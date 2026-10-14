@@ -15,7 +15,7 @@
  * 7. That's it! Every submitted order will instantly appear here with 100% accuracy and zero missed orders.
  */
 
-const BACKEND_BASE_URL = "https://sevenfold-blazer-pacific.ngrok-free.dev";
+const BACKEND_BASE_URL = "https://order.khandelia.online";
 
 /**
  * 📦 Web App Endpoint: Receives order submissions and appends to Google Sheet

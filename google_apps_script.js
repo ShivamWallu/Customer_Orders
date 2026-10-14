@@ -3,7 +3,7 @@
  * Copy and paste this entirely into: Google Sheet > Extensions > Apps Script
  */
 
-const WEBHOOK_URL = "https://sevenfold-blazer-pacific.ngrok-free.dev/api/webhook/google-sheet";
+const WEBHOOK_URL = "https://order.khandelia.online/api/webhook/google-sheet";
 const SECRET_TOKEN = "MASHAL_SECURE_TOKEN_2026";
 
 /**
