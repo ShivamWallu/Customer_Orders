@@ -1,0 +1,19 @@
+# Virtual Environment
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables & secrets (NEVER push to GitHub)
+.env
+
+# Chrome profile data (heavy files & browser session)
+whatsapp_chrome_profile/
+
+# Temporary order slips and local caches
+order_slips/
+scratch/
+*.log

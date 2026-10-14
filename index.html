@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Customer Wise Live Monitor | Mashal OMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --panel-bg: #111827;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-glow: rgba(59, 130, 246, 0.25);
+      --success: #10b981;
+      --danger: #ef4444;
+      --th-bg: #162032;
+      --th-color: #cbd5e1;
+      --row-even: #0e1524;
+      --row-odd: #121a2d;
+      --row-hover: #1e293b;
+      --cell-border: rgba(255, 255, 255, 0.06);
+      --sticky-shadow: 4px 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ⚡ ULTRA-SLEEK COMPACT TOP BAR (Maximum space for Table) */
+    .top-compact-bar {
+      height: 56px;
+      min-height: 56px;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 50;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* Compact Pill Indicators */
+    .meta-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .pill-active-sheet {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: #60a5fa;
+    }
+
+    .pill-count {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.25);
+      color: #c084fc;
+    }
+
+    .pill-live {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Search & Actions */
+    .bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: flex-end;
+      max-width: 600px;
+    }
+
+    .search-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .search-wrapper svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 0 10px 0 32px;
+      color: #fff;
+      font-size: 12px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-wrapper input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+
+    .btn-compact {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--panel-border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .btn-compact:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-compact.btn-primary {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border: none;
+      color: #fff;
+    }
+
+    .btn-compact.btn-primary:hover {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    }
+
+    /* 📊 FULL SCREEN TABLE CONTAINER (Max Space) */
+    .table-container {
+      flex: 1;
+      overflow: auto;
+      position: relative;
+      background: var(--bg);
+    }
+
+    /* Scrollbars */
+    .table-container::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    .table-container::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background: #1f293d;
+      border-radius: 5px;
+      border: 2px solid #090d16;
+    }
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+      table-layout: auto;
+    }
+
+    /* 📌 STICKY HEADERS */
+    thead th {
+      position: sticky;
+      top: 0;
+      background: var(--th-bg);
+      color: var(--th-color);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+      border-right: 1px solid var(--cell-border);
+      white-space: nowrap;
+      z-index: 20;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Row Styling */
+    tbody tr:nth-child(even) {
+      background: var(--row-even);
+    }
+    tbody tr:nth-child(odd) {
+      background: var(--row-odd);
+    }
+    tbody tr:hover {
+      background: var(--row-hover) !important;
+    }
+
+    tbody td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--cell-border);
+      border-right: 1px solid var(--cell-border);
+      color: #e2e8f0;
+      white-space: nowrap;
+      height: 36px;
+    }
+
+    /* 📌 STICKY GRAND TOTAL FOOTER */
+    tfoot {
+      position: sticky;
+      bottom: 0;
+      z-index: 25;
+      background: #111a2e;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+    }
+    tfoot tr {
+      background: #131d33 !important;
+    }
+    tfoot td {
+      padding: 10px 14px;
+      border-top: 2px solid var(--primary);
+      border-bottom: none;
+      border-right: 1px solid var(--cell-border);
+      font-weight: 700;
+      color: #fff;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    tfoot td.sticky-col-0,
+    tfoot td.sticky-col-1,
+    tfoot td.sticky-col-2 {
+      background: #131d33 !important;
+      z-index: 26;
+    }
+    tfoot td.total-cell {
+      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.15) !important;
+    }
+
+    /* 📌 FROZEN / STICKY COLUMNS (Customer Code & Name lock on horizontal scroll) */
+    /* Col 0: Row Index */
+    table .sticky-col-0 {
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      background: inherit;
+      width: 45px;
+      min-width: 45px;
+      text-align: center;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+    thead th.sticky-col-0 {
+      z-index: 30;
+      background: var(--th-bg);
+    }
+
+    /* Col 1: Customer Code */
+    table .sticky-col-1 {
+      position: sticky;
+      left: 45px;
+      z-index: 10;
+      background: inherit;
+      border-right: 1px solid var(--cell-border);
+    }
+    thead th.sticky-col-1 {
+      z-index: 30;
+      background: var(--th-bg);
+    }
+
+    /* Col 2: Customer Name */
+    table .sticky-col-2 {
+      position: sticky;
+      left: 175px;
+      z-index: 10;
+      background: inherit;
+      border-right: 2px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow: var(--sticky-shadow);
+    }
+    thead th.sticky-col-2 {
+      z-index: 30;
+      background: var(--th-bg);
+    }
+
+    /* Cell Types */
+    .cust-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .cust-name {
+      font-weight: 600;
+      color: #ffffff;
+      min-width: 220px;
+    }
+
+    .badge-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .amount-cell {
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
+      color: #f8fafc;
+      font-weight: 500;
+      min-width: 110px;
+    }
+
+    .total-cell {
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
+      font-weight: 700;
+      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.08) !important;
+      min-width: 120px;
+    }
+
+    .growth-negative {
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
+      font-weight: 700;
+      color: #f87171 !important;
+      background: rgba(239, 68, 68, 0.08) !important;
+      min-width: 120px;
+    }
+
+    .growth-positive {
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
+      font-weight: 700;
+      color: #34d399 !important;
+      background: rgba(16, 185, 129, 0.08) !important;
+      min-width: 120px;
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: #1f2937;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.25s ease;
+      z-index: 100;
+    }
+    /* 🛡️ EXECUTIVE AUTHENTICATION OVERLAY */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 30%, #1e293b, #0b0f19 80%);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 10000;
+      transition: opacity 0.3s ease;
+    }
+
+    .auth-card {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 32px 28px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      animation: authCardPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes authCardPop {
+      0% { opacity: 0; transform: scale(0.92); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .auth-icon-badge {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(30, 64, 175, 0.4));
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
+    }
+
+    .auth-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+      font-size: 12.5px;
+      color: #94a3b8;
+      margin-bottom: 22px;
+      line-height: 1.4;
+    }
+
+    .auth-form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .auth-label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .auth-input {
+      width: 100%;
+      height: 44px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #ffffff;
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .auth-password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-toggle-pwd {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .auth-error-msg {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .auth-btn {
+      width: 100%;
+      height: 46px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    }
+
+    .auth-btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .auth-btn:active {
+      transform: translateY(0);
+    }
+
+    .auth-footer-note {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 18px;
+    }
+
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.15) !important;
+      border-color: rgba(239, 68, 68, 0.3) !important;
+      color: #fca5a5 !important;
+    }
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.25) !important;
+      color: #ffffff !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ⚡ COMPACT HEADER BAR -->
+  <div class="top-compact-bar">
+    <div class="brand-group">
+      <div class="brand-icon">📊</div>
+      <div class="brand-title">Sales Customer Wise (1st Sheet Live Mirror)</div>
+    </div>
+
+    <!-- Live Meta Pills -->
+    <div class="meta-pills">
+      <div class="pill pill-active-sheet">
+        <span>📅 Tab:</span>
+        <span id="activeSheetName">Detecting...</span>
+      </div>
+
+      <div class="pill pill-count">
+        <span>👥 Rows:</span>
+        <span id="activeRowCount">0</span>
+      </div>
+
+      <div class="pill pill-live">
+        <span class="live-dot"></span>
+        <span id="syncStatus">Auto-Sync (2X Fast)</span>
+      </div>
+    </div>
+
+    <!-- Search & Actions -->
+    <div class="bar-actions">
+      <div class="search-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search Code, Customer, State, Amount..." onkeyup="filterTable()">
+      </div>
+
+      <button class="btn-compact" id="refreshBtn" onclick="manualFetch()">
+        🔄 Refresh
+      </button>
+
+      <button class="btn-compact btn-primary" onclick="exportToCSV()">
+        📥 Export CSV
+      </button>
+
+      <div class="admin-badge">👤 admin</div>
+
+      <button class="btn-compact btn-logout" onclick="logoutAdmin()" title="Lock Confidential Dashboard">
+        🔒 Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- 📊 MAXIMIZED TABLE CONTAINER -->
+  <div class="table-container">
+    <table id="dataTable">
+      <thead id="tableHead">
+        <!-- Dynamically injected -->
+      </thead>
+      <tbody id="tableBody">
+        <tr>
+          <td colspan="15" style="text-align: center; padding: 60px 0; color: var(--text-muted);">
+            🔄 Connecting to 1st Sheet data stream...
+          </td>
+        </tr>
+      </tbody>
+      <tfoot id="tableFoot"></tfoot>
+    </table>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span>✅</span>
+    <span id="toastMsg">Synced!</span>
+  </div>
+
+  <!-- 🛡️ ENTERPRISE ACCESS LOGIN OVERLAY -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-icon-badge">🔒</div>
+      <h2 class="auth-title">Khandelia Oil & General Mills</h2>
+      <p class="auth-subtitle">Restricted Executive Access: Sales & Turnover Dashboard</p>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="auth-form-group">
+          <label class="auth-label">Username</label>
+          <input type="text" id="authUsername" class="auth-input" placeholder="admin" required autocomplete="username">
+        </div>
+
+        <div class="auth-form-group">
+          <label class="auth-label">Password</label>
+          <div class="auth-password-wrapper">
+            <input type="password" id="authPassword" class="auth-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility()">👁️</button>
+          </div>
+        </div>
+
+        <div id="authError" class="auth-error-msg" style="display: none;"></div>
+
+        <button type="submit" class="auth-btn" id="loginBtn">
+          <span>Unlock Sales Dashboard</span>
+          <span>➔</span>
+        </button>
+      </form>
+
+      <div class="auth-footer-note">
+        Authorized Executive Personnel Only • 256-bit Encrypted Session
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentHeaders = [];
+    let currentCustomerRows = [];
+    let currentGrandTotalRow = null;
+    let lastKnownTimestamp = null;
+    let lastKnownSheet = null;
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById("authUsername").value.trim();
+      const p = document.getElementById("authPassword").value;
+      const errBox = document.getElementById("authError");
+      const btn = document.getElementById("loginBtn");
+
+      errBox.style.display = "none";
+      btn.disabled = true;
+      btn.innerHTML = `<span>Verifying...</span>`;
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, password: p })
+        });
+
+        if (!res.ok) {
+          throw new Error("Invalid username or password. Please try again.");
+        }
+
+        const data = await res.json();
+        sessionStorage.setItem("admin_token", data.token);
+        document.getElementById("authOverlay").style.display = "none";
+        showToast("🔓 Welcome, Admin! Access Granted.");
+        fetchSheetData();
+      } catch (err) {
+        errBox.textContent = "❌ " + err.message;
+        errBox.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Unlock Sales Dashboard</span><span>➔</span>`;
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem("admin_token");
+      document.getElementById("authPassword").value = "";
+      document.getElementById("authOverlay").style.display = "flex";
+      showToast("🔒 Dashboard Locked.");
+    }
+
+    function togglePasswordVisibility() {
+      const inp = document.getElementById("authPassword");
+      inp.type = inp.type === "password" ? "text" : "password";
+    }
+
+    async function fetchSheetData() {
+      const token = sessionStorage.getItem("admin_token");
+      if (!token) {
+        document.getElementById("authOverlay").style.display = "flex";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/sheet/current", {
+          headers: { "X-Admin-Token": token }
+        });
+
+        if (res.status === 401) {
+          sessionStorage.removeItem("admin_token");
+          document.getElementById("authOverlay").style.display = "flex";
+          document.getElementById("authError").textContent = "Session expired. Please log in.";
+          document.getElementById("authError").style.display = "block";
+          return;
+        }
+
+        const json = await res.json();
+
+        if (json.status === "active") {
+          const isFreshData = (lastKnownTimestamp !== json.last_synced_at || lastKnownSheet !== json.sheet_name);
+
+          // If fresh sync arrived from Google Sheets
+          if (isFreshData) {
+            lastKnownTimestamp = json.last_synced_at;
+            lastKnownSheet = json.sheet_name;
+
+            const headers = json.headers || [];
+            let allRawRows = [];
+
+            if (json.raw_grid && json.raw_grid.length > 0) {
+              allRawRows = json.raw_grid;
+            } else if (json.data && json.data.length > 0) {
+              allRawRows = json.data.map(obj => headers.map(h => obj[h] !== undefined ? obj[h] : ""));
+            }
+
+            // Separate Customer Rows vs Grand Total Row vs Empty Rows
+            const customers = [];
+            let grandTotal = null;
+
+            allRawRows.forEach(row => {
+              // 1. Skip if completely blank
+              const isBlank = row.every(c => !c || String(c).trim() === "");
+              if (isBlank) return;
+
+              // 2. Detect Grand Total row
+              const combinedText = ((row[0] || "") + " " + (row[1] || "") + " " + (row[2] || "")).toLowerCase();
+              if (combinedText.includes("grand total") || combinedText.includes("total")) {
+                grandTotal = row;
+              } else {
+                customers.push(row);
+              }
+            });
+
+            currentHeaders = headers;
+            currentCustomerRows = customers;
+            currentGrandTotalRow = grandTotal;
+
+            showToast(`⚡ Synced with 1st Sheet: '${json.sheet_name}' (${customers.length} Customers)`);
+            document.getElementById("activeSheetName").textContent = json.sheet_name || "1st Sheet";
+            document.getElementById("activeRowCount").textContent = `${customers.length} Customers`;
+
+            // Respect existing search query
+            const activeQuery = document.getElementById("searchInput").value.trim();
+            if (activeQuery) {
+              filterTable();
+            } else {
+              renderTable(headers, customers, grandTotal);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    }
+
+    function renderTable(headers, rows, totalRow) {
+      const thead = document.getElementById("tableHead");
+      const tbody = document.getElementById("tableBody");
+      const tfoot = document.getElementById("tableFoot");
+
+      if (!headers || headers.length === 0) return;
+
+      // Detect key column indices for sticky freezing & formatting
+      let codeColIdx = -1;
+      let nameColIdx = -1;
+
+      headers.forEach((h, idx) => {
+        const lh = h.toLowerCase();
+        if (codeColIdx === -1 && lh.includes("code")) codeColIdx = idx;
+        if (nameColIdx === -1 && lh.includes("name")) nameColIdx = idx;
+      });
+
+      // 1. Build Header
+      let headHtml = "<tr>";
+      headHtml += `<th class="sticky-col-0">#</th>`; // Row counter
+
+      headers.forEach((h, colIdx) => {
+        let stickyClass = "";
+        if (colIdx === codeColIdx) stickyClass = "sticky-col-1";
+        else if (colIdx === nameColIdx) stickyClass = "sticky-col-2";
+
+        let titleHtml = escapeHtml(h);
+        if (h.includes(" Amount")) {
+          const month = h.replace(" Amount", "").trim();
+          titleHtml = `<div style="color:#60a5fa; font-size:10px; font-weight:700; letter-spacing:0.04em;">${escapeHtml(month)}</div><div style="font-size:11px;">Amount</div>`;
+        } else if (h.includes("Inc/ Dec") || h.includes("% Inc/ Dec")) {
+          const prefix = h.includes("Sept - Oct") ? "Sept - Oct" : "";
+          const metric = h.replace("Sept - Oct", "").trim();
+          titleHtml = `<div style="color:#c084fc; font-size:10px; font-weight:700; letter-spacing:0.04em;">${escapeHtml(prefix || 'Growth')}</div><div style="font-size:11px;">${escapeHtml(metric || h)}</div>`;
+        }
+
+        headHtml += `<th class="${stickyClass}">${titleHtml}</th>`;
+      });
+      headHtml += "</tr>";
+      thead.innerHTML = headHtml;
+
+      // 2. Build Customer Body Rows (Exact Sequential Order)
+      if (!rows || rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${headers.length + 1}" style="text-align:center; padding: 40px; color: var(--text-muted);">No matching customers found</td></tr>`;
+      } else {
+        let bodyHtml = "";
+        rows.forEach((row, rowIdx) => {
+          bodyHtml += "<tr>";
+          bodyHtml += `<td class="sticky-col-0">${rowIdx + 1}</td>`;
+
+          headers.forEach((h, colIdx) => {
+            const val = row[colIdx] !== undefined ? String(row[colIdx]) : "";
+            const lowerH = h.toLowerCase();
+
+            let cellClass = "";
+            let inner = escapeHtml(val);
+
+            if (colIdx === codeColIdx) {
+              cellClass += " sticky-col-1";
+              inner = `<span class="cust-code">${inner}</span>`;
+            } else if (colIdx === nameColIdx) {
+              cellClass += " sticky-col-2 cust-name";
+            } else if (lowerH.includes("group") || lowerH.includes("category") || lowerH.includes("status")) {
+              if (val) inner = `<span class="badge-tag">${inner}</span>`;
+            } else if (lowerH.includes("inc/dec") || lowerH.includes("growth") || lowerH.includes("sept=oct")) {
+              if (val.startsWith("-")) {
+                cellClass += " growth-negative";
+              } else if (val && val !== "0") {
+                cellClass += " growth-positive";
+              }
+            } else if (lowerH.includes("total")) {
+              cellClass += " total-cell";
+            } else if (lowerH.includes("amount") || isNumeric(val)) {
+              cellClass += " amount-cell";
+            }
+
+            bodyHtml += `<td class="${cellClass.trim()}">${inner}</td>`;
+          });
+
+          bodyHtml += "</tr>";
+        });
+        tbody.innerHTML = bodyHtml;
+      }
+
+      // 3. Build Sticky Grand Total Footer (Auto-calculate if not provided by sheet)
+      if (tfoot) {
+        let finalTotalRow = totalRow;
+
+        if (!finalTotalRow && rows && rows.length > 0) {
+          finalTotalRow = new Array(headers.length).fill("");
+          finalTotalRow[0] = "GRAND TOTAL";
+          if (codeColIdx !== -1) finalTotalRow[codeColIdx] = "TOTAL";
+          if (nameColIdx !== -1) finalTotalRow[nameColIdx] = `${rows.length} Accounts`;
+
+          headers.forEach((h, colIdx) => {
+            const lowerH = h.toLowerCase();
+            if (lowerH.includes("amount") || lowerH.includes("total") || lowerH.includes("inc/dec")) {
+              if (lowerH.includes("%")) return;
+              let sum = 0;
+              rows.forEach(r => {
+                const clean = String(r[colIdx] || "0").replace(/,/g, "").trim();
+                const n = parseFloat(clean);
+                if (!isNaN(n)) sum += n;
+              });
+              finalTotalRow[colIdx] = Math.round(sum).toLocaleString("en-IN");
+            }
+          });
+        }
+
+        if (finalTotalRow) {
+          let footHtml = "<tr>";
+          footHtml += `<td class="sticky-col-0" style="color:#60a5fa; font-weight:800;">∑</td>`;
+
+          headers.forEach((h, colIdx) => {
+            let stickyClass = "";
+            if (colIdx === codeColIdx) stickyClass = "sticky-col-1";
+            else if (colIdx === nameColIdx) stickyClass = "sticky-col-2";
+
+            let val = finalTotalRow[colIdx] !== undefined ? String(finalTotalRow[colIdx]) : "";
+            const lowerH = h.toLowerCase();
+            let cellClass = "";
+
+            if (colIdx === 0 && !val) val = "GRAND TOTAL";
+            if (lowerH.includes("total")) cellClass = "total-cell";
+            else if (lowerH.includes("amount") || isNumeric(val)) cellClass = "amount-cell";
+            else if (lowerH.includes("inc/dec") || lowerH.includes("%")) {
+              cellClass = val.startsWith("-") ? "growth-negative" : "growth-positive";
+            }
+
+            footHtml += `<td class="${stickyClass} ${cellClass}">${escapeHtml(val)}</td>`;
+          });
+          footHtml += "</tr>";
+          tfoot.innerHTML = footHtml;
+        } else {
+          tfoot.innerHTML = "";
+        }
+      }
+    }
+
+    function filterTable() {
+      const q = document.getElementById("searchInput").value.toLowerCase().trim();
+      if (!q) {
+        document.getElementById("activeRowCount").textContent = `${currentCustomerRows.length} Customers`;
+        renderTable(currentHeaders, currentCustomerRows, currentGrandTotalRow);
+        return;
+      }
+
+      const filtered = currentCustomerRows.filter(row => {
+        return row.some(cell => String(cell).toLowerCase().includes(q));
+      });
+
+      document.getElementById("activeRowCount").textContent = `${filtered.length} of ${currentCustomerRows.length} Customers`;
+      renderTable(currentHeaders, filtered, currentGrandTotalRow);
+    }
+
+    function isNumeric(str) {
+      if (typeof str !== "string") return false;
+      const clean = str.replace(/,/g, "").trim();
+      return clean.length > 0 && !isNaN(clean);
+    }
+
+    function escapeHtml(t) {
+      if (t === null || t === undefined) return "";
+      return String(t)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      document.getElementById("toastMsg").textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+
+    function manualFetch() {
+      const b = document.getElementById("refreshBtn");
+      b.textContent = "⏳ Syncing...";
+      fetchSheetData().finally(() => {
+        setTimeout(() => b.textContent = "🔄 Refresh", 400);
+      });
+    }
+
+    function exportToCSV() {
+      if (!currentCustomerRows || currentCustomerRows.length === 0) return;
+      let csv = ["#", ...currentHeaders].join(",") + "\n";
+      currentCustomerRows.forEach((r, idx) => {
+        const line = [idx + 1, ...r].map(c => `"${String(c || '').replace(/"/g, '""')}"`).join(",");
+        csv += line + "\n";
+      });
+      if (currentGrandTotalRow) {
+        const totalLine = ["∑", ...currentGrandTotalRow].map(c => `"${String(c || '').replace(/"/g, '""')}"`).join(",");
+        csv += totalLine + "\n";
+      }
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Mashal_${document.getElementById('activeSheetName').textContent}_Export.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // Auto-poll every 3s
+    fetchSheetData();
+    setInterval(fetchSheetData, 3000);
+  </script>
+</body>
+</html>
