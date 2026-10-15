@@ -68,6 +68,15 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_mgr_token ON sales_manager_sessions (token);
             CREATE INDEX IF NOT EXISTS idx_mgr_phone ON sales_manager_sessions (phone);
             """)
+        # Safe migration for new columns
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN total_pieces INTEGER DEFAULT 0;")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN party_code TEXT DEFAULT '';")
+        except Exception:
+            pass
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
     finally:
         conn.close()
@@ -142,6 +151,8 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
         formatted_timestamp = order.get("formattedTimestamp") or order.get("formatted_timestamp", "")
         created_at = order.get("timestamp") or datetime.now().isoformat()
         total_boxes = int(order.get("totalBoxes") or order.get("total_boxes", 0))
+        total_pieces = int(order.get("totalPieces") or order.get("total_pieces", 0))
+        party_code = order.get("partyCode") or order.get("party_code", "")
         
         items = order.get("items", [])
         items_json = json.dumps(items, ensure_ascii=False) if isinstance(items, list) else str(items)
@@ -154,25 +165,27 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
         with conn:
             conn.execute("""
             INSERT INTO orders (
-                order_id, party_name, party_address, delivery_address, sales_person,
-                order_date, formatted_timestamp, created_at, total_boxes,
+                order_id, party_name, party_code, party_address, delivery_address, sales_person,
+                order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
                 synced_to_sheet
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(order_id) DO UPDATE SET
                 party_name = excluded.party_name,
+                party_code = excluded.party_code,
                 party_address = excluded.party_address,
                 delivery_address = excluded.delivery_address,
                 sales_person = excluded.sales_person,
                 total_boxes = excluded.total_boxes,
+                total_pieces = excluded.total_pieces,
                 items_json = excluded.items_json,
                 items_summary = excluded.items_summary,
                 slip_image_path = COALESCE(NULLIF(excluded.slip_image_path, ''), orders.slip_image_path),
                 slip_image_url = COALESCE(NULLIF(excluded.slip_image_url, ''), orders.slip_image_url),
                 synced_to_sheet = CASE WHEN excluded.synced_to_sheet = 1 THEN 1 ELSE orders.synced_to_sheet END;
             """, (
-                order_id, party_name, party_address, delivery_address, sales_person,
-                order_date, formatted_timestamp, created_at, total_boxes,
+                order_id, party_name, party_code, party_address, delivery_address, sales_person,
+                order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
                 synced_to_sheet
             ))

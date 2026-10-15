@@ -137,6 +137,16 @@
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
+    textarea.input-control {
+      height: auto;
+      min-height: 56px;
+      line-height: 1.45;
+      padding: 10px 14px;
+      font-family: inherit;
+      resize: vertical;
+      word-break: break-word;
+    }
+
     .row-2col {
       display: grid;
       grid-template-columns: 1fr;
@@ -627,7 +637,12 @@
             <span>Party Address</span>
             <span class="label-tag tag-green">Address</span>
           </label>
-          <input type="text" class="input-control" id="partyAddress" placeholder="Shop / Office / Street address, City, State, Pincode" required>
+          <textarea class="input-control" 
+                    id="partyAddress" 
+                    rows="2"
+                    placeholder="Shop / Office / Street address, City, State, Pincode" 
+                    oninput="this.style.height = ''; this.style.height = Math.max(54, this.scrollHeight) + 'px'"
+                    required></textarea>
         </div>
 
         <div class="row-2col">
@@ -1054,7 +1069,7 @@
       ctx.font = "12px 'Arial', sans-serif";
       ctx.fillText("Address: " + (order.partyAddress || "-"), 24, 242);
       
-      // Table Header (5 Columns)
+      // Table Header (5 Columns with Centered Pieces)
       const tableY = 275;
       ctx.fillStyle = "#004b99";
       ctx.fillRect(12, tableY, width - 24, tableHeaderHeight);
@@ -1062,13 +1077,13 @@
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 12px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("#", 32, tableY + 25);
-      ctx.fillText("BRAND", 75, tableY + 25);
+      ctx.fillText("#", 35, tableY + 25);
+      ctx.fillText("BRAND", 85, tableY + 25);
       ctx.textAlign = "left";
-      ctx.fillText("PACKING / PRODUCT DESCRIPTION", 130, tableY + 25);
+      ctx.fillText("PACKING / PRODUCT DESCRIPTION", 135, tableY + 25);
       ctx.textAlign = "center";
-      ctx.fillText("QUANTITY (IN PIECES)", width - 190, tableY + 25);
-      ctx.fillText("QUANTITY (BOXES)", width - 80, tableY + 25);
+      ctx.fillText("QUANTITY (IN PIECES)", 570, tableY + 25);
+      ctx.fillText("QUANTITY (BOXES)", 750, tableY + 25);
       
       // Table Rows
       let curY = tableY + tableHeaderHeight;
@@ -1091,19 +1106,19 @@
         ctx.fillStyle = "#64748b";
         ctx.font = "bold 12px 'Arial', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText((idx + 1).toString(), 32, curY + 23);
+        ctx.fillText((idx + 1).toString(), 35, curY + 23);
         
         // Brand
         const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
         ctx.fillStyle = isMashal ? "#1e40af" : "#15803d";
         ctx.font = "bold 11px 'Arial', sans-serif";
-        ctx.fillText(it.brand || "Mashal", 75, curY + 23);
+        ctx.fillText(it.brand || "Mashal", 85, curY + 23);
         
         // Item name
         ctx.fillStyle = "#0f172a";
         ctx.font = "bold 13px 'Arial', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText(it.item || "", 130, curY + 23);
+        ctx.fillText(it.item || "", 135, curY + 23);
 
         // Pieces Multiplier Calculation
         const multiplier = (it.item && it.item.match(/x\s*(\d+)/i)) ? parseInt(it.item.match(/x\s*(\d+)/i)[1], 10) : 1;
@@ -1112,17 +1127,17 @@
         totalBoxes += bxs;
         totalPieces += pcs;
         
-        // Pieces Column
+        // Pieces Column (Centered at 570)
         ctx.fillStyle = "#1e40af";
         ctx.font = "bold 13.5px 'Arial', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(pcs.toLocaleString() + " Pcs", width - 190, curY + 23);
+        ctx.fillText(pcs.toLocaleString() + " Pcs", 570, curY + 23);
 
-        // Boxes Column
+        // Boxes Column (Centered at 750)
         ctx.fillStyle = "#003366";
         ctx.font = "bold 15px 'Courier New', monospace";
         ctx.textAlign = "center";
-        ctx.fillText(bxs + " bxs", width - 80, curY + 23);
+        ctx.fillText(bxs + " bxs", 750, curY + 23);
         
         curY += rowHeight;
       });

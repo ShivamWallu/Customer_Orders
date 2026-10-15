@@ -168,6 +168,28 @@
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
+    textarea.input-control {
+      height: auto;
+      min-height: 56px;
+      line-height: 1.45;
+      padding: 10px 14px;
+      font-family: inherit;
+      resize: vertical;
+      word-break: break-word;
+    }
+
+    .tag-party-code {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-weight: 800;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
     .row-2col {
       display: grid;
       grid-template-columns: 1fr;
@@ -747,8 +769,11 @@
         
         <!-- Field 1: Party Name (1st position with smart auto-suggest) -->
         <div class="form-group">
-          <label class="form-label">
-            <span>Party Name</span>
+          <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>Party Name</span>
+              <span id="partyCodeBadge" class="label-tag tag-party-code" style="display: none;"></span>
+            </div>
             <span class="label-tag tag-blue">Customer</span>
           </label>
           <input type="text" 
@@ -776,17 +801,18 @@
           <div class="clean-dropdown" id="contactDropdown"></div>
         </div>
 
-        <!-- Field 3: Party Address (3rd position) -->
+        <!-- Field 3: Party Address (3rd position, auto-expanding professional format) -->
         <div class="form-group">
           <label class="form-label">
             <span>Party Address</span>
             <span class="label-tag tag-green">Address</span>
           </label>
-          <input type="text" 
-                 class="input-control" 
-                 id="partyAddress" 
-                 placeholder="Shop / Office / Street address, City, State, Pincode" 
-                 required>
+          <textarea class="input-control" 
+                    id="partyAddress" 
+                    rows="2"
+                    placeholder="Shop / Office / Street address, City, State, Pincode" 
+                    oninput="this.style.height = ''; this.style.height = Math.max(54, this.scrollHeight) + 'px'"
+                    required></textarea>
         </div>
 
         <!-- Field 4: Date & Sales Person -->
@@ -804,7 +830,7 @@
               <span>Area Sales Manager</span>
               <span class="label-tag tag-pink">Manager</span>
             </label>
-            <input type="text" class="input-control" id="salesPerson" placeholder="Area Sales Manager Name" required>
+            <input type="text" class="input-control" id="salesPerson" placeholder="Area Sales Manager Name" readonly required style="background: #f8fafc; font-weight: 600; color: #0f172a; cursor: default;">
           </div>
         </div>
       </section>
@@ -1066,6 +1092,9 @@
       }
       try {
         const sess = JSON.parse(stored);
+        // Instant pre-population from local storage (Zero delay, persists permanently)
+        applyManagerSession(sess);
+
         const res = await fetch("/api/sales-manager/check-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1073,7 +1102,7 @@
         });
         const data = await res.json();
         if (data.status === "valid") {
-          applyManagerSession(sess);
+          applyManagerSession(data.session || sess);
         } else {
           showManagerAuthModal();
         }
@@ -1097,9 +1126,12 @@
       const spInput = document.getElementById("salesPerson");
       if (spInput) {
         spInput.value = name;
+        spInput.defaultValue = name;
         spInput.readOnly = true;
-        spInput.style.background = "#f1f5f9";
-        spInput.style.cursor = "not-allowed";
+        spInput.style.background = "#f8fafc";
+        spInput.style.color = "#0f172a";
+        spInput.style.fontWeight = "600";
+        spInput.style.cursor = "default";
       }
     }
 
@@ -1294,7 +1326,22 @@
       document.getElementById("partyName").value = c.party_name;
       document.getElementById("partyName").dataset.partyCode = c.party_code || "";
       document.getElementById("partyContactInput").value = c.phone1 || c.phone2 || c.email || "";
-      document.getElementById("partyAddress").value = c.full_address;
+      
+      const addrEl = document.getElementById("partyAddress");
+      addrEl.value = c.full_address || "";
+      addrEl.style.height = "auto";
+      addrEl.style.height = Math.max(54, addrEl.scrollHeight) + "px";
+
+      // Display Party Code Badge next to Party Name
+      const codeBadge = document.getElementById("partyCodeBadge");
+      if (codeBadge) {
+        if (c.party_code) {
+          codeBadge.textContent = `[${c.party_code}]`;
+          codeBadge.style.display = "inline-flex";
+        } else {
+          codeBadge.style.display = "none";
+        }
+      }
 
       document.getElementById("partyDropdown").classList.remove("active");
       document.getElementById("contactDropdown").classList.remove("active");
@@ -1514,7 +1561,7 @@
       ctx.font = "12px 'Arial', sans-serif";
       ctx.fillText("Address: " + (order.partyAddress || "-"), 24, 242);
       
-      // Table Header (5 Columns)
+      // Table Header (5 Columns with Centered Pieces)
       const tableY = 275;
       ctx.fillStyle = "#004b99";
       ctx.fillRect(12, tableY, width - 24, tableHeaderHeight);
@@ -1522,13 +1569,13 @@
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 12px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("#", 32, tableY + 25);
-      ctx.fillText("BRAND", 75, tableY + 25);
+      ctx.fillText("#", 35, tableY + 25);
+      ctx.fillText("BRAND", 85, tableY + 25);
       ctx.textAlign = "left";
-      ctx.fillText("PACKING / PRODUCT DESCRIPTION", 130, tableY + 25);
+      ctx.fillText("PACKING / PRODUCT DESCRIPTION", 135, tableY + 25);
       ctx.textAlign = "center";
-      ctx.fillText("QUANTITY (IN PIECES)", width - 190, tableY + 25);
-      ctx.fillText("QUANTITY (BOXES)", width - 80, tableY + 25);
+      ctx.fillText("QUANTITY (IN PIECES)", 570, tableY + 25);
+      ctx.fillText("QUANTITY (BOXES)", 750, tableY + 25);
       
       // Table Rows
       let curY = tableY + tableHeaderHeight;
@@ -1551,19 +1598,19 @@
         ctx.fillStyle = "#64748b";
         ctx.font = "bold 12px 'Arial', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText((idx + 1).toString(), 32, curY + 23);
+        ctx.fillText((idx + 1).toString(), 35, curY + 23);
         
         // Brand
         const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
         ctx.fillStyle = isMashal ? "#1e40af" : "#15803d";
         ctx.font = "bold 11px 'Arial', sans-serif";
-        ctx.fillText(it.brand || "Mashal", 75, curY + 23);
+        ctx.fillText(it.brand || "Mashal", 85, curY + 23);
         
         // Item name
         ctx.fillStyle = "#0f172a";
         ctx.font = "bold 13px 'Arial', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText(it.item || "", 130, curY + 23);
+        ctx.fillText(it.item || "", 135, curY + 23);
 
         // Pieces Multiplier Calculation
         const multiplier = (it.item && it.item.match(/x\s*(\d+)/i)) ? parseInt(it.item.match(/x\s*(\d+)/i)[1], 10) : 1;
@@ -1572,17 +1619,17 @@
         totalBoxes += bxs;
         totalPieces += pcs;
         
-        // Pieces Column
+        // Pieces Column (Centered at 570)
         ctx.fillStyle = "#1e40af";
         ctx.font = "bold 13.5px 'Arial', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(pcs.toLocaleString() + " Pcs", width - 190, curY + 23);
+        ctx.fillText(pcs.toLocaleString() + " Pcs", 570, curY + 23);
 
-        // Boxes Column
+        // Boxes Column (Centered at 750)
         ctx.fillStyle = "#003366";
         ctx.font = "bold 15px 'Courier New', monospace";
         ctx.textAlign = "center";
-        ctx.fillText(bxs + " bxs", width - 80, curY + 23);
+        ctx.fillText(bxs + " bxs", 750, curY + 23);
         
         curY += rowHeight;
       });
@@ -1675,12 +1722,25 @@
       document.getElementById("orderDate").valueAsDate = new Date();
       updateTotal();
 
-      // Keep logged-in manager name in field
+      // Reset Party Code badge
+      const codeBadge = document.getElementById("partyCodeBadge");
+      if (codeBadge) codeBadge.style.display = "none";
+      const partyInput = document.getElementById("partyName");
+      if (partyInput) partyInput.dataset.partyCode = "";
+
+      // Keep logged-in manager name in field permanently
       const stored = localStorage.getItem(SESSION_KEY);
       if (stored) {
         try {
           const sess = JSON.parse(stored);
-          if (sess.manager_name) document.getElementById("salesPerson").value = sess.manager_name;
+          const name = sess.manager_name || (sess.phone ? `Manager (${sess.phone})` : "");
+          if (name) {
+            const spInput = document.getElementById("salesPerson");
+            if (spInput) {
+              spInput.value = name;
+              spInput.defaultValue = name;
+            }
+          }
         } catch(e) {}
       }
     }

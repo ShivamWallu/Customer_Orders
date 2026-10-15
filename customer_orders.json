@@ -1053,5 +1053,90 @@
     "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 600 bxs\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 972 bxs\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 112 bxs\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 556 bxs\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 6 bxs\n🔵 Mashal 5 LTR CAN x 4 ➔ 729 bxs\n🔵 Mashal 2 LTR CAN x 6 ➔ 894 bxs\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 183 bxs\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 63 bxs\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 68 bxs\n🔵 Mashal 15 KG CAN x 1 ➔ 88 bxs\n🔵 Mashal 15 KG TIN x 1 ➔ 167 bxs\n🔵 Mashal 15 LTR CAN x 1 ➔ 982 bxs\n🔵 Mashal 15 LTR TIN x 1 ➔ 230 bxs\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 46 bxs\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 815 bxs\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 276 bxs\n🟢 Fauji 15 KG CAN x 1 ➔ 634 bxs\n🟢 Fauji 15 KG TIN x 1 ➔ 709 bxs",
     "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261014-6061.png",
     "slipImageUrl": "/order_slips/KOGM-20261014-6061.png"
+  },
+  {
+    "id": "KOGM-20261015-6236",
+    "partyName": "Tara Chand Sushil Kumar - Chandigarh",
+    "partyCode": "SDMOCH0009",
+    "partyAddress": "Scf - 81, Grain Market, Sector 26, Chandigarh - 160026",
+    "deliveryAddress": "Scf - 81, Grain Market, Sector 26, Chandigarh - 160026",
+    "orderDate": "2026-10-15",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 33,
+    "formattedTimestamp": "15/10/2026 05:39:05 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 2
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 2
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 3
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 4
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 3
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 3
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 2
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 4
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 2
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 2
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 2
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 2
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 2
+      }
+    ],
+    "contactInput": "9357701095",
+    "timestamp": "2026-10-15T17:39:05.570157",
+    "formattedDate": "15/10/2026",
+    "synced_to_sheet": true,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 2 bxs\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 2 bxs\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 3 bxs\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 4 bxs\n🔵 Mashal 5 LTR CAN x 4 ➔ 3 bxs\n🔵 Mashal 2 LTR CAN x 6 ➔ 3 bxs\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 2 bxs\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 4 bxs\n🔵 Mashal 15 KG CAN x 1 ➔ 2 bxs\n🔵 Mashal 15 KG TIN x 1 ➔ 2 bxs\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 2 bxs\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 2 bxs\n🟢 Fauji 15 KG CAN x 1 ➔ 2 bxs",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261015-6236.png",
+    "slipImageUrl": "/order_slips/KOGM-20261015-6236.png"
   }
 ]

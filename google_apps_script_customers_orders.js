@@ -62,24 +62,83 @@ function appendOrderToSheet(order) {
     sheet = ss.getSheets()[0];
   }
 
-  // Check if header row exists
+  // Format timestamp (IST)
+  const now = new Date();
+  const istFormattedTimestamp = Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy HH:mm:ss");
+  const orderId = order.id || order.orderId || ("KOGM-" + Utilities.formatDate(now, "Asia/Kolkata", "yyyyMMdd") + "-" + Math.floor(1000 + Math.random() * 9000));
+
+  // 📅 Auto Date Formatting (Guaranteed clean dd/MM/yyyy in IST)
+  let orderDateFormatted = "";
+  if (order.orderDate) {
+    const rawDate = String(order.orderDate).trim();
+    if (rawDate.indexOf("-") !== -1) {
+      const parts = rawDate.split("-");
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          // YYYY-MM-DD -> DD/MM/YYYY
+          orderDateFormatted = parts[2] + "/" + parts[1] + "/" + parts[0];
+        } else {
+          orderDateFormatted = parts[0] + "/" + parts[1] + "/" + parts[2];
+        }
+      }
+    } else {
+      orderDateFormatted = rawDate;
+    }
+  }
+  if (!orderDateFormatted) {
+    orderDateFormatted = Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy");
+  }
+
+  // Calculate Pieces and Boxes
+  const itemsList = order.items || [];
+  let totalPieces = Number(order.totalPieces || 0);
+  let totalBoxes = Number(order.totalBoxes || 0);
+  if (totalPieces === 0 && itemsList.length > 0) {
+    totalPieces = 0;
+    itemsList.forEach(function(it) {
+      const match = (it.item || "").match(/x\s*(\d+)/i);
+      const mult = match ? parseInt(match[1], 10) : 1;
+      const bxs = parseInt(it.boxes, 10) || 0;
+      totalPieces += (bxs * mult);
+    });
+  }
+
+  // Format items summary string with Pieces and Boxes
+  let itemsSummary = order.itemsSummary || "";
+  if (!itemsSummary && itemsList.length > 0) {
+    itemsSummary = itemsList.map(function(it) {
+      const icon = (it.brand || "Mashal").toLowerCase() === "mashal" ? "🔵" : "🟢";
+      const match = (it.item || "").match(/x\s*(\d+)/i);
+      const mult = match ? parseInt(match[1], 10) : 1;
+      const bxs = parseInt(it.boxes, 10) || 0;
+      const pcs = bxs * mult;
+      return icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + pcs + " Pcs (" + bxs + " bxs)";
+    }).join("\n");
+  }
+
+  // Check existing headers or initialize sheet
+  let headerRow = [];
+  if (sheet.getLastRow() > 0) {
+    headerRow = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0].map(function(h) { return String(h).trim(); });
+  }
+
+  const standardHeaders = [
+    "Timestamp (IST)", 
+    "Order ID", 
+    "Order Date", 
+    "Party Name (Customer)", 
+    "Billing Address", 
+    "Delivery Address", 
+    "Area Sales Manager", 
+    "Quantity (Pieces)",
+    "Total Boxes", 
+    "Ordered Items Breakdown", 
+    "Status"
+  ];
+
   if (sheet.getLastRow() === 0 || sheet.getRange(1, 1).getValue() === "") {
-    const headers = [
-      "Timestamp (IST)", 
-      "Order ID", 
-      "Order Date", 
-      "Party Name (Customer)", 
-      "Billing Address", 
-      "Delivery Address", 
-      "Sales Person", 
-      "Total Boxes", 
-      "Ordered Items Breakdown", 
-      "Status"
-    ];
-    sheet.appendRow(headers);
-    
-    // Style Header Row
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    sheet.appendRow(standardHeaders);
+    const headerRange = sheet.getRange(1, 1, 1, standardHeaders.length);
     headerRange.setBackground("#003366")
                .setFontColor("#ffffff")
                .setFontWeight("bold")
@@ -88,62 +147,112 @@ function appendOrderToSheet(order) {
                .setVerticalAlignment("middle");
     sheet.setRowHeight(1, 38);
     sheet.setFrozenRows(1);
+    headerRow = standardHeaders;
   }
 
-  // Format timestamp (IST)
-  const now = new Date();
-  const istFormattedTimestamp = Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy HH:mm:ss");
-  const orderId = order.id || order.orderId || ("KOGM-" + Utilities.formatDate(now, "Asia/Kolkata", "yyyyMMdd") + "-" + Math.floor(1000 + Math.random() * 9000));
-  
-  // Format items summary string
-  let itemsSummary = order.itemsSummary || "";
-  const itemsList = order.items || [];
-  if (!itemsSummary && itemsList.length > 0) {
-    itemsSummary = itemsList.map(function(it) {
-      const icon = (it.brand || "Mashal").toLowerCase() === "mashal" ? "🔵" : "🟢";
-      return icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + (it.boxes || 0) + " bxs";
-    }).join("\n");
-    
+  // Check if "Quantity (Pieces)" exists in header row, if not add it dynamically
+  let hasPiecesCol = false;
+  headerRow.forEach(function(h) {
+    if (h.toLowerCase().indexOf("piece") !== -1 || h.toLowerCase().indexOf("pcs") !== -1) {
+      hasPiecesCol = true;
+    }
+  });
+
+  if (!hasPiecesCol && headerRow.length >= 8) {
+    // Find index of Total Boxes
+    let boxesIdx = -1;
+    for (let i = 0; i < headerRow.length; i++) {
+      if (headerRow[i].toLowerCase().indexOf("box") !== -1) {
+        boxesIdx = i + 1;
+        break;
+      }
+    }
+    if (boxesIdx !== -1) {
+      sheet.insertColumnBefore(boxesIdx);
+      sheet.getRange(1, boxesIdx).setValue("Quantity (Pieces)")
+           .setBackground("#003366")
+           .setFontColor("#ffffff")
+           .setFontWeight("bold")
+           .setFontSize(11)
+           .setHorizontalAlignment("center")
+           .setVerticalAlignment("middle");
+      hasPiecesCol = true;
+    }
   }
 
-  const row = [
-    istFormattedTimestamp,
-    orderId,
-    order.formattedDate || order.orderDate || Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy"),
-    order.partyName || "",
-    order.partyAddress || "",
-    order.deliveryAddress || order.partyAddress || "",
-    order.salesPerson || "",
-    Number(order.totalBoxes || 0),
-    itemsSummary, // Will be enhanced by rich text below
-    "CONFIRMED"
-  ];
+  // Build row array according to column structure
+  let row = [];
+  if (hasPiecesCol) {
+    row = [
+      istFormattedTimestamp,
+      orderId,
+      orderDateFormatted,
+      order.partyName || "",
+      order.partyAddress || "",
+      order.deliveryAddress || order.partyAddress || "",
+      order.salesPerson || "",
+      Number(totalPieces),
+      Number(totalBoxes),
+      itemsSummary,
+      "CONFIRMED"
+    ];
+  } else {
+    row = [
+      istFormattedTimestamp,
+      orderId,
+      orderDateFormatted,
+      order.partyName || "",
+      order.partyAddress || "",
+      order.deliveryAddress || order.partyAddress || "",
+      order.salesPerson || "",
+      Number(totalBoxes),
+      itemsSummary,
+      "CONFIRMED"
+    ];
+  }
 
   sheet.appendRow(row);
-
   const lastRow = sheet.getLastRow();
   
   // Format row columns
   sheet.getRange(lastRow, 1).setHorizontalAlignment("center").setVerticalAlignment("middle"); // Timestamp
   sheet.getRange(lastRow, 2).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#004b99").setHorizontalAlignment("center").setVerticalAlignment("middle"); // Order ID
-  sheet.getRange(lastRow, 3).setHorizontalAlignment("center").setVerticalAlignment("middle"); // Order Date
+  sheet.getRange(lastRow, 3).setHorizontalAlignment("center").setVerticalAlignment("middle"); // Auto Date
   sheet.getRange(lastRow, 4).setFontWeight("bold").setVerticalAlignment("middle"); // Party Name
-  sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff"); // Total Boxes
-  sheet.getRange(lastRow, 10).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle"); // Status
   
-  // 🎨 Multi-line Colorful Rich Text for Column I (Ordered Items Breakdown)
-  const cellI = sheet.getRange(lastRow, 9);
-  if (itemsList.length > 0) {
-    try {
-      cellI.setRichTextValue(buildRichItemsBreakdown(itemsList, itemsSummary));
-    } catch (e) {
-      cellI.setValue(itemsSummary);
+  if (hasPiecesCol) {
+    // Quantity (Pieces) in Column 8
+    sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setFontColor("#1e40af").setBackground("#f0fdf4");
+    // Total Boxes in Column 9
+    sheet.getRange(lastRow, 9).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff");
+    // Status in Column 11
+    sheet.getRange(lastRow, 11).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle");
+    
+    // Rich text for Column 10 (Breakdown)
+    const cellBreakdown = sheet.getRange(lastRow, 10);
+    if (itemsList.length > 0) {
+      try {
+        cellBreakdown.setRichTextValue(buildRichItemsBreakdown(itemsList, itemsSummary));
+      } catch (e) {
+        cellBreakdown.setValue(itemsSummary);
+      }
     }
+    cellBreakdown.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
+  } else {
+    sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff"); // Total Boxes
+    sheet.getRange(lastRow, 10).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle"); // Status
+    const cellBreakdown = sheet.getRange(lastRow, 9);
+    if (itemsList.length > 0) {
+      try {
+        cellBreakdown.setRichTextValue(buildRichItemsBreakdown(itemsList, itemsSummary));
+      } catch (e) {
+        cellBreakdown.setValue(itemsSummary);
+      }
+    }
+    cellBreakdown.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
   }
-  cellI.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
-  cellI.setVerticalAlignment("middle");
-  
-  // Dynamic spacious row height for comfortable reading
+
+  // Dynamic spacious row height
   const calculatedHeight = Math.max(38, itemsList.length * 24 + 10);
   sheet.setRowHeight(lastRow, calculatedHeight);
 }

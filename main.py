@@ -151,13 +151,26 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     order["formattedDate"] = now_dt.strftime("%d/%m/%Y")
     order["synced_to_sheet"] = False
     
-    # Format items summary with brand icons & clean multi-line layout
+    # Format items summary with brand icons, calculate total pieces & clean multi-line layout
     items = order.get("items", [])
     summary_parts = []
+    total_pieces = 0
+    total_boxes = 0
     for it in items:
         brand = it.get("brand", "Mashal")
         icon = "🔵" if brand.lower() == "mashal" else "🟢"
-        summary_parts.append(f"{icon} {brand} {it.get('item', '')} ➔ {it.get('boxes', 0)} bxs")
+        item_name = it.get("item", "")
+        bxs = int(it.get("boxes", 0))
+        match = re.search(r'x\s*(\d+)', item_name, re.IGNORECASE)
+        mult = int(match.group(1)) if match else 1
+        pcs = bxs * mult
+        it["pieces"] = pcs
+        total_pieces += pcs
+        total_boxes += bxs
+        summary_parts.append(f"{icon} {brand} {item_name} ➔ {pcs} Pcs ({bxs} bxs)")
+    order["totalPieces"] = total_pieces
+    if not order.get("totalBoxes"):
+        order["totalBoxes"] = total_boxes
     order["itemsSummary"] = "\n".join(summary_parts)
     
     # Decode and save high-resolution Order Slip image if provided by client
@@ -258,7 +271,7 @@ SMTP_TLS = os.environ.get("SMTP_TLS", "true").lower() == "true"
 NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "itchd.kogm@gmail.com")
 
 def send_order_email_notification(order: dict):
-    """Sends immediate email notification for every customer order to NOTIFICATION_EMAIL"""
+    """Sends immediate email notification for every customer order formatted exactly like the Order Slip"""
     if not SMTP_PASSWORD:
         print("[EMAIL NOTIFICATION SKIPPED] No SMTP_PASSWORD found in .env")
         return
@@ -267,75 +280,176 @@ def send_order_email_notification(order: dict):
         import smtplib
         from email.mime.text import MIMEText
         from email.mime.multipart import MIMEMultipart
+        from email.mime.image import MIMEImage
 
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"🔔 [NEW ORDER] {order.get('id')} - {order.get('partyName')} ({order.get('totalBoxes')} Boxes)"
-        msg["From"] = f"Mashal Order System <{SMTP_USER}>"
-        msg["To"] = NOTIFICATION_EMAIL
+        msg_root = MIMEMultipart("related")
+        total_bxs = order.get("totalBoxes", 0)
+        total_pcs = order.get("totalPieces", 0)
+        msg_root["Subject"] = f"🔔 [NEW ORDER] #{order.get('id')} - {order.get('partyName')} ({total_bxs} Boxes / {total_pcs:,} Pcs)"
+        msg_root["From"] = f"Mashal Order System <{SMTP_USER}>"
+        msg_root["To"] = NOTIFICATION_EMAIL
 
+        msg_alternative = MIMEMultipart("alternative")
+        msg_root.attach(msg_alternative)
+
+        # 5-Column Table Rows matching Order Slip
         items_rows = ""
-        for it in order.get("items", []):
+        for idx, it in enumerate(order.get("items", [])):
+            brand = it.get("brand", "Mashal")
+            item_name = it.get("item", "")
+            bxs = int(it.get("boxes", 0))
+            match = re.search(r'x\s*(\d+)', item_name, re.IGNORECASE)
+            mult = int(match.group(1)) if match else 1
+            pcs = bxs * mult
+            brand_color = "#1e40af" if brand.lower() == "mashal" else "#15803d"
+            bg_color = "#f8fafc" if idx % 2 == 0 else "#ffffff"
             items_rows += f"""
-            <tr>
-              <td style="padding: 8px; border: 1px solid #cbd5e1; font-weight: bold; color: {'#004b99' if it.get('brand')=='Mashal' else '#007a3d'};">{it.get('brand')}</td>
-              <td style="padding: 8px; border: 1px solid #cbd5e1;">{it.get('item')}</td>
-              <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; font-size: 15px;">{it.get('boxes')}</td>
+            <tr style="background-color: {bg_color};">
+              <td style="padding: 10px 8px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #64748b; font-size: 12px;">{idx + 1}</td>
+              <td style="padding: 10px 8px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: {brand_color}; font-size: 12px;">{brand}</td>
+              <td style="padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; font-weight: bold; color: #0f172a; font-size: 13px;">{item_name}</td>
+              <td style="padding: 10px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #1e40af; font-size: 13.5px;">{pcs:,} Pcs</td>
+              <td style="padding: 10px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-family: monospace; font-size: 14.5px; color: #003366;">{bxs} bxs</td>
             </tr>
             """
 
+        party_title = order.get("partyName", "Customer")
+        party_code = order.get("partyCode", "")
+        if party_code and f"[{party_code}]" not in party_title:
+            party_title += f"  <span style='color: #0369a1; font-family: monospace; font-size: 13px; font-weight: bold;'>[Party Code: {party_code}]</span>"
+
         html_content = f"""
+        <!DOCTYPE html>
         <html>
-        <body style="font-family: Arial, sans-serif; background-color: #f8fafc; padding: 20px;">
-          <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-            <div style="background: #003366; color: #ffffff; padding: 18px 24px; text-align: center;">
-              <h2 style="margin: 0; font-size: 19px; letter-spacing: 0.5px;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h2>
-              <div style="font-size: 13px; margin-top: 6px; color: #fde047; font-weight: bold; letter-spacing: 1px;">NEW ORDER CONFIRMATION</div>
-            </div>
-            <div style="padding: 24px;">
-              <table style="width: 100%; margin-bottom: 20px; font-size: 14px; line-height: 1.6;">
-                <tr><td style="color: #64748b; width: 140px;"><strong>Order ID:</strong></td><td style="font-family: monospace; font-size: 15px; font-weight: bold; color: #004b99;">#{order.get('id')}</td></tr>
-                <tr><td style="color: #64748b;"><strong>Order Date & Time:</strong></td><td style="font-weight: 600;">{order.get('formattedTimestamp', order.get('timestamp'))}</td></tr>
-                <tr><td style="color: #64748b;"><strong>Party Name:</strong></td><td style="font-weight: 800; color: #0f172a; font-size: 15px;">{order.get('partyName')}</td></tr>
-                <tr><td style="color: #64748b;"><strong>Billing Address:</strong></td><td>{order.get('partyAddress')}</td></tr>
-                <tr><td style="color: #64748b;"><strong>Delivery Address:</strong></td><td>{order.get('deliveryAddress')}</td></tr>
-                <tr><td style="color: #64748b;"><strong>Sales Person:</strong></td><td style="font-weight: 600;">{order.get('salesPerson')}</td></tr>
+        <body style="font-family: Arial, Helvetica, sans-serif; background-color: #f1f5f9; padding: 20px; margin: 0;">
+          <div style="max-width: 750px; margin: 0 auto; background: #ffffff; border: 3px solid #003366; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            
+            <!-- 🏢 Top Navy Header with Logos & Title -->
+            <div style="background: #003366; padding: 18px 20px; text-align: center;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="width: 110px; text-align: left; vertical-align: middle;">
+                    <img src="cid:kogm_logo" alt="KOGM" style="height: 52px; max-width: 105px; display: block; border-radius: 4px; background: #ffffff; padding: 3px;">
+                  </td>
+                  <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
+                    <h2 style="margin: 0; font-size: 18px; color: #ffffff; letter-spacing: 0.5px; font-weight: 800; text-transform: uppercase;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h2>
+                    <div style="display: inline-block; background: #d97706; color: #ffffff; padding: 5px 16px; border-radius: 4px; font-size: 11px; margin-top: 8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">OFFICIAL ORDER CONFIRMATION SLIP</div>
+                  </td>
+                  <td style="width: 110px; text-align: right; vertical-align: middle;">
+                    <img src="cid:mashal_logo" alt="Mashal" style="height: 52px; max-width: 105px; display: block; border-radius: 4px; background: #ffffff; padding: 3px; margin-left: auto;">
+                  </td>
+                </tr>
               </table>
-              <h4 style="margin: 16px 0 8px 0; color: #003366; font-size: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">Ordered Items Breakdown:</h4>
-              <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
+            </div>
+
+            <!-- 🔖 Reference Bar (Order ID, Date, Area Sales Manager) -->
+            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 12px 20px;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <tr>
+                  <td style="text-align: left; font-weight: bold; font-family: monospace; font-size: 13.5px; color: #0f172a;">
+                    ORDER ID: <span style="color: #004b99;">#{order.get('id')}</span>
+                  </td>
+                  <td style="text-align: center; color: #475569;">
+                    <strong>Date:</strong> {order.get('formattedTimestamp', order.get('timestamp'))}
+                  </td>
+                  <td style="text-align: right; color: #0f172a;">
+                    <strong>Area Sales Manager:</strong> <span style="font-weight: 700;">{order.get('salesPerson', '-')}</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- 👤 Customer & Billing Details -->
+            <div style="padding: 18px 20px 10px 20px;">
+              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px 18px;">
+                <div style="font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">CUSTOMER / BILLING DETAILS</div>
+                <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">
+                  {party_title}
+                </div>
+                <div style="font-size: 13px; color: #475569; line-height: 1.45;">
+                  <strong>Address:</strong> {order.get('partyAddress', '-')}
+                </div>
+              </div>
+            </div>
+
+            <!-- 📦 5-Column Ordered Items Table (Matching Canvas Slip) -->
+            <div style="padding: 10px 20px 16px 20px;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #cbd5e1;">
                 <thead>
-                  <tr style="background: #003366; color: #ffffff;">
-                    <th style="padding: 9px; text-align: left;">Brand</th>
-                    <th style="padding: 9px; text-align: left;">Packing Description</th>
-                    <th style="padding: 9px; text-align: center;">Boxes</th>
+                  <tr style="background: #004b99; color: #ffffff;">
+                    <th style="padding: 10px 8px; text-align: center; width: 40px; font-size: 11.5px;">#</th>
+                    <th style="padding: 10px 8px; text-align: center; width: 80px; font-size: 11.5px;">BRAND</th>
+                    <th style="padding: 10px 14px; text-align: left; font-size: 11.5px;">PACKING / PRODUCT DESCRIPTION</th>
+                    <th style="padding: 10px 12px; text-align: center; width: 140px; font-size: 11.5px;">QUANTITY (IN PIECES)</th>
+                    <th style="padding: 10px 12px; text-align: center; width: 130px; font-size: 11.5px;">QUANTITY (BOXES)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {items_rows}
                 </tbody>
               </table>
-              <div style="background: #eff6ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 14px; text-align: center; font-size: 19px; font-weight: 800; color: #1e3a8a;">
-                TOTAL ORDER: {order.get('totalBoxes')} BOXES
+
+              <!-- 🏆 Grand Total Banner -->
+              <div style="background: #003366; color: #ffffff; padding: 14px 20px; text-align: center; margin-top: 12px; border-radius: 6px; font-size: 17px; font-weight: 800; letter-spacing: 0.5px;">
+                TOTAL ORDER QUANTITY: {total_bxs:,} BOXES  ({total_pcs:,} PIECES)
               </div>
             </div>
-            <div style="background: #f1f5f9; padding: 12px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0;">
-              Recorded into Google Sheets "Customers Orders" | 100% Accurate Sync System
+
+            <!-- 🛡️ Bottom Digital Stamp -->
+            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 20px;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; color: #64748b;">
+                <tr>
+                  <td style="text-align: left;">
+                    <div style="color: #16a34a; font-weight: bold; margin-bottom: 2px;">✔ DIGITALLY RECORDED INTO GOOGLE SHEETS 'CUSTOMERS ORDERS'</div>
+                    <div>Submission: {order.get('formattedTimestamp', order.get('timestamp'))} • Khandelia Oil & General Mills Pvt. Ltd.</div>
+                  </td>
+                  <td style="text-align: right; width: 170px;">
+                    <div style="border: 1.5px solid #16a34a; border-radius: 4px; padding: 4px 8px; text-align: center; color: #16a34a; font-weight: bold;">
+                      VERIFIED ORDER<br>
+                      <span style="font-family: monospace; font-size: 10px;">#{order.get('id')}</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </div>
+
           </div>
         </body>
         </html>
         """
-        msg.attach(MIMEText(html_content, "html"))
+        msg_alternative.attach(MIMEText(html_content, "html"))
+
+        # Attach Inline Logos
+        kogm_path = os.path.join("images", "kogm_logo_thumb.jpg")
+        if os.path.exists(kogm_path):
+            try:
+                with open(kogm_path, "rb") as f:
+                    img_k = MIMEImage(f.read())
+                    img_k.add_header('Content-ID', '<kogm_logo>')
+                    img_k.add_header('Content-Disposition', 'inline', filename='kogm_logo.jpg')
+                    msg_root.attach(img_k)
+            except Exception as e:
+                print(f"[EMAIL LOGO ERROR] KOGM: {e}")
+
+        mashal_path = os.path.join("images", "mashal_logo_thumb.jpg")
+        if os.path.exists(mashal_path):
+            try:
+                with open(mashal_path, "rb") as f:
+                    img_m = MIMEImage(f.read())
+                    img_m.add_header('Content-ID', '<mashal_logo>')
+                    img_m.add_header('Content-Disposition', 'inline', filename='mashal_logo.jpg')
+                    msg_root.attach(img_m)
+            except Exception as e:
+                print(f"[EMAIL LOGO ERROR] Mashal: {e}")
 
         # Attach high-resolution slip image if saved on server
         slip_img_path = order.get("slipImagePath")
         if slip_img_path and os.path.exists(slip_img_path):
             try:
-                from email.mime.image import MIMEImage
                 with open(slip_img_path, "rb") as img_f:
-                    img_data = img_f.read()
-                image_attachment = MIMEImage(img_data, name=f"Order_Slip_{order.get('id')}.png")
-                image_attachment.add_header('Content-Disposition', 'attachment', filename=f"Order_Slip_{order.get('id')}.png")
-                msg.attach(image_attachment)
+                    image_attachment = MIMEImage(img_f.read(), name=f"Order_Slip_{order.get('id')}.png")
+                    image_attachment.add_header('Content-Disposition', 'attachment', filename=f"Order_Slip_{order.get('id')}.png")
+                    msg_root.attach(image_attachment)
                 print(f"[EMAIL ATTACHMENT] Attached Order_Slip_{order.get('id')}.png to email")
             except Exception as att_err:
                 print(f"[EMAIL ATTACHMENT ERROR] {att_err}")
@@ -344,8 +458,8 @@ def send_order_email_notification(order: dict):
             if SMTP_TLS:
                 server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(SMTP_USER, NOTIFICATION_EMAIL, msg.as_string())
-        print(f"[EMAIL NOTIFICATION SENT] Order {order.get('id')} emailed to {NOTIFICATION_EMAIL}")
+            server.sendmail(SMTP_USER, NOTIFICATION_EMAIL, msg_root.as_string())
+        print(f"[EMAIL NOTIFICATION SENT] Order #{order.get('id')} emailed to {NOTIFICATION_EMAIL} in Slip format")
     except Exception as e:
         print(f"[EMAIL NOTIFICATION ERROR] Could not send email: {e}")
 
