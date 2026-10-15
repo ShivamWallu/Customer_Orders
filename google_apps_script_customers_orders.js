@@ -103,6 +103,7 @@ function appendOrderToSheet(order) {
       const icon = (it.brand || "Mashal").toLowerCase() === "mashal" ? "🔵" : "🟢";
       return icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + (it.boxes || 0) + " bxs";
     }).join("\n");
+    
   }
 
   const row = [

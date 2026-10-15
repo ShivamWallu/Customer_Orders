@@ -43,6 +43,66 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROFILE_DIR = os.path.join(BASE_DIR, "whatsapp_chrome_profile")
 os.makedirs(PROFILE_DIR, exist_ok=True)
 
+REMOTE_SERVER_URL = os.environ.get("REMOTE_SERVER_URL", "https://order.khandelia.online").rstrip("/")
+
+def fetch_pending_orders_hybrid():
+    """
+    Fetches pending orders from LIVE AWS server (https://order.khandelia.online/api/whatsapp/pending).
+    Falls back to local queue if server is unreachable.
+    Downloads any missing slip images to local order_slips/ directory.
+    """
+    import urllib.request
+    import json
+
+    # 1. Try remote live server first
+    if REMOTE_SERVER_URL:
+        try:
+            req = urllib.request.Request(
+                f"{REMOTE_SERVER_URL}/api/whatsapp/pending",
+                headers={"User-Agent": "MashalWhatsAppBot/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                if resp.status == 200:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    remote_orders = data.get("pending_orders", [])
+                    if remote_orders:
+                        for item in remote_orders:
+                            order_id = item.get("order_id")
+                            local_slip = os.path.join(BASE_DIR, "order_slips", f"{order_id}.png")
+                            if not os.path.exists(local_slip):
+                                os.makedirs(os.path.dirname(local_slip), exist_ok=True)
+                                try:
+                                    img_url = f"{REMOTE_SERVER_URL}/order_slips/{order_id}.png"
+                                    urllib.request.urlretrieve(img_url, local_slip)
+                                    item["slip_image_path"] = os.path.abspath(local_slip)
+                                except Exception as dl_err:
+                                    print(f"[BOT WARN] Could not download slip image for #{order_id}: {dl_err}")
+                            else:
+                                item["slip_image_path"] = os.path.abspath(local_slip)
+                        return remote_orders
+        except Exception:
+            pass
+
+    # 2. Local fallback
+    return get_pending_whatsapp_orders()
+
+def mark_order_sent_hybrid(order_id: str):
+    """Marks order sent in local queue and on remote server"""
+    mark_whatsapp_order_sent(order_id)
+    if REMOTE_SERVER_URL:
+        try:
+            import urllib.request
+            import json
+            req = urllib.request.Request(
+                f"{REMOTE_SERVER_URL}/api/whatsapp/mark-sent",
+                data=json.dumps({"order_id": order_id}).encode("utf-8"),
+                headers={"Content-Type": "application/json", "User-Agent": "MashalWhatsAppBot/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                pass
+        except Exception as e:
+            print(f"[BOT SYNC WARN] Could not mark sent on remote server: {e}")
+
 def cleanup_orphaned_chrome():
     """Kills any previous orphaned Chrome process holding the profile locked"""
     try:
@@ -298,7 +358,7 @@ def run_bot_loop():
         
         while True:
             try:
-                pending_orders = get_pending_whatsapp_orders()
+                pending_orders = fetch_pending_orders_hybrid()
                 if pending_orders:
                     print(f"\n[BOT] Found {len(pending_orders)} pending order(s) to send!")
                     for item in pending_orders:
@@ -315,7 +375,7 @@ def run_bot_loop():
                         )
                         
                         if success:
-                            mark_whatsapp_order_sent(order_id)
+                            mark_order_sent_hybrid(order_id)
                             print(f"[SUCCESS] Order #{order_id} slip & details delivered on WhatsApp!")
                         else:
                             print(f"[RETRY LATER] Failed to deliver Order #{order_id}. Will retry on next cycle.")

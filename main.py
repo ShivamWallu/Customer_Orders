@@ -8,7 +8,11 @@ import json
 import os
 import base64
 from dotenv import load_dotenv
-from whatsapp_service import enqueue_whatsapp_order
+from whatsapp_service import (
+    enqueue_whatsapp_order,
+    get_pending_whatsapp_orders,
+    mark_whatsapp_order_sent
+)
 from database import (
     init_db,
     save_order_to_db,
@@ -292,13 +296,33 @@ def send_order_email_notification(order: dict):
             except Exception as att_err:
                 print(f"[EMAIL ATTACHMENT ERROR] {att_err}")
 
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
-            server.starttls()
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=12) as server:
+            if SMTP_TLS:
+                server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(SMTP_USER, "itchd.kogm@gmail.com", msg.as_string())
-        print(f"[EMAIL NOTIFICATION SENT] Order {order.get('id')} emailed to itchd.kogm@gmail.com")
+            server.sendmail(SMTP_USER, NOTIFICATION_EMAIL, msg.as_string())
+        print(f"[EMAIL NOTIFICATION SENT] Order {order.get('id')} emailed to {NOTIFICATION_EMAIL}")
     except Exception as e:
         print(f"[EMAIL NOTIFICATION ERROR] Could not send email: {e}")
+
+@app.get("/api/whatsapp/pending")
+def api_get_pending_whatsapp_orders():
+    """Returns all orders pending delivery via WhatsApp for automatic bot delivery"""
+    orders = get_pending_whatsapp_orders()
+    for o in orders:
+        if not o.get("slip_image_url") and o.get("order_id"):
+            o["slip_image_url"] = f"/order_slips/{o['order_id']}.png"
+    return {"pending_orders": orders, "count": len(orders)}
+
+@app.post("/api/whatsapp/mark-sent")
+async def api_mark_whatsapp_sent(request: Request):
+    """Marks order as delivered via WhatsApp in queue and database"""
+    body = await request.json()
+    order_id = body.get("order_id")
+    if order_id:
+        mark_whatsapp_order_sent(order_id)
+        return {"status": "success", "order_id": order_id}
+    return {"status": "error", "message": "Missing order_id"}
 
 @app.get("/api/orders/pending")
 def get_pending_orders():

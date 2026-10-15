@@ -733,12 +733,16 @@
       </div>
 
       <!-- Actions -->
+      <button type="button" class="btn-whatsapp-share" style="background: #15803d; color: #ffffff; font-weight: 800; font-size: 15px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35);" onclick="sendWhatsAppToOffice()">
+        <span>📲 WhatsApp Slip to Office (+91 7814749816)</span>
+      </button>
+
       <button type="button" class="btn-download-slip" onclick="downloadOrderSlipImage()">
         <span>📥 Download Order Slip (Image)</span>
       </button>
 
       <button type="button" class="btn-whatsapp-share" onclick="shareOnWhatsApp()">
-        <span>📲 Share on WhatsApp</span>
+        <span>📤 Share to Party / Customer</span>
       </button>
 
       <button type="button" class="btn-next-order" onclick="closeModal()">
@@ -1216,10 +1220,7 @@
       }, "image/png", 1.0);
     }
 
-    function shareOnWhatsApp() {
-      if (!window.lastCompletedOrder) return;
-      const o = window.lastCompletedOrder;
-      
+    function buildWhatsAppMessage(o) {
       let msg = `📦 *KHANDELIA OIL AND GENERAL MILLS PVT. LTD.*\n`;
       msg += `*ORDER CONFIRMATION SLIP*\n`;
       msg += `------------------------------------\n`;
@@ -1243,8 +1244,21 @@
         msg += `------------------------------------\n`;
       }
       msg += `_Recorded in Google Sheets 'Customers Orders'_`;
+      return msg;
+    }
 
-      // Free contact picker for customer
+    function sendWhatsAppToOffice() {
+      if (!window.lastCompletedOrder) return;
+      const o = window.lastCompletedOrder;
+      const msg = buildWhatsAppMessage(o);
+      const url = `https://api.whatsapp.com/send?phone=917814749816&text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
+    }
+
+    function shareOnWhatsApp() {
+      if (!window.lastCompletedOrder) return;
+      const o = window.lastCompletedOrder;
+      const msg = buildWhatsAppMessage(o);
       const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
       window.open(url, "_blank");
     }
