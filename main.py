@@ -31,7 +31,8 @@ from crm_service import (
 from otp_service import (
     send_kit19_otp,
     verify_kit19_otp,
-    verify_manager_login_otp
+    verify_manager_login_otp,
+    check_kit19_balance
 )
 
 # Load configuration from .env file
@@ -424,6 +425,11 @@ async def api_manager_check_session(request: Request):
     if session:
         return {"status": "valid", "session": session}
     return {"status": "invalid"}
+
+@app.get("/api/otp/kit19-balance")
+def api_get_kit19_balance():
+    """Checks live SMS balance from Kit19 API"""
+    return check_kit19_balance()
 
 @app.get("/api/orders/pending")
 def get_pending_orders():
