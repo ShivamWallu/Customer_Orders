@@ -18,13 +18,15 @@ import json
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 
-load_dotenv()
-
-KIT19_API_URL = os.environ.get("KIT19_API_URL", "https://www.kit19.com/ComposeSMS.aspx")
-KIT19_USERNAME = os.environ.get("KIT19_USERNAME", "khandelia348774")
-KIT19_PASSWORD = os.environ.get("KIT19_PASSWORD", "")
-KIT19_SENDER_ID = os.environ.get("KIT19_SENDER_ID", "KHANDL")
-KIT19_DLT_TEMPLATE_ID = os.environ.get("KIT19_DLT_TEMPLATE_ID", "")
+def get_kit19_config():
+    load_dotenv(override=True)
+    return {
+        "api_url": os.environ.get("KIT19_API_URL", "https://www.kit19.com/ComposeSMS.aspx"),
+        "username": os.environ.get("KIT19_USERNAME", "khandelia348774"),
+        "password": os.environ.get("KIT19_PASSWORD", ""),
+        "sender_id": os.environ.get("KIT19_SENDER_ID", "KHANDL"),
+        "dlt_template_id": os.environ.get("KIT19_DLT_TEMPLATE_ID", "")
+    }
 
 # Store active OTPs in memory: { phone: { "otp": "123456", "expires_at": 123456789, "verified": False } }
 _ACTIVE_OTPS: Dict[str, Dict[str, Any]] = {}
@@ -39,10 +41,13 @@ def check_kit19_balance() -> Dict[str, Any]:
     Checks the remaining SMS balance on Kit19 using the official BalanceCheck API:
     https://www.kit19.com/BalanceCheck.aspx?username=username&password=password
     """
-    if not (KIT19_USERNAME and KIT19_PASSWORD):
+    cfg = get_kit19_config()
+    username = cfg["username"]
+    password = cfg["password"]
+    if not (username and password):
         return {"status": "error", "message": "KIT19_USERNAME or KIT19_PASSWORD not configured in .env"}
     try:
-        url = f"https://www.kit19.com/BalanceCheck.aspx?username={urllib.parse.quote(KIT19_USERNAME)}&password={urllib.parse.quote(KIT19_PASSWORD)}"
+        url = f"https://www.kit19.com/BalanceCheck.aspx?username={urllib.parse.quote(username)}&password={urllib.parse.quote(password)}"
         req = urllib.request.Request(url, headers={"User-Agent": "KhandeliaOMS/1.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
             content = resp.read().decode("utf-8").strip()
@@ -84,26 +89,33 @@ def send_kit19_otp(phone: str) -> Dict[str, Any]:
     message_text = f"Your verification OTP for Khandelia Order Management is {otp}. Valid for 5 minutes. Do not share with anyone."
 
     # If Kit19 credentials are provided in .env, send live HTTP request
-    if KIT19_USERNAME and KIT19_PASSWORD:
+    cfg = get_kit19_config()
+    username = cfg["username"]
+    password = cfg["password"]
+    sender_id = cfg["sender_id"]
+    api_url = cfg["api_url"]
+    dlt_template_id = cfg["dlt_template_id"]
+
+    if username and password:
         try:
             # Prepare query parameters matching exact Kit19 dashboard spec
             params = {
-                "username": KIT19_USERNAME,
-                "password": KIT19_PASSWORD,
-                "sender": KIT19_SENDER_ID,
+                "username": username,
+                "password": password,
+                "sender": sender_id,
                 "to": phone_clean,
                 "message": message_text,
                 "priority": "1",
                 "dnd": "1",
                 "unicode": "0"
             }
-            if KIT19_DLT_TEMPLATE_ID:
-                params["dlttemplateid"] = KIT19_DLT_TEMPLATE_ID
+            if dlt_template_id:
+                params["dlttemplateid"] = dlt_template_id
 
             query_str = urllib.parse.urlencode(params)
             # Kit19 specific requirement: '%26' for '&' and '%2B' for '+'
             query_str = query_str.replace("+", "%20")
-            full_url = f"{KIT19_API_URL}?{query_str}"
+            full_url = f"{api_url}?{query_str}"
             
             req = urllib.request.Request(full_url, headers={"User-Agent": "KhandeliaOMS/1.0"})
             with urllib.request.urlopen(req, timeout=10) as resp:
