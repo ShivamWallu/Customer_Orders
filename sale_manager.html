@@ -10,18 +10,15 @@
   <style>
     :root {
       --navy: #0a2540;
+      --navy-dark: #001a33;
       --navy-light: #123760;
       --mashal-blue: #0056b3;
-      --mashal-bg: #fffbf0;
-      --mashal-border: #fde68a;
       --fauji-green: #0a7c42;
-      --fauji-bg: #f0fdf4;
-      --fauji-border: #bbf7d0;
       --border-gray: #e2e8f0;
       --text-dark: #0f172a;
       --text-muted: #64748b;
-      --primary: #2563eb;
-      --gold: #d97706;
+      --gold: #f59e0b;
+      --gold-dark: #b45309;
     }
 
     * {
@@ -50,12 +47,52 @@
       min-height: 100vh;
       overflow-x: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      position: relative;
     }
 
-    /* 🏷️ TOP HEADER */
+    /* 🛡️ 1-YEAR SALES MANAGER SESSION BAR */
+    .manager-auth-bar {
+      background: #001a33;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 7px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .manager-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .manager-auth-tag {
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-switch-account {
+      color: #cbd5e1;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    /* 🏷️ TOP BRAND HEADER */
     .brand-header {
       background: linear-gradient(135deg, #002244 0%, #003366 100%);
-      padding: 20px 18px 16px;
+      padding: 18px 16px 14px;
       text-align: center;
       color: #ffffff;
       border-bottom: 3px solid #f59e0b;
@@ -80,7 +117,7 @@
       letter-spacing: 1.2px;
       padding: 4px 14px;
       border-radius: 999px;
-      margin-top: 8px;
+      margin-top: 6px;
       text-transform: uppercase;
       box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
     }
@@ -114,7 +151,6 @@
     }
 
     .section-title.blue { color: #004b99; }
-    .section-title.green { color: #0a7c42; }
 
     .form-group {
       margin-bottom: 14px;
@@ -166,10 +202,6 @@
     }
 
     /* 🔍 AUTO-SUGGEST DROPDOWN */
-    .suggest-container {
-      position: relative;
-    }
-
     .suggest-dropdown {
       position: absolute;
       top: 100%;
@@ -197,7 +229,7 @@
       transition: background 0.15s;
     }
 
-    .suggest-item:hover, .suggest-item.highlighted {
+    .suggest-item:hover {
       background: #eff6ff;
     }
 
@@ -268,92 +300,6 @@
       margin-top: 6px;
     }
 
-    /* 🔐 OTP VERIFICATION CARD */
-    .otp-card {
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      border-radius: 8px;
-      padding: 12px;
-      margin-top: 10px;
-    }
-
-    .otp-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .btn-send-otp {
-      height: 44px;
-      padding: 0 16px;
-      background: #004b99;
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s;
-    }
-
-    .btn-send-otp:hover {
-      background: #003366;
-    }
-
-    .btn-verify-otp {
-      height: 40px;
-      padding: 0 16px;
-      background: #16a34a;
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .otp-input-field {
-      width: 140px;
-      height: 40px;
-      text-align: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 3px;
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 8px;
-      outline: none;
-    }
-
-    .otp-input-field:focus {
-      border-color: #16a34a;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
-    }
-
-    .otp-timer {
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 6px;
-    }
-
-    .otp-verified-badge {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
-      background: #dcfce7;
-      color: #15803d;
-      border: 1px solid #86efac;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      margin-top: 8px;
-    }
-
     .row-2col {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -374,15 +320,8 @@
       margin: 16px 14px 10px;
     }
 
-    .brand-section-header.mashal {
-      background: #004b99;
-      color: #ffffff;
-    }
-
-    .brand-section-header.fauji {
-      background: #0a7c42;
-      color: #ffffff;
-    }
+    .brand-section-header.mashal { background: #004b99; color: #ffffff; }
+    .brand-section-header.fauji { background: #0a7c42; color: #ffffff; }
 
     .items-container {
       margin: 0 14px 16px;
@@ -401,13 +340,9 @@
       gap: 10px;
     }
 
-    .item-row:last-child {
-      border-bottom: none;
-    }
+    .item-row:last-child { border-bottom: none; }
 
-    .item-info {
-      flex: 1;
-    }
+    .item-info { flex: 1; }
 
     .item-name {
       font-size: 13px;
@@ -448,9 +383,7 @@
       justify-content: center;
     }
 
-    .btn-step:active {
-      background: #e2e8f0;
-    }
+    .btn-step:active { background: #e2e8f0; }
 
     .qty-input-field {
       width: 60px;
@@ -465,9 +398,7 @@
       outline: none;
     }
 
-    .qty-input-field:focus {
-      border-color: #2563eb;
-    }
+    .qty-input-field:focus { border-color: #2563eb; }
 
     /* 📌 STICKY BOTTOM BAR */
     .sticky-bottom-bar {
@@ -534,6 +465,104 @@
       background: #94a3b8;
       box-shadow: none;
       cursor: not-allowed;
+    }
+
+    /* 🔒 SALES MANAGER 1-YEAR LOGIN OVERLAY */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 47, 0.92);
+      backdrop-filter: blur(6px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .auth-card {
+      background: #ffffff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 26px 22px;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .auth-icon-circle {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #eff6ff;
+      color: #004b99;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 12px;
+      border: 2px solid #bfdbfe;
+    }
+
+    .auth-card-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .auth-card-sub {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .auth-1year-tag {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 14px;
+    }
+
+    .btn-auth-action {
+      width: 100%;
+      height: 46px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+
+    .btn-auth-primary {
+      background: #004b99;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 75, 153, 0.35);
+    }
+
+    .btn-auth-primary:hover {
+      background: #003366;
+    }
+
+    .btn-auth-success {
+      background: #16a34a;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+    }
+
+    .btn-auth-success:hover {
+      background: #15803d;
     }
 
     /* 🌟 SUCCESS MODAL */
@@ -666,40 +695,96 @@
 </head>
 <body>
 
+  <!-- 🔐 SALES MANAGER 1-YEAR LOGIN OVERLAY (Shows only if not logged in) -->
+  <div class="auth-overlay" id="authOverlay" style="display: none;">
+    <div class="auth-card">
+      <div class="auth-icon-circle">🔐</div>
+      <div class="auth-card-title">Sales Manager Portal</div>
+      <div class="auth-card-sub">
+        Enter your mobile number to receive a 1-Time Kit19 OTP.<br>
+        <strong>Once verified, this device remains logged in for 1 Full Year!</strong>
+      </div>
+      <div class="auth-1year-tag">✨ 365 Days Valid Session • No Repeated OTP</div>
+
+      <!-- Step 1: Mobile & Name Input -->
+      <div id="authStep1">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Sales Manager Name</label>
+          <input type="text" class="input-control" id="loginManagerName" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">10-Digit Mobile Number</label>
+          <input type="tel" class="input-control" id="loginManagerPhone" placeholder="e.g. 9812345678" maxlength="10" required>
+        </div>
+        <button type="button" class="btn-auth-action btn-auth-primary" id="btnGetManagerOtp" onclick="requestManagerLoginOtp()">
+          <span>📲 Send Verification OTP (Kit19)</span>
+        </button>
+      </div>
+
+      <!-- Step 2: OTP Verification -->
+      <div id="authStep2" style="display: none;">
+        <div style="font-size: 13px; font-weight: 700; color: #004b99; margin-bottom: 10px;" id="authSentMessage">
+          OTP sent to +91 XXXXXXXXXX
+        </div>
+        <div class="form-group">
+          <input type="text" class="input-control" id="loginOtpInput" placeholder="Enter 6-Digit OTP" maxlength="6" style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:18px; letter-spacing:4px; font-weight:800;">
+        </div>
+        <button type="button" class="btn-auth-action btn-auth-success" id="btnVerifyManagerOtp" onclick="submitManagerLoginOtp()">
+          <span>✔ Verify & Activate 1-Year Access</span>
+        </button>
+        <div style="font-size: 11.5px; color: #64748b; margin-top: 10px;" id="loginCountdown">
+          Resend OTP in 60s
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="app-wrapper">
+    <!-- 🛡️ 1-YEAR SALES MANAGER SESSION BAR -->
+    <div class="manager-auth-bar" id="managerSessionBar">
+      <div class="manager-badge">
+        <span>👤</span>
+        <span id="sessionManagerDisplay">Sales Manager</span>
+        <span class="manager-auth-tag">1-Year Verified</span>
+      </div>
+      <span class="btn-switch-account" onclick="logoutManager()">Change Account</span>
+    </div>
+
     <!-- Top Branding -->
     <header class="brand-header">
       <div class="company-name">Khandelia Oil and General Mills Pvt. Ltd.</div>
       <div class="order-badge-title">
         <span>⚡ SALES MANAGER ORDER PORTAL</span>
       </div>
-      <div class="portal-subtitle">Smart Customer Auto-Suggest (2X Faster) • Kit19 Verified</div>
+      <div class="portal-subtitle">Smart Customer Auto-Suggest (2X Faster) • Zero Customer OTP</div>
     </header>
 
     <form id="orderForm" onsubmit="submitManagerOrder(event)">
-      <!-- 🔍 SMART PARTY AUTO-SUGGEST CARD -->
+      <!-- 📋 PARTY DETAILS (EXACT ORDER REQUESTED) -->
       <section class="section-card">
         <div class="section-title blue">
           <span>🏢</span>
           <span>Customer & Party Information</span>
         </div>
 
-        <!-- Smart Contact Search Input -->
+        <!-- 1️⃣ FIRST FIELD: PARTY NAME (With Smart Auto-Suggest) -->
         <div class="form-group suggest-container">
           <label class="form-label">
-            <span>Customer Mobile Number or Email (2X Fast AI Search)</span>
-            <span class="label-tag tag-gold">Smart Lookup</span>
+            <span>Party Name (Customer / Firm Name)</span>
+            <span class="label-tag tag-blue" id="partyCodeBadge">Customer</span>
           </label>
           <input 
             type="text" 
             class="input-control" 
-            id="partyContactInput" 
-            placeholder="Type 10-digit Phone (e.g. 943128...) or Email..." 
+            id="partyName" 
+            placeholder="Type Party Name (e.g. Ajay Kirana) or Party Code..." 
             autocomplete="off"
-            oninput="handleContactInput(this.value)"
+            required
+            oninput="handlePartyNameInput(this.value)"
           >
+          <input type="hidden" id="partyCode" value="">
           
-          <!-- Dropdown Results -->
+          <!-- Dropdown Results for Party Name -->
           <div class="suggest-dropdown" id="suggestDropdown"></div>
 
           <!-- Verified Customer Pill -->
@@ -711,55 +796,44 @@
           <!-- New Customer Pill -->
           <div class="new-customer-pill" id="newCustomerPill">
             <span>✨</span>
-            <span>New Customer Detected • Auto-Save into Database Enabled</span>
+            <span>New Customer Detected • Auto-Save to Database Enabled</span>
           </div>
         </div>
 
-        <!-- 🔐 OPTIONAL KIT19 OTP VERIFICATION CARD -->
-        <div class="otp-card" id="otpCard" style="display: none;">
-          <div style="font-size: 11px; font-weight: 700; color: #004b99; margin-bottom: 8px;">
-            🔐 Kit19 SMS OTP Verification (5 Lakh Balance Ready)
-          </div>
-          <div class="otp-row" id="otpSendRow">
-            <input type="text" class="input-control" id="otpPhoneInput" placeholder="10-Digit Mobile Number" readonly style="flex:1;">
-            <button type="button" class="btn-send-otp" id="btnSendOtp" onclick="sendOtpRequest()">
-              <span>Send OTP</span>
-            </button>
-          </div>
-          <div id="otpVerifySection" style="display: none; margin-top: 10px;">
-            <div class="otp-row">
-              <input type="text" class="otp-input-field" id="enteredOtp" placeholder="6-DIGIT" maxlength="6">
-              <button type="button" class="btn-verify-otp" onclick="verifyOtpRequest()">
-                <span>Verify OTP</span>
-              </button>
-            </div>
-            <div class="otp-timer" id="otpTimerText">Resend OTP in 60s</div>
-          </div>
-          <div class="otp-verified-badge" id="otpVerifiedBadge">
-            <span>✔</span>
-            <span>Phone Number Verified via Kit19 OTP!</span>
-          </div>
-        </div>
-
-        <!-- Party Name & Party Code -->
-        <div class="form-group" style="margin-top: 14px;">
+        <!-- 2️⃣ SECOND FIELD: CUSTOMER MOBILE NUMBER / EMAIL ADDRESS -->
+        <div class="form-group suggest-container">
           <label class="form-label">
-            <span>Party Name</span>
-            <span class="label-tag tag-blue" id="partyCodeBadge">Customer</span>
+            <span>Customer Mobile Number or Email Address</span>
+            <span class="label-tag tag-gold">Contact Lookup</span>
           </label>
-          <input type="text" class="input-control" id="partyName" placeholder="Firm or Customer Name" required>
-          <input type="hidden" id="partyCode" value="">
+          <input 
+            type="text" 
+            class="input-control" 
+            id="partyContactInput" 
+            placeholder="Type Customer Mobile Number (e.g. 943128...) or Email..." 
+            autocomplete="off"
+            oninput="handleContactInput(this.value)"
+          >
+          <!-- Dropdown Results for Contact -->
+          <div class="suggest-dropdown" id="contactDropdown"></div>
         </div>
 
-        <!-- Party Address (Comma-Separated: Line 1, Line 2, City, State - Pincode) -->
+        <!-- 3️⃣ THIRD FIELD: PARTY ADDRESS (Comma-Separated: Line 1, Line 2, City, State - Pincode) -->
         <div class="form-group">
           <label class="form-label">
             <span>Party Address (Line 1, Line 2, City, State, Pincode)</span>
             <span class="label-tag tag-green">Full Address</span>
           </label>
-          <input type="text" class="input-control" id="partyAddress" placeholder="Shop/Office, Area, City, State - Pincode" required>
+          <input 
+            type="text" 
+            class="input-control" 
+            id="partyAddress" 
+            placeholder="Shop/Office, Area, City, State - Pincode" 
+            required
+          >
         </div>
 
+        <!-- 4️⃣ FOURTH FIELD: DATE & SALES MANAGER NAME -->
         <div class="row-2col">
           <div class="form-group">
             <label class="form-label">
@@ -772,9 +846,9 @@
           <div class="form-group">
             <label class="form-label">
               <span>Sales Manager / Person</span>
-              <span class="label-tag tag-pink">Rep</span>
+              <span class="label-tag tag-pink">Verified Rep</span>
             </label>
-            <input type="text" class="input-control" id="salesPerson" placeholder="Manager Name" required>
+            <input type="text" class="input-control" id="salesPerson" placeholder="Executive Name" required>
           </div>
         </div>
       </section>
@@ -871,10 +945,173 @@
       "15 KG. BUCKET"
     ];
 
-    // Set today's date
     document.getElementById("orderDate").valueAsDate = new Date();
 
-    // Render packing items
+    // 🔐 CHECK 1-YEAR SALES MANAGER SESSION ON LOAD
+    const SESSION_KEY = "sales_manager_session_v1";
+
+    async function checkManagerSession() {
+      const stored = localStorage.getItem(SESSION_KEY);
+      if (!stored) {
+        showAuthOverlay();
+        return;
+      }
+      try {
+        const sess = JSON.parse(stored);
+        const res = await fetch("/api/sales-manager/check-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: sess.token })
+        });
+        const data = await res.json();
+        if (data.status === "valid") {
+          applyManagerSession(sess);
+        } else {
+          showAuthOverlay();
+        }
+      } catch(e) {
+        // If network error but localStorage has valid unexpired session, allow access
+        const sess = JSON.parse(stored);
+        if (sess.expires_at && sess.expires_at * 1000 > Date.now()) {
+          applyManagerSession(sess);
+        } else {
+          showAuthOverlay();
+        }
+      }
+    }
+
+    function applyManagerSession(sess) {
+      document.getElementById("authOverlay").style.display = "none";
+      const name = sess.manager_name || `+91 ${sess.phone}`;
+      document.getElementById("sessionManagerDisplay").textContent = name;
+      const spInput = document.getElementById("salesPerson");
+      if (sess.manager_name) {
+        spInput.value = sess.manager_name;
+      } else {
+        spInput.value = `Manager (${sess.phone})`;
+      }
+    }
+
+    function showAuthOverlay() {
+      document.getElementById("authOverlay").style.display = "flex";
+      document.getElementById("authStep1").style.display = "block";
+      document.getElementById("authStep2").style.display = "none";
+    }
+
+    function logoutManager() {
+      if (confirm("Do you want to switch or log out of this Sales Manager account?")) {
+        localStorage.removeItem(SESSION_KEY);
+        location.reload();
+      }
+    }
+
+    // 📲 REQUEST SALES MANAGER LOGIN OTP
+    let managerCountdownInterval = null;
+
+    async function requestManagerLoginOtp() {
+      const name = document.getElementById("loginManagerName").value.trim();
+      const phone = document.getElementById("loginManagerPhone").value.replace(/\D/g, "");
+
+      if (phone.length !== 10) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+
+      const btn = document.getElementById("btnGetManagerOtp");
+      btn.disabled = true;
+      btn.textContent = "Sending OTP via Kit19...";
+
+      try {
+        const res = await fetch("/api/sales-manager/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          document.getElementById("authStep1").style.display = "none";
+          document.getElementById("authStep2").style.display = "block";
+          document.getElementById("authSentMessage").textContent = `OTP sent to +91 ${phone}`;
+          alert(data.message);
+          startManagerCountdown(60);
+        } else {
+          alert("Kit19 Error: " + data.message);
+          btn.disabled = false;
+          btn.textContent = "📲 Send Verification OTP (Kit19)";
+        }
+      } catch(e) {
+        alert("Network error: " + e.message);
+        btn.disabled = false;
+        btn.textContent = "📲 Send Verification OTP (Kit19)";
+      }
+    }
+
+    function startManagerCountdown(sec) {
+      clearInterval(managerCountdownInterval);
+      let s = sec;
+      const el = document.getElementById("loginCountdown");
+      el.textContent = `Resend OTP in ${s}s`;
+      managerCountdownInterval = setInterval(() => {
+        s--;
+        if (s <= 0) {
+          clearInterval(managerCountdownInterval);
+          el.innerHTML = `<a href="javascript:void(0)" onclick="requestManagerLoginOtp()" style="color:#004b99; font-weight:700;">Resend OTP</a>`;
+        } else {
+          el.textContent = `Resend OTP in ${s}s`;
+        }
+      }, 1000);
+    }
+
+    async function submitManagerLoginOtp() {
+      const name = document.getElementById("loginManagerName").value.trim();
+      const phone = document.getElementById("loginManagerPhone").value.replace(/\D/g, "");
+      const otp = document.getElementById("loginOtpInput").value.trim();
+
+      if (otp.length !== 6) {
+        alert("Please enter the 6-digit OTP.");
+        return;
+      }
+
+      const btn = document.getElementById("btnVerifyManagerOtp");
+      btn.disabled = true;
+      btn.textContent = "Verifying...";
+
+      try {
+        const res = await fetch("/api/sales-manager/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, otp, manager_name: name })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          // Save 1-Year Session to localStorage
+          localStorage.setItem(SESSION_KEY, JSON.stringify({
+            token: data.token,
+            phone: data.phone,
+            manager_name: name,
+            expires_at: data.expires_at
+          }));
+          alert("✔ Verification Successful! Device authenticated for 1 Full Year.");
+          applyManagerSession({
+            token: data.token,
+            phone: data.phone,
+            manager_name: name
+          });
+        } else {
+          alert("Verification Failed: " + data.message);
+          btn.disabled = false;
+          btn.textContent = "✔ Verify & Activate 1-Year Access";
+        }
+      } catch(e) {
+        alert("Verification error: " + e.message);
+        btn.disabled = false;
+        btn.textContent = "✔ Verify & Activate 1-Year Access";
+      }
+    }
+
+    // 📦 RENDER PACKINGS
     function renderPackings() {
       const mashalBox = document.getElementById("mashalItemsList");
       const faujiBox = document.getElementById("faujiItemsList");
@@ -931,11 +1168,12 @@
       document.getElementById("bottomTotalDisplay").textContent = `${sum.toLocaleString()} Boxes`;
     }
 
-    // 🔍 SMART REAL-TIME AUTO-SUGGEST
+    // 🔍 SMART REAL-TIME AUTO-SUGGEST (FOR PARTY NAME & CONTACT)
     let searchDebounceTimer = null;
     let currentCustomerMatches = [];
 
-    function handleContactInput(val) {
+    // Triggered when typing in Field 1: Party Name
+    function handlePartyNameInput(val) {
       clearTimeout(searchDebounceTimer);
       const query = val.trim();
       const dropdown = document.getElementById("suggestDropdown");
@@ -955,19 +1193,13 @@
           currentCustomerMatches = data.results || [];
 
           if (currentCustomerMatches.length > 0) {
-            renderSuggestions(currentCustomerMatches);
+            renderSuggestions(currentCustomerMatches, dropdown);
             dropdown.classList.add("active");
             document.getElementById("newCustomerPill").style.display = "none";
           } else {
             dropdown.classList.remove("active");
-            dropdown.innerHTML = "";
-            // If user typed 10 digits or email and no match found, show new customer pill
-            if (/^\d{10}$/.test(query.replace(/\D/g, "")) || query.includes("@")) {
-              document.getElementById("newCustomerPill").style.display = "flex";
-              document.getElementById("verifiedPill").style.display = "none";
-              // Prep OTP card
-              showOtpCardIfPhone(query);
-            }
+            document.getElementById("newCustomerPill").style.display = "flex";
+            document.getElementById("verifiedPill").style.display = "none";
           }
         } catch(err) {
           console.error("Search error:", err);
@@ -975,10 +1207,38 @@
       }, 120);
     }
 
-    function renderSuggestions(matches) {
-      const dropdown = document.getElementById("suggestDropdown");
-      dropdown.innerHTML = "";
+    // Triggered when typing in Field 2: Contact
+    function handleContactInput(val) {
+      clearTimeout(searchDebounceTimer);
+      const query = val.trim();
+      const dropdown = document.getElementById("contactDropdown");
 
+      if (query.length < 2) {
+        dropdown.classList.remove("active");
+        dropdown.innerHTML = "";
+        return;
+      }
+
+      searchDebounceTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}`);
+          const data = await res.json();
+          currentCustomerMatches = data.results || [];
+
+          if (currentCustomerMatches.length > 0) {
+            renderSuggestions(currentCustomerMatches, dropdown);
+            dropdown.classList.add("active");
+          } else {
+            dropdown.classList.remove("active");
+          }
+        } catch(err) {
+          console.error("Search error:", err);
+        }
+      }, 120);
+    }
+
+    function renderSuggestions(matches, dropdown) {
+      dropdown.innerHTML = "";
       matches.forEach((c, idx) => {
         const contactText = [c.phone1, c.phone2, c.email].filter(Boolean).join(" • ");
         const itemHtml = `
@@ -999,112 +1259,21 @@
       const c = currentCustomerMatches[idx];
       if (!c) return;
 
-      document.getElementById("partyContactInput").value = c.phone1 || c.email || c.party_code;
       document.getElementById("partyName").value = c.party_name;
       document.getElementById("partyCode").value = c.party_code;
-      document.getElementById("partyAddress").value = c.full_address;
       document.getElementById("partyCodeBadge").textContent = c.party_code || "Customer";
+      document.getElementById("partyContactInput").value = c.phone1 || c.email || "";
+      document.getElementById("partyAddress").value = c.full_address;
 
       document.getElementById("suggestDropdown").classList.remove("active");
+      document.getElementById("contactDropdown").classList.remove("active");
+
       document.getElementById("verifiedPill").style.display = "flex";
       document.getElementById("verifiedText").textContent = `Verified Customer: [${c.party_code}] ${c.party_name}`;
       document.getElementById("newCustomerPill").style.display = "none";
-
-      if (c.phone1) {
-        showOtpCardIfPhone(c.phone1);
-      }
     }
 
-    function showOtpCardIfPhone(str) {
-      const digits = str.replace(/\D/g, "");
-      if (digits.length >= 10) {
-        const p = digits.slice(-10);
-        document.getElementById("otpPhoneInput").value = p;
-        document.getElementById("otpCard").style.display = "block";
-      }
-    }
-
-    // 🔐 KIT19 OTP LOGIC
-    let otpTimerInterval = null;
-
-    async function sendOtpRequest() {
-      const phone = document.getElementById("otpPhoneInput").value.trim();
-      if (!phone) {
-        alert("Please enter a valid phone number.");
-        return;
-      }
-      const btn = document.getElementById("btnSendOtp");
-      btn.disabled = true;
-      btn.textContent = "Sending...";
-
-      try {
-        const res = await fetch("/api/otp/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone })
-        });
-        const data = await res.json();
-        if (data.status === "success") {
-          document.getElementById("otpVerifySection").style.display = "block";
-          document.getElementById("otpSendRow").style.display = "none";
-          alert(data.message);
-          startOtpCountdown(60);
-        } else {
-          alert("OTP Error: " + data.message);
-          btn.disabled = false;
-          btn.textContent = "Send OTP";
-        }
-      } catch(e) {
-        alert("Network error sending OTP: " + e.message);
-        btn.disabled = false;
-        btn.textContent = "Send OTP";
-      }
-    }
-
-    function startOtpCountdown(seconds) {
-      clearInterval(otpTimerInterval);
-      let s = seconds;
-      const el = document.getElementById("otpTimerText");
-      el.textContent = `Resend OTP in ${s}s`;
-      otpTimerInterval = setInterval(() => {
-        s--;
-        if (s <= 0) {
-          clearInterval(otpTimerInterval);
-          el.innerHTML = `<a href="javascript:void(0)" onclick="sendOtpRequest()" style="color:#004b99; font-weight:700;">Resend OTP</a>`;
-        } else {
-          el.textContent = `Resend OTP in ${s}s`;
-        }
-      }, 1000);
-    }
-
-    async function verifyOtpRequest() {
-      const phone = document.getElementById("otpPhoneInput").value.trim();
-      const otp = document.getElementById("enteredOtp").value.trim();
-      if (!otp) {
-        alert("Please enter the 6-digit OTP.");
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/otp/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, otp })
-        });
-        const data = await res.json();
-        if (data.status === "success") {
-          document.getElementById("otpVerifySection").style.display = "none";
-          document.getElementById("otpVerifiedBadge").style.display = "flex";
-          alert("✔ Phone number verified successfully via Kit19!");
-        } else {
-          alert("Invalid OTP: " + data.message);
-        }
-      } catch(e) {
-        alert("Verification error: " + e.message);
-      }
-    }
-
-    // 📤 ORDER SUBMISSION
+    // 📤 ORDER SUBMISSION (ZERO CUSTOMER OTP - SUPER FAST!)
     async function submitManagerOrder(e) {
       e.preventDefault();
 
@@ -1138,7 +1307,6 @@
       btn.disabled = true;
       btn.innerHTML = `<span>Saving & Syncing...</span>`;
 
-      // Order ID
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
       const formattedTimestamp = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
@@ -1158,7 +1326,6 @@
         contactInput: contactInput
       };
 
-      // Generate Slip Canvas
       try {
         const c = generateSlipCanvas(payload);
         payload.slipImageData = c.toDataURL("image/png");
@@ -1177,7 +1344,6 @@
 
         window.lastCompletedOrder = finalOrder;
 
-        // Populate Modal
         document.getElementById("modalOrderId").textContent = "#" + finalOrder.id;
         document.getElementById("modalTime").textContent = finalOrder.formattedTimestamp;
         document.getElementById("modalParty").textContent = finalOrder.partyName;
@@ -1398,8 +1564,14 @@
       document.getElementById("orderDate").valueAsDate = new Date();
       document.getElementById("verifiedPill").style.display = "none";
       document.getElementById("newCustomerPill").style.display = "none";
-      document.getElementById("otpCard").style.display = "none";
       document.getElementById("partyCodeBadge").textContent = "Customer";
+      
+      // Keep sales person filled
+      const stored = localStorage.getItem(SESSION_KEY);
+      if (stored) {
+        const sess = JSON.parse(stored);
+        if (sess.manager_name) document.getElementById("salesPerson").value = sess.manager_name;
+      }
       updateTotal();
     }
 
@@ -1407,8 +1579,9 @@
       return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Initialize packings
+    // Initialize packings and check session
     renderPackings();
+    checkManagerSession();
   </script>
 </body>
 </html>

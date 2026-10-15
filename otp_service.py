@@ -140,3 +140,23 @@ def is_phone_verified(phone: str) -> bool:
     if record and record.get("verified") and (time.time() - record.get("created_at", 0)) < 1800:
         return True
     return False
+
+def verify_manager_login_otp(phone: str, entered_otp: str, manager_name: str = "") -> Dict[str, Any]:
+    """Verifies Sales Manager login OTP and generates a 1-year persistent session"""
+    verify_res = verify_kit19_otp(phone, entered_otp)
+    if verify_res.get("status") != "success":
+        return verify_res
+
+    # Generate 1-year persistent session token in database
+    from database import create_manager_session
+    phone_clean = clean_phone(phone)
+    session = create_manager_session(phone_clean, manager_name)
+    return {
+        "status": "success",
+        "phone": phone_clean,
+        "token": session["token"],
+        "manager_name": manager_name,
+        "expires_at": session["expires_at"],
+        "validity_days": 365,
+        "message": "Sales Manager verified successfully! Valid for 1 Year."
+    }

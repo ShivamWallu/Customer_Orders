@@ -20,7 +20,8 @@ from database import (
     mark_order_synced_in_db,
     mark_whatsapp_sent_in_db,
     get_all_orders_from_db,
-    migrate_existing_json_orders
+    migrate_existing_json_orders,
+    validate_manager_session
 )
 from crm_service import (
     init_crm_db,
@@ -29,7 +30,8 @@ from crm_service import (
 )
 from otp_service import (
     send_kit19_otp,
-    verify_kit19_otp
+    verify_kit19_otp,
+    verify_manager_login_otp
 )
 
 # Load configuration from .env file
@@ -395,6 +397,33 @@ async def api_verify_otp(request: Request):
     phone = body.get("phone", "")
     otp = body.get("otp", "")
     return verify_kit19_otp(phone, otp)
+
+# 🔐 1-YEAR SALES MANAGER OTP AUTHENTICATION
+@app.post("/api/sales-manager/send-otp")
+async def api_manager_send_otp(request: Request):
+    """Dispatches Kit19 OTP to Sales Manager's phone for 1-year device authentication"""
+    body = await request.json()
+    phone = body.get("phone", "")
+    return send_kit19_otp(phone)
+
+@app.post("/api/sales-manager/verify-otp")
+async def api_manager_verify_otp(request: Request):
+    """Verifies Sales Manager OTP and creates 1-year persistent session"""
+    body = await request.json()
+    phone = body.get("phone", "")
+    otp = body.get("otp", "")
+    name = body.get("manager_name", "")
+    return verify_manager_login_otp(phone, otp, name)
+
+@app.post("/api/sales-manager/check-session")
+async def api_manager_check_session(request: Request):
+    """Checks if Sales Manager has an active 1-year device session"""
+    body = await request.json()
+    token = body.get("token", "")
+    session = validate_manager_session(token)
+    if session:
+        return {"status": "valid", "session": session}
+    return {"status": "invalid"}
 
 @app.get("/api/orders/pending")
 def get_pending_orders():

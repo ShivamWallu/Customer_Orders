@@ -33,7 +33,7 @@ def init_db():
     conn = get_connection()
     try:
         with conn:
-            conn.execute("""
+            conn.executescript("""
             CREATE TABLE IF NOT EXISTS orders (
                 order_id TEXT PRIMARY KEY,
                 party_name TEXT NOT NULL,
@@ -53,12 +53,76 @@ def init_db():
                 whatsapp_status TEXT DEFAULT 'PENDING',
                 whatsapp_sent_at TEXT
             );
+            CREATE TABLE IF NOT EXISTS sales_manager_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                token TEXT UNIQUE NOT NULL,
+                phone TEXT NOT NULL,
+                manager_name TEXT,
+                created_at TEXT NOT NULL,
+                expires_at REAL NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_orders_created ON orders (created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_orders_party ON orders (party_name);
+            CREATE INDEX IF NOT EXISTS idx_orders_synced ON orders (synced_to_sheet);
+            CREATE INDEX IF NOT EXISTS idx_orders_wa_status ON orders (whatsapp_status);
+            CREATE INDEX IF NOT EXISTS idx_mgr_token ON sales_manager_sessions (token);
+            CREATE INDEX IF NOT EXISTS idx_mgr_phone ON sales_manager_sessions (phone);
             """)
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_created ON orders (created_at DESC);")
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_party ON orders (party_name);")
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_synced ON orders (synced_to_sheet);")
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_wa_status ON orders (whatsapp_status);")
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
+    finally:
+        conn.close()
+
+def create_manager_session(phone: str, manager_name: str = "") -> Dict[str, Any]:
+    """Creates a 1-year persistent session token for verified Sales Manager"""
+    import secrets
+    import time
+    token = f"MGR_{secrets.token_hex(24)}"
+    now = time.time()
+    one_year_seconds = 365 * 24 * 3600
+    expires_at = now + one_year_seconds
+    now_str = datetime.now().isoformat()
+
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            INSERT INTO sales_manager_sessions (token, phone, manager_name, created_at, expires_at)
+            VALUES (?, ?, ?, ?, ?)
+            """, (token, phone, manager_name, now_str, expires_at))
+        return {
+            "status": "success",
+            "token": token,
+            "phone": phone,
+            "manager_name": manager_name,
+            "expires_at": expires_at,
+            "validity_days": 365
+        }
+    finally:
+        conn.close()
+
+def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
+    """Validates if token exists and is within 1-year window"""
+    import time
+    if not token:
+        return None
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT token, phone, manager_name, created_at, expires_at
+        FROM sales_manager_sessions
+        WHERE token = ?
+        """, (token,))
+        row = cur.fetchone()
+        if row and row["expires_at"] > time.time():
+            return {
+                "token": row["token"],
+                "phone": row["phone"],
+                "manager_name": row["manager_name"] or "",
+                "created_at": row["created_at"],
+                "expires_at": row["expires_at"]
+            }
+        return None
     finally:
         conn.close()
 
