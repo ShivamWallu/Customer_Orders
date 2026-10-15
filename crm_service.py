@@ -14,11 +14,12 @@ import os
 import re
 import sqlite3
 import threading
+import json
 from typing import Dict, Any, List, Optional
-import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_FILE = os.path.join(BASE_DIR, "orders.db")
+JSON_CACHE_FILE = os.path.join(BASE_DIR, "customers_crm.json")
 EXCEL_FILE = os.path.join(BASE_DIR, "Customer_Detail", "Address Update_15_10_2026.xlsx")
 
 # Thread-safe in-memory cache for sub-millisecond search
@@ -81,45 +82,79 @@ def init_crm_db():
         cur.execute("SELECT COUNT(*) FROM customers_crm")
         count = cur.fetchone()[0]
 
-        if count == 0 and os.path.exists(EXCEL_FILE):
-            print(f"[CRM] Importing customers from Excel: {EXCEL_FILE}...")
-            try:
-                df = pd.read_excel(EXCEL_FILE)
-                rows_to_insert = []
-                for _, r in df.iterrows():
-                    p_code = str(r.get('Party Code*', '')).strip() if pd.notna(r.get('Party Code*')) else ''
-                    p_name = str(r.get('Party Name', '')).strip() if pd.notna(r.get('Party Name')) else ''
-                    l1 = str(r.get('Address Line 1*', '')).strip() if pd.notna(r.get('Address Line 1*')) else ''
-                    l2 = str(r.get('Address Line 2*', '')).strip() if pd.notna(r.get('Address Line 2*')) else ''
-                    city = str(r.get('City*', '')).strip() if pd.notna(r.get('City*')) else ''
-                    state = str(r.get('State*', '')).strip() if pd.notna(r.get('State*')) else ''
-                    pin = str(r.get('Pincode*', '')).replace('.0', '').strip() if pd.notna(r.get('Pincode*')) else ''
-                    email = str(r.get('Email-Id 1', '')).strip() if pd.notna(r.get('Email-Id 1')) else ''
-                    p1 = str(r.get('Phone Number 1', '')).replace('.0', '').strip() if pd.notna(r.get('Phone Number 1')) else ''
-                    p2 = str(r.get('Phone Number 2', '')).replace('.0', '').strip() if pd.notna(r.get('Phone Number 2')) else ''
-                    
-                    full_addr = format_clean_address(l1, l2, city, state, pin)
-                    
-                    # Clean nans
-                    email = "" if email.lower() == 'nan' else email
-                    p1 = "" if p1.lower() == 'nan' else p1
-                    p2 = "" if p2.lower() == 'nan' else p2
+        if count == 0:
+            if os.path.exists(JSON_CACHE_FILE):
+                print(f"[CRM] Importing customers from pre-cached {JSON_CACHE_FILE}...")
+                try:
+                    with open(JSON_CACHE_FILE, "r", encoding="utf-8") as f:
+                        records = json.load(f)
+                    rows_to_insert = [
+                        (
+                            r.get("party_code", ""),
+                            r.get("party_name", ""),
+                            r.get("address_line1", ""),
+                            r.get("address_line2", ""),
+                            r.get("city", ""),
+                            r.get("state", ""),
+                            r.get("pincode", ""),
+                            r.get("full_address", ""),
+                            r.get("email", ""),
+                            r.get("phone1", ""),
+                            r.get("phone2", ""),
+                            r.get("is_custom", 0)
+                        )
+                        for r in records
+                    ]
+                    with conn:
+                        conn.executemany("""
+                        INSERT INTO customers_crm (
+                            party_code, party_name, address_line1, address_line2,
+                            city, state, pincode, full_address, email, phone1, phone2, is_custom
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, rows_to_insert)
+                    print(f"[CRM] Successfully loaded {len(rows_to_insert)} customers into customers_crm!")
+                except Exception as e:
+                    print(f"[CRM JSON IMPORT ERROR] {e}")
 
-                    rows_to_insert.append((
-                        p_code, p_name, l1, l2, city, state, pin,
-                        full_addr, email, p1, p2, 0
-                    ))
+            elif os.path.exists(EXCEL_FILE):
+                print(f"[CRM] Importing customers from Excel: {EXCEL_FILE}...")
+                try:
+                    import pandas as pd
+                    df = pd.read_excel(EXCEL_FILE)
+                    rows_to_insert = []
+                    for _, r in df.iterrows():
+                        p_code = str(r.get('Party Code*', '')).strip() if pd.notna(r.get('Party Code*')) else ''
+                        p_name = str(r.get('Party Name', '')).strip() if pd.notna(r.get('Party Name')) else ''
+                        l1 = str(r.get('Address Line 1*', '')).strip() if pd.notna(r.get('Address Line 1*')) else ''
+                        l2 = str(r.get('Address Line 2*', '')).strip() if pd.notna(r.get('Address Line 2*')) else ''
+                        city = str(r.get('City*', '')).strip() if pd.notna(r.get('City*')) else ''
+                        state = str(r.get('State*', '')).strip() if pd.notna(r.get('State*')) else ''
+                        pin = str(r.get('Pincode*', '')).replace('.0', '').strip() if pd.notna(r.get('Pincode*')) else ''
+                        email = str(r.get('Email-Id 1', '')).strip() if pd.notna(r.get('Email-Id 1')) else ''
+                        p1 = str(r.get('Phone Number 1', '')).replace('.0', '').strip() if pd.notna(r.get('Phone Number 1')) else ''
+                        p2 = str(r.get('Phone Number 2', '')).replace('.0', '').strip() if pd.notna(r.get('Phone Number 2')) else ''
+                        
+                        full_addr = format_clean_address(l1, l2, city, state, pin)
+                        
+                        email = "" if email.lower() == 'nan' else email
+                        p1 = "" if p1.lower() == 'nan' else p1
+                        p2 = "" if p2.lower() == 'nan' else p2
 
-                with conn:
-                    conn.executemany("""
-                    INSERT INTO customers_crm (
-                        party_code, party_name, address_line1, address_line2,
-                        city, state, pincode, full_address, email, phone1, phone2, is_custom
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, rows_to_insert)
-                print(f"[CRM] Successfully imported {len(rows_to_insert)} customers into customers_crm!")
-            except Exception as e:
-                print(f"[CRM IMPORT ERROR] {e}")
+                        rows_to_insert.append((
+                            p_code, p_name, l1, l2, city, state, pin,
+                            full_addr, email, p1, p2, 0
+                        ))
+
+                    with conn:
+                        conn.executemany("""
+                        INSERT INTO customers_crm (
+                            party_code, party_name, address_line1, address_line2,
+                            city, state, pincode, full_address, email, phone1, phone2, is_custom
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, rows_to_insert)
+                    print(f"[CRM] Successfully imported {len(rows_to_insert)} customers into customers_crm!")
+                except Exception as e:
+                    print(f"[CRM EXCEL IMPORT ERROR] {e}")
 
         # Refresh In-Memory Cache for 2X Sub-Millisecond Search
         refresh_memory_cache(conn)
