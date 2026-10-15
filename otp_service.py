@@ -24,7 +24,7 @@ def get_kit19_config():
         "api_url": os.environ.get("KIT19_API_URL", "https://www.kit19.com/ComposeSMS.aspx"),
         "username": os.environ.get("KIT19_USERNAME", "khandelia348774"),
         "password": os.environ.get("KIT19_PASSWORD", ""),
-        "sender_id": os.environ.get("KIT19_SENDER_ID", "KHANDL"),
+        "sender_id": os.environ.get("KIT19_SENDER_ID", "KOGMBD"),
         "dlt_template_id": os.environ.get("KIT19_DLT_TEMPLATE_ID", "")
     }
 
@@ -86,7 +86,8 @@ def send_kit19_otp(phone: str) -> Dict[str, Any]:
         "attempts": 0
     }
 
-    message_text = f"Your verification OTP for Khandelia Order Management is {otp}. Valid for 5 minutes. Do not share with anyone."
+    # Approved DLT Template registered with Kit19 and Telecom Operators
+    message_text = f"Khandelia Oil & General Mills Pvt. Ltd. - Your OTP {otp} is to login to Khandelia Trading. Please DO NOT share with anyone. The OTP expires in 10 mins."
 
     # If Kit19 credentials are provided in .env, send live HTTP request
     cfg = get_kit19_config()
