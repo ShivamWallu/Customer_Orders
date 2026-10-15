@@ -6,6 +6,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 import json
 import os
+import re
 import base64
 from dotenv import load_dotenv
 from whatsapp_service import (
@@ -21,6 +22,15 @@ from database import (
     get_all_orders_from_db,
     migrate_existing_json_orders
 )
+from crm_service import (
+    init_crm_db,
+    search_customers,
+    save_or_update_customer
+)
+from otp_service import (
+    send_kit19_otp,
+    verify_kit19_otp
+)
 
 # Load configuration from .env file
 load_dotenv()
@@ -28,6 +38,7 @@ load_dotenv()
 # Initialize permanent database and auto-migrate historical orders
 init_db()
 migrate_existing_json_orders()
+init_crm_db()
 
 ORDER_SLIPS_DIR = "order_slips"
 os.makedirs(ORDER_SLIPS_DIR, exist_ok=True)
@@ -47,6 +58,16 @@ def serve_order_slip_root():
 def serve_order_slip_alias():
     """Alias for digital Khandelia Order Slip"""
     return FileResponse("order_form.html")
+
+@app.get("/sale_manager")
+def serve_sale_manager_portal():
+    """Serves the smart Sales Manager Portal with AI customer auto-suggest & Kit19 OTP"""
+    return FileResponse("sale_manager.html")
+
+@app.get("/sale_manage")
+def serve_sale_manage_alias():
+    """Alias for Sales Manager Portal"""
+    return FileResponse("sale_manager.html")
 
 @app.get("/sale_table_data")
 def serve_sales_table_data():
@@ -155,10 +176,26 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     with open(ORDERS_LOG, "w", encoding="utf-8") as f:
         json.dump(orders_list, f, indent=2, ensure_ascii=False)
         
-    print(f"[NEW ORDER] ID: {order['id']} | Party: {order.get('partyName')} | Total Boxes: {order.get('totalBoxes')} | Time: {order['formattedTimestamp']}")
-    
     # 0. Save permanently to orders.db SQLite database (Zero Data Loss Engine)
     save_order_to_db(order)
+
+    # Auto-register/update party into CRM database
+    contact = order.get("contactInput", "").strip()
+    if contact:
+        try:
+            p_name = order.get("partyName", "").strip()
+            clean_name = re.sub(r"^\[.*?\]\s*", "", p_name).strip()
+            digits = re.sub(r"\D", "", contact)
+            phone_val = digits[-10:] if len(digits) >= 10 else ""
+            email_val = contact if "@" in contact else ""
+            save_or_update_customer(
+                party_name=clean_name,
+                full_address=order.get("partyAddress", ""),
+                phone=phone_val,
+                email=email_val
+            )
+        except Exception as crm_err:
+            print(f"[CRM AUTO-REGISTER ERROR] {crm_err}")
 
     # 1. Send email notification with slip image attachment
     background_tasks.add_task(send_order_email_notification, order)
@@ -323,6 +360,41 @@ async def api_mark_whatsapp_sent(request: Request):
         mark_whatsapp_order_sent(order_id)
         return {"status": "success", "order_id": order_id}
     return {"status": "error", "message": "Missing order_id"}
+
+# ----------------- CRM & KIT19 OTP ENDPOINTS -----------------
+@app.get("/api/customers/search")
+def api_search_customers(q: str = ""):
+    """Ultra-fast customer autocomplete matching phone, email, party code, or name (<1ms response)"""
+    results = search_customers(q, limit=10)
+    return {"status": "success", "query": q, "count": len(results), "results": results}
+
+@app.post("/api/customers/save-new")
+async def api_save_new_customer(request: Request):
+    """Saves new customer / party into CRM database"""
+    body = await request.json()
+    res = save_or_update_customer(
+        party_name=body.get("party_name"),
+        full_address=body.get("full_address"),
+        phone=body.get("phone"),
+        email=body.get("email"),
+        party_code=body.get("party_code")
+    )
+    return res
+
+@app.post("/api/otp/send")
+async def api_send_otp(request: Request):
+    """Sends 6-digit verification OTP via Kit19 HTTP API"""
+    body = await request.json()
+    phone = body.get("phone", "")
+    return send_kit19_otp(phone)
+
+@app.post("/api/otp/verify")
+async def api_verify_otp(request: Request):
+    """Verifies submitted OTP"""
+    body = await request.json()
+    phone = body.get("phone", "")
+    otp = body.get("otp", "")
+    return verify_kit19_otp(phone, otp)
 
 @app.get("/api/orders/pending")
 def get_pending_orders():

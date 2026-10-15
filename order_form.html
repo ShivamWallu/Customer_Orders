@@ -625,17 +625,9 @@
         <div class="form-group">
           <label class="form-label">
             <span>Party Address</span>
-            <span class="label-tag tag-green">Billing Address</span>
+            <span class="label-tag tag-green">Address</span>
           </label>
-          <input type="text" class="input-control" id="partyAddress" placeholder="Shop / Office / Street address, City, State" required>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">
-            <span>Party Delivery Address</span>
-            <span class="label-tag tag-green">Godown / Destination</span>
-          </label>
-          <input type="text" class="input-control" id="deliveryAddress" placeholder="Delivery destination (leave blank if same as billing)">
+          <input type="text" class="input-control" id="partyAddress" placeholder="Shop / Office / Street address, City, State, Pincode" required>
         </div>
 
         <div class="row-2col">
@@ -886,7 +878,7 @@
 
       const partyName = document.getElementById("partyName").value.trim();
       const partyAddress = document.getElementById("partyAddress").value.trim();
-      const deliveryAddress = document.getElementById("deliveryAddress").value.trim() || partyAddress;
+      const deliveryAddress = partyAddress;
       const orderDate = document.getElementById("orderDate").value;
       const salesPerson = document.getElementById("salesPerson").value.trim();
 
@@ -1042,8 +1034,7 @@
       
       ctx.fillStyle = "#475569";
       ctx.font = "12px 'Arial', sans-serif";
-      ctx.fillText("Billing Address: " + (order.partyAddress || "-"), 24, 226);
-      ctx.fillText("Delivery Godown: " + (order.deliveryAddress || order.partyAddress || "Same"), 24, 242);
+      ctx.fillText("Address: " + (order.partyAddress || "-"), 24, 232);
       
       // Table Header
       const tableY = 265;
