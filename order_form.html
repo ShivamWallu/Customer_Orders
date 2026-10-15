@@ -641,10 +641,10 @@
 
           <div class="form-group">
             <label class="form-label">
-              <span>Sales Person</span>
-              <span class="label-tag tag-pink">Rep</span>
+              <span>Area Sales Manager</span>
+              <span class="label-tag tag-pink">Manager</span>
             </label>
-            <input type="text" class="input-control" id="salesPerson" placeholder="Executive Name" required>
+            <input type="text" class="input-control" id="salesPerson" placeholder="Area Sales Manager Name" required>
           </div>
         </div>
       </section>
@@ -949,6 +949,12 @@
       }
     }
 
+    // Pre-load logos for digital slip canvas
+    window.kogmLogoImg = new Image();
+    window.kogmLogoImg.src = "/images/kogm_logo_thumb.jpg";
+    window.mashalLogoImg = new Image();
+    window.mashalLogoImg.src = "/images/mashal_logo_thumb.jpg";
+
     function generateOrderSlipCanvas(order) {
       const items = order.items || [];
       const scale = 2;
@@ -957,7 +963,7 @@
       
       const rowHeight = 36;
       const tableHeaderHeight = 40;
-      const baseHeight = 440;
+      const baseHeight = 460;
       const totalHeight = baseHeight + (items.length * rowHeight);
       
       canvas.width = width * scale;
@@ -977,10 +983,20 @@
       
       // Top Header Banner
       ctx.fillStyle = "#003366";
-      ctx.fillRect(10, 10, width - 20, 95);
+      ctx.fillRect(10, 10, width - 20, 105);
+
+      // Top Left KOGM Logo
+      if (window.kogmLogoImg && window.kogmLogoImg.complete && window.kogmLogoImg.naturalWidth > 0) {
+        ctx.drawImage(window.kogmLogoImg, 22, 22, 115, 62);
+      }
+
+      // Top Right Mashal Logo
+      if (window.mashalLogoImg && window.mashalLogoImg.complete && window.mashalLogoImg.naturalWidth > 0) {
+        ctx.drawImage(window.mashalLogoImg, width - 142, 16, 120, 75);
+      }
       
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 24px 'Arial', sans-serif";
+      ctx.font = "bold 23px 'Arial', sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", width / 2, 45);
       
@@ -988,71 +1004,76 @@
       ctx.fillStyle = "#d97706";
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(width / 2 - 145, 60, 290, 30, 6);
+        ctx.roundRect(width / 2 - 150, 60, 300, 32, 6);
         ctx.fill();
       } else {
-        ctx.fillRect(width / 2 - 145, 60, 290, 30);
+        ctx.fillRect(width / 2 - 150, 60, 300, 32);
       }
       
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 13px 'Arial', sans-serif";
-      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", width / 2, 80);
+      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", width / 2, 81);
       
       // Reference Bar
       ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(12, 110, width - 24, 45);
+      ctx.fillRect(12, 120, width - 24, 45);
       ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 1;
-      ctx.strokeRect(12, 110, width - 24, 45);
+      ctx.strokeRect(12, 120, width - 24, 45);
       
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 13px 'Courier New', monospace";
       ctx.textAlign = "left";
-      ctx.fillText("ORDER ID: #" + order.id, 24, 137);
+      ctx.fillText("ORDER ID: #" + order.id, 24, 147);
       
       ctx.font = "12px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("Date: " + (order.formattedTimestamp || order.orderDate || ""), width / 2, 137);
+      ctx.fillText("Date: " + (order.formattedTimestamp || order.orderDate || ""), width / 2, 147);
       
       ctx.textAlign = "right";
-      ctx.fillText("Sales Rep: " + (order.salesPerson || "-"), width - 24, 137);
+      ctx.fillText("Area Sales Manager: " + (order.salesPerson || "-"), width - 24, 147);
       
       // Customer Details Box
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 1;
-      ctx.strokeRect(12, 165, width - 24, 85);
+      ctx.strokeRect(12, 175, width - 24, 85);
       
       ctx.textAlign = "left";
       ctx.fillStyle = "#64748b";
       ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.fillText("CUSTOMER / BILLING DETAILS", 24, 185);
+      ctx.fillText("CUSTOMER / BILLING DETAILS", 24, 195);
       
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 16px 'Arial', sans-serif";
-      ctx.fillText(order.partyName || "Customer", 24, 206);
+      let partyTitle = order.partyName || "Customer";
+      if (order.partyCode) partyTitle += "  [Party Code: " + order.partyCode + "]";
+      ctx.fillText(partyTitle, 24, 218);
       
       ctx.fillStyle = "#475569";
       ctx.font = "12px 'Arial', sans-serif";
-      ctx.fillText("Address: " + (order.partyAddress || "-"), 24, 232);
+      ctx.fillText("Address: " + (order.partyAddress || "-"), 24, 242);
       
-      // Table Header
-      const tableY = 265;
+      // Table Header (5 Columns)
+      const tableY = 275;
       ctx.fillStyle = "#004b99";
       ctx.fillRect(12, tableY, width - 24, tableHeaderHeight);
       
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 12px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("#", 35, tableY + 25);
-      ctx.fillText("BRAND", 90, tableY + 25);
+      ctx.fillText("#", 32, tableY + 25);
+      ctx.fillText("BRAND", 75, tableY + 25);
       ctx.textAlign = "left";
-      ctx.fillText("PACKING / PRODUCT DESCRIPTION", 160, tableY + 25);
+      ctx.fillText("PACKING / PRODUCT DESCRIPTION", 130, tableY + 25);
       ctx.textAlign = "center";
-      ctx.fillText("QUANTITY (BOXES)", width - 110, tableY + 25);
+      ctx.fillText("QUANTITY (IN PIECES)", width - 190, tableY + 25);
+      ctx.fillText("QUANTITY (BOXES)", width - 80, tableY + 25);
       
       // Table Rows
       let curY = tableY + tableHeaderHeight;
+      let totalPieces = 0;
+      let totalBoxes = 0;
       items.forEach((it, idx) => {
         // Zebra Stripe
         ctx.fillStyle = idx % 2 === 0 ? "#f8fafc" : "#ffffff";
@@ -1070,25 +1091,38 @@
         ctx.fillStyle = "#64748b";
         ctx.font = "bold 12px 'Arial', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText((idx + 1).toString(), 35, curY + 23);
+        ctx.fillText((idx + 1).toString(), 32, curY + 23);
         
         // Brand
-        const isMashal = it.brand === "Mashal";
+        const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
         ctx.fillStyle = isMashal ? "#1e40af" : "#15803d";
         ctx.font = "bold 11px 'Arial', sans-serif";
-        ctx.fillText(it.brand || "Mashal", 90, curY + 23);
+        ctx.fillText(it.brand || "Mashal", 75, curY + 23);
         
         // Item name
         ctx.fillStyle = "#0f172a";
         ctx.font = "bold 13px 'Arial', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText(it.item || "", 160, curY + 23);
+        ctx.fillText(it.item || "", 130, curY + 23);
+
+        // Pieces Multiplier Calculation
+        const multiplier = (it.item && it.item.match(/x\s*(\d+)/i)) ? parseInt(it.item.match(/x\s*(\d+)/i)[1], 10) : 1;
+        const bxs = parseInt(it.boxes, 10) || 0;
+        const pcs = bxs * multiplier;
+        totalBoxes += bxs;
+        totalPieces += pcs;
         
-        // Boxes
+        // Pieces Column
+        ctx.fillStyle = "#1e40af";
+        ctx.font = "bold 13.5px 'Arial', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(pcs.toLocaleString() + " Pcs", width - 190, curY + 23);
+
+        // Boxes Column
         ctx.fillStyle = "#003366";
         ctx.font = "bold 15px 'Courier New', monospace";
         ctx.textAlign = "center";
-        ctx.fillText((it.boxes || 0).toString() + " bxs", width - 110, curY + 23);
+        ctx.fillText(bxs + " bxs", width - 80, curY + 23);
         
         curY += rowHeight;
       });
@@ -1098,9 +1132,9 @@
       ctx.fillRect(12, curY + 10, width - 24, 50);
       
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 20px 'Arial', sans-serif";
+      ctx.font = "bold 18px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("TOTAL ORDER QUANTITY: " + (order.totalBoxes || 0) + " BOXES", width / 2, curY + 42);
+      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  (" + totalPieces.toLocaleString() + " PIECES)", width / 2, curY + 42);
       
       // Footer Notes & Stamp
       const footY = curY + 80;

@@ -197,8 +197,9 @@ def verify_manager_login_otp(phone: str, entered_otp: str, manager_name: str = "
         "status": "success",
         "phone": phone_clean,
         "token": session["token"],
-        "manager_name": manager_name,
+        "manager_name": manager_name or session.get("manager_name", ""),
         "expires_at": session["expires_at"],
         "validity_days": 365,
+        "session": session,
         "message": "Sales Manager verified successfully! Valid for 1 Year."
     }

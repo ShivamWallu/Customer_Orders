@@ -801,10 +801,10 @@
 
           <div class="form-group">
             <label class="form-label">
-              <span>Sales Person</span>
-              <span class="label-tag tag-pink">Rep</span>
+              <span>Area Sales Manager</span>
+              <span class="label-tag tag-pink">Manager</span>
             </label>
-            <input type="text" class="input-control" id="salesPerson" placeholder="Executive Name" required>
+            <input type="text" class="input-control" id="salesPerson" placeholder="Area Sales Manager Name" required>
           </div>
         </div>
       </section>
@@ -1088,11 +1088,19 @@
     }
 
     function applyManagerSession(sess) {
+      if (!sess) return;
       document.getElementById("managerAuthModal").style.display = "none";
-      const name = sess.manager_name || `Manager (${sess.phone})`;
+      const name = sess.manager_name || (sess.phone ? `Manager (${sess.phone})` : "Area Sales Manager");
       document.getElementById("loggedManagerName").textContent = name;
       document.getElementById("managerStatusStrip").style.display = "flex";
-      document.getElementById("salesPerson").value = sess.manager_name || name;
+      
+      const spInput = document.getElementById("salesPerson");
+      if (spInput) {
+        spInput.value = name;
+        spInput.readOnly = true;
+        spInput.style.background = "#f1f5f9";
+        spInput.style.cursor = "not-allowed";
+      }
     }
 
     function showManagerAuthModal() {
@@ -1102,7 +1110,7 @@
     }
 
     function logoutManager() {
-      if (confirm("Do you want to switch user account?")) {
+      if (confirm("Do you want to switch Area Sales Manager account?")) {
         localStorage.removeItem(SESSION_KEY);
         location.reload();
       }
@@ -1133,7 +1141,7 @@
           document.getElementById("authStep1").style.display = "none";
           document.getElementById("authStep2").style.display = "block";
           document.getElementById("authSentMessage").textContent = `Code sent to +91 ${phone}`;
-          startCountdown(60);
+          startCountdown(120); // 2 Minutes (120s)
         } else {
           alert(data.message || "Could not send verification code.");
           btn.disabled = false;
@@ -1148,16 +1156,17 @@
 
     function startCountdown(seconds) {
       clearInterval(countdownInterval);
-      let s = seconds;
+      let s = seconds || 120;
       const el = document.getElementById("loginCountdown");
-      el.textContent = `Resend code in ${s}s`;
+      const fmt = sec => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+      el.textContent = `Resend code in ${fmt(s)}`;
       countdownInterval = setInterval(() => {
         s--;
         if (s <= 0) {
           clearInterval(countdownInterval);
           el.innerHTML = `<a href="javascript:void(0)" onclick="requestManagerLoginOtp()" style="color:#2563eb; font-weight:700; text-decoration:none;">Resend Code</a>`;
         } else {
-          el.textContent = `Resend code in ${s}s`;
+          el.textContent = `Resend code in ${fmt(s)}`;
         }
       }, 1000);
     }
@@ -1185,8 +1194,10 @@
         const data = await res.json();
 
         if (data.status === "success") {
-          localStorage.setItem(SESSION_KEY, JSON.stringify(data.session));
-          applyManagerSession(data.session);
+          const sess = data.session || data;
+          if (!sess.manager_name && name) sess.manager_name = name;
+          localStorage.setItem(SESSION_KEY, JSON.stringify(sess));
+          applyManagerSession(sess);
         } else {
           alert(data.message || "Invalid verification code.");
           btn.disabled = false;
@@ -1281,6 +1292,7 @@
       if (!c) return;
 
       document.getElementById("partyName").value = c.party_name;
+      document.getElementById("partyName").dataset.partyCode = c.party_code || "";
       document.getElementById("partyContactInput").value = c.phone1 || c.phone2 || c.email || "";
       document.getElementById("partyAddress").value = c.full_address;
 
@@ -1322,6 +1334,7 @@
       }
 
       const partyName = document.getElementById("partyName").value.trim();
+      const partyCode = document.getElementById("partyName").dataset.partyCode || "";
       const partyAddress = document.getElementById("partyAddress").value.trim();
       const deliveryAddress = partyAddress;
       const orderDate = document.getElementById("orderDate").value;
@@ -1342,6 +1355,7 @@
       const payload = {
         id: clientOrderId,
         partyName,
+        partyCode,
         partyAddress,
         deliveryAddress,
         orderDate,
@@ -1394,138 +1408,217 @@
       }
     }
 
-    // 📸 ORDER SLIP CANVAS GENERATOR
+    // Pre-load logos for digital slip canvas
+    window.kogmLogoImg = new Image();
+    window.kogmLogoImg.src = "/images/kogm_logo_thumb.jpg";
+    window.mashalLogoImg = new Image();
+    window.mashalLogoImg.src = "/images/mashal_logo_thumb.jpg";
+
+    // 📸 ORDER SLIP CANVAS GENERATOR (Matching Image 2 Specification)
     function generateOrderSlipCanvas(order) {
+      const items = order.items || [];
+      const scale = 2;
       const canvas = document.createElement("canvas");
+      const width = 850;
+      
+      const rowHeight = 36;
+      const tableHeaderHeight = 40;
+      const baseHeight = 460;
+      const totalHeight = baseHeight + (items.length * rowHeight);
+      
+      canvas.width = width * scale;
+      canvas.height = totalHeight * scale;
+      
       const ctx = canvas.getContext("2d");
-
-      const width = 1000;
-      const baseHeight = 540;
-      const rowHeight = 44;
-      const itemsCount = (order.items && order.items.length) ? order.items.length : 0;
-      const totalHeight = baseHeight + (itemsCount * rowHeight);
-
-      canvas.width = width;
-      canvas.height = totalHeight;
-
-      // Background
+      ctx.scale(scale, scale);
+      
+      // Background Clean White
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, width, totalHeight);
+      
+      // Outer Navy Border
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#003366";
+      ctx.strokeRect(8, 8, width - 16, totalHeight - 16);
+      
+      // Top Header Banner
+      ctx.fillStyle = "#003366";
+      ctx.fillRect(10, 10, width - 20, 105);
 
-      // Top Navy Banner
-      ctx.fillStyle = "#0a2540";
-      ctx.fillRect(0, 0, width, 110);
-
-      // Company Name
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 26px 'Plus Jakarta Sans', sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", width / 2, 48);
-
-      // Subtitle
-      ctx.fillStyle = "#93c5fd";
-      ctx.font = "600 15px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillText("SALES ORDER SLIP", width / 2, 80);
-
-      // Order ID & Date Badges
-      ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(30, 125, width - 60, 140);
-      ctx.strokeStyle = "#cbd5e1";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(30, 125, width - 60, 140);
-
-      // Order Details Grid
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 16px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillText(`ORDER ID: #${order.id || "--"}`, 50, 160);
-
-      ctx.fillStyle = "#475569";
-      ctx.font = "600 14px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillText(`Date: ${order.orderDate || "--"}`, 680, 160);
-
-      ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 15px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillText(`Party Name: ${order.partyName || "--"}`, 50, 195);
-
-      ctx.fillStyle = "#475569";
-      ctx.font = "600 13px 'Plus Jakarta Sans', sans-serif";
-      const cleanAddr = (order.partyAddress || "--").substring(0, 95);
-      ctx.fillText(`Address: ${cleanAddr}`, 50, 225);
-
-      ctx.fillText(`Sales Rep: ${order.salesPerson || "--"}`, 680, 195);
-      if (order.contactInput) {
-        ctx.fillText(`Contact: ${order.contactInput}`, 680, 225);
+      // Top Left KOGM Logo
+      if (window.kogmLogoImg && window.kogmLogoImg.complete && window.kogmLogoImg.naturalWidth > 0) {
+        ctx.drawImage(window.kogmLogoImg, 22, 22, 115, 62);
       }
 
-      // Items Table Header
-      let y = 285;
-      ctx.fillStyle = "#1e3a8a";
-      ctx.fillRect(30, y, width - 60, 38);
-
+      // Top Right Mashal Logo
+      if (window.mashalLogoImg && window.mashalLogoImg.complete && window.mashalLogoImg.naturalWidth > 0) {
+        ctx.drawImage(window.mashalLogoImg, width - 142, 16, 120, 75);
+      }
+      
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 13px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillText("S.NO", 50, y + 24);
-      ctx.fillText("BRAND", 130, y + 24);
-      ctx.fillText("ITEM / PACKING DESCRIPTION", 270, y + 24);
-      ctx.textAlign = "right";
-      ctx.fillText("BOXES", width - 60, y + 24);
-
-      // Table Rows
-      y += 38;
-      ctx.textAlign = "left";
-      ctx.font = "600 14px 'Plus Jakarta Sans', sans-serif";
-
-      let totalBoxes = 0;
-      (order.items || []).forEach((it, i) => {
-        ctx.fillStyle = i % 2 === 0 ? "#ffffff" : "#f8fafc";
-        ctx.fillRect(30, y, width - 60, rowHeight);
-        ctx.strokeStyle = "#e2e8f0";
-        ctx.strokeRect(30, y, width - 60, rowHeight);
-
-        ctx.fillStyle = "#475569";
-        ctx.fillText(`${i + 1}`, 55, y + 27);
-
-        ctx.fillStyle = it.brand === "Mashal" ? "#0056b3" : "#0a7c42";
-        ctx.font = "bold 13px 'Plus Jakarta Sans', sans-serif";
-        ctx.fillText(it.brand || "Mashal", 130, y + 27);
-
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "600 14px 'Plus Jakarta Sans', sans-serif";
-        ctx.fillText(it.item || "--", 270, y + 27);
-
-        ctx.fillStyle = "#0a2540";
-        ctx.font = "bold 16px 'JetBrains Mono', monospace";
-        ctx.textAlign = "right";
-        ctx.fillText(`${it.boxes || 0}`, width - 60, y + 28);
-        ctx.textAlign = "left";
-
-        totalBoxes += (it.boxes || 0);
-        y += rowHeight;
-      });
-
-      // Total Row
-      ctx.fillStyle = "#f1f5f9";
-      ctx.fillRect(30, y, width - 60, 46);
-      ctx.strokeStyle = "#94a3b8";
-      ctx.strokeRect(30, y, width - 60, 46);
-
-      ctx.fillStyle = "#0a2540";
-      ctx.font = "bold 16px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillText("TOTAL ORDER QUANTITY:", 50, y + 30);
-
-      ctx.fillStyle = "#1e40af";
-      ctx.font = "bold 20px 'JetBrains Mono', monospace";
-      ctx.textAlign = "right";
-      ctx.fillText(`${totalBoxes.toLocaleString()} BOXES`, width - 60, y + 31);
-
-      // Footer
-      y += 65;
+      ctx.font = "bold 23px 'Arial', sans-serif";
       ctx.textAlign = "center";
+      ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", width / 2, 45);
+      
+      // Ribbon Subtitle
+      ctx.fillStyle = "#d97706";
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(width / 2 - 150, 60, 300, 32, 6);
+        ctx.fill();
+      } else {
+        ctx.fillRect(width / 2 - 150, 60, 300, 32);
+      }
+      
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px 'Arial', sans-serif";
+      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", width / 2, 81);
+      
+      // Reference Bar
+      ctx.fillStyle = "#f8fafc";
+      ctx.fillRect(12, 120, width - 24, 45);
+      ctx.strokeStyle = "#e2e8f0";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(12, 120, width - 24, 45);
+      
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 13px 'Courier New', monospace";
+      ctx.textAlign = "left";
+      ctx.fillText("ORDER ID: #" + order.id, 24, 147);
+      
+      ctx.font = "12px 'Arial', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Date: " + (order.formattedTimestamp || order.orderDate || ""), width / 2, 147);
+      
+      ctx.textAlign = "right";
+      ctx.fillText("Area Sales Manager: " + (order.salesPerson || "-"), width - 24, 147);
+      
+      // Customer Details Box
+      ctx.fillStyle = "#ffffff";
+      ctx.strokeStyle = "#cbd5e1";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(12, 175, width - 24, 85);
+      
+      ctx.textAlign = "left";
       ctx.fillStyle = "#64748b";
-      ctx.font = "500 12px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillText("Digitally Generated Order Slip • Khandelia Oil & General Mills Pvt. Ltd.", width / 2, y);
+      ctx.font = "bold 11px 'Arial', sans-serif";
+      ctx.fillText("CUSTOMER / BILLING DETAILS", 24, 195);
+      
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 16px 'Arial', sans-serif";
+      let partyTitle = order.partyName || "Customer";
+      if (order.partyCode) partyTitle += "  [Party Code: " + order.partyCode + "]";
+      ctx.fillText(partyTitle, 24, 218);
+      
+      ctx.fillStyle = "#475569";
+      ctx.font = "12px 'Arial', sans-serif";
+      ctx.fillText("Address: " + (order.partyAddress || "-"), 24, 242);
+      
+      // Table Header (5 Columns)
+      const tableY = 275;
+      ctx.fillStyle = "#004b99";
+      ctx.fillRect(12, tableY, width - 24, tableHeaderHeight);
+      
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 12px 'Arial', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("#", 32, tableY + 25);
+      ctx.fillText("BRAND", 75, tableY + 25);
+      ctx.textAlign = "left";
+      ctx.fillText("PACKING / PRODUCT DESCRIPTION", 130, tableY + 25);
+      ctx.textAlign = "center";
+      ctx.fillText("QUANTITY (IN PIECES)", width - 190, tableY + 25);
+      ctx.fillText("QUANTITY (BOXES)", width - 80, tableY + 25);
+      
+      // Table Rows
+      let curY = tableY + tableHeaderHeight;
+      let totalPieces = 0;
+      let totalBoxes = 0;
+      items.forEach((it, idx) => {
+        // Zebra Stripe
+        ctx.fillStyle = idx % 2 === 0 ? "#f8fafc" : "#ffffff";
+        ctx.fillRect(12, curY, width - 24, rowHeight);
+        
+        // Border bottom
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(12, curY + rowHeight);
+        ctx.lineTo(width - 12, curY + rowHeight);
+        ctx.stroke();
+        
+        // Index
+        ctx.fillStyle = "#64748b";
+        ctx.font = "bold 12px 'Arial', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText((idx + 1).toString(), 32, curY + 23);
+        
+        // Brand
+        const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
+        ctx.fillStyle = isMashal ? "#1e40af" : "#15803d";
+        ctx.font = "bold 11px 'Arial', sans-serif";
+        ctx.fillText(it.brand || "Mashal", 75, curY + 23);
+        
+        // Item name
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 13px 'Arial', sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(it.item || "", 130, curY + 23);
 
+        // Pieces Multiplier Calculation
+        const multiplier = (it.item && it.item.match(/x\s*(\d+)/i)) ? parseInt(it.item.match(/x\s*(\d+)/i)[1], 10) : 1;
+        const bxs = parseInt(it.boxes, 10) || 0;
+        const pcs = bxs * multiplier;
+        totalBoxes += bxs;
+        totalPieces += pcs;
+        
+        // Pieces Column
+        ctx.fillStyle = "#1e40af";
+        ctx.font = "bold 13.5px 'Arial', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(pcs.toLocaleString() + " Pcs", width - 190, curY + 23);
+
+        // Boxes Column
+        ctx.fillStyle = "#003366";
+        ctx.font = "bold 15px 'Courier New', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(bxs + " bxs", width - 80, curY + 23);
+        
+        curY += rowHeight;
+      });
+      
+      // Grand Total Banner
+      ctx.fillStyle = "#003366";
+      ctx.fillRect(12, curY + 10, width - 24, 50);
+      
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 18px 'Arial', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  (" + totalPieces.toLocaleString() + " PIECES)", width / 2, curY + 42);
+      
+      // Footer Notes & Stamp
+      const footY = curY + 80;
+      ctx.fillStyle = "#16a34a";
+      ctx.font = "bold 12px 'Arial', sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("✔ DIGITALLY RECORDED INTO GOOGLE SHEETS 'CUSTOMERS ORDERS'", 24, footY);
+      
+      ctx.fillStyle = "#64748b";
+      ctx.font = "11px 'Arial', sans-serif";
+      ctx.fillText("Submission Timestamp: " + (order.formattedTimestamp || new Date().toLocaleString()), 24, footY + 18);
+      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 34);
+      
+      // Verified Badge on Right
+      ctx.strokeStyle = "#16a34a";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(width - 190, footY - 14, 170, 48);
+      ctx.fillStyle = "#16a34a";
+      ctx.font = "bold 12px 'Arial', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("VERIFIED ORDER", width - 105, footY + 8);
+      ctx.font = "10px 'Courier New', monospace";
+      ctx.fillText("#" + order.id, width - 105, footY + 24);
+      
       return canvas;
     }
 

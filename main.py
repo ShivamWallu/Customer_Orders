@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Header, HTTPException, Request, BackgroundTasks
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -51,6 +52,9 @@ app = FastAPI(
     version="1.0.2",
     description="Real-time Webhook & Dynamic Data Sync for Google Sheets 1st Tab"
 )
+
+if os.path.exists("images"):
+    app.mount("/images", StaticFiles(directory="images"), name="images")
 
 @app.get("/")
 def serve_order_slip_root():
