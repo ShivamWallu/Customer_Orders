@@ -611,7 +611,7 @@ def get_order_qr_code(order_id: str, request: Request):
     return RedirectResponse(url=f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={verify_url}")
 
 @app.get("/verify/{order_id}", response_class=HTMLResponse)
-def verify_order_public_portal(order_id: str):
+def verify_order_public_portal(order_id: str, request: Request):
     """
     🛡️ Central Factory Verification Portal for Khandelia Oil & General Mills Pvt. Ltd.
     Allows warehouse dispatchers, dealers, accountants, and transport coordinators
@@ -843,6 +843,18 @@ def verify_order_public_portal(order_id: str):
     total_pieces = order.get("totalPieces") or order.get("total_pieces") or 0
     sec_hash = order.get("securityHash") or generate_order_security_hash(clean_id, timestamp_str, party_name, total_boxes)
 
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
+    if "sevenfold-blazer-pacific.ngrok-free.dev" in host or "localhost" in host or "127.0.0.1" in host:
+        base_url = "https://sevenfold-blazer-pacific.ngrok-free.dev"
+    elif host:
+        scheme = request.headers.get("x-forwarded-proto") or "https"
+        base_url = f"{scheme}://{host}"
+    else:
+        base_url = "https://order.khandelia.online"
+
+    slip_img_url = f"{base_url}/order_slips/{clean_id}.png"
+    canonical_url = f"{base_url}/verify/{clean_id}"
+
     return HTMLResponse(content=f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -850,6 +862,21 @@ def verify_order_public_portal(order_id: str):
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
       <title>✔ 100% Genuine Order Verified | Khandelia OMS</title>
+      
+      <!-- 🌐 Open Graph / WhatsApp Rich Link Preview with Image -->
+      <meta property="og:type" content="website">
+      <meta property="og:title" content="✔ Order Verified: #{clean_id} - {party_name}">
+      <meta property="og:description" content="Total: {total_boxes:,} Boxes ({total_pieces:,} Pcs) • Khandelia Oil & General Mills Pvt. Ltd. Official Authenticity Verified.">
+      <meta property="og:image" content="{slip_img_url}">
+      <meta property="og:image:secure_url" content="{slip_img_url}">
+      <meta property="og:image:type" content="image/png">
+      <meta property="og:image:width" content="850">
+      <meta property="og:image:height" content="1100">
+      <meta property="og:url" content="{canonical_url}">
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="✔ Order Verified: #{clean_id} - {party_name}">
+      <meta name="twitter:description" content="Total: {total_boxes:,} Boxes ({total_pieces:,} Pcs) • Khandelia Oil & General Mills">
+      <meta name="twitter:image" content="{slip_img_url}">
       <style>
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
         body {{

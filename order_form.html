@@ -1789,8 +1789,14 @@
       msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES*  |  *${totalPieces.toLocaleString()} PIECES*\n`;
       msg += `------------------------------------\n`;
       if (o.id) {
-        const slipLink = window.location.origin + `/order_slips/${o.id}.png`;
-        msg += `🖼️ *Digital Order Slip:* ${slipLink}\n`;
+        const cleanId = String(o.id).replace("#", "").trim();
+        const base = (window.location.hostname.includes("ngrok") || window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1"))
+          ? "https://sevenfold-blazer-pacific.ngrok-free.dev"
+          : window.location.origin;
+        const verifyLink = `${base}/verify/${cleanId}`;
+        const slipImgLink = `${base}/order_slips/${cleanId}.png`;
+        msg += `🖼️ *Digital Order Slip & Verification:* ${verifyLink}\n`;
+        msg += `📁 *Direct Slip Image:* ${slipImgLink}\n`;
         msg += `------------------------------------\n`;
       }
       msg += `_Official Order Record • Khandelia Oil & General Mills Pvt. Ltd._`;
