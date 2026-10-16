@@ -107,10 +107,18 @@
       padding: 14px 16px;
       background: #ffffff;
       border-bottom: 6px solid #f1f5f9;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .form-group {
       margin-bottom: 12px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
 
     .form-group:last-child {
@@ -141,6 +149,9 @@
 
     .input-control {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
       height: 44px;
       background: #f8fafc;
       border: 1.5px solid var(--border-gray);
@@ -151,6 +162,52 @@
       color: var(--text-dark);
       outline: none;
       transition: all 0.2s ease;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    /* 📱 Specific iOS Safari / WebKit Date Input Layout & Alignment Fix */
+    input[type="date"].input-control,
+    input[type="date"] {
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      padding: 0 14px !important;
+      background-color: #f8fafc;
+      overflow: hidden;
+    }
+
+    input[type="date"]::-webkit-date-and-time-value {
+      text-align: left;
+      margin: 0;
+      padding: 0;
+      min-height: 40px;
+      line-height: 40px;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      display: block;
+      cursor: pointer;
+      opacity: 0.65;
+      padding: 0;
+      margin: 0;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-clear-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
     .input-control:focus {
@@ -171,13 +228,23 @@
 
     .row-2col {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .row-2col > div,
+    .row-2col > * {
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     @media (min-width: 480px) {
       .row-2col {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       }
     }
 
@@ -667,7 +734,7 @@
       }
 
       .row-2col {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 16px;
       }
 
