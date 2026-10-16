@@ -1816,7 +1816,7 @@
       
       const rowHeight = 36;
       const tableHeaderHeight = 40;
-      const baseHeight = 520;
+      const baseHeight = 560;
       const totalHeight = baseHeight + (items.length * rowHeight);
       
       canvas.width = width * scale;
@@ -1878,33 +1878,10 @@
         }
       }
 
-      // Purity Seal on Top Right
-      const sealX = width - 134;
-      ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
-      ctx.lineWidth = 1;
-      if (ctx.roundRect) {
-        ctx.beginPath();
-        ctx.roundRect(sealX, 24, 110, 80, 8);
-        ctx.fill();
-        ctx.stroke();
-      } else {
-        ctx.fillRect(sealX, 24, 110, 80);
-        ctx.strokeRect(sealX, 24, 110, 80);
-      }
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 10px 'Arial', sans-serif";
+      ctx.font = "bold 21px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("🟢 100% PURE", sealX + 55, 50);
-      ctx.fillText("KACHI GHANI", sealX + 55, 66);
-      ctx.fillStyle = "#fbbf24";
-      ctx.font = "bold 9px 'Arial', sans-serif";
-      ctx.fillText("MASHAL & FAUJI", sealX + 55, 82);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 20px 'Arial', sans-serif";
-      ctx.textAlign = "center";
-      const headerTextX = (width / 2) + 20;
+      const headerTextX = (width / 2) + 40;
       ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", headerTextX, 52);
       
       // Ribbon Subtitle
@@ -2044,38 +2021,42 @@
       });
       
       // Grand Total Banner
+      const bannerY = curY + 12;
+      const bannerH = 48;
       ctx.fillStyle = "#003366";
-      ctx.fillRect(12, curY + 10, width - 24, 50);
+      ctx.fillRect(12, bannerY, width - 24, bannerH);
       
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 18px 'Arial', sans-serif";
+      ctx.font = "bold 17px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  (" + totalPieces.toLocaleString() + " PIECES)", width / 2, curY + 42);
+      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  (" + totalPieces.toLocaleString() + " PIECES)", width / 2, bannerY + 31);
       
       // 🛡️ Footer Notes, Official Customer Care Support & Stamp
-      const footY = curY + 76;
+      // Banner ends at curY + 60. Footer starts at curY + 84 (24px clean gap!)
+      const footY = bannerY + bannerH + 24;
       ctx.fillStyle = "#16a34a";
-      ctx.font = "bold 12.5px 'Arial', sans-serif";
+      ctx.font = "bold 12px 'Arial', sans-serif";
       ctx.textAlign = "left";
       ctx.fillText("✔ OFFICIALLY RECORDED & VERIFIED ORDER", 24, footY);
       
       ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 11.5px 'Arial', sans-serif";
-      ctx.fillText("Customer Care: 📞 Toll-Free: 1800 103 3211   |   ✉ customercare@khandelia.com", 24, footY + 20);
+      ctx.font = "bold 11px 'Arial', sans-serif";
+      ctx.fillText("Customer Care: 📞 Toll-Free: 1800 103 3211   |   ✉ customercare@khandelia.com", 24, footY + 19);
       
       ctx.fillStyle = "#475569";
-      ctx.font = "11px 'Arial', sans-serif";
-      ctx.fillText("Thank you for reaching out to us! Our Customer Care team is always ready to assist you — just a call or click away!", 24, footY + 37);
+      ctx.font = "10.5px 'Arial', sans-serif";
+      ctx.fillText("Thank you for choosing Khandelia! Our Customer Care team is always ready to assist you — just a call or click away!", 24, footY + 35);
 
       ctx.fillStyle = "#94a3b8";
-      ctx.font = "10.5px 'Arial', sans-serif";
-      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 53);
+      ctx.font = "10px 'Arial', sans-serif";
+      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 50);
       
       // 🛡️ Verified Factory Stamp on Right (Anti-Tamper & Security Sealed)
+      // Placed with 16px white space below the Dark Blue Banner (No overlap!)
       const stampBoxW = 216;
-      const stampBoxH = 68;
-      const stampBoxX = width - stampBoxW - 14;
-      const stampBoxY = footY - 18;
+      const stampBoxH = 64;
+      const stampBoxX = width - stampBoxW - 16;
+      const stampBoxY = footY - 8;
       
       ctx.fillStyle = "#f0fdf4";
       ctx.strokeStyle = "#16a34a";
@@ -2093,19 +2074,19 @@
       ctx.fillStyle = "#15803d";
       ctx.font = "bold 11px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("✔ VERIFIED FACTORY RECORD", stampBoxX + (stampBoxW / 2), stampBoxY + 18);
+      ctx.fillText("✔ VERIFIED FACTORY RECORD", stampBoxX + (stampBoxW / 2), stampBoxY + 17);
       
       ctx.font = "bold 12px 'Courier New', monospace";
-      ctx.fillText("#" + order.id, stampBoxX + (stampBoxW / 2), stampBoxY + 33);
+      ctx.fillText("#" + order.id, stampBoxX + (stampBoxW / 2), stampBoxY + 32);
       
       ctx.font = "bold 10px 'Courier New', monospace";
       ctx.fillStyle = "#0369a1";
       const sealText = order.securityHash || "SEC-AUTHENTIC";
-      ctx.fillText("SEAL: " + sealText, stampBoxX + (stampBoxW / 2), stampBoxY + 48);
+      ctx.fillText("SEAL: " + sealText, stampBoxX + (stampBoxW / 2), stampBoxY + 46);
 
       ctx.fillStyle = "#16a34a";
       ctx.font = "9px 'Arial', sans-serif";
-      ctx.fillText("Verify: order.khandelia.online/verify", stampBoxX + (stampBoxW / 2), stampBoxY + 60);
+      ctx.fillText("Verify: order.khandelia.online/verify", stampBoxX + (stampBoxW / 2), stampBoxY + 58);
       
       return canvas;
     }

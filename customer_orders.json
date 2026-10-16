@@ -1355,5 +1355,58 @@
     "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 8565 Pcs (571 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 27990 Pcs (933 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 57840 Pcs (964 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 33560 Pcs (839 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 37440 Pcs (312 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 552 Pcs (138 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 1338 Pcs (223 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 5535 Pcs (615 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 10304 Pcs (644 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 9376 Pcs (293 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 728 Pcs (728 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 612 Pcs (612 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 842 Pcs (842 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 665 Pcs (665 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 12750 Pcs (850 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 15270 Pcs (509 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 7568 Pcs (473 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 393 Pcs (393 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 868 Pcs (868 bxs)",
     "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-5327.png",
     "slipImageUrl": "/order_slips/KOGM-20261016-5327.png"
+  },
+  {
+    "id": "KOGM-20261016-4426",
+    "partyName": "Tandra Agency - Howrah",
+    "partyCode": "SDMOWB0130",
+    "partyAddress": "Jadupur Pantihal, Howrah, Pantihal, West Bengal - 711410",
+    "deliveryAddress": "Jadupur Pantihal, Howrah, Pantihal, West Bengal - 711410",
+    "orderDate": "2026-10-16",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 11,
+    "formattedTimestamp": "16/10/2026 12:50:34 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 2,
+        "pieces": 30
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 3,
+        "pieces": 120
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 2,
+        "pieces": 240
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 2,
+        "pieces": 32
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 2,
+        "pieces": 2
+      }
+    ],
+    "contactInput": "9434971820",
+    "timestamp": "2026-10-16T12:50:34.065812",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 424,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 30 Pcs (2 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 120 Pcs (3 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 240 Pcs (2 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 32 Pcs (2 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 2 Pcs (2 bxs)",
+    "securityHash": "SEC-C83A-03F1",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-4426.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-4426.png"
   }
 ]

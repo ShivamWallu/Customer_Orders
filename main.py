@@ -397,11 +397,6 @@ def send_order_email_notification(order: dict):
                     <h2 style="margin: 0; font-size: 19px; color: #ffffff; letter-spacing: 0.5px; font-weight: 800; text-transform: uppercase; line-height: 1.3;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h2>
                     <div style="display: inline-block; background: #d97706; color: #ffffff; padding: 5px 14px; border-radius: 4px; font-size: 11px; margin-top: 8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">OFFICIAL ORDER CONFIRMATION SLIP</div>
                   </td>
-                  <td style="width: 110px; vertical-align: middle; text-align: right;">
-                    <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 6px 10px; text-align: center; color: #ffffff; font-size: 10px; font-weight: bold; line-height: 1.3;">
-                      🟢 100% PURE<br>KACHI GHANI
-                    </div>
-                  </td>
                 </tr>
               </table>
             </div>
@@ -481,11 +476,6 @@ def send_order_email_notification(order: dict):
                     </div>
                     <div style="color: #475569; font-size: 11px; margin-top: 3px; line-height: 1.4;">
                       Thank you for choosing Khandelia! Our Customer Care team is always ready to assist you — just a call or click away!
-                    </div>
-                    <div style="margin-top: 8px;">
-                      <a href="https://order.khandelia.online/verify/{order.get('id')}" target="_blank" style="display: inline-block; background: #15803d; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 11px; font-weight: bold; letter-spacing: 0.2px;">
-                        🔒 Verify Authentic Factory Record #{order.get('id')}
-                      </a>
                     </div>
                   </td>
                   <td style="text-align: right; width: 190px; vertical-align: middle;">

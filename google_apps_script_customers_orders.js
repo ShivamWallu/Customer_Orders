@@ -212,8 +212,10 @@ function appendOrderToSheet(order) {
     sheet = ss.getSheets()[0];
   }
 
-  // 1. Run Auto-Migration & Formatting to ensure columns are 100% synchronized
-  migrateAndFormatSheet(sheet);
+  // 1. Fast Check: Only run Migration if sheet is empty or headers need standardizing (Bypasses 3-5 sec delay on normal appends!)
+  if (sheet.getLastRow() === 0 || sheet.getLastColumn() < 11 || String(sheet.getRange(1, 3).getValue()).toLowerCase().indexOf("code") === -1) {
+    migrateAndFormatSheet(sheet);
+  }
 
   // Format timestamp (IST)
   const now = new Date();
