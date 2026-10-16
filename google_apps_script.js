@@ -109,7 +109,7 @@ function handleSheetChange(e) {
   syncFirstSheetData();
 }
 
-const BACKEND_BASE_URL = "https://sevenfold-blazer-pacific.ngrok-free.dev";
+const BACKEND_BASE_URL = "https://order.khandelia.online";
 const ORDERS_SHEET_NAME = "Customer Orders";
 
 /**

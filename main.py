@@ -118,13 +118,21 @@ if os.path.exists("images"):
     app.mount("/static_images", StaticFiles(directory="images"), name="static_images")
 
 def get_base_url_from_request(request: Request) -> str:
+    """Dynamically resolves base URL: supports Ngrok local testing, AWS production domain, and custom hosts"""
     host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
-    if "sevenfold-blazer-pacific.ngrok-free.dev" in host or "localhost" in host or "127.0.0.1" in host:
+    # 1. Active Ngrok tunnel (for local mobile testing)
+    if "sevenfold-blazer-pacific.ngrok-free.dev" in host:
         return "https://sevenfold-blazer-pacific.ngrok-free.dev"
-    elif host:
+    # 2. Production Domain (e.g. order.khandelia.online on AWS)
+    elif "khandelia.online" in host:
         scheme = request.headers.get("x-forwarded-proto") or "https"
         return f"{scheme}://{host}"
-    return "https://order.khandelia.online"
+    # 3. Custom host / AWS EC2 public IP or ELB
+    elif host and not ("localhost" in host or "127.0.0.1" in host):
+        scheme = request.headers.get("x-forwarded-proto") or "https"
+        return f"{scheme}://{host}"
+    # 4. Default Production URL from .env or official domain
+    return os.environ.get("APP_BASE_URL", "https://order.khandelia.online")
 
 @app.get("/")
 @app.get("/order_form.html")
@@ -313,15 +321,8 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     order["formattedDate"] = now_dt.strftime("%d/%m/%Y")
     order["synced_to_sheet"] = False
     
-    # 🔗 Dynamic Verification Portal URL (Ngrok Tunnel support for local mobile testing)
-    forwarded_host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
-    scheme = request.headers.get("x-forwarded-proto") or ("https" if ("ngrok" in forwarded_host or "online" in forwarded_host) else request.url.scheme)
-    if "sevenfold-blazer-pacific.ngrok-free.dev" in forwarded_host or "localhost" in forwarded_host or "127.0.0.1" in forwarded_host:
-        verify_base = "https://sevenfold-blazer-pacific.ngrok-free.dev"
-    elif forwarded_host:
-        verify_base = f"{scheme}://{forwarded_host}"
-    else:
-        verify_base = "https://order.khandelia.online"
+    # 🔗 Dynamic Verification Portal URL (supports Ngrok locally and AWS production)
+    verify_base = get_base_url_from_request(request)
     clean_uid = str(order_id).replace("#", "").strip()
     order["verifyUrl"] = f"{verify_base}/verify/{clean_uid}"
     
@@ -505,7 +506,8 @@ def send_order_email_notification(order: dict):
         party_name = (order.get("partyName") or "Customer").strip()
         party_code = (order.get("partyCode") or "").strip()
         clean_order_id = str(order.get("id", "")).replace("#", "").strip()
-        verify_url = order.get("verifyUrl") or f"https://sevenfold-blazer-pacific.ngrok-free.dev/verify/{clean_order_id}"
+        default_prod_url = os.environ.get("APP_BASE_URL", "https://order.khandelia.online")
+        verify_url = order.get("verifyUrl") or f"{default_prod_url}/verify/{clean_order_id}"
         p_code_str = f" [{party_code}]" if party_code else ""
         msg_root["Subject"] = f"Order Confirmation: #{order.get('id')} - {party_name}{p_code_str} | {total_bxs:,} Boxes ({total_pcs:,} Pcs)"
         msg_root["From"] = f"Mashal Order System <{SMTP_USER}>"
@@ -713,14 +715,7 @@ async def api_mark_whatsapp_sent(request: Request):
 def get_order_qr_code(order_id: str, request: Request):
     """Dynamic high-resolution QR code generator pointing to live factory verification portal"""
     clean_id = order_id.replace("#", "").strip()
-    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
-    if "sevenfold-blazer-pacific.ngrok-free.dev" in host or "localhost" in host or "127.0.0.1" in host:
-        base = "https://sevenfold-blazer-pacific.ngrok-free.dev"
-    elif host:
-        scheme = request.headers.get("x-forwarded-proto") or "https"
-        base = f"{scheme}://{host}"
-    else:
-        base = "https://order.khandelia.online"
+    base = get_base_url_from_request(request)
     verify_url = f"{base}/verify/{clean_id}"
     if qrcode is not None:
         try:
