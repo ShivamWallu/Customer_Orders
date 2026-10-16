@@ -1088,6 +1088,7 @@
       const payload = {
         id: clientOrderId,
         partyName,
+        partyCode: "",
         partyAddress,
         deliveryAddress,
         orderDate,
@@ -1140,12 +1141,6 @@
       }
     }
 
-    // Pre-load logos for digital slip canvas
-    window.kogmLogoImg = new Image();
-    window.kogmLogoImg.src = "/images/kogm_logo_thumb.jpg";
-    window.mashalLogoImg = new Image();
-    window.mashalLogoImg.src = "/images/mashal_logo_thumb.jpg";
-
     function generateOrderSlipCanvas(order) {
       const items = order.items || [];
       const scale = 2;
@@ -1175,35 +1170,25 @@
       // Top Header Banner
       ctx.fillStyle = "#003366";
       ctx.fillRect(10, 10, width - 20, 105);
-
-      // Top Left KOGM Logo
-      if (window.kogmLogoImg && window.kogmLogoImg.complete && window.kogmLogoImg.naturalWidth > 0) {
-        ctx.drawImage(window.kogmLogoImg, 22, 22, 115, 62);
-      }
-
-      // Top Right Mashal Logo
-      if (window.mashalLogoImg && window.mashalLogoImg.complete && window.mashalLogoImg.naturalWidth > 0) {
-        ctx.drawImage(window.mashalLogoImg, width - 142, 16, 120, 75);
-      }
       
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 23px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", width / 2, 45);
+      ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", width / 2, 48);
       
       // Ribbon Subtitle
       ctx.fillStyle = "#d97706";
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(width / 2 - 150, 60, 300, 32, 6);
+        ctx.roundRect(width / 2 - 165, 66, 330, 32, 6);
         ctx.fill();
       } else {
-        ctx.fillRect(width / 2 - 150, 60, 300, 32);
+        ctx.fillRect(width / 2 - 165, 66, 330, 32);
       }
       
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 13px 'Arial', sans-serif";
-      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", width / 2, 81);
+      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", width / 2, 87);
       
       // Reference Bar
       ctx.fillStyle = "#f8fafc";
@@ -1235,11 +1220,17 @@
       ctx.font = "bold 11px 'Arial', sans-serif";
       ctx.fillText("CUSTOMER / BILLING DETAILS", 24, 195);
       
+      // Dedicated Party Code on right
+      const pCode = (order.partyCode && String(order.partyCode).trim()) ? String(order.partyCode).trim() : "N/A";
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#004b99";
+      ctx.font = "bold 12px 'Courier New', monospace";
+      ctx.fillText("PARTY CODE: " + pCode, width - 24, 195);
+
+      ctx.textAlign = "left";
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 16px 'Arial', sans-serif";
-      let partyTitle = order.partyName || "Customer";
-      if (order.partyCode) partyTitle += "  [Party Code: " + order.partyCode + "]";
-      ctx.fillText(partyTitle, 24, 218);
+      ctx.fillText(order.partyName || "Customer", 24, 218);
       
       ctx.fillStyle = "#475569";
       ctx.font = "12px 'Arial', sans-serif";

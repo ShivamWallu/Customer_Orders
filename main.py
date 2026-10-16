@@ -151,6 +151,22 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     order["formattedDate"] = now_dt.strftime("%d/%m/%Y")
     order["synced_to_sheet"] = False
     
+    # Ensure party code is resolved from CRM if not explicitly provided
+    party_code = (order.get("partyCode") or "").strip()
+    if not party_code:
+        p_name = order.get("partyName", "").strip().lower()
+        if p_name:
+            try:
+                from crm_service import _CRM_CACHE, _CACHE_LOCK
+                with _CACHE_LOCK:
+                    for c in _CRM_CACHE:
+                        if c.get("party_name", "").strip().lower() == p_name:
+                            party_code = c.get("party_code", "")
+                            break
+            except Exception as crm_lookup_err:
+                print(f"[CRM CODE LOOKUP WARN] {crm_lookup_err}")
+    order["partyCode"] = party_code
+    
     # Format items summary with brand icons, calculate total pieces & clean multi-line layout
     items = order.get("items", [])
     summary_parts = []
@@ -285,7 +301,10 @@ def send_order_email_notification(order: dict):
         msg_root = MIMEMultipart("related")
         total_bxs = order.get("totalBoxes", 0)
         total_pcs = order.get("totalPieces", 0)
-        msg_root["Subject"] = f"🔔 [NEW ORDER] #{order.get('id')} - {order.get('partyName')} ({total_bxs} Boxes / {total_pcs:,} Pcs)"
+        party_name = (order.get("partyName") or "Customer").strip()
+        party_code = (order.get("partyCode") or "").strip()
+        p_code_str = f" [{party_code}]" if party_code else ""
+        msg_root["Subject"] = f"Order Confirmation: #{order.get('id')} - {party_name}{p_code_str} | {total_bxs:,} Boxes ({total_pcs:,} Pcs)"
         msg_root["From"] = f"Mashal Order System <{SMTP_USER}>"
         msg_root["To"] = NOTIFICATION_EMAIL
 
@@ -313,33 +332,16 @@ def send_order_email_notification(order: dict):
             </tr>
             """
 
-        party_title = order.get("partyName", "Customer")
-        party_code = order.get("partyCode", "")
-        if party_code and f"[{party_code}]" not in party_title:
-            party_title += f"  <span style='color: #0369a1; font-family: monospace; font-size: 13px; font-weight: bold;'>[Party Code: {party_code}]</span>"
-
         html_content = f"""
         <!DOCTYPE html>
         <html>
         <body style="font-family: Arial, Helvetica, sans-serif; background-color: #f1f5f9; padding: 20px; margin: 0;">
           <div style="max-width: 750px; margin: 0 auto; background: #ffffff; border: 3px solid #003366; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
             
-            <!-- 🏢 Top Navy Header with Logos & Title -->
-            <div style="background: #003366; padding: 18px 20px; text-align: center;">
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                  <td style="width: 110px; text-align: left; vertical-align: middle;">
-                    <img src="cid:kogm_logo" alt="KOGM" style="height: 52px; max-width: 105px; display: block; border-radius: 4px; background: #ffffff; padding: 3px;">
-                  </td>
-                  <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
-                    <h2 style="margin: 0; font-size: 18px; color: #ffffff; letter-spacing: 0.5px; font-weight: 800; text-transform: uppercase;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h2>
-                    <div style="display: inline-block; background: #d97706; color: #ffffff; padding: 5px 16px; border-radius: 4px; font-size: 11px; margin-top: 8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">OFFICIAL ORDER CONFIRMATION SLIP</div>
-                  </td>
-                  <td style="width: 110px; text-align: right; vertical-align: middle;">
-                    <img src="cid:mashal_logo" alt="Mashal" style="height: 52px; max-width: 105px; display: block; border-radius: 4px; background: #ffffff; padding: 3px; margin-left: auto;">
-                  </td>
-                </tr>
-              </table>
+            <!-- 🏢 Top Navy Header -->
+            <div style="background: #003366; padding: 22px 20px; text-align: center;">
+              <h2 style="margin: 0; font-size: 20px; color: #ffffff; letter-spacing: 0.5px; font-weight: 800; text-transform: uppercase;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h2>
+              <div style="display: inline-block; background: #d97706; color: #ffffff; padding: 6px 20px; border-radius: 4px; font-size: 11px; margin-top: 10px; font-weight: bold; letter-spacing: 1.2px; text-transform: uppercase;">OFFICIAL ORDER CONFIRMATION SLIP</div>
             </div>
 
             <!-- 🔖 Reference Bar (Order ID, Date, Area Sales Manager) -->
@@ -359,12 +361,23 @@ def send_order_email_notification(order: dict):
               </table>
             </div>
 
-            <!-- 👤 Customer & Billing Details -->
+            <!-- 👤 Customer & Billing Details with Party Code -->
             <div style="padding: 18px 20px 10px 20px;">
               <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px 18px;">
-                <div style="font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">CUSTOMER / BILLING DETAILS</div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
+                  <tr>
+                    <td style="font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">
+                      CUSTOMER / BILLING DETAILS
+                    </td>
+                    <td style="text-align: right;">
+                      <span style="display: inline-block; background: #eff6ff; color: #004b99; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 4px; font-family: monospace; font-size: 12px; font-weight: bold;">
+                        PARTY CODE: {party_code if party_code else 'N/A'}
+                      </span>
+                    </td>
+                  </tr>
+                </table>
                 <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">
-                  {party_title}
+                  {party_name}
                 </div>
                 <div style="font-size: 13px; color: #475569; line-height: 1.45;">
                   <strong>Address:</strong> {order.get('partyAddress', '-')}
@@ -419,28 +432,17 @@ def send_order_email_notification(order: dict):
         """
         msg_alternative.attach(MIMEText(html_content, "html"))
 
-        # Attach Inline Logos
-        kogm_path = os.path.join("images", "kogm_logo_thumb.jpg")
-        if os.path.exists(kogm_path):
+        # Attach high-resolution slip image if saved on server
+        slip_img_path = order.get("slipImagePath")
+        if slip_img_path and os.path.exists(slip_img_path):
             try:
-                with open(kogm_path, "rb") as f:
-                    img_k = MIMEImage(f.read())
-                    img_k.add_header('Content-ID', '<kogm_logo>')
-                    img_k.add_header('Content-Disposition', 'inline', filename='kogm_logo.jpg')
-                    msg_root.attach(img_k)
-            except Exception as e:
-                print(f"[EMAIL LOGO ERROR] KOGM: {e}")
-
-        mashal_path = os.path.join("images", "mashal_logo_thumb.jpg")
-        if os.path.exists(mashal_path):
-            try:
-                with open(mashal_path, "rb") as f:
-                    img_m = MIMEImage(f.read())
-                    img_m.add_header('Content-ID', '<mashal_logo>')
-                    img_m.add_header('Content-Disposition', 'inline', filename='mashal_logo.jpg')
-                    msg_root.attach(img_m)
-            except Exception as e:
-                print(f"[EMAIL LOGO ERROR] Mashal: {e}")
+                with open(slip_img_path, "rb") as img_f:
+                    image_attachment = MIMEImage(img_f.read(), name=f"Order_Slip_{order.get('id')}.png")
+                    image_attachment.add_header('Content-Disposition', 'attachment', filename=f"Order_Slip_{order.get('id')}.png")
+                    msg_root.attach(image_attachment)
+                print(f"[EMAIL ATTACHMENT] Attached Order_Slip_{order.get('id')}.png to email")
+            except Exception as att_err:
+                print(f"[EMAIL ATTACHMENT ERROR] {att_err}")
 
         # Attach high-resolution slip image if saved on server
         slip_img_path = order.get("slipImagePath")
