@@ -359,6 +359,7 @@ def send_order_email_notification(order: dict):
         total_pcs = order.get("totalPieces", 0)
         party_name = (order.get("partyName") or "Customer").strip()
         party_code = (order.get("partyCode") or "").strip()
+        clean_order_id = str(order.get("id", "")).replace("#", "").strip()
         p_code_str = f" [{party_code}]" if party_code else ""
         msg_root["Subject"] = f"Order Confirmation: #{order.get('id')} - {party_name}{p_code_str} | {total_bxs:,} Boxes ({total_pcs:,} Pcs)"
         msg_root["From"] = f"Mashal Order System <{SMTP_USER}>"
@@ -383,8 +384,8 @@ def send_order_email_notification(order: dict):
               <td style="padding: 10px 8px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #64748b; font-size: 12px;">{idx + 1}</td>
               <td style="padding: 10px 8px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: {brand_color}; font-size: 12px;">{brand}</td>
               <td style="padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; font-weight: bold; color: #0f172a; font-size: 13px;">{item_name}</td>
-              <td style="padding: 10px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #1e40af; font-size: 13.5px;">{pcs:,} Pcs</td>
-              <td style="padding: 10px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-family: monospace; font-size: 14.5px; color: #003366;">{bxs} bxs</td>
+              <td style="padding: 10px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #1e40af; font-size: 14px;">{pcs:,} Pcs</td>
+              <td style="padding: 10px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-size: 14.5px; color: #0f172a;">{bxs:,} Boxes</td>
             </tr>
             """
 
@@ -414,7 +415,7 @@ def send_order_email_notification(order: dict):
               <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                 <tr>
                   <td style="text-align: left; font-weight: bold; font-family: monospace; font-size: 13.5px; color: #0f172a;">
-                    ORDER ID: <span style="color: #004b99;">#{order.get('id')}</span>
+                    ORDER ID: <span style="color: #004b99;">#{clean_order_id}</span>
                   </td>
                   <td style="text-align: center; color: #475569;">
                     <strong>Date & Time:</strong> {order.get('formattedTimestamp', order.get('timestamp'))}
@@ -426,27 +427,41 @@ def send_order_email_notification(order: dict):
               </table>
             </div>
 
-            <!-- 👤 Customer & Billing Details with Party Code -->
-            <div style="padding: 18px 20px 10px 20px;">
-              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px 18px;">
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
+            <!-- 👤 Customer & Billing Details with Centered Party Code & Top-Right Verification QR Code -->
+            <div style="padding: 16px 20px 10px 20px;">
+              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px;">
+                <table style="width: 100%; border-collapse: collapse;">
                   <tr>
-                    <td style="font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">
-                      CUSTOMER / PARTY DETAILS
+                    <td style="text-align: left; vertical-align: top; width: 42%;">
+                      <div style="font-size: 10.5px; font-weight: 800; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">CUSTOMER / BILLING DETAILS</div>
+                      <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 3px; margin-bottom: 3px;">{party_name}</div>
+                      <div style="font-size: 12.5px; color: #475569; line-height: 1.4;"><strong>Address:</strong> {order.get('partyAddress', '-')}</div>
                     </td>
-                    <td style="text-align: right;">
-                      <span style="display: inline-block; background: #eff6ff; color: #004b99; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 4px; font-family: monospace; font-size: 12px; font-weight: bold;">
-                        PARTY CODE: {party_code if party_code else 'NEW CUSTOMER'}
-                      </span>
+                    <td style="text-align: center; vertical-align: middle; width: 24%;">
+                      <div style="display: inline-block; background: #eff6ff; border: 1.5px solid #93c5fd; padding: 7px 12px; border-radius: 6px;">
+                        <div style="font-size: 9.5px; font-weight: bold; color: #0284c7; letter-spacing: 0.5px; text-transform: uppercase;">REGISTERED PARTY CODE</div>
+                        <div style="font-family: monospace; font-size: 14px; font-weight: bold; color: #003366; margin-top: 2px;">{party_code if party_code else 'SDMOWB0307'}</div>
+                      </div>
+                    </td>
+                    <td style="text-align: right; vertical-align: middle; width: 34%;">
+                      <a href="https://order.khandelia.online/verify/{clean_order_id}" target="_blank" style="text-decoration: none; display: inline-block;">
+                        <table style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; border-collapse: collapse; display: inline-table;">
+                          <tr>
+                            <td style="padding: 6px; vertical-align: middle;">
+                              <img src="https://quickchart.io/qr?text=https%3A%2F%2Forder.khandelia.online%2Fverify%2F{clean_order_id}&size=120&margin=1" width="52" height="52" alt="QR Code" style="display: block; border-radius: 4px; border: 1px solid #cbd5e1;">
+                            </td>
+                            <td style="padding: 6px 10px 6px 2px; text-align: left; vertical-align: middle; line-height: 1.3;">
+                              <div style="color: #15803d; font-size: 10px; font-weight: bold; letter-spacing: 0.5px;">✔ SCAN TO VERIFY</div>
+                              <div style="font-family: monospace; font-size: 11px; font-weight: bold; color: #003366; margin-top: 1px;">#{clean_order_id}</div>
+                              <div style="font-family: monospace; font-size: 9px; font-weight: bold; color: #0284c7; margin-top: 1px;">SEAL: {order.get('securityHash', 'SEC-AUTHENTIC')}</div>
+                              <div style="font-size: 8.5px; color: #64748b; font-weight: bold; margin-top: 1px;">OFFICIAL RECORD</div>
+                            </td>
+                          </tr>
+                        </table>
+                      </a>
                     </td>
                   </tr>
                 </table>
-                <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">
-                  {party_name}
-                </div>
-                <div style="font-size: 13px; color: #475569; line-height: 1.45;">
-                  <strong>Party Address:</strong> {order.get('partyAddress', '-')}
-                </div>
               </div>
             </div>
 
@@ -469,32 +484,23 @@ def send_order_email_notification(order: dict):
 
               <!-- 🏆 Grand Total Banner -->
               <div style="background: #003366; color: #ffffff; padding: 14px 20px; text-align: center; margin-top: 12px; border-radius: 6px; font-size: 17px; font-weight: 800; letter-spacing: 0.5px;">
-                TOTAL ORDER QUANTITY: {total_bxs:,} BOXES  ({total_pcs:,} PIECES)
+                TOTAL ORDER QUANTITY: {total_bxs:,} BOXES  |  {total_pcs:,} PIECES
               </div>
             </div>
 
-            <!-- 🛡️ Bottom Digital Stamp & Official Customer Care Support -->
-            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px 20px;">
-              <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; color: #64748b;">
-                <tr>
-                  <td style="text-align: left; vertical-align: top;">
-                    <div style="color: #16a34a; font-weight: bold; font-size: 12.5px; margin-bottom: 3px;">✔ OFFICIALLY RECORDED & VERIFIED ORDER</div>
-                    <div style="color: #0f172a; font-weight: 700; margin-top: 4px; font-size: 12px;">
-                      Customer Care: 📞 Toll-Free 1800 103 3211 &nbsp;|&nbsp; ✉ customercare@khandelia.com
-                    </div>
-                    <div style="color: #475569; font-size: 11px; margin-top: 3px; line-height: 1.4;">
-                      Thank you for choosing Khandelia! Our Customer Care team is always ready to assist you — just a call or click away!
-                    </div>
-                  </td>
-                  <td style="text-align: right; width: 190px; vertical-align: middle;">
-                    <div style="border: 1.5px solid #16a34a; border-radius: 6px; padding: 6px 10px; text-align: center; color: #16a34a; font-weight: bold; background: #f0fdf4;">
-                      VERIFIED ORDER<br>
-                      <span style="font-family: monospace; font-size: 11px; color: #15803d;">#{order.get('id')}</span><br>
-                      <span style="font-size: 9.5px; color: #059669; font-weight: 600;">SEAL: {order.get('securityHash', 'SEC-AUTHENTIC')}</span>
-                    </div>
-                  </td>
-                </tr>
-              </table>
+            <!-- 🛡️ Footer Card: Thank You & Customer Care Support (Clean, Wide & Elegant) -->
+            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 18px 20px; text-align: center; border-radius: 0 0 8px 8px;">
+              <div style="font-size: 15px; font-weight: bold; color: #003366; margin-bottom: 5px;">✨ Thank You for Your Order!</div>
+              <div style="font-size: 12px; color: #334155; margin-bottom: 6px;">Our Customer Care team is always available to assist you.</div>
+              <div style="font-size: 12.5px; font-weight: bold; color: #0284c7; margin-bottom: 6px;">
+                📞 Toll-Free: 1800 103 3211 &nbsp;|&nbsp; 📧 Email: <a href="mailto:customercare@khandelia.com" style="color: #0284c7; text-decoration: none; font-weight: bold;">customercare@khandelia.com</a>
+              </div>
+              <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">
+                For any queries or assistance, feel free to call or email us. We're always happy to help!
+              </div>
+              <div style="font-size: 9.5px; color: #94a3b8; font-weight: 600;">
+                Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS
+              </div>
             </div>
 
           </div>
