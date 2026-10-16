@@ -17,3 +17,5 @@ whatsapp_chrome_profile/
 order_slips/
 scratch/
 *.log
+~$*
+*.tmp

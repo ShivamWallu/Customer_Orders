@@ -93,6 +93,18 @@ def create_manager_session(phone: str, manager_name: str = "") -> Dict[str, Any]
 
     conn = get_connection()
     try:
+        # If manager_name is missing, try to recall the last entered name for this phone
+        if not manager_name:
+            cur = conn.cursor()
+            cur.execute("""
+            SELECT manager_name FROM sales_manager_sessions 
+            WHERE phone = ? AND manager_name != '' AND manager_name IS NOT NULL
+            ORDER BY id DESC LIMIT 1
+            """, (phone,))
+            prev_row = cur.fetchone()
+            if prev_row and prev_row["manager_name"]:
+                manager_name = prev_row["manager_name"]
+
         with conn:
             conn.execute("""
             INSERT INTO sales_manager_sessions (token, phone, manager_name, created_at, expires_at)
@@ -124,10 +136,24 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
         """, (token,))
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
+            m_name = row["manager_name"] or ""
+            # If current session token has empty name, auto-heal from previous records of this phone
+            if not m_name:
+                cur.execute("""
+                SELECT manager_name FROM sales_manager_sessions 
+                WHERE phone = ? AND manager_name != '' AND manager_name IS NOT NULL
+                ORDER BY id DESC LIMIT 1
+                """, (row["phone"],))
+                prev_row = cur.fetchone()
+                if prev_row and prev_row["manager_name"]:
+                    m_name = prev_row["manager_name"]
+                    with conn:
+                        conn.execute("UPDATE sales_manager_sessions SET manager_name = ? WHERE token = ?", (m_name, token))
+
             return {
                 "token": row["token"],
                 "phone": row["phone"],
-                "manager_name": row["manager_name"] or "",
+                "manager_name": m_name,
                 "created_at": row["created_at"],
                 "expires_at": row["expires_at"]
             }
