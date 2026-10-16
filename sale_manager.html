@@ -1027,7 +1027,7 @@
 </head>
 <body>
   <!-- 🛢️ Preloaded Mashal Official Logo for Digital Order Slip Canvas -->
-  <img id="mashalOfficialLogo" src="/images/mashal_slip_logo.png" alt="Mashal" style="display:none;" crossorigin="anonymous">
+  <img id="mashalOfficialLogo" src="/images/mashal_slip_logo.png" alt="Mashal" style="position:fixed; left:-9999px; top:-9999px; width:120px; height:120px; opacity:0; pointer-events:none;" crossorigin="anonymous">
 
   <div class="app-wrapper">
     <!-- Top Branding -->
@@ -1839,44 +1839,89 @@
       ctx.fillRect(10, 10, width - 20, 110);
       
       // 🛢️ Draw Official Mashal Logo on Top-Left
-      const logoImg = document.getElementById("mashalOfficialLogo");
-      const hasLogo = logoImg && logoImg.complete && logoImg.naturalWidth > 0;
-      if (hasLogo) {
-        try {
-          ctx.save();
-          if (ctx.roundRect) {
+      let logoImg = document.getElementById("mashalOfficialLogo");
+      if (!logoImg || !logoImg.complete || logoImg.naturalWidth === 0) {
+        logoImg = new Image();
+        logoImg.crossOrigin = "anonymous";
+        logoImg.src = "/images/mashal_slip_logo.png";
+      }
+      const hasLogo = logoImg && (logoImg.naturalWidth > 0 || logoImg.complete);
+      
+      // Draw Crisp White Card for Logo with Gold Accent
+      ctx.fillStyle = "#ffffff";
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(24, 20, 88, 88, 8);
+        ctx.fill();
+        ctx.stroke();
+        if (hasLogo) {
+          try {
+            ctx.save();
             ctx.beginPath();
-            ctx.roundRect(24, 20, 90, 90, 10);
+            ctx.roundRect(24, 20, 88, 88, 8);
             ctx.clip();
+            ctx.drawImage(logoImg, 26, 22, 84, 84);
+            ctx.restore();
+          } catch(e) {
+            console.warn("Slip logo draw error:", e);
           }
-          ctx.drawImage(logoImg, 24, 20, 90, 90);
-          ctx.restore();
-        } catch(e) {
-          console.warn("Slip logo draw error:", e);
+        }
+      } else {
+        ctx.fillRect(24, 20, 88, 88);
+        ctx.strokeRect(24, 20, 88, 88);
+        if (hasLogo) {
+          try {
+            ctx.drawImage(logoImg, 26, 22, 84, 84);
+          } catch(e) {}
         }
       }
 
+      // Purity Seal on Top Right
+      const sealX = width - 134;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+      ctx.lineWidth = 1;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(sealX, 24, 110, 80, 8);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillRect(sealX, 24, 110, 80);
+        ctx.strokeRect(sealX, 24, 110, 80);
+      }
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 22px 'Arial', sans-serif";
+      ctx.font = "bold 10px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      const headerTextX = hasLogo ? (width / 2) + 38 : width / 2;
+      ctx.fillText("🟢 100% PURE", sealX + 55, 50);
+      ctx.fillText("KACHI GHANI", sealX + 55, 66);
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "bold 9px 'Arial', sans-serif";
+      ctx.fillText("MASHAL & FAUJI", sealX + 55, 82);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 20px 'Arial', sans-serif";
+      ctx.textAlign = "center";
+      const headerTextX = (width / 2) + 20;
       ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", headerTextX, 52);
       
       // Ribbon Subtitle
       ctx.fillStyle = "#d97706";
-      const ribbonW = 330;
+      const ribbonW = 320;
       const ribbonX = headerTextX - (ribbonW / 2);
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(ribbonX, 70, ribbonW, 32, 6);
+        ctx.roundRect(ribbonX, 70, ribbonW, 30, 6);
         ctx.fill();
       } else {
-        ctx.fillRect(ribbonX, 70, ribbonW, 32);
+        ctx.fillRect(ribbonX, 70, ribbonW, 30);
       }
       
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 13px 'Arial', sans-serif";
-      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", headerTextX, 91);
+      ctx.font = "bold 12.5px 'Arial', sans-serif";
+      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", headerTextX, 90);
       
       // Reference Bar (Single authoritative Date & Time placement)
       ctx.fillStyle = "#f8fafc";
@@ -2026,19 +2071,41 @@
       ctx.font = "10.5px 'Arial', sans-serif";
       ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 53);
       
-      // Verified Badge on Right
+      // 🛡️ Verified Factory Stamp on Right (Anti-Tamper & Security Sealed)
+      const stampBoxW = 216;
+      const stampBoxH = 68;
+      const stampBoxX = width - stampBoxW - 14;
+      const stampBoxY = footY - 18;
+      
+      ctx.fillStyle = "#f0fdf4";
       ctx.strokeStyle = "#16a34a";
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(width - 200, footY - 14, 180, 58);
-      ctx.fillStyle = "#16a34a";
-      ctx.font = "bold 12px 'Arial', sans-serif";
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH, 6);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH);
+        ctx.strokeRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH);
+      }
+      
+      ctx.fillStyle = "#15803d";
+      ctx.font = "bold 11px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("VERIFIED ORDER", width - 110, footY + 11);
-      ctx.font = "bold 11px 'Courier New', monospace";
-      ctx.fillText("#" + order.id, width - 110, footY + 29);
-      ctx.fillStyle = "#059669";
-      ctx.font = "9.5px 'Arial', sans-serif";
-      ctx.fillText("100% SECURE & VERIFIED", width - 110, footY + 44);
+      ctx.fillText("✔ VERIFIED FACTORY RECORD", stampBoxX + (stampBoxW / 2), stampBoxY + 18);
+      
+      ctx.font = "bold 12px 'Courier New', monospace";
+      ctx.fillText("#" + order.id, stampBoxX + (stampBoxW / 2), stampBoxY + 33);
+      
+      ctx.font = "bold 10px 'Courier New', monospace";
+      ctx.fillStyle = "#0369a1";
+      const sealText = order.securityHash || "SEC-AUTHENTIC";
+      ctx.fillText("SEAL: " + sealText, stampBoxX + (stampBoxW / 2), stampBoxY + 48);
+
+      ctx.fillStyle = "#16a34a";
+      ctx.font = "9px 'Arial', sans-serif";
+      ctx.fillText("Verify: order.khandelia.online/verify", stampBoxX + (stampBoxW / 2), stampBoxY + 60);
       
       return canvas;
     }

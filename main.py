@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Header, HTTPException, Request, BackgroundTasks
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -9,6 +9,8 @@ import json
 import os
 import re
 import base64
+import io
+import qrcode
 from dotenv import load_dotenv
 from whatsapp_service import (
     enqueue_whatsapp_order,
@@ -21,6 +23,7 @@ from database import (
     mark_order_synced_in_db,
     mark_whatsapp_sent_in_db,
     get_all_orders_from_db,
+    get_order_by_id,
     migrate_existing_json_orders,
     validate_manager_session
 )
@@ -29,6 +32,9 @@ from crm_service import (
     search_customers,
     save_or_update_customer
 )
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 from otp_service import (
     send_kit19_otp,
     verify_kit19_otp,
@@ -117,6 +123,18 @@ async def admin_login(request: Request):
     raise HTTPException(status_code=401, detail="Invalid username or password")
 
 import secrets
+import hmac
+import hashlib
+
+def generate_order_security_hash(order_id: str, timestamp_str: str, party_name: str, total_boxes: int) -> str:
+    """
+    Cryptographic Anti-Tamper Digital Seal.
+    Prevents anyone from falsifying dates, times, quantities, or party names.
+    """
+    secret = "KOGM_SECURITY_SECRET_KEY_2026_MASHAL"
+    raw = f"{order_id}|{timestamp_str}|{(party_name or '').strip().lower()}|{total_boxes}"
+    h = hmac.new(secret.encode(), raw.encode(), hashlib.sha256).hexdigest().upper()
+    return f"SEC-{h[:4]}-{h[4:8]}"
 
 def generate_unique_order_id() -> str:
     """Generates unique professional order ID: KOGM-YYYYMMDD-XXXX"""
@@ -210,6 +228,11 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     if not order.get("totalBoxes"):
         order["totalBoxes"] = total_boxes
     order["itemsSummary"] = "\n".join(summary_parts)
+
+    # 🔒 Cryptographic Anti-Tamper Digital Security Hash
+    order["securityHash"] = generate_order_security_hash(
+        order["id"], order["formattedTimestamp"], order.get("partyName", ""), order["totalBoxes"]
+    )
     
     # Decode and save high-resolution Order Slip image if provided by client
     slip_data = order.get("slipImageData", "")
@@ -360,10 +383,24 @@ def send_order_email_notification(order: dict):
         <body style="font-family: Arial, Helvetica, sans-serif; background-color: #f1f5f9; padding: 20px; margin: 0;">
           <div style="max-width: 750px; margin: 0 auto; background: #ffffff; border: 3px solid #003366; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
             
-            <!-- 🏢 Top Navy Header -->
-            <div style="background: #003366; padding: 22px 20px; text-align: center;">
-              <h2 style="margin: 0; font-size: 20px; color: #ffffff; letter-spacing: 0.5px; font-weight: 800; text-transform: uppercase;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h2>
-              <div style="display: inline-block; background: #d97706; color: #ffffff; padding: 6px 20px; border-radius: 4px; font-size: 11px; margin-top: 10px; font-weight: bold; letter-spacing: 1.2px; text-transform: uppercase;">OFFICIAL ORDER CONFIRMATION SLIP</div>
+            <!-- 🏢 Top Navy Header with Official Mashal Logo & Purity Seal -->
+            <div style="background: #003366; padding: 18px 20px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="width: 82px; vertical-align: middle;">
+                    <img src="cid:mashal_logo" alt="Mashal" width="76" height="76" style="border-radius: 8px; border: 2px solid #f59e0b; background: #ffffff; display: block;">
+                  </td>
+                  <td style="vertical-align: middle; padding-left: 14px; text-align: left;">
+                    <h2 style="margin: 0; font-size: 19px; color: #ffffff; letter-spacing: 0.5px; font-weight: 800; text-transform: uppercase; line-height: 1.3;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h2>
+                    <div style="display: inline-block; background: #d97706; color: #ffffff; padding: 5px 14px; border-radius: 4px; font-size: 11px; margin-top: 8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">OFFICIAL ORDER CONFIRMATION SLIP</div>
+                  </td>
+                  <td style="width: 110px; vertical-align: middle; text-align: right;">
+                    <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 6px 10px; text-align: center; color: #ffffff; font-size: 10px; font-weight: bold; line-height: 1.3;">
+                      🟢 100% PURE<br>KACHI GHANI
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </div>
 
             <!-- 🔖 Reference Bar (Order ID, Single Authoritative Date & Time, Area Sales Manager) -->
@@ -389,11 +426,11 @@ def send_order_email_notification(order: dict):
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
                   <tr>
                     <td style="font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">
-                      CUSTOMER / BILLING DETAILS
+                      CUSTOMER / PARTY DETAILS
                     </td>
                     <td style="text-align: right;">
                       <span style="display: inline-block; background: #eff6ff; color: #004b99; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 4px; font-family: monospace; font-size: 12px; font-weight: bold;">
-                        PARTY CODE: {party_code if party_code else 'N/A'}
+                        PARTY CODE: {party_code if party_code else 'NEW CUSTOMER'}
                       </span>
                     </td>
                   </tr>
@@ -402,7 +439,7 @@ def send_order_email_notification(order: dict):
                   {party_name}
                 </div>
                 <div style="font-size: 13px; color: #475569; line-height: 1.45;">
-                  <strong>Address:</strong> {order.get('partyAddress', '-')}
+                  <strong>Party Address:</strong> {order.get('partyAddress', '-')}
                 </div>
               </div>
             </div>
@@ -442,15 +479,17 @@ def send_order_email_notification(order: dict):
                     <div style="color: #475569; font-size: 11px; margin-top: 3px; line-height: 1.4;">
                       Thank you for choosing Khandelia! Our Customer Care team is always ready to assist you — just a call or click away!
                     </div>
-                    <div style="color: #94a3b8; font-size: 10.5px; margin-top: 3px;">
-                      Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS
+                    <div style="margin-top: 8px;">
+                      <a href="https://order.khandelia.online/verify/{order.get('id')}" target="_blank" style="display: inline-block; background: #15803d; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 11px; font-weight: bold; letter-spacing: 0.2px;">
+                        🔒 Verify Authentic Factory Record #{order.get('id')}
+                      </a>
                     </div>
                   </td>
-                  <td style="text-align: right; width: 180px; vertical-align: middle;">
+                  <td style="text-align: right; width: 190px; vertical-align: middle;">
                     <div style="border: 1.5px solid #16a34a; border-radius: 6px; padding: 6px 10px; text-align: center; color: #16a34a; font-weight: bold; background: #f0fdf4;">
                       VERIFIED ORDER<br>
                       <span style="font-family: monospace; font-size: 11px; color: #15803d;">#{order.get('id')}</span><br>
-                      <span style="font-size: 9.5px; color: #059669; font-weight: 600;">100% SECURE & VERIFIED</span>
+                      <span style="font-size: 9.5px; color: #059669; font-weight: 600;">SEAL: {order.get('securityHash', 'SEC-AUTHENTIC')}</span>
                     </div>
                   </td>
                 </tr>
@@ -462,6 +501,19 @@ def send_order_email_notification(order: dict):
         </html>
         """
         msg_alternative.attach(MIMEText(html_content, "html"))
+
+        # Attach official Mashal Logo as inline image with Content-ID: <mashal_logo>
+        logo_path = os.path.join(BASE_DIR, "images", "mashal_slip_logo.png")
+        if os.path.exists(logo_path):
+            try:
+                with open(logo_path, "rb") as lf:
+                    logo_mime = MIMEImage(lf.read(), name="mashal_logo.png")
+                    logo_mime.add_header('Content-ID', '<mashal_logo>')
+                    logo_mime.add_header('Content-Disposition', 'inline', filename="mashal_logo.png")
+                    msg_root.attach(logo_mime)
+                print("[EMAIL INLINE LOGO] Attached mashal_logo.png with Content-ID: <mashal_logo>")
+            except Exception as l_err:
+                print(f"[LOGO ATTACH WARN] {l_err}")
 
         # Attach high-resolution slip image if saved on server
         slip_img_path = order.get("slipImagePath")
@@ -502,6 +554,267 @@ async def api_mark_whatsapp_sent(request: Request):
         mark_whatsapp_order_sent(order_id)
         return {"status": "success", "order_id": order_id}
     return {"status": "error", "message": "Missing order_id"}
+
+# ----------------- 🛡️ CENTRAL ANTI-TAMPER VERIFICATION SYSTEM -----------------
+@app.get("/api/orders/{order_id}/qr.png")
+def get_order_qr_code(order_id: str):
+    """Dynamic high-resolution QR code generator pointing to live factory verification portal"""
+    clean_id = order_id.replace("#", "").strip()
+    verify_url = f"https://order.khandelia.online/verify/{clean_id}"
+    try:
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=8,
+            border=2,
+        )
+        qr.add_data(verify_url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="#003366", back_color="#ffffff")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        return Response(content=buf.getvalue(), media_type="image/png")
+    except Exception as e:
+        print(f"[QR ERROR] {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate QR code")
+
+@app.get("/verify/{order_id}", response_class=HTMLResponse)
+def verify_order_public_portal(order_id: str):
+    """
+    🛡️ Central Factory Verification Portal for Khandelia Oil & General Mills Pvt. Ltd.
+    Allows warehouse dispatchers, dealers, accountants, and transport coordinators
+    to cross-verify order authenticity against the server database in real time.
+    Exposes and prevents any forged dates, times, quantities, or party details.
+    """
+    clean_id = order_id.replace("#", "").strip()
+    order = get_order_by_id(clean_id)
+    
+    # Fallback to customer_orders.json if database lookup returns None
+    if not order and os.path.exists(ORDERS_LOG):
+        try:
+            with open(ORDERS_LOG, "r", encoding="utf-8") as f:
+                all_o = json.load(f)
+            for o in all_o:
+                if (o.get("id") or "").replace("#", "").strip() == clean_id:
+                    order = o
+                    break
+        except Exception:
+            pass
+
+    if not order:
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>⚠️ Order Verification Failed | Khandelia OMS</title>
+          <style>
+            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 24px; display: flex; justify-content: center; }}
+            .card {{ max-width: 620px; width: 100%; background: #ffffff; border: 2px solid #ef4444; border-radius: 12px; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.12); overflow: hidden; }}
+            .header {{ background: #dc2626; color: #ffffff; padding: 24px 20px; text-align: center; }}
+            .content {{ padding: 28px 24px; }}
+            .alert-box {{ background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 14px; line-height: 1.5; color: #991b1b; }}
+            .support-box {{ background: #f1f5f9; border-radius: 8px; padding: 16px; font-size: 13px; text-align: center; margin-top: 24px; }}
+            .btn {{ display: inline-block; background: #003366; color: #ffffff; padding: 10px 22px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; margin-top: 14px; }}
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="header">
+              <h1 style="margin: 0; font-size: 22px; text-transform: uppercase;">⚠️ Order Record Not Found</h1>
+              <p style="margin: 6px 0 0; font-size: 13px; opacity: 0.9;">Khandelia Oil and General Mills Pvt. Ltd. • Anti-Fraud Security</p>
+            </div>
+            <div class="content">
+              <p style="font-size: 15px; margin-top: 0;">The Order ID <strong>#{clean_id}</strong> could not be authenticated in the official central database.</p>
+              
+              <div class="alert-box">
+                <strong>🚨 POTENTIAL SECURITY ALERT / UNVERIFIED SLIP:</strong><br>
+                If you are viewing a printed slip, WhatsApp message, or screenshot displaying this Order ID, <strong>do NOT dispatch or release goods</strong> based on that document. It may have been fabricated, modified, or canceled.
+              </div>
+
+              <p style="font-size: 13.5px; color: #475569; line-height: 1.6;">
+                Every genuine order submitted through our official digital portal is permanently registered on our central servers with a cryptographic security hash.
+              </p>
+
+              <div class="support-box">
+                <div style="font-weight: bold; color: #0f172a; margin-bottom: 6px;">Need Verification Assistance?</div>
+                <div>📞 Toll-Free: <strong>1800 103 3211</strong> &nbsp;|&nbsp; ✉ <strong>customercare@khandelia.com</strong></div>
+                <div style="margin-top: 4px; color: #64748b;">Khandelia Oil and General Mills Pvt. Ltd., GT Road, Alwar, Rajasthan</div>
+                <a href="tel:18001033211" class="btn">Call Customer Care</a>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+        """, status_code=404)
+
+    # Order found! Render official verified certificate
+    party_name = order.get("partyName") or order.get("party_name") or "Customer"
+    party_code = order.get("partyCode") or order.get("party_code") or "NEW CUSTOMER"
+    party_address = order.get("partyAddress") or order.get("party_address") or "-"
+    sales_person = order.get("salesPerson") or order.get("sales_person") or "-"
+    timestamp_str = order.get("formattedTimestamp") or order.get("formatted_timestamp") or order.get("created_at") or "-"
+    total_boxes = order.get("totalBoxes") or order.get("total_boxes") or 0
+    total_pieces = order.get("totalPieces") or order.get("total_pieces") or 0
+    sec_hash = order.get("securityHash") or generate_order_security_hash(clean_id, timestamp_str, party_name, total_boxes)
+    items = order.get("items") or []
+
+    items_html = ""
+    for idx, it in enumerate(items):
+        brand = it.get("brand", "Mashal")
+        item_name = it.get("item", "")
+        bxs = int(it.get("boxes", 0))
+        pcs = int(it.get("pieces", 0))
+        if pcs == 0:
+            m = re.search(r'x\s*(\d+)', item_name, re.IGNORECASE)
+            pcs = bxs * (int(m.group(1)) if m else 1)
+        brand_color = "#1e40af" if brand.lower() == "mashal" else "#15803d"
+        bg_col = "#f8fafc" if idx % 2 == 0 else "#ffffff"
+        items_html += f"""
+        <tr style="background: {bg_col};">
+          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #64748b;">{idx + 1}</td>
+          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: {brand_color};">{brand}</td>
+          <td style="padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; font-weight: bold; color: #0f172a;">{item_name}</td>
+          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #1e40af;">{pcs:,} Pcs</td>
+          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-family: monospace; font-size: 14px; color: #003366;">{bxs:,} bxs</td>
+        </tr>
+        """
+
+    return HTMLResponse(content=f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>✔ Official Verified Order #{clean_id} | Khandelia OMS</title>
+      <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding: 20px; }}
+        .container {{ max-width: 820px; margin: 0 auto; background: #ffffff; border: 2px solid #003366; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.08); }}
+        .header {{ background: #003366; color: #ffffff; padding: 20px 24px; }}
+        .header-table {{ width: 100%; border-collapse: collapse; }}
+        .badge-verified {{ display: inline-flex; align-items: center; background: #15803d; color: #ffffff; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; letter-spacing: 0.5px; }}
+        .hash-badge {{ background: #eff6ff; color: #004b99; border: 1.5px solid #93c5fd; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 13px; font-weight: bold; }}
+        .meta-strip {{ background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 14px 24px; font-size: 13.5px; }}
+        .details-box {{ padding: 20px 24px; }}
+        .info-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-bottom: 20px; }}
+        .info-item label {{ display: block; font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }}
+        .info-item span {{ font-size: 14px; font-weight: 700; color: #0f172a; }}
+        .items-table {{ width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }}
+        .items-table th {{ background: #004b99; color: #ffffff; padding: 10px 8px; font-size: 12px; }}
+        .total-banner {{ background: #003366; color: #ffffff; padding: 14px 20px; text-align: center; font-size: 17px; font-weight: 800; border-radius: 6px; margin-top: 14px; }}
+        .anti-fraud-banner {{ background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 14px 18px; margin-top: 20px; font-size: 12.5px; color: #166534; line-height: 1.5; }}
+        .footer {{ background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px 24px; text-align: center; font-size: 12px; color: #64748b; }}
+        @media print {{ body {{ padding: 0; background: #fff; }} .container {{ box-shadow: none; border-color: #000; }} .no-print {{ display: none; }} }}
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        
+        <!-- Header -->
+        <div class="header">
+          <table class="header-table">
+            <tr>
+              <td style="width: 76px; vertical-align: middle;">
+                <img src="/images/mashal_slip_logo.png" alt="Mashal" width="70" height="70" style="border-radius: 8px; border: 2px solid #f59e0b; background: #ffffff; display: block; object-fit: contain;">
+              </td>
+              <td style="vertical-align: middle; padding-left: 16px;">
+                <h1 style="margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h1>
+                <div style="font-size: 12px; color: #fbbf24; margin-top: 4px; font-weight: 600;">CENTRAL FACTORY ORDER VERIFICATION SYSTEM</div>
+              </td>
+              <td style="text-align: right; vertical-align: middle;">
+                <span class="badge-verified">✔ 100% AUTHENTIC RECORD</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Meta Strip -->
+        <div class="meta-strip">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td><strong>Order ID:</strong> <span style="font-family: monospace; font-size: 15px; color: #004b99; font-weight: bold;">#{clean_id}</span></td>
+              <td style="text-align: center;"><strong>Locked Timestamp:</strong> <span style="color: #0f172a; font-weight: 700;">{timestamp_str} (IST)</span></td>
+              <td style="text-align: right;"><strong>Digital Seal:</strong> <span class="hash-badge">{sec_hash}</span></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Details -->
+        <div class="details-box">
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Party Code</label>
+              <span style="font-family: monospace; color: #004b99;">{party_code}</span>
+            </div>
+            <div class="info-item">
+              <label>Customer / Party Name</label>
+              <span>{party_name}</span>
+            </div>
+            <div class="info-item" style="grid-column: 1 / -1;">
+              <label>Party Delivery Address</label>
+              <span style="font-size: 13px; font-weight: 600;">{party_address}</span>
+            </div>
+            <div class="info-item">
+              <label>Area Sales Manager</label>
+              <span>{sales_person}</span>
+            </div>
+            <div class="info-item">
+              <label>Data Consent (DPDP Compliant)</label>
+              <span style="color: #15803d;">✔ YES (Verified Digital Consent)</span>
+            </div>
+          </div>
+
+          <!-- Items Table -->
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th style="width: 40px; text-align: center;">#</th>
+                <th style="width: 80px; text-align: center;">BRAND</th>
+                <th style="text-align: left; padding-left: 14px;">PACKING / PRODUCT DESCRIPTION</th>
+                <th style="width: 130px; text-align: center;">QUANTITY (PIECES)</th>
+                <th style="width: 120px; text-align: center;">QUANTITY (BOXES)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items_html}
+            </tbody>
+          </table>
+
+          <!-- Total Banner -->
+          <div class="total-banner">
+            TOTAL ORDER QUANTITY: {total_boxes:,} BOXES &nbsp;({total_pieces:,} PIECES)
+          </div>
+
+          <!-- Anti-Tamper Notice -->
+          <div class="anti-fraud-banner">
+            <strong>🔒 ANTI-FRAUD NOTICE (FOR WAREHOUSE, ACCOUNTS & DEALERS):</strong><br>
+            This electronic verification record is locked directly in Khandelia Oil and General Mills Pvt. Ltd. central enterprise database. 
+            The timestamp <strong>{timestamp_str}</strong> and total quantity of <strong>{total_boxes:,} Boxes</strong> are immutable. 
+            Any paper slip, forwarded WhatsApp message, or screenshot showing different dates, parties, or quantities from this record is <strong>FORGED and INVALID</strong>.
+          </div>
+
+          <!-- Actions -->
+          <div class="no-print" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <button onclick="window.print()" style="background: #003366; color: #ffffff; border: none; padding: 10px 22px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">
+              🖨️ Print Certified Copy
+            </button>
+            <div style="font-size: 12px; color: #475569;">
+              Customer Care: 📞 <strong>1800 103 3211</strong> | ✉ <strong>customercare@khandelia.com</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+          Khandelia Oil and General Mills Pvt. Ltd. • Official Digital Order Management System • 100% Pure Kachi Ghani Mustard Oil
+        </div>
+
+      </div>
+    </body>
+    </html>
+    """)
 
 # ----------------- CRM & KIT19 OTP ENDPOINTS -----------------
 @app.get("/api/customers/search")

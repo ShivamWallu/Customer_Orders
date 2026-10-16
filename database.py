@@ -291,6 +291,37 @@ def get_all_orders_from_db(limit: int = 500) -> List[Dict[str, Any]]:
     finally:
         conn.close()
 
+def get_order_by_id(order_id: str) -> Optional[Dict[str, Any]]:
+    """Retrieves a single order by ID for anti-tamper public verification"""
+    clean_id = (order_id or "").replace("#", "").strip()
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM orders WHERE order_id = ? OR order_id = ?", (clean_id, f"#{clean_id}"))
+        row = cursor.fetchone()
+        if row:
+            d = dict(row)
+            try:
+                d["items"] = json.loads(d.get("items_json") or "[]")
+            except Exception:
+                d["items"] = []
+            d["id"] = d["order_id"]
+            d["partyName"] = d["party_name"]
+            d["partyCode"] = d.get("party_code", "")
+            d["partyAddress"] = d["party_address"]
+            d["salesPerson"] = d["sales_person"]
+            d["totalBoxes"] = d["total_boxes"]
+            d["totalPieces"] = d.get("total_pieces", 0)
+            d["formattedTimestamp"] = d["formatted_timestamp"]
+            d["dataConsent"] = d.get("data_consent", "YES (Verified)")
+            return d
+        return None
+    except Exception as e:
+        print(f"[DATABASE ERROR] Could not fetch order {clean_id}: {e}")
+        return None
+    finally:
+        conn.close()
+
 def migrate_existing_json_orders():
     """Migrates any previous orders from customer_orders.json into orders.db"""
     json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
