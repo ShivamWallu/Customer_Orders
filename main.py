@@ -603,49 +603,201 @@ def verify_order_public_portal(order_id: str):
         <html lang="en">
         <head>
           <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>⚠️ Order Verification Failed | Khandelia OMS</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <title>✖ Unverified Order Slip | Khandelia Security</title>
           <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 24px; display: flex; justify-content: center; }}
-            .card {{ max-width: 620px; width: 100%; background: #ffffff; border: 2px solid #ef4444; border-radius: 12px; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.12); overflow: hidden; }}
-            .header {{ background: #dc2626; color: #ffffff; padding: 24px 20px; text-align: center; }}
-            .content {{ padding: 28px 24px; }}
-            .alert-box {{ background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 14px; line-height: 1.5; color: #991b1b; }}
-            .support-box {{ background: #f1f5f9; border-radius: 8px; padding: 16px; font-size: 13px; text-align: center; margin-top: 24px; }}
-            .btn {{ display: inline-block; background: #003366; color: #ffffff; padding: 10px 22px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; margin-top: 14px; }}
+            * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+            body {{
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+              background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 20px;
+              color: #ffffff;
+            }}
+            .verify-card {{
+              width: 100%;
+              max-width: 440px;
+              background: rgba(30, 41, 59, 0.85);
+              backdrop-filter: blur(20px);
+              -webkit-backdrop-filter: blur(20px);
+              border: 1.5px solid rgba(239, 68, 68, 0.4);
+              border-radius: 28px;
+              padding: 36px 28px 30px;
+              text-align: center;
+              box-shadow: 0 25px 60px rgba(220, 38, 38, 0.25), 0 0 40px rgba(0, 0, 0, 0.5);
+              animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+            }}
+            @keyframes shake {{
+              10%, 90% {{ transform: translate3d(-2px, 0, 0); }}
+              20%, 80% {{ transform: translate3d(4px, 0, 0); }}
+              30%, 50%, 70% {{ transform: translate3d(-6px, 0, 0); }}
+              40%, 60% {{ transform: translate3d(6px, 0, 0); }}
+            }}
+            .brand-badge {{
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              background: rgba(255, 255, 255, 0.08);
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              padding: 6px 14px;
+              border-radius: 20px;
+              font-size: 11.5px;
+              font-weight: 700;
+              letter-spacing: 0.8px;
+              color: #cbd5e1;
+              text-transform: uppercase;
+              margin-bottom: 24px;
+            }}
+            /* Animated Error Cross */
+            .cross-container {{
+              width: 96px;
+              height: 96px;
+              margin: 0 auto 20px;
+              position: relative;
+            }}
+            .cross-svg {{
+              width: 96px;
+              height: 96px;
+              border-radius: 50%;
+              display: block;
+              stroke-width: 3.5;
+              stroke: #ef4444;
+              stroke-miterlimit: 10;
+              box-shadow: 0 0 35px rgba(239, 68, 68, 0.45);
+            }}
+            .cross-circle {{
+              stroke-dasharray: 290;
+              stroke-dashoffset: 290;
+              stroke-width: 3.5;
+              stroke-miterlimit: 10;
+              stroke: #ef4444;
+              fill: rgba(239, 68, 68, 0.1);
+              animation: drawCircle 0.7s ease-in-out forwards;
+            }}
+            .cross-line {{
+              transform-origin: 50% 50%;
+              stroke-dasharray: 60;
+              stroke-dashoffset: 60;
+              animation: drawLine 0.4s ease-out 0.6s forwards;
+            }}
+            @keyframes drawCircle {{
+              100% {{ stroke-dashoffset: 0; }}
+            }}
+            @keyframes drawLine {{
+              100% {{ stroke-dashoffset: 0; }}
+            }}
+            .verdict-title {{
+              font-size: 24px;
+              font-weight: 800;
+              color: #ef4444;
+              letter-spacing: -0.3px;
+              margin-bottom: 8px;
+            }}
+            .verdict-sub {{
+              font-size: 14.5px;
+              color: #94a3b8;
+              line-height: 1.5;
+              margin-bottom: 24px;
+            }}
+            .alert-banner {{
+              background: rgba(220, 38, 38, 0.18);
+              border: 1.5px solid rgba(239, 68, 68, 0.4);
+              border-radius: 14px;
+              padding: 14px 16px;
+              margin-bottom: 24px;
+              font-size: 13.5px;
+              font-weight: 700;
+              color: #fca5a5;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            }}
+            .info-card {{
+              background: rgba(15, 23, 42, 0.6);
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              border-radius: 16px;
+              padding: 16px;
+              margin-bottom: 22px;
+              text-align: left;
+            }}
+            .info-row {{
+              display: flex;
+              justify-content: space-between;
+              padding: 7px 0;
+              font-size: 13.5px;
+              border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }}
+            .info-row:last-child {{ border-bottom: none; }}
+            .info-label {{ color: #64748b; font-weight: 600; }}
+            .info-val {{ color: #f1f5f9; font-weight: 700; font-family: monospace; }}
+            .btn-call {{
+              display: block;
+              width: 100%;
+              background: linear-gradient(135deg, #004b99 0%, #002244 100%);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              color: #ffffff;
+              padding: 14px;
+              border-radius: 14px;
+              text-decoration: none;
+              font-weight: 700;
+              font-size: 14px;
+              letter-spacing: 0.3px;
+              box-shadow: 0 8px 25px rgba(0, 75, 153, 0.35);
+            }}
+            .footer-txt {{
+              margin-top: 18px;
+              font-size: 11px;
+              color: #64748b;
+            }}
           </style>
         </head>
         <body>
-          <div class="card">
-            <div class="header">
-              <h1 style="margin: 0; font-size: 22px; text-transform: uppercase;">⚠️ Order Record Not Found</h1>
-              <p style="margin: 6px 0 0; font-size: 13px; opacity: 0.9;">Khandelia Oil and General Mills Pvt. Ltd. • Anti-Fraud Security</p>
+          <div class="verify-card">
+            <div class="brand-badge">🏢 Khandelia Security Audit</div>
+            
+            <!-- Animated Cross -->
+            <div class="cross-container">
+              <svg class="cross-svg" viewBox="0 0 100 100">
+                <circle class="cross-circle" cx="50" cy="50" r="44"/>
+                <line class="cross-line" x1="33" y1="33" x2="67" y2="67"/>
+                <line class="cross-line" x1="67" y1="33" x2="33" y2="67"/>
+              </svg>
             </div>
-            <div class="content">
-              <p style="font-size: 15px; margin-top: 0;">The Order ID <strong>#{clean_id}</strong> could not be authenticated in the official central database.</p>
-              
-              <div class="alert-box">
-                <strong>🚨 POTENTIAL SECURITY ALERT / UNVERIFIED SLIP:</strong><br>
-                If you are viewing a printed slip, WhatsApp message, or screenshot displaying this Order ID, <strong>do NOT dispatch or release goods</strong> based on that document. It may have been fabricated, modified, or canceled.
+
+            <h1 class="verdict-title">UNVERIFIED ORDER</h1>
+            <p class="verdict-sub">This order slip could not be matched against our official central database.</p>
+
+            <div class="alert-banner">
+              ⛔ DO NOT DISPATCH GOODS
+            </div>
+
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Scanned Order ID</span>
+                <span class="info-val" style="color: #ef4444;">#{clean_id}</span>
               </div>
-
-              <p style="font-size: 13.5px; color: #475569; line-height: 1.6;">
-                Every genuine order submitted through our official digital portal is permanently registered on our central servers with a cryptographic security hash.
-              </p>
-
-              <div class="support-box">
-                <div style="font-weight: bold; color: #0f172a; margin-bottom: 6px;">Need Verification Assistance?</div>
-                <div>📞 Toll-Free: <strong>1800 103 3211</strong> &nbsp;|&nbsp; ✉ <strong>customercare@khandelia.com</strong></div>
-                <div style="margin-top: 4px; color: #64748b;">Khandelia Oil and General Mills Pvt. Ltd., GT Road, Alwar, Rajasthan</div>
-                <a href="tel:18001033211" class="btn">Call Customer Care</a>
+              <div class="info-row">
+                <span class="info-label">Record Status</span>
+                <span class="info-val" style="color: #f87171;">NOT FOUND / FORGED</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Action Required</span>
+                <span class="info-val" style="color: #fbbf24;">Contact Dispatch Desk</span>
               </div>
             </div>
+
+            <a href="tel:18001033211" class="btn-call">📞 Call Support (1800 103 3211)</a>
+            <div class="footer-txt">Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS</div>
           </div>
         </body>
         </html>
         """, status_code=404)
 
-    # Order found! Render official verified certificate
+    # Order found! Render ultra-premium minimal mobile verified card
     party_name = order.get("partyName") or order.get("party_name") or "Customer"
     party_code = order.get("partyCode") or order.get("party_code") or "NEW CUSTOMER"
     party_address = order.get("partyAddress") or order.get("party_address") or "-"
@@ -654,158 +806,204 @@ def verify_order_public_portal(order_id: str):
     total_boxes = order.get("totalBoxes") or order.get("total_boxes") or 0
     total_pieces = order.get("totalPieces") or order.get("total_pieces") or 0
     sec_hash = order.get("securityHash") or generate_order_security_hash(clean_id, timestamp_str, party_name, total_boxes)
-    items = order.get("items") or []
-
-    items_html = ""
-    for idx, it in enumerate(items):
-        brand = it.get("brand", "Mashal")
-        item_name = it.get("item", "")
-        bxs = int(it.get("boxes", 0))
-        pcs = int(it.get("pieces", 0))
-        if pcs == 0:
-            m = re.search(r'x\s*(\d+)', item_name, re.IGNORECASE)
-            pcs = bxs * (int(m.group(1)) if m else 1)
-        brand_color = "#1e40af" if brand.lower() == "mashal" else "#15803d"
-        bg_col = "#f8fafc" if idx % 2 == 0 else "#ffffff"
-        items_html += f"""
-        <tr style="background: {bg_col};">
-          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #64748b;">{idx + 1}</td>
-          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: {brand_color};">{brand}</td>
-          <td style="padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; font-weight: bold; color: #0f172a;">{item_name}</td>
-          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; color: #1e40af;">{pcs:,} Pcs</td>
-          <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-family: monospace; font-size: 14px; color: #003366;">{bxs:,} bxs</td>
-        </tr>
-        """
 
     return HTMLResponse(content=f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>✔ Official Verified Order #{clean_id} | Khandelia OMS</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <title>✔ 100% Genuine Order Verified | Khandelia OMS</title>
       <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding: 20px; }}
-        .container {{ max-width: 820px; margin: 0 auto; background: #ffffff; border: 2px solid #003366; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.08); }}
-        .header {{ background: #003366; color: #ffffff; padding: 20px 24px; }}
-        .header-table {{ width: 100%; border-collapse: collapse; }}
-        .badge-verified {{ display: inline-flex; align-items: center; background: #15803d; color: #ffffff; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; letter-spacing: 0.5px; }}
-        .hash-badge {{ background: #eff6ff; color: #004b99; border: 1.5px solid #93c5fd; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 13px; font-weight: bold; }}
-        .meta-strip {{ background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 14px 24px; font-size: 13.5px; }}
-        .details-box {{ padding: 20px 24px; }}
-        .info-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-bottom: 20px; }}
-        .info-item label {{ display: block; font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }}
-        .info-item span {{ font-size: 14px; font-weight: 700; color: #0f172a; }}
-        .items-table {{ width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }}
-        .items-table th {{ background: #004b99; color: #ffffff; padding: 10px 8px; font-size: 12px; }}
-        .total-banner {{ background: #003366; color: #ffffff; padding: 14px 20px; text-align: center; font-size: 17px; font-weight: 800; border-radius: 6px; margin-top: 14px; }}
-        .anti-fraud-banner {{ background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 14px 18px; margin-top: 20px; font-size: 12.5px; color: #166534; line-height: 1.5; }}
-        .footer {{ background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px 24px; text-align: center; font-size: 12px; color: #64748b; }}
-        @media print {{ body {{ padding: 0; background: #fff; }} .container {{ box-shadow: none; border-color: #000; }} .no-print {{ display: none; }} }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+          background: linear-gradient(135deg, #091e14 0%, #061826 100%);
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          color: #ffffff;
+        }}
+        .verify-card {{
+          width: 100%;
+          max-width: 440px;
+          background: rgba(15, 30, 24, 0.85);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1.5px solid rgba(34, 197, 94, 0.45);
+          border-radius: 28px;
+          padding: 36px 28px 28px;
+          text-align: center;
+          box-shadow: 0 25px 60px rgba(34, 197, 94, 0.22), 0 0 45px rgba(0, 0, 0, 0.6);
+          animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }}
+        @keyframes popIn {{
+          0% {{ opacity: 0; transform: scale(0.92) translateY(20px); }}
+          100% {{ opacity: 1; transform: scale(1) translateY(0); }}
+        }}
+        .brand-badge {{
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.8px;
+          color: #cbd5e1;
+          text-transform: uppercase;
+          margin-bottom: 24px;
+        }}
+        /* Animated Success Checkmark (Tick) */
+        .tick-container {{
+          width: 96px;
+          height: 96px;
+          margin: 0 auto 20px;
+          position: relative;
+        }}
+        .tick-svg {{
+          width: 96px;
+          height: 96px;
+          border-radius: 50%;
+          display: block;
+          stroke-width: 3.5;
+          stroke: #22c55e;
+          stroke-miterlimit: 10;
+          box-shadow: 0 0 35px rgba(34, 197, 94, 0.5);
+          animation: glowPulse 2s infinite ease-in-out;
+        }}
+        @keyframes glowPulse {{
+          0%, 100% {{ box-shadow: 0 0 25px rgba(34, 197, 94, 0.4); }}
+          50% {{ box-shadow: 0 0 45px rgba(34, 197, 94, 0.7); }}
+        }}
+        .tick-circle {{
+          stroke-dasharray: 290;
+          stroke-dashoffset: 290;
+          stroke-width: 3.5;
+          stroke-miterlimit: 10;
+          stroke: #22c55e;
+          fill: rgba(34, 197, 94, 0.12);
+          animation: drawCircle 0.7s ease-in-out forwards;
+        }}
+        .tick-check {{
+          transform-origin: 50% 50%;
+          stroke-dasharray: 60;
+          stroke-dashoffset: 60;
+          animation: drawCheck 0.45s ease-out 0.65s forwards;
+        }}
+        @keyframes drawCircle {{
+          100% {{ stroke-dashoffset: 0; }}
+        }}
+        @keyframes drawCheck {{
+          100% {{ stroke-dashoffset: 0; }}
+        }}
+        .verdict-title {{
+          font-size: 25px;
+          font-weight: 800;
+          color: #22c55e;
+          letter-spacing: -0.3px;
+          margin-bottom: 6px;
+        }}
+        .verdict-sub {{
+          font-size: 14.5px;
+          color: #94a3b8;
+          line-height: 1.5;
+          margin-bottom: 22px;
+        }}
+        .status-badge {{
+          background: rgba(34, 197, 94, 0.18);
+          border: 1.5px solid rgba(34, 197, 94, 0.45);
+          border-radius: 14px;
+          padding: 12px 16px;
+          margin-bottom: 22px;
+          font-size: 13.5px;
+          font-weight: 800;
+          color: #86efac;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          letter-spacing: 0.3px;
+        }}
+        .info-card {{
+          background: rgba(10, 20, 16, 0.65);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 18px;
+          padding: 18px 20px;
+          margin-bottom: 24px;
+          text-align: left;
+        }}
+        .info-row {{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 9px 0;
+          font-size: 13.5px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }}
+        .info-row:last-child {{ border-bottom: none; }}
+        .info-label {{ color: #94a3b8; font-weight: 600; font-size: 12.5px; }}
+        .info-val {{ color: #ffffff; font-weight: 700; text-align: right; }}
+        .val-mono {{ font-family: monospace; font-size: 14px; color: #60a5fa; }}
+        .val-boxes {{ font-size: 16px; font-weight: 800; color: #4ade80; }}
+        .footer-txt {{
+          font-size: 11px;
+          color: #64748b;
+          line-height: 1.5;
+        }}
       </style>
     </head>
     <body>
-      <div class="container">
+      <div class="verify-card">
+        <div class="brand-badge">🏢 Khandelia Oil & General Mills</div>
         
-        <!-- Header -->
-        <div class="header">
-          <table class="header-table">
-            <tr>
-              <td style="width: 76px; vertical-align: middle;">
-                <img src="/images/mashal_slip_logo.png" alt="Mashal" width="70" height="70" style="border-radius: 8px; border: 2px solid #f59e0b; background: #ffffff; display: block; object-fit: contain;">
-              </td>
-              <td style="vertical-align: middle; padding-left: 16px;">
-                <h1 style="margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">KHANDELIA OIL AND GENERAL MILLS PVT. LTD.</h1>
-                <div style="font-size: 12px; color: #fbbf24; margin-top: 4px; font-weight: 600;">CENTRAL FACTORY ORDER VERIFICATION SYSTEM</div>
-              </td>
-              <td style="text-align: right; vertical-align: middle;">
-                <span class="badge-verified">✔ 100% AUTHENTIC RECORD</span>
-              </td>
-            </tr>
-          </table>
+        <!-- Animated Success Tick -->
+        <div class="tick-container">
+          <svg class="tick-svg" viewBox="0 0 100 100">
+            <circle class="tick-circle" cx="50" cy="50" r="44"/>
+            <polyline class="tick-check" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" points="28,52 43,67 72,36"/>
+          </svg>
         </div>
 
-        <!-- Meta Strip -->
-        <div class="meta-strip">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td><strong>Order ID:</strong> <span style="font-family: monospace; font-size: 15px; color: #004b99; font-weight: bold;">#{clean_id}</span></td>
-              <td style="text-align: center;"><strong>Locked Timestamp:</strong> <span style="color: #0f172a; font-weight: 700;">{timestamp_str} (IST)</span></td>
-              <td style="text-align: right;"><strong>Digital Seal:</strong> <span class="hash-badge">{sec_hash}</span></td>
-            </tr>
-          </table>
+        <h1 class="verdict-title">ORDER 100% VERIFIED</h1>
+        <p class="verdict-sub">This order is authentic, cryptographically sealed, and confirmed in factory records.</p>
+
+        <div class="status-badge">
+          ✔ SAFE FOR DISPATCH & BILLING
         </div>
 
-        <!-- Details -->
-        <div class="details-box">
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Party Code</label>
-              <span style="font-family: monospace; color: #004b99;">{party_code}</span>
-            </div>
-            <div class="info-item">
-              <label>Customer / Party Name</label>
-              <span>{party_name}</span>
-            </div>
-            <div class="info-item" style="grid-column: 1 / -1;">
-              <label>Party Delivery Address</label>
-              <span style="font-size: 13px; font-weight: 600;">{party_address}</span>
-            </div>
-            <div class="info-item">
-              <label>Area Sales Manager</label>
-              <span>{sales_person}</span>
-            </div>
-            <div class="info-item">
-              <label>Data Consent (DPDP Compliant)</label>
-              <span style="color: #15803d;">✔ YES (Verified Digital Consent)</span>
-            </div>
+        <!-- Clean, Essential Summary (No Cluttered Tables!) -->
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Order ID</span>
+            <span class="info-val val-mono">#{clean_id}</span>
           </div>
-
-          <!-- Items Table -->
-          <table class="items-table">
-            <thead>
-              <tr>
-                <th style="width: 40px; text-align: center;">#</th>
-                <th style="width: 80px; text-align: center;">BRAND</th>
-                <th style="text-align: left; padding-left: 14px;">PACKING / PRODUCT DESCRIPTION</th>
-                <th style="width: 130px; text-align: center;">QUANTITY (PIECES)</th>
-                <th style="width: 120px; text-align: center;">QUANTITY (BOXES)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items_html}
-            </tbody>
-          </table>
-
-          <!-- Total Banner -->
-          <div class="total-banner">
-            TOTAL ORDER QUANTITY: {total_boxes:,} BOXES &nbsp;({total_pieces:,} PIECES)
+          <div class="info-row">
+            <span class="info-label">Customer / Party</span>
+            <span class="info-val">{party_name}</span>
           </div>
-
-          <!-- Anti-Tamper Notice -->
-          <div class="anti-fraud-banner">
-            <strong>🔒 ANTI-FRAUD NOTICE (FOR WAREHOUSE, ACCOUNTS & DEALERS):</strong><br>
-            This electronic verification record is locked directly in Khandelia Oil and General Mills Pvt. Ltd. central enterprise database. 
-            The timestamp <strong>{timestamp_str}</strong> and total quantity of <strong>{total_boxes:,} Boxes</strong> are immutable. 
-            Any paper slip, forwarded WhatsApp message, or screenshot showing different dates, parties, or quantities from this record is <strong>FORGED and INVALID</strong>.
+          <div class="info-row">
+            <span class="info-label">Total Quantity</span>
+            <span class="info-val val-boxes">{total_boxes:,} Boxes <span style="font-size: 12px; color: #94a3b8; font-weight: normal;">({total_pieces:,} Pcs)</span></span>
           </div>
-
-          <!-- Actions -->
-          <div class="no-print" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <button onclick="window.print()" style="background: #003366; color: #ffffff; border: none; padding: 10px 22px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">
-              🖨️ Print Certified Copy
-            </button>
-            <div style="font-size: 12px; color: #475569;">
-              Customer Care: 📞 <strong>1800 103 3211</strong> | ✉ <strong>customercare@khandelia.com</strong>
-            </div>
+          <div class="info-row">
+            <span class="info-label">Security Seal</span>
+            <span class="info-val" style="font-family: monospace; color: #38bdf8;">{sec_hash}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Server Timestamp</span>
+            <span class="info-val" style="font-size: 12px; color: #cbd5e1;">{timestamp_str}</span>
           </div>
         </div>
 
-        <!-- Footer -->
-        <div class="footer">
-          Khandelia Oil and General Mills Pvt. Ltd. • Official Digital Order Management System • 100% Pure Kachi Ghani Mustard Oil
+        <div class="footer-txt">
+          Officially Verified via Central Digital OMS<br>
+          Khandelia Oil and General Mills Pvt. Ltd.
         </div>
-
       </div>
     </body>
     </html>
