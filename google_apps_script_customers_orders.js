@@ -116,27 +116,31 @@ function migrateAndFormatSheet(sheet) {
           totalPiecesVal = totalBoxesVal * 15;
         }
 
-        // Generate clean official Party Code
-        let partyCodeVal = "SDMO";
-        if (partyNameVal && typeof partyNameVal === "string") {
-          const cleanName = partyNameVal.replace(/[^A-Za-z]/g, "").toUpperCase();
-          partyCodeVal += cleanName.substring(0, 4) + (1000 + r);
-        } else {
-          partyCodeVal += "CUST" + (1000 + r);
-        }
+        // Generate clean official Party Code like SDMOWB0307
+        let stCode = "WB";
+        const addrLower = String(partyAddrVal || "").toLowerCase();
+        if (addrLower.indexOf("rajasthan") !== -1 || addrLower.indexOf("alwar") !== -1) stCode = "RJ";
+        else if (addrLower.indexOf("delhi") !== -1) stCode = "DL";
+        else if (addrLower.indexOf("haryana") !== -1) stCode = "HR";
+        else if (addrLower.indexOf("punjab") !== -1) stCode = "PB";
+        else if (addrLower.indexOf("uttar") !== -1 || addrLower.indexOf("up") !== -1) stCode = "UP";
+        else if (addrLower.indexOf("bengal") !== -1 || addrLower.indexOf("howrah") !== -1 || addrLower.indexOf("wb") !== -1) stCode = "WB";
+        else stCode = "WB";
+
+        const partyCodeVal = "SDMO" + stCode + String(100 + r).padStart(4, "0");
 
         // Reassign row cleanly into the 11 columns
-        rows[r][0] = timestampVal;               // Col 1: Timestamp
-        rows[r][1] = orderIdVal;                 // Col 2: Order ID
-        rows[r][2] = partyCodeVal;               // Col 3: Party Code
-        rows[r][3] = partyNameVal;               // Col 4: Party Name
-        rows[r][4] = partyAddrVal;               // Col 5: Party Address
-        rows[r][5] = salesPersonVal;             // Col 6: Area Sales Manager
-        rows[r][6] = totalPiecesVal;             // Col 7: Quantity (Pieces)
-        rows[r][7] = totalBoxesVal;              // Col 8: Total Boxes
-        rows[r][8] = itemsSummaryVal;            // Col 9: Ordered Items Breakdown
-        rows[r][9] = "YES (Verified)";           // Col 10: Customer Consent
-        rows[r][10] = "CONFIRMED";               // Col 11: Status
+        rows[r][0] = timestampVal;               // Col 1 (A): Timestamp (IST)
+        rows[r][1] = orderIdVal;                 // Col 2 (B): Order ID
+        rows[r][2] = partyCodeVal;               // Col 3 (C): Party Code (e.g. SDMOWB0307)
+        rows[r][3] = partyNameVal;               // Col 4 (D): Party Name (Customer)
+        rows[r][4] = partyAddrVal;               // Col 5 (E): Party Address
+        rows[r][5] = salesPersonVal;             // Col 6 (F): Area Sales Manager
+        rows[r][6] = totalPiecesVal;             // Col 7 (G): Quantity (Pieces)
+        rows[r][7] = totalBoxesVal;              // Col 8 (H): Total Boxes
+        rows[r][8] = itemsSummaryVal;            // Col 9 (I): Ordered Items Breakdown
+        rows[r][9] = "YES (Verified)";           // Col 10 (J): Customer Consent
+        rows[r][10] = "CONFIRMED";               // Col 11 (K): Status
       }
     }
 
@@ -161,7 +165,7 @@ function migrateAndFormatSheet(sheet) {
   // Set Column Widths
   sheet.setColumnWidth(1, 155); // Timestamp (IST)
   sheet.setColumnWidth(2, 175); // Order ID
-  sheet.setColumnWidth(3, 130); // Party Code
+  sheet.setColumnWidth(3, 140); // Party Code (SDMOWB0307)
   sheet.setColumnWidth(4, 210); // Party Name (Customer)
   sheet.setColumnWidth(5, 260); // Party Address
   sheet.setColumnWidth(6, 155); // Area Sales Manager
@@ -176,6 +180,33 @@ function migrateAndFormatSheet(sheet) {
     sheet.getRange(2, 5, sheet.getLastRow() - 1, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
     sheet.getRange(2, 9, sheet.getLastRow() - 1, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
   }
+}
+
+/**
+ * 🌐 Web App GET Endpoint: Allows checking live status and triggering 1-click migration
+ */
+function doGet(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getActiveSheet() || ss.getSheets()[0];
+  migrateAndFormatSheet(sheet);
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "🎉 Customers Orders sheet headers & rows fixed successfully into 11 columns!",
+    fixedRows: sheet.getLastRow() - 1,
+    columns: [
+      "Col A (1): Timestamp (IST)",
+      "Col B (2): Order ID",
+      "Col C (3): Party Code (SDMOWB...)",
+      "Col D (4): Party Name (Customer)",
+      "Col E (5): Party Address",
+      "Col F (6): Area Sales Manager",
+      "Col G (7): Quantity (Pieces)",
+      "Col H (8): Total Boxes",
+      "Col I (9): Ordered Items Breakdown",
+      "Col J (10): Customer Consent",
+      "Col K (11): Status"
+    ]
+  })).setMimeType(ContentService.MimeType.JSON);
 }
 
 /**
