@@ -63,8 +63,31 @@ app = FastAPI(
     description="Real-time Webhook & Dynamic Data Sync for Google Sheets 1st Tab"
 )
 
+# ----------------- ⚡ ULTRA-FAST SOCIAL PREVIEW & CACHED ASSETS -----------------
+BOT_USER_AGENTS = ("whatsapp", "facebookexternalhit", "facebot", "twitterbot", "telegrambot", "linkedinbot", "slackbot", "skypeuripreview")
+
+def is_social_crawler(request: Request) -> bool:
+    ua = (request.headers.get("user-agent") or "").lower()
+    return any(b in ua for b in BOT_USER_AGENTS)
+
+@app.get("/images/{filename}")
+def serve_image_file(filename: str):
+    """High-speed image delivery with aggressive caching for instant WhatsApp preview cards"""
+    file_path = os.path.join(BASE_DIR, "images", filename)
+    if os.path.exists(file_path):
+        media_type = "image/jpeg" if filename.endswith((".jpg", ".jpeg")) else "image/png"
+        return FileResponse(
+            file_path,
+            media_type=media_type,
+            headers={
+                "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+                "Access-Control-Allow-Origin": "*"
+            }
+        )
+    raise HTTPException(status_code=404, detail="Image not found")
+
 if os.path.exists("images"):
-    app.mount("/images", StaticFiles(directory="images"), name="images")
+    app.mount("/static_images", StaticFiles(directory="images"), name="static_images")
 
 def get_base_url_from_request(request: Request) -> str:
     host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
@@ -81,6 +104,39 @@ def get_base_url_from_request(request: Request) -> str:
 def serve_order_slip_root(request: Request):
     """Serves the digital Khandelia Order Slip with dynamic WhatsApp Open Graph preview"""
     base_url = get_base_url_from_request(request)
+    
+    # ⚡ 2X Ultra-Fast Response for WhatsApp / Social Crawlers (1KB payload instead of 80KB)
+    if is_social_crawler(request):
+        return HTMLResponse(
+            f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Khandelia Oil & General Mills - Customer Order Slip</title>
+  <meta name="description" content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Khandelia Oil & General Mills Pvt. Ltd.">
+  <meta property="og:title" content="Khandelia Oil & General Mills - Customer Order Slip">
+  <meta property="og:description" content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
+  <meta property="og:image" content="{base_url}/images/customer_order_preview.jpg">
+  <meta property="og:image:secure_url" content="{base_url}/images/customer_order_preview.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="773">
+  <meta property="og:image:height" content="372">
+  <meta property="og:image:alt" content="Customer Order Slip - Quality, Price, Efficiency, Reliability">
+  <meta property="og:url" content="{base_url}/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Khandelia Oil & General Mills - Customer Order Slip">
+  <meta name="twitter:description" content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd.">
+  <meta name="twitter:image" content="{base_url}/images/customer_order_preview.jpg">
+</head>
+<body>
+  <h1>Khandelia Oil & General Mills - Customer Order Slip</h1>
+</body>
+</html>""",
+            headers={"Cache-Control": "public, max-age=3600"}
+        )
+
     html_path = os.path.join(BASE_DIR, "order_form.html")
     with open(html_path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -94,6 +150,39 @@ def serve_order_slip_root(request: Request):
 def serve_sale_manager_portal(request: Request):
     """Serves the Sales Manager Portal with dynamic WhatsApp Open Graph preview"""
     base_url = get_base_url_from_request(request)
+    
+    # ⚡ 2X Ultra-Fast Response for WhatsApp / Social Crawlers (1KB payload instead of 80KB)
+    if is_social_crawler(request):
+        return HTMLResponse(
+            f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Khandelia Oil & General Mills - Area Sales Manager Portal</title>
+  <meta name="description" content="Official Area Sales Manager Order Booking Portal for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil).">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Khandelia Oil & General Mills Pvt. Ltd.">
+  <meta property="og:title" content="Khandelia Oil & General Mills - Area Sales Manager Portal">
+  <meta property="og:description" content="Official Area Sales Manager Order Booking Portal for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil).">
+  <meta property="og:image" content="{base_url}/images/area_sales_manager_preview.jpg">
+  <meta property="og:image:secure_url" content="{base_url}/images/area_sales_manager_preview.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="800">
+  <meta property="og:image:height" content="418">
+  <meta property="og:image:alt" content="Area Sales Manager - Khandelia Oil & General Mills">
+  <meta property="og:url" content="{base_url}/sale_manage">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Khandelia Oil & General Mills - Area Sales Manager Portal">
+  <meta name="twitter:description" content="Official Area Sales Manager Order Booking Portal for Khandelia Oil & General Mills Pvt. Ltd.">
+  <meta name="twitter:image" content="{base_url}/images/area_sales_manager_preview.jpg">
+</head>
+<body>
+  <h1>Khandelia Oil & General Mills - Area Sales Manager Portal</h1>
+</body>
+</html>""",
+            headers={"Cache-Control": "public, max-age=3600"}
+        )
+
     html_path = os.path.join(BASE_DIR, "sale_manager.html")
     with open(html_path, "r", encoding="utf-8") as f:
         content = f.read()
