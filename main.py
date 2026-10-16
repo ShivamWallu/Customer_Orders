@@ -70,12 +70,40 @@ def is_social_crawler(request: Request) -> bool:
     ua = (request.headers.get("user-agent") or "").lower()
     return any(b in ua for b in BOT_USER_AGENTS)
 
-@app.get("/images/{filename}")
-def serve_image_file(filename: str):
-    """High-speed image delivery with aggressive caching for instant WhatsApp preview cards"""
-    file_path = os.path.join(BASE_DIR, "images", filename)
+@app.get("/manifest.json")
+def serve_manifest():
+    """Serves PWA Web App Manifest for Android APK installation"""
+    file_path = os.path.join(BASE_DIR, "manifest.json")
     if os.path.exists(file_path):
-        media_type = "image/jpeg" if filename.endswith((".jpg", ".jpeg")) else "image/png"
+        return FileResponse(
+            file_path,
+            media_type="application/manifest+json",
+            headers={"Cache-Control": "public, max-age=3600", "Access-Control-Allow-Origin": "*"}
+        )
+    raise HTTPException(status_code=404, detail="Manifest not found")
+
+@app.get("/sw.js")
+def serve_service_worker():
+    """Serves PWA Service Worker for offline shell & 2X speed caching"""
+    file_path = os.path.join(BASE_DIR, "sw.js")
+    if os.path.exists(file_path):
+        return FileResponse(
+            file_path,
+            media_type="application/javascript",
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Service-Worker-Allowed": "/",
+                "Access-Control-Allow-Origin": "*"
+            }
+        )
+    raise HTTPException(status_code=404, detail="Service worker not found")
+
+@app.get("/images/{filepath:path}")
+def serve_image_file(filepath: str):
+    """High-speed image and icon delivery with aggressive caching for instant WhatsApp preview cards and PWA icons"""
+    file_path = os.path.join(BASE_DIR, "images", filepath)
+    if os.path.exists(file_path):
+        media_type = "image/jpeg" if filepath.endswith((".jpg", ".jpeg")) else "image/png"
         return FileResponse(
             file_path,
             media_type=media_type,
