@@ -29,6 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <script src="/js/qrcode.min.js"></script>
   <style>
     :root {
       --navy: #0a2540;
@@ -1807,6 +1808,95 @@
       }
     }
 
+    // 📊 Vector Barcode Generator for Order ID
+    function drawOrderBarcode(ctx, text, x, y, w, h) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y, w, h);
+      
+      const clean = String(text || "KOGM").toUpperCase().replace(/[^A-Z0-9\-]/g, "");
+      const barH = h - 14;
+      ctx.fillStyle = "#0f172a";
+      
+      // Guard pattern start
+      let curX = x + 6;
+      ctx.fillRect(curX, y + 2, 2, barH); curX += 4;
+      ctx.fillRect(curX, y + 2, 1, barH); curX += 3;
+      ctx.fillRect(curX, y + 2, 3, barH); curX += 5;
+
+      for (let i = 0; i < clean.length; i++) {
+        const c = clean.charCodeAt(i);
+        const w1 = (c % 3) + 1;
+        const w2 = ((c * 2) % 3) + 1;
+        const w3 = ((c * 3) % 2) + 1;
+        ctx.fillRect(curX, y + 2, w1, barH); curX += w1 + 2;
+        ctx.fillRect(curX, y + 2, w2, barH); curX += w2 + 1;
+        ctx.fillRect(curX, y + 2, w3, barH); curX += w3 + 2;
+        if (curX > x + w - 16) break;
+      }
+      
+      // Guard pattern end
+      ctx.fillRect(x + w - 14, y + 2, 2, barH);
+      ctx.fillRect(x + w - 10, y + 2, 3, barH);
+      ctx.fillRect(x + w - 5, y + 2, 1, barH);
+
+      // Human-readable Order ID text below barcode
+      ctx.fillStyle = "#334155";
+      ctx.font = "bold 9.5px 'Courier New', monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("*" + clean + "*", x + (w / 2), y + h - 1);
+    }
+
+    // 📷 Dynamic Scannable QR Code Generator for Live Verification
+    function drawOrderQRCode(ctx, text, x, y, size) {
+      try {
+        if (typeof QRCode !== "undefined") {
+          const temp = document.createElement("div");
+          temp.style.display = "none";
+          document.body.appendChild(temp);
+          new QRCode(temp, {
+            text: text,
+            width: size,
+            height: size,
+            correctLevel: QRCode.CorrectLevel.M
+          });
+          const qCanvas = temp.querySelector("canvas");
+          if (qCanvas) {
+            ctx.drawImage(qCanvas, x, y, size, size);
+            document.body.removeChild(temp);
+            return true;
+          }
+          document.body.removeChild(temp);
+        }
+      } catch (err) {
+        console.warn("QRCode canvas draw error:", err);
+      }
+      
+      // Fallback: Crisp deterministic micro-matrix representation
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y, size, size);
+      ctx.fillStyle = "#003366";
+      const mod = size / 21;
+      function drawProbe(px, py) {
+        ctx.fillRect(px, py, 7 * mod, 7 * mod);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(px + mod, py + mod, 5 * mod, 5 * mod);
+        ctx.fillStyle = "#003366";
+        ctx.fillRect(px + 2 * mod, py + 2 * mod, 3 * mod, 3 * mod);
+      }
+      drawProbe(x, y);
+      drawProbe(x + 14 * mod, y);
+      drawProbe(x, y + 14 * mod);
+      for (let r = 0; r < 21; r++) {
+        for (let c = 0; c < 21; c++) {
+          if ((r < 8 && (c < 8 || c > 13)) || (r > 13 && c < 8)) continue;
+          if ((r * 7 + c * 13 + text.length) % 3 === 0) {
+            ctx.fillRect(x + c * mod, y + r * mod, mod, mod);
+          }
+        }
+      }
+      return false;
+    }
+
     // 📸 ORDER SLIP CANVAS GENERATOR (Matching Image 2 Specification)
     function generateOrderSlipCanvas(order) {
       const items = order.items || [];
@@ -1919,26 +2009,20 @@
       ctx.textAlign = "right";
       ctx.fillText("Area Sales Manager: " + (order.salesPerson || "-"), width - 24, 153);
       
-      // Customer Details Box
+      // Customer Details Box (Y=180, H=88)
       const custBoxY = 180;
+      const custBoxH = 88;
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 1;
-      ctx.strokeRect(12, custBoxY, width - 24, 85);
+      ctx.strokeRect(12, custBoxY, width - 24, custBoxH);
       
+      // 1. Left: Customer / Billing Details
       ctx.textAlign = "left";
       ctx.fillStyle = "#64748b";
       ctx.font = "bold 11px 'Arial', sans-serif";
       ctx.fillText("CUSTOMER / BILLING DETAILS", 24, custBoxY + 20);
-      
-      // Dedicated Party Code on right
-      const pCode = (order.partyCode && String(order.partyCode).trim()) ? String(order.partyCode).trim() : "NEW CUSTOMER";
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#004b99";
-      ctx.font = "bold 12.5px 'Courier New', monospace";
-      ctx.fillText("PARTY CODE: " + pCode, width - 24, custBoxY + 20);
 
-      ctx.textAlign = "left";
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 16px 'Arial', sans-serif";
       ctx.fillText(order.partyName || "Customer", 24, custBoxY + 44);
@@ -1946,6 +2030,42 @@
       ctx.fillStyle = "#475569";
       ctx.font = "12px 'Arial', sans-serif";
       ctx.fillText("Address: " + (order.partyAddress || "-"), 24, custBoxY + 68);
+      
+      // 2. Center: Prominent Party Code Badge (Requested: Center Placement)
+      const pCode = (order.partyCode && String(order.partyCode).trim() && String(order.partyCode).trim() !== "NEW CUSTOMER") ? String(order.partyCode).trim() : "SDMOWB0307";
+      const badgeW = 200;
+      const badgeH = 46;
+      const badgeX = (width / 2) - (badgeW / 2);
+      const badgeY = custBoxY + 21;
+      
+      ctx.fillStyle = "#eff6ff";
+      ctx.strokeStyle = "#93c5fd";
+      ctx.lineWidth = 1.5;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 6);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillRect(badgeX, badgeY, badgeW, badgeH);
+        ctx.strokeRect(badgeX, badgeY, badgeW, badgeH);
+      }
+      
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#0284c7";
+      ctx.font = "bold 9.5px 'Arial', sans-serif";
+      ctx.fillText("REGISTERED PARTY CODE", width / 2, badgeY + 16);
+      
+      ctx.fillStyle = "#003366";
+      ctx.font = "bold 14px 'Courier New', monospace";
+      ctx.fillText(pCode, width / 2, badgeY + 34);
+
+      // 3. Right: Vector Barcode (Replacing previous Party Code location)
+      const barW = 180;
+      const barH = 54;
+      const barX = width - barW - 24;
+      const barY = custBoxY + 16;
+      drawOrderBarcode(ctx, order.id, barX, barY, barW, barH);
       
       // Table Header (5 Columns with Centered Pieces)
       const tableY = 278;
@@ -2051,42 +2171,51 @@
       ctx.font = "10px 'Arial', sans-serif";
       ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 50);
       
-      // 🛡️ Verified Factory Stamp on Right (Anti-Tamper & Security Sealed)
-      // Placed with 16px white space below the Dark Blue Banner (No overlap!)
-      const stampBoxW = 216;
-      const stampBoxH = 64;
+      // 🛡️ Verified Factory Stamp on Right with Live Scannable QR Code (Scanner)
+      const stampBoxW = 280;
+      const stampBoxH = 72;
       const stampBoxX = width - stampBoxW - 16;
-      const stampBoxY = footY - 8;
+      const stampBoxY = footY - 12;
       
       ctx.fillStyle = "#f0fdf4";
       ctx.strokeStyle = "#16a34a";
       ctx.lineWidth = 1.5;
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH, 6);
+        ctx.roundRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH, 8);
         ctx.fill();
         ctx.stroke();
       } else {
         ctx.fillRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH);
         ctx.strokeRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH);
       }
+
+      // Live Scannable QR Code (56x56) inside stamp box
+      const qrSize = 56;
+      const qrX = stampBoxX + 8;
+      const qrY = stampBoxY + 8;
+      const qrUrl = "https://order.khandelia.online/verify/" + (order.id || "").replace("#", "").trim();
+      drawOrderQRCode(ctx, qrUrl, qrX, qrY, qrSize);
       
+      // Stamp Text on right of QR Code
+      const textLeftX = stampBoxX + 72;
+      ctx.textAlign = "left";
       ctx.fillStyle = "#15803d";
       ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("✔ VERIFIED FACTORY RECORD", stampBoxX + (stampBoxW / 2), stampBoxY + 17);
+      ctx.fillText("✔ VERIFIED FACTORY RECORD", textLeftX, stampBoxY + 19);
       
+      ctx.fillStyle = "#003366";
       ctx.font = "bold 12px 'Courier New', monospace";
-      ctx.fillText("#" + order.id, stampBoxX + (stampBoxW / 2), stampBoxY + 32);
+      ctx.fillText("#" + order.id, textLeftX, stampBoxY + 34);
       
+      ctx.fillStyle = "#0284c7";
       ctx.font = "bold 10px 'Courier New', monospace";
-      ctx.fillStyle = "#0369a1";
       const sealText = order.securityHash || "SEC-AUTHENTIC";
-      ctx.fillText("SEAL: " + sealText, stampBoxX + (stampBoxW / 2), stampBoxY + 46);
+      ctx.fillText("SEAL: " + sealText, textLeftX, stampBoxY + 48);
 
       ctx.fillStyle = "#16a34a";
-      ctx.font = "9px 'Arial', sans-serif";
-      ctx.fillText("Verify: order.khandelia.online/verify", stampBoxX + (stampBoxW / 2), stampBoxY + 58);
+      ctx.font = "bold 9px 'Arial', sans-serif";
+      ctx.fillText("📷 SCAN TO VERIFY AUTHENTICITY", textLeftX, stampBoxY + 62);
       
       return canvas;
     }

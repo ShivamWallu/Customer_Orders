@@ -98,6 +98,14 @@ def serve_order_slip_file(filename: str):
         return FileResponse(file_path, media_type="image/png")
     raise HTTPException(status_code=404, detail="Slip image not found")
 
+@app.get("/js/{filename}")
+def serve_js_file(filename: str):
+    """Serves local JS libraries like qrcode.min.js offline"""
+    file_path = os.path.join("js", filename)
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="JS file not found")
+
 ORDERS_LOG = "customer_orders.json"
 GOOGLE_SHEET_ORDERS_WEBAPP_URL = os.environ.get(
     "GOOGLE_SHEET_ORDERS_WEBAPP_URL",
