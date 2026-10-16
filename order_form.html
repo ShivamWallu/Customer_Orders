@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Khandelia Oil & General Mills - Mobile Order Slip</title>
 
   <!-- 📱 WHATSAPP & SOCIAL MEDIA LINK PREVIEW (Customer Order Link) -->
-  <meta name="description" content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
+  <meta name="description"
+    content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
   <meta property="og:title" content="Khandelia Oil & General Mills - Customer Order Slip">
-  <meta property="og:description" content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
-  <meta property="og:image" content="https://order.khandelia.online/images/customer_order_preview.jpg">
-  <meta property="og:image:secure_url" content="https://order.khandelia.online/images/customer_order_preview.jpg">
+  <meta property="og:description"
+    content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
+  <meta property="og:image" content="https://sevenfold-blazer-pacific.ngrok-free.dev/images/customer_order_preview.jpg">
+  <meta property="og:image:secure_url" content="https://sevenfold-blazer-pacific.ngrok-free.dev/images/customer_order_preview.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="773">
   <meta property="og:image:height" content="372">
   <meta property="og:image:alt" content="Customer Order Slip - Quality, Price, Efficiency, Reliability">
-  <meta property="og:url" content="https://order.khandelia.online/">
+  <meta property="og:url" content="https://sevenfold-blazer-pacific.ngrok-free.dev/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Khandelia Oil & General Mills Pvt. Ltd.">
 
   <!-- Twitter / WhatsApp Rich Cards Fallback -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Khandelia Oil & General Mills - Customer Order Slip">
-  <meta name="twitter:description" content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
-  <meta name="twitter:image" content="https://order.khandelia.online/images/customer_order_preview.jpg">
-  <link rel="image_src" href="https://order.khandelia.online/images/customer_order_preview.jpg">
+  <meta name="twitter:description"
+    content="Direct Customer Order Booking for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil). Quality • Price • Efficiency • Reliability.">
+  <meta name="twitter:image" content="https://sevenfold-blazer-pacific.ngrok-free.dev/images/customer_order_preview.jpg">
+  <link rel="image_src" href="https://sevenfold-blazer-pacific.ngrok-free.dev/images/customer_order_preview.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap"
+    rel="stylesheet">
   <script src="/js/qrcode.min.js"></script>
   <style>
     :root {
@@ -54,13 +60,15 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    html, body {
+    html,
+    body {
       width: 100%;
       max-width: 100vw;
       overflow-x: hidden;
       background: #f8fafc;
       color: var(--text-dark);
-      padding-bottom: 115px; /* Room for sticky bottom bar & DPDP strip */
+      padding-bottom: 115px;
+      /* Room for sticky bottom bar & DPDP strip */
       display: flex;
       justify-content: center;
     }
@@ -71,7 +79,7 @@
       background: #ffffff;
       min-height: 100vh;
       overflow-x: hidden;
-      box-shadow: 0 0 25px rgba(0,0,0,0.06);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.06);
     }
 
     /* 🏷️ TOP HEADER */
@@ -143,10 +151,26 @@
       border-radius: 4px;
       text-transform: uppercase;
     }
-    .tag-blue { background: #e0f2fe; color: #0369a1; }
-    .tag-green { background: #dcfce7; color: #15803d; }
-    .tag-purple { background: #f3e8ff; color: #7e22ce; }
-    .tag-pink { background: #ffe4e6; color: #be123c; }
+
+    .tag-blue {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .tag-green {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .tag-purple {
+      background: #f3e8ff;
+      color: #7e22ce;
+    }
+
+    .tag-pink {
+      background: #ffe4e6;
+      color: #be123c;
+    }
 
     .input-control {
       width: 100%;
@@ -236,8 +260,8 @@
       box-sizing: border-box;
     }
 
-    .row-2col > div,
-    .row-2col > * {
+    .row-2col>div,
+    .row-2col>* {
       min-width: 0;
       max-width: 100%;
       box-sizing: border-box;
@@ -296,6 +320,7 @@
     .item-card.bg-mashal {
       background: var(--mashal-bg);
     }
+
     .item-card.bg-mashal:nth-child(even) {
       background: #fffdf5;
     }
@@ -303,6 +328,7 @@
     .item-card.bg-fauji {
       background: var(--fauji-bg);
     }
+
     .item-card.bg-fauji:nth-child(even) {
       background: #f7fee7;
     }
@@ -348,6 +374,7 @@
       -webkit-appearance: none !important;
       margin: 0 !important;
     }
+
     input[type=number] {
       -moz-appearance: textfield !important;
     }
@@ -582,8 +609,15 @@
     }
 
     @keyframes modalPop {
-      0% { opacity: 0; transform: scale(0.85); }
-      100% { opacity: 1; transform: scale(1); }
+      0% {
+        opacity: 0;
+        transform: scale(0.85);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     /* Animated SVG Checkmark */
@@ -624,20 +658,33 @@
     }
 
     @keyframes strokeCircle {
-      100% { stroke-dashoffset: 0; }
+      100% {
+        stroke-dashoffset: 0;
+      }
     }
 
     @keyframes strokeCheck {
-      100% { stroke-dashoffset: 0; }
+      100% {
+        stroke-dashoffset: 0;
+      }
     }
 
     @keyframes fillGreen {
-      100% { box-shadow: inset 0 0 0 40px #16a34a; }
+      100% {
+        box-shadow: inset 0 0 0 40px #16a34a;
+      }
     }
 
     @keyframes scaleUp {
-      0%, 100% { transform: none; }
-      50% { transform: scale3d(1.1, 1.1, 1); }
+
+      0%,
+      100% {
+        transform: none;
+      }
+
+      50% {
+        transform: scale3d(1.1, 1.1, 1);
+      }
     }
 
     .modal-title {
@@ -838,7 +885,7 @@
         border: 1.5px solid var(--border-gray);
         border-radius: 10px;
         padding: 12px 16px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
       }
 
       .item-title {
@@ -865,9 +912,11 @@
       .app-wrapper {
         max-width: 1180px;
       }
+
       .sticky-order-bar {
         max-width: 1180px;
       }
+
       .items-container {
         gap: 14px;
         padding: 18px 24px;
@@ -875,9 +924,12 @@
     }
   </style>
 </head>
+
 <body>
   <!-- 🛢️ Preloaded Mashal Official Logo for Digital Order Slip Canvas -->
-  <img id="mashalOfficialLogo" src="/images/mashal_slip_logo.png" alt="Mashal" style="position:fixed; left:-9999px; top:-9999px; width:120px; height:120px; opacity:0; pointer-events:none;" crossorigin="anonymous">
+  <img id="mashalOfficialLogo" src="/images/mashal_slip_logo.png" alt="Mashal"
+    style="position:fixed; left:-9999px; top:-9999px; width:120px; height:120px; opacity:0; pointer-events:none;"
+    crossorigin="anonymous">
 
   <div class="app-wrapper">
     <!-- Top Branding -->
@@ -894,7 +946,8 @@
             <span>Party Name</span>
             <span class="label-tag tag-blue">Customer</span>
           </label>
-          <input type="text" class="input-control" id="partyName" placeholder="Enter full firm or customer name" required>
+          <input type="text" class="input-control" id="partyName" placeholder="Enter full firm or customer name"
+            required>
         </div>
 
         <div class="form-group">
@@ -902,12 +955,10 @@
             <span>Party Address</span>
             <span class="label-tag tag-green">Address</span>
           </label>
-          <textarea class="input-control" 
-                    id="partyAddress" 
-                    rows="2"
-                    placeholder="Shop / Office / Street address, City, State, Pincode" 
-                    oninput="this.style.height = ''; this.style.height = Math.max(54, this.scrollHeight) + 'px'"
-                    required></textarea>
+          <textarea class="input-control" id="partyAddress" rows="2"
+            placeholder="Shop / Office / Street address, City, State, Pincode"
+            oninput="this.style.height = ''; this.style.height = Math.max(54, this.scrollHeight) + 'px'"
+            required></textarea>
         </div>
 
         <div class="row-2col">
@@ -954,14 +1005,16 @@
         </div>
         <div class="privacy-content-col">
           <div class="privacy-badge-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
             <span>Secure & Data Protected</span>
           </div>
           <div class="privacy-badge-desc">
-            Your contact number and delivery details are used strictly for order confirmation, WhatsApp slips, and dispatch coordination. Your business data remains private and is never shared with third parties.
+            Your contact number and delivery details are used strictly for order confirmation, WhatsApp slips, and
+            dispatch coordination. Your business data remains private and is never shared with third parties.
           </div>
         </div>
       </label>
@@ -986,8 +1039,8 @@
       <!-- Animated Green SVG Checkmark -->
       <div class="success-checkmark-wrapper">
         <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-          <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+          <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
         </svg>
       </div>
 
@@ -1026,25 +1079,28 @@
       <!-- Unified Professional Actions -->
       <button type="button" id="btnShareSlip" class="btn-share-primary" onclick="shareOrderSlip()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          <path
+            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
         </svg>
         <span>Share Order Slip</span>
         <span class="btn-subtext">Image + Text</span>
       </button>
 
       <button type="button" class="btn-download-secondary" onclick="downloadOrderSlipImage()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
         <span>Download Slip (PNG)</span>
       </button>
 
       <button type="button" class="btn-next-order" onclick="closeModal()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
         <span>Take Next Order</span>
       </button>
@@ -1226,7 +1282,7 @@
       try {
         const c = generateOrderSlipCanvas(payload);
         payload.slipImageData = c.toDataURL("image/png");
-      } catch(imgErr) {
+      } catch (imgErr) {
         console.warn("Could not generate slip canvas data URL:", imgErr);
       }
 
@@ -1245,7 +1301,7 @@
         try {
           sessionStorage.setItem("lastCompletedOrder", JSON.stringify(finalOrder));
           localStorage.setItem("lastCompletedOrder", JSON.stringify(finalOrder));
-        } catch(e) {}
+        } catch (e) { }
 
         // Populate Modal Fields
         document.getElementById("displayOrderId").textContent = "#" + finalOrder.id;
@@ -1269,11 +1325,11 @@
     function drawOrderBarcode(ctx, text, x, y, w, h) {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(x, y, w, h);
-      
+
       const clean = String(text || "KOGM").toUpperCase().replace(/[^A-Z0-9\-]/g, "");
       const barH = h - 14;
       ctx.fillStyle = "#0f172a";
-      
+
       // Guard pattern start
       let curX = x + 6;
       ctx.fillRect(curX, y + 2, 2, barH); curX += 4;
@@ -1290,7 +1346,7 @@
         ctx.fillRect(curX, y + 2, w3, barH); curX += w3 + 2;
         if (curX > x + w - 16) break;
       }
-      
+
       // Guard pattern end
       ctx.fillRect(x + w - 14, y + 2, 2, barH);
       ctx.fillRect(x + w - 10, y + 2, 3, barH);
@@ -1316,18 +1372,18 @@
             height: 256,
             correctLevel: QRCode.CorrectLevel.L
           });
-          
+
           const qrObj = qr._oQRCode;
           if (qrObj && qrObj.getModuleCount) {
             const count = qrObj.getModuleCount();
             const quietZone = 2; // 2-module pure white quiet zone for guaranteed instant scanner lock
             const totalModules = count + (quietZone * 2);
             const cellSize = size / totalModules;
-            
+
             // 1. Solid pure white quiet zone background
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(x, y, size, size);
-            
+
             // 2. High-contrast pure black modules (zero blur, zero anti-alias bleeding)
             ctx.fillStyle = "#000000";
             for (let r = 0; r < count; r++) {
@@ -1344,7 +1400,7 @@
             document.body.removeChild(temp);
             return true;
           }
-          
+
           const qCanvas = temp.querySelector("canvas");
           if (qCanvas) {
             ctx.imageSmoothingEnabled = false;
@@ -1365,31 +1421,31 @@
       const scale = 2;
       const canvas = document.createElement("canvas");
       const width = 850;
-      
+
       const rowHeight = 36;
       const tableHeaderHeight = 40;
       const baseHeight = 510;
       const totalHeight = baseHeight + (items.length * rowHeight);
-      
+
       canvas.width = width * scale;
       canvas.height = totalHeight * scale;
-      
+
       const ctx = canvas.getContext("2d");
       ctx.scale(scale, scale);
-      
+
       // Background Clean White
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, width, totalHeight);
-      
+
       // Outer Navy Border
       ctx.lineWidth = 3;
       ctx.strokeStyle = "#003366";
       ctx.strokeRect(8, 8, width - 16, totalHeight - 16);
-      
+
       // Top Header Banner
       ctx.fillStyle = "#003366";
       ctx.fillRect(10, 10, width - 20, 110);
-      
+
       // 🛢️ Draw Official Mashal Logo on Top-Left
       let logoImg = document.getElementById("mashalOfficialLogo");
       if (!logoImg || !logoImg.complete || logoImg.naturalWidth === 0) {
@@ -1398,7 +1454,7 @@
         logoImg.src = "/images/mashal_slip_logo.png";
       }
       const hasLogo = logoImg && (logoImg.naturalWidth > 0 || logoImg.complete);
-      
+
       // Draw Crisp White Card for Logo with Gold Accent
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#f59e0b";
@@ -1416,7 +1472,7 @@
             ctx.clip();
             ctx.drawImage(logoImg, 26, 22, 84, 84);
             ctx.restore();
-          } catch(e) {
+          } catch (e) {
             console.warn("Slip logo draw error:", e);
           }
         }
@@ -1426,7 +1482,7 @@
         if (hasLogo) {
           try {
             ctx.drawImage(logoImg, 26, 22, 84, 84);
-          } catch(e) {}
+          } catch (e) { }
         }
       }
 
@@ -1435,7 +1491,7 @@
       ctx.textAlign = "center";
       const headerTextX = (width / 2) + 40;
       ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", headerTextX, 52);
-      
+
       // Ribbon Subtitle
       ctx.fillStyle = "#d97706";
       const ribbonW = 320;
@@ -1447,30 +1503,30 @@
       } else {
         ctx.fillRect(ribbonX, 70, ribbonW, 30);
       }
-      
+
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 12.5px 'Arial', sans-serif";
       ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", headerTextX, 90);
-      
+
       // Reference Bar (Single authoritative Date & Time placement)
       ctx.fillStyle = "#f8fafc";
       ctx.fillRect(12, 126, width - 24, 45);
       ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 1;
       ctx.strokeRect(12, 126, width - 24, 45);
-      
+
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 13px 'Courier New', monospace";
       ctx.textAlign = "left";
       ctx.fillText("ORDER ID: #" + order.id, 24, 153);
-      
+
       ctx.font = "12px 'Arial', sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("Date & Time: " + (order.formattedTimestamp || order.orderDate || ""), width / 2, 153);
-      
+
       ctx.textAlign = "right";
       ctx.fillText("Area Sales Manager: " + (order.salesPerson || "-"), width - 24, 153);
-      
+
       // Customer Details Box (Y=180, H=88)
       const custBoxY = 180;
       const custBoxH = 88;
@@ -1478,7 +1534,7 @@
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 1;
       ctx.strokeRect(12, custBoxY, width - 24, custBoxH);
-      
+
       // 1. Left: Customer / Billing Details
       ctx.textAlign = "left";
       ctx.fillStyle = "#64748b";
@@ -1488,18 +1544,18 @@
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 16px 'Arial', sans-serif";
       ctx.fillText(order.partyName || "Customer", 24, custBoxY + 44);
-      
+
       ctx.fillStyle = "#475569";
       ctx.font = "12px 'Arial', sans-serif";
       ctx.fillText("Address: " + (order.partyAddress || "-"), 24, custBoxY + 68);
-      
+
       // 2. Center: Prominent Party Code Badge (Requested: Center Placement)
       const pCode = (order.partyCode && String(order.partyCode).trim() && String(order.partyCode).trim() !== "NEW CUSTOMER") ? String(order.partyCode).trim() : "SDMOWB0307";
       const badgeW = 200;
       const badgeH = 46;
       const badgeX = (width / 2) - (badgeW / 2);
       const badgeY = custBoxY + 21;
-      
+
       ctx.fillStyle = "#eff6ff";
       ctx.strokeStyle = "#93c5fd";
       ctx.lineWidth = 1.5;
@@ -1512,28 +1568,19 @@
         ctx.fillRect(badgeX, badgeY, badgeW, badgeH);
         ctx.strokeRect(badgeX, badgeY, badgeW, badgeH);
       }
-      
+
       ctx.textAlign = "center";
       ctx.fillStyle = "#0284c7";
       ctx.font = "bold 9.5px 'Arial', sans-serif";
       ctx.fillText("REGISTERED PARTY CODE", width / 2, badgeY + 16);
-      
+
       ctx.fillStyle = "#003366";
       ctx.font = "bold 14px 'Courier New', monospace";
       ctx.fillText(pCode, width / 2, badgeY + 34);
-      
+
       // 3. Right: Live Scannable Verification QR Code (Replacing 1D Barcode)
       const cleanOrderId = (order.id || "").replace("#", "").trim();
-      let verifyBaseUrl = "https://order.khandelia.online";
-      if (typeof window !== "undefined" && window.location) {
-        const host = window.location.hostname || "";
-        if (host.includes("ngrok") || host.includes("localhost") || host.includes("127.0.0.1")) {
-          verifyBaseUrl = host.includes("ngrok") ? window.location.origin : "https://sevenfold-blazer-pacific.ngrok-free.dev";
-        } else if (window.location.origin && !window.location.origin.startsWith("file:")) {
-          verifyBaseUrl = window.location.origin;
-        }
-      }
-      const qrUrl = verifyBaseUrl + "/verify/" + cleanOrderId;
+      const qrUrl = "https://order.khandelia.online/verify/" + cleanOrderId;
       const sealText = order.securityHash || "SEC-AUTHENTIC";
 
       const qrCardW = 216;
@@ -1578,12 +1625,12 @@
       ctx.fillStyle = "#64748b";
       ctx.font = "bold 8.5px 'Arial', sans-serif";
       ctx.fillText("OFFICIAL RECORD", textX, qrCardY + 63);
-      
+
       // Table Header (5 Columns with Centered Pieces)
       const tableY = 278;
       ctx.fillStyle = "#004b99";
       ctx.fillRect(12, tableY, width - 24, tableHeaderHeight);
-      
+
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 12px 'Arial', sans-serif";
       ctx.textAlign = "center";
@@ -1594,7 +1641,7 @@
       ctx.textAlign = "center";
       ctx.fillText("QUANTITY (IN PIECES)", 570, tableY + 25);
       ctx.fillText("QUANTITY (BOXES)", 750, tableY + 25);
-      
+
       // Table Rows
       let curY = tableY + tableHeaderHeight;
       let totalPieces = 0;
@@ -1603,7 +1650,7 @@
         // Zebra Stripe
         ctx.fillStyle = idx % 2 === 0 ? "#f8fafc" : "#ffffff";
         ctx.fillRect(12, curY, width - 24, rowHeight);
-        
+
         // Border bottom
         ctx.strokeStyle = "#e2e8f0";
         ctx.lineWidth = 1;
@@ -1611,19 +1658,19 @@
         ctx.moveTo(12, curY + rowHeight);
         ctx.lineTo(width - 12, curY + rowHeight);
         ctx.stroke();
-        
+
         // Index
         ctx.fillStyle = "#64748b";
         ctx.font = "bold 12px 'Arial', sans-serif";
         ctx.textAlign = "center";
         ctx.fillText((idx + 1).toString(), 35, curY + 23);
-        
+
         // Brand
         const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
         ctx.fillStyle = isMashal ? "#1e40af" : "#15803d";
         ctx.font = "bold 11px 'Arial', sans-serif";
         ctx.fillText(it.brand || "Mashal", 85, curY + 23);
-        
+
         // Item name
         ctx.fillStyle = "#0f172a";
         ctx.font = "bold 13px 'Arial', sans-serif";
@@ -1636,7 +1683,7 @@
         const pcs = bxs * multiplier;
         totalBoxes += bxs;
         totalPieces += pcs;
-        
+
         // Pieces Column (Centered at 570 - Crisp Bold Navy Blue)
         ctx.fillStyle = "#1e40af";
         ctx.font = "bold 14px 'Arial', sans-serif";
@@ -1648,21 +1695,21 @@
         ctx.font = "bold 14.5px 'Arial', sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(bxs.toLocaleString() + " Boxes", 750, curY + 23);
-        
+
         curY += rowHeight;
       });
-      
+
       // Grand Total Banner (Prominent Boxes & Pieces Distinction)
       const bannerY = curY + 12;
       const bannerH = 48;
       ctx.fillStyle = "#003366";
       ctx.fillRect(12, bannerY, width - 24, bannerH);
-      
+
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 16.5px 'Arial', sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  |  " + totalPieces.toLocaleString() + " PIECES", width / 2, bannerY + 31);
-      
+
       // 🛡️ Footer Card: Thank You & Customer Care Support (Clean, Wide & Elegant)
       const footCardW = width - 24;
       const footCardH = 96;
@@ -1708,13 +1755,13 @@
 
     function downloadOrderSlipImage() {
       let order = window.lastCompletedOrder;
-      
+
       // 1. Try sessionStorage / localStorage
       if (!order) {
         try {
           const stored = sessionStorage.getItem("lastCompletedOrder") || localStorage.getItem("lastCompletedOrder");
           if (stored) order = JSON.parse(stored);
-        } catch(e) {}
+        } catch (e) { }
       }
 
       // 2. Fallback: Reconstruct directly from open modal & form DOM
@@ -1752,7 +1799,7 @@
         alert("Please place an order first to generate slip.");
         return;
       }
-      
+
       const canvas = generateOrderSlipCanvas(order);
       const filename = `Khandelia_Order_Slip_${order.id}.png`;
       const link = document.createElement("a");
@@ -1789,14 +1836,8 @@
       msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES*  |  *${totalPieces.toLocaleString()} PIECES*\n`;
       msg += `------------------------------------\n`;
       if (o.id) {
-        const cleanId = String(o.id).replace("#", "").trim();
-        const base = (window.location.hostname.includes("ngrok") || window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1"))
-          ? "https://sevenfold-blazer-pacific.ngrok-free.dev"
-          : window.location.origin;
-        const verifyLink = `${base}/verify/${cleanId}`;
-        const slipImgLink = `${base}/order_slips/${cleanId}.png`;
-        msg += `🖼️ *Digital Order Slip & Verification:* ${verifyLink}\n`;
-        msg += `📁 *Direct Slip Image:* ${slipImgLink}\n`;
+        const slipLink = window.location.origin + `/order_slips/${o.id}.png`;
+        msg += `🖼️ *Digital Order Slip:* ${slipLink}\n`;
         msg += `------------------------------------\n`;
       }
       msg += `_Official Order Record • Khandelia Oil & General Mills Pvt. Ltd._`;
@@ -1872,4 +1913,5 @@
     renderItemList();
   </script>
 </body>
+
 </html>
