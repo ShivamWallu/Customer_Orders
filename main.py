@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Header, HTTPException, Request, BackgroundTasks
-from fastapi.responses import FileResponse, HTMLResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -10,7 +10,10 @@ import os
 import re
 import base64
 import io
-import qrcode
+try:
+    import qrcode
+except ImportError:
+    qrcode = None
 from dotenv import load_dotenv
 from whatsapp_service import (
     enqueue_whatsapp_order,
@@ -561,23 +564,25 @@ def get_order_qr_code(order_id: str):
     """Dynamic high-resolution QR code generator pointing to live factory verification portal"""
     clean_id = order_id.replace("#", "").strip()
     verify_url = f"https://order.khandelia.online/verify/{clean_id}"
-    try:
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=8,
-            border=2,
-        )
-        qr.add_data(verify_url)
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="#003366", back_color="#ffffff")
-        buf = io.BytesIO()
-        img.save(buf, format="PNG")
-        buf.seek(0)
-        return Response(content=buf.getvalue(), media_type="image/png")
-    except Exception as e:
-        print(f"[QR ERROR] {e}")
-        raise HTTPException(status_code=500, detail="Failed to generate QR code")
+    if qrcode is not None:
+        try:
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_M,
+                box_size=8,
+                border=2,
+            )
+            qr.add_data(verify_url)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="#003366", back_color="#ffffff")
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            buf.seek(0)
+            return Response(content=buf.getvalue(), media_type="image/png")
+        except Exception as e:
+            print(f"[QR ERROR] {e}")
+    # Fallback to public QR generator if local library is unavailable
+    return RedirectResponse(url=f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={verify_url}")
 
 @app.get("/verify/{order_id}", response_class=HTMLResponse)
 def verify_order_public_portal(order_id: str):
