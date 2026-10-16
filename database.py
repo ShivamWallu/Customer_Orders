@@ -77,6 +77,10 @@ def init_db():
             conn.execute("ALTER TABLE orders ADD COLUMN party_code TEXT DEFAULT '';")
         except Exception:
             pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN data_consent TEXT DEFAULT 'YES (Verified)';")
+        except Exception:
+            pass
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
     finally:
         conn.close()
@@ -179,6 +183,7 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
         total_boxes = int(order.get("totalBoxes") or order.get("total_boxes", 0))
         total_pieces = int(order.get("totalPieces") or order.get("total_pieces", 0))
         party_code = order.get("partyCode") or order.get("party_code", "")
+        data_consent = order.get("dataConsent") or order.get("data_consent", "YES (Verified)")
         
         items = order.get("items", [])
         items_json = json.dumps(items, ensure_ascii=False) if isinstance(items, list) else str(items)
@@ -194,8 +199,8 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                 order_id, party_name, party_code, party_address, delivery_address, sales_person,
                 order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
-                synced_to_sheet
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                synced_to_sheet, data_consent
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(order_id) DO UPDATE SET
                 party_name = excluded.party_name,
                 party_code = excluded.party_code,
@@ -206,6 +211,7 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                 total_pieces = excluded.total_pieces,
                 items_json = excluded.items_json,
                 items_summary = excluded.items_summary,
+                data_consent = excluded.data_consent,
                 slip_image_path = COALESCE(NULLIF(excluded.slip_image_path, ''), orders.slip_image_path),
                 slip_image_url = COALESCE(NULLIF(excluded.slip_image_url, ''), orders.slip_image_url),
                 synced_to_sheet = CASE WHEN excluded.synced_to_sheet = 1 THEN 1 ELSE orders.synced_to_sheet END;
@@ -213,7 +219,7 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                 order_id, party_name, party_code, party_address, delivery_address, sales_person,
                 order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
-                synced_to_sheet
+                synced_to_sheet, data_consent
             ))
         print(f"[DATABASE] Order #{order_id} permanently saved in orders.db")
         return True

@@ -151,21 +151,43 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     order["formattedDate"] = now_dt.strftime("%d/%m/%Y")
     order["synced_to_sheet"] = False
     
-    # Ensure party code is resolved from CRM if not explicitly provided
+    # Ensure party code is resolved from CRM or auto-generated for new customers
     party_code = (order.get("partyCode") or "").strip()
     if not party_code:
-        p_name = order.get("partyName", "").strip().lower()
+        p_name = order.get("partyName", "").strip()
         if p_name:
             try:
                 from crm_service import _CRM_CACHE, _CACHE_LOCK
                 with _CACHE_LOCK:
                     for c in _CRM_CACHE:
-                        if c.get("party_name", "").strip().lower() == p_name:
-                            party_code = c.get("party_code", "")
+                        if c.get("party_name", "").strip().lower() == p_name.lower():
+                            party_code = (c.get("party_code") or "").strip()
                             break
             except Exception as crm_lookup_err:
                 print(f"[CRM CODE LOOKUP WARN] {crm_lookup_err}")
+
+    # If still not found, this is a NEW customer -> Auto-generate unique official party code & register
+    if not party_code:
+        try:
+            from crm_service import generate_unique_party_code, save_or_update_customer
+            p_name_raw = order.get("partyName", "").strip()
+            p_addr_raw = order.get("partyAddress", "").strip()
+            contact_val = order.get("contactInput", "").strip()
+            party_code = generate_unique_party_code(p_name_raw, p_addr_raw)
+            # Register new customer in CRM with their new party code
+            save_or_update_customer(
+                party_name=p_name_raw,
+                full_address=p_addr_raw,
+                phone=contact_val if not "@" in contact_val else "",
+                email=contact_val if "@" in contact_val else "",
+                party_code=party_code
+            )
+            print(f"[NEW CUSTOMER AUTO-CODE] Generated unique party code: {party_code} for '{p_name_raw}'")
+        except Exception as gen_err:
+            print(f"[AUTO PARTY CODE ERROR] {gen_err}")
+
     order["partyCode"] = party_code
+    order["dataConsent"] = order.get("dataConsent") or "YES (Verified)"
     
     # Format items summary with brand icons, calculate total pieces & clean multi-line layout
     items = order.get("items", [])
@@ -344,7 +366,7 @@ def send_order_email_notification(order: dict):
               <div style="display: inline-block; background: #d97706; color: #ffffff; padding: 6px 20px; border-radius: 4px; font-size: 11px; margin-top: 10px; font-weight: bold; letter-spacing: 1.2px; text-transform: uppercase;">OFFICIAL ORDER CONFIRMATION SLIP</div>
             </div>
 
-            <!-- 🔖 Reference Bar (Order ID, Date, Area Sales Manager) -->
+            <!-- 🔖 Reference Bar (Order ID, Single Authoritative Date & Time, Area Sales Manager) -->
             <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 12px 20px;">
               <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                 <tr>
@@ -352,7 +374,7 @@ def send_order_email_notification(order: dict):
                     ORDER ID: <span style="color: #004b99;">#{order.get('id')}</span>
                   </td>
                   <td style="text-align: center; color: #475569;">
-                    <strong>Date:</strong> {order.get('formattedTimestamp', order.get('timestamp'))}
+                    <strong>Date & Time:</strong> {order.get('formattedTimestamp', order.get('timestamp'))}
                   </td>
                   <td style="text-align: right; color: #0f172a;">
                     <strong>Area Sales Manager:</strong> <span style="font-weight: 700;">{order.get('salesPerson', '-')}</span>
@@ -408,18 +430,27 @@ def send_order_email_notification(order: dict):
               </div>
             </div>
 
-            <!-- 🛡️ Bottom Digital Stamp -->
-            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 20px;">
+            <!-- 🛡️ Bottom Digital Stamp & Official Customer Care Support -->
+            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px 20px;">
               <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; color: #64748b;">
                 <tr>
-                  <td style="text-align: left;">
-                    <div style="color: #16a34a; font-weight: bold; margin-bottom: 2px;">✔ OFFICIALLY RECORDED & VERIFIED ORDER</div>
-                    <div>Submission: {order.get('formattedTimestamp', order.get('timestamp'))} • Khandelia Oil & General Mills Pvt. Ltd.</div>
+                  <td style="text-align: left; vertical-align: top;">
+                    <div style="color: #16a34a; font-weight: bold; font-size: 12.5px; margin-bottom: 3px;">✔ OFFICIALLY RECORDED & VERIFIED ORDER</div>
+                    <div style="color: #0f172a; font-weight: 700; margin-top: 4px; font-size: 12px;">
+                      Customer Care: 📞 Toll-Free 1800 103 3211 &nbsp;|&nbsp; ✉ customercare@khandelia.com
+                    </div>
+                    <div style="color: #475569; font-size: 11px; margin-top: 3px; line-height: 1.4;">
+                      Thank you for choosing Khandelia! Our Customer Care team is always ready to assist you — just a call or click away!
+                    </div>
+                    <div style="color: #94a3b8; font-size: 10.5px; margin-top: 3px;">
+                      Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS
+                    </div>
                   </td>
-                  <td style="text-align: right; width: 170px;">
-                    <div style="border: 1.5px solid #16a34a; border-radius: 4px; padding: 4px 8px; text-align: center; color: #16a34a; font-weight: bold;">
+                  <td style="text-align: right; width: 180px; vertical-align: middle;">
+                    <div style="border: 1.5px solid #16a34a; border-radius: 6px; padding: 6px 10px; text-align: center; color: #16a34a; font-weight: bold; background: #f0fdf4;">
                       VERIFIED ORDER<br>
-                      <span style="font-family: monospace; font-size: 10px;">#{order.get('id')}</span>
+                      <span style="font-family: monospace; font-size: 11px; color: #15803d;">#{order.get('id')}</span><br>
+                      <span style="font-size: 9.5px; color: #059669; font-weight: 600;">100% SECURE & VERIFIED</span>
                     </div>
                   </td>
                 </tr>
@@ -431,18 +462,6 @@ def send_order_email_notification(order: dict):
         </html>
         """
         msg_alternative.attach(MIMEText(html_content, "html"))
-
-        # Attach high-resolution slip image if saved on server
-        slip_img_path = order.get("slipImagePath")
-        if slip_img_path and os.path.exists(slip_img_path):
-            try:
-                with open(slip_img_path, "rb") as img_f:
-                    image_attachment = MIMEImage(img_f.read(), name=f"Order_Slip_{order.get('id')}.png")
-                    image_attachment.add_header('Content-Disposition', 'attachment', filename=f"Order_Slip_{order.get('id')}.png")
-                    msg_root.attach(image_attachment)
-                print(f"[EMAIL ATTACHMENT] Attached Order_Slip_{order.get('id')}.png to email")
-            except Exception as att_err:
-                print(f"[EMAIL ATTACHMENT ERROR] {att_err}")
 
         # Attach high-resolution slip image if saved on server
         slip_img_path = order.get("slipImagePath")

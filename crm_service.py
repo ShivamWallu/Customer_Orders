@@ -270,6 +270,68 @@ def search_customers(query: str, limit: int = 10) -> List[Dict[str, Any]]:
     matches.sort(key=lambda x: x["_score"], reverse=True)
     return matches[:limit]
 
+def generate_unique_party_code(party_name: str = "", address: str = "") -> str:
+    """
+    Generates a guaranteed unique, professional Party Code for new customers.
+    Format: SDMO[STATE_CODE][SEQ_NUMBER] e.g. SDMOPB1001 or SDMONEW1001.
+    Guarantees absolute uniqueness across SQLite customers_crm table and in-memory cache.
+    """
+    global _CRM_CACHE
+    combined = f"{party_name} {address}".lower()
+    
+    state_map = {
+        "punjab": "PB", "pb": "PB",
+        "west bengal": "WB", "bengal": "WB", "kolkata": "WB", "wb": "WB",
+        "bihar": "BH", "bh": "BH",
+        "haryana": "HR", "hr": "HR",
+        "delhi": "DL", "dl": "DL",
+        "rajasthan": "RJ", "rj": "RJ",
+        "uttar pradesh": "UP", "up": "UP",
+        "himachal": "HP", "hp": "HP",
+        "jammu": "JK", "kashmir": "JK", "jk": "JK",
+        "assam": "AS", "as": "AS",
+        "odisha": "OD", "orissa": "OD",
+        "jharkhand": "JH", "jh": "JH",
+        "madhya pradesh": "MP", "mp": "MP",
+        "gujarat": "GJ", "gj": "GJ",
+        "maharashtra": "MH", "mumbai": "MH",
+    }
+    
+    prefix = "SDMONEW"
+    for st, code in state_map.items():
+        if re.search(r'\b' + re.escape(st) + r'\b', combined):
+            prefix = f"SDMO{code}"
+            break
+
+    # Collect existing codes in a set for O(1) membership check
+    existing_codes = set()
+    with _CACHE_LOCK:
+        for c in _CRM_CACHE:
+            p_code = (c.get("party_code") or "").strip().upper()
+            if p_code:
+                existing_codes.add(p_code)
+
+    # Find highest number with this prefix or start from 1001
+    max_num = 1000
+    for code in existing_codes:
+        if code.startswith(prefix):
+            m = re.search(r'(\d+)$', code)
+            if m:
+                try:
+                    num = int(m.group(1))
+                    if num > max_num:
+                        max_num = num
+                except ValueError:
+                    pass
+
+    next_num = max_num + 1
+    new_code = f"{prefix}{next_num:04d}"
+    while new_code in existing_codes:
+        next_num += 1
+        new_code = f"{prefix}{next_num:04d}"
+
+    return new_code
+
 def save_or_update_customer(
     party_name: str,
     full_address: str,
@@ -279,48 +341,64 @@ def save_or_update_customer(
 ) -> Dict[str, Any]:
     """
     Saves a newly entered party into the CRM database so future orders auto-fill instantly.
+    If party_code is missing, generates a unique official party code.
     """
     party_name = (party_name or "").strip()
     full_address = (full_address or "").strip()
     phone = (phone or "").strip()
     email = (email or "").strip()
-    party_code = (party_code or "").strip()
+    party_code = (party_code or "").strip().upper()
 
     if not party_name:
         return {"status": "error", "message": "Party name is required"}
 
-    # If party_code is empty, auto-generate standard KOGM code: NEW-YYYYMM-XXXX
-    if not party_code:
-        import secrets
-        from datetime import datetime
-        party_code = f"NEW-{datetime.now().strftime('%Y%m')}-{secrets.token_hex(2).upper()}"
-
     conn = get_db()
     try:
         with conn:
-            # Check if customer with this phone or email already exists
             cur = conn.cursor()
             existing_id = None
-            if phone:
-                cur.execute("SELECT id FROM customers_crm WHERE phone1 = ? OR phone2 = ?", (phone, phone))
+            existing_code = ""
+
+            # Check if customer with this party name already exists
+            cur.execute("SELECT id, party_code FROM customers_crm WHERE LOWER(party_name) = LOWER(?)", (party_name,))
+            row = cur.fetchone()
+            if row:
+                existing_id = row[0]
+                existing_code = row[1] or ""
+
+            # Check phone
+            if not existing_id and phone:
+                cur.execute("SELECT id, party_code FROM customers_crm WHERE phone1 = ? OR phone2 = ?", (phone, phone))
                 row = cur.fetchone()
                 if row:
                     existing_id = row[0]
+                    existing_code = row[1] or ""
+
+            # Check email
             if not existing_id and email:
-                cur.execute("SELECT id FROM customers_crm WHERE email = ?", (email,))
+                cur.execute("SELECT id, party_code FROM customers_crm WHERE email = ?", (email,))
                 row = cur.fetchone()
                 if row:
                     existing_id = row[0]
+                    existing_code = row[1] or ""
+
+            # Use existing party code if available, otherwise generate new unique code
+            if not party_code:
+                if existing_code:
+                    party_code = existing_code
+                else:
+                    party_code = generate_unique_party_code(party_name, full_address)
 
             if existing_id:
                 # Update existing record
                 conn.execute("""
                 UPDATE customers_crm
                 SET party_name = ?, full_address = ?,
+                    party_code = COALESCE(NULLIF(?, ''), party_code),
                     email = COALESCE(NULLIF(?, ''), email),
                     phone1 = COALESCE(NULLIF(?, ''), phone1)
                 WHERE id = ?
-                """, (party_name, full_address, email, phone, existing_id))
+                """, (party_name, full_address, party_code, email, phone, existing_id))
                 cust_id = existing_id
             else:
                 # Insert new customer

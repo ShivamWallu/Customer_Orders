@@ -1026,6 +1026,8 @@
   </style>
 </head>
 <body>
+  <!-- 🛢️ Preloaded Mashal Official Logo for Digital Order Slip Canvas -->
+  <img id="mashalOfficialLogo" src="/images/mashal_slip_logo.png" alt="Mashal" style="display:none;" crossorigin="anonymous">
 
   <div class="app-wrapper">
     <!-- Top Branding -->
@@ -1814,7 +1816,7 @@
       
       const rowHeight = 36;
       const tableHeaderHeight = 40;
-      const baseHeight = 460;
+      const baseHeight = 520;
       const totalHeight = baseHeight + (items.length * rowHeight);
       
       canvas.width = width * scale;
@@ -1834,75 +1836,97 @@
       
       // Top Header Banner
       ctx.fillStyle = "#003366";
-      ctx.fillRect(10, 10, width - 20, 105);
+      ctx.fillRect(10, 10, width - 20, 110);
       
+      // 🛢️ Draw Official Mashal Logo on Top-Left
+      const logoImg = document.getElementById("mashalOfficialLogo");
+      const hasLogo = logoImg && logoImg.complete && logoImg.naturalWidth > 0;
+      if (hasLogo) {
+        try {
+          ctx.save();
+          if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(24, 20, 90, 90, 10);
+            ctx.clip();
+          }
+          ctx.drawImage(logoImg, 24, 20, 90, 90);
+          ctx.restore();
+        } catch(e) {
+          console.warn("Slip logo draw error:", e);
+        }
+      }
+
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 23px 'Arial', sans-serif";
+      ctx.font = "bold 22px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", width / 2, 48);
+      const headerTextX = hasLogo ? (width / 2) + 38 : width / 2;
+      ctx.fillText("KHANDELIA OIL AND GENERAL MILLS PVT. LTD.", headerTextX, 52);
       
       // Ribbon Subtitle
       ctx.fillStyle = "#d97706";
+      const ribbonW = 330;
+      const ribbonX = headerTextX - (ribbonW / 2);
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(width / 2 - 165, 66, 330, 32, 6);
+        ctx.roundRect(ribbonX, 70, ribbonW, 32, 6);
         ctx.fill();
       } else {
-        ctx.fillRect(width / 2 - 165, 66, 330, 32);
+        ctx.fillRect(ribbonX, 70, ribbonW, 32);
       }
       
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 13px 'Arial', sans-serif";
-      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", width / 2, 87);
+      ctx.fillText("OFFICIAL ORDER CONFIRMATION SLIP", headerTextX, 91);
       
-      // Reference Bar
+      // Reference Bar (Single authoritative Date & Time placement)
       ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(12, 120, width - 24, 45);
+      ctx.fillRect(12, 126, width - 24, 45);
       ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 1;
-      ctx.strokeRect(12, 120, width - 24, 45);
+      ctx.strokeRect(12, 126, width - 24, 45);
       
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 13px 'Courier New', monospace";
       ctx.textAlign = "left";
-      ctx.fillText("ORDER ID: #" + order.id, 24, 147);
+      ctx.fillText("ORDER ID: #" + order.id, 24, 153);
       
       ctx.font = "12px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("Date: " + (order.formattedTimestamp || order.orderDate || ""), width / 2, 147);
+      ctx.fillText("Date & Time: " + (order.formattedTimestamp || order.orderDate || ""), width / 2, 153);
       
       ctx.textAlign = "right";
-      ctx.fillText("Area Sales Manager: " + (order.salesPerson || "-"), width - 24, 147);
+      ctx.fillText("Area Sales Manager: " + (order.salesPerson || "-"), width - 24, 153);
       
       // Customer Details Box
+      const custBoxY = 180;
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 1;
-      ctx.strokeRect(12, 175, width - 24, 85);
+      ctx.strokeRect(12, custBoxY, width - 24, 85);
       
       ctx.textAlign = "left";
       ctx.fillStyle = "#64748b";
       ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.fillText("CUSTOMER / BILLING DETAILS", 24, 195);
+      ctx.fillText("CUSTOMER / BILLING DETAILS", 24, custBoxY + 20);
       
       // Dedicated Party Code on right
-      const pCode = (order.partyCode && String(order.partyCode).trim()) ? String(order.partyCode).trim() : "N/A";
+      const pCode = (order.partyCode && String(order.partyCode).trim()) ? String(order.partyCode).trim() : "NEW CUSTOMER";
       ctx.textAlign = "right";
       ctx.fillStyle = "#004b99";
-      ctx.font = "bold 12px 'Courier New', monospace";
-      ctx.fillText("PARTY CODE: " + pCode, width - 24, 195);
+      ctx.font = "bold 12.5px 'Courier New', monospace";
+      ctx.fillText("PARTY CODE: " + pCode, width - 24, custBoxY + 20);
 
       ctx.textAlign = "left";
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 16px 'Arial', sans-serif";
-      ctx.fillText(order.partyName || "Customer", 24, 218);
+      ctx.fillText(order.partyName || "Customer", 24, custBoxY + 44);
       
       ctx.fillStyle = "#475569";
       ctx.font = "12px 'Arial', sans-serif";
-      ctx.fillText("Address: " + (order.partyAddress || "-"), 24, 242);
+      ctx.fillText("Address: " + (order.partyAddress || "-"), 24, custBoxY + 68);
       
       // Table Header (5 Columns with Centered Pieces)
-      const tableY = 275;
+      const tableY = 278;
       ctx.fillStyle = "#004b99";
       ctx.fillRect(12, tableY, width - 24, tableHeaderHeight);
       
@@ -1983,28 +2007,38 @@
       ctx.textAlign = "center";
       ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  (" + totalPieces.toLocaleString() + " PIECES)", width / 2, curY + 42);
       
-      // Footer Notes & Stamp
-      const footY = curY + 80;
+      // 🛡️ Footer Notes, Official Customer Care Support & Stamp
+      const footY = curY + 76;
       ctx.fillStyle = "#16a34a";
-      ctx.font = "bold 12px 'Arial', sans-serif";
+      ctx.font = "bold 12.5px 'Arial', sans-serif";
       ctx.textAlign = "left";
       ctx.fillText("✔ OFFICIALLY RECORDED & VERIFIED ORDER", 24, footY);
       
-      ctx.fillStyle = "#64748b";
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 11.5px 'Arial', sans-serif";
+      ctx.fillText("Customer Care: 📞 Toll-Free: 1800 103 3211   |   ✉ customercare@khandelia.com", 24, footY + 20);
+      
+      ctx.fillStyle = "#475569";
       ctx.font = "11px 'Arial', sans-serif";
-      ctx.fillText("Submission Timestamp: " + (order.formattedTimestamp || new Date().toLocaleString()), 24, footY + 18);
-      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 34);
+      ctx.fillText("Thank you for reaching out to us! Our Customer Care team is always ready to assist you — just a call or click away!", 24, footY + 37);
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "10.5px 'Arial', sans-serif";
+      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 53);
       
       // Verified Badge on Right
       ctx.strokeStyle = "#16a34a";
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(width - 190, footY - 14, 170, 48);
+      ctx.strokeRect(width - 200, footY - 14, 180, 58);
       ctx.fillStyle = "#16a34a";
       ctx.font = "bold 12px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("VERIFIED ORDER", width - 105, footY + 8);
-      ctx.font = "10px 'Courier New', monospace";
-      ctx.fillText("#" + order.id, width - 105, footY + 24);
+      ctx.fillText("VERIFIED ORDER", width - 110, footY + 11);
+      ctx.font = "bold 11px 'Courier New', monospace";
+      ctx.fillText("#" + order.id, width - 110, footY + 29);
+      ctx.fillStyle = "#059669";
+      ctx.font = "9.5px 'Arial', sans-serif";
+      ctx.fillText("100% SECURE & VERIFIED", width - 110, footY + 44);
       
       return canvas;
     }

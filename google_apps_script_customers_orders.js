@@ -117,22 +117,29 @@ function appendOrderToSheet(order) {
   }
 
   // Check existing headers or initialize sheet
+  // Check existing headers or initialize sheet
   let headerRow = [];
   if (sheet.getLastRow() > 0) {
     headerRow = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0].map(function(h) { return String(h).trim(); });
   }
 
+  // 1. Auto-migrate Column C header from "Order Date" to "Party Code"
+  if (sheet.getLastRow() > 0 && sheet.getRange(1, 3).getValue().toString().trim().toLowerCase().includes("date")) {
+    sheet.getRange(1, 3).setValue("Party Code");
+  }
+
   const standardHeaders = [
     "Timestamp (IST)", 
     "Order ID", 
-    "Order Date", 
+    "Party Code", 
     "Party Name (Customer)", 
     "Billing Address", 
     "Delivery Address", 
     "Area Sales Manager", 
     "Quantity (Pieces)",
     "Total Boxes", 
-    "Ordered Items Breakdown", 
+    "Ordered Items Breakdown",
+    "Customer Consent",
     "Status"
   ];
 
@@ -159,7 +166,6 @@ function appendOrderToSheet(order) {
   });
 
   if (!hasPiecesCol && headerRow.length >= 8) {
-    // Find index of Total Boxes
     let boxesIdx = -1;
     for (let i = 0; i < headerRow.length; i++) {
       if (headerRow[i].toLowerCase().indexOf("box") !== -1) {
@@ -180,13 +186,56 @@ function appendOrderToSheet(order) {
     }
   }
 
+  // Check if "Customer Consent" column exists, if not insert before Status
+  let hasConsentCol = false;
+  let statusColIdx = -1;
+  headerRow = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0].map(function(h) { return String(h).trim(); });
+  for (let i = 0; i < headerRow.length; i++) {
+    if (headerRow[i].toLowerCase().indexOf("consent") !== -1) {
+      hasConsentCol = true;
+    }
+    if (headerRow[i].toLowerCase().indexOf("status") !== -1) {
+      statusColIdx = i + 1;
+    }
+  }
+  if (!hasConsentCol && statusColIdx !== -1) {
+    sheet.insertColumnBefore(statusColIdx);
+    sheet.getRange(1, statusColIdx).setValue("Customer Consent")
+         .setBackground("#003366")
+         .setFontColor("#ffffff")
+         .setFontWeight("bold")
+         .setFontSize(11)
+         .setHorizontalAlignment("center")
+         .setVerticalAlignment("middle");
+    hasConsentCol = true;
+  }
+
+  // Resolve Party Code (Customer Code)
+  const resolvedPartyCode = (order.partyCode || order.party_code || "").toString().trim();
+  const consentVal = (order.dataConsent || order.consent || "YES (Verified)").toString().trim();
+
   // Build row array according to column structure
   let row = [];
-  if (hasPiecesCol) {
+  if (hasPiecesCol && hasConsentCol) {
     row = [
       istFormattedTimestamp,
       orderId,
-      orderDateFormatted,
+      resolvedPartyCode || "NEW CUSTOMER",
+      order.partyName || "",
+      order.partyAddress || "",
+      order.deliveryAddress || order.partyAddress || "",
+      order.salesPerson || "",
+      Number(totalPieces),
+      Number(totalBoxes),
+      itemsSummary,
+      consentVal,
+      "CONFIRMED"
+    ];
+  } else if (hasPiecesCol) {
+    row = [
+      istFormattedTimestamp,
+      orderId,
+      resolvedPartyCode || "NEW CUSTOMER",
       order.partyName || "",
       order.partyAddress || "",
       order.deliveryAddress || order.partyAddress || "",
@@ -200,7 +249,7 @@ function appendOrderToSheet(order) {
     row = [
       istFormattedTimestamp,
       orderId,
-      orderDateFormatted,
+      resolvedPartyCode || "NEW CUSTOMER",
       order.partyName || "",
       order.partyAddress || "",
       order.deliveryAddress || order.partyAddress || "",
@@ -217,18 +266,43 @@ function appendOrderToSheet(order) {
   // Format row columns
   sheet.getRange(lastRow, 1).setHorizontalAlignment("center").setVerticalAlignment("middle"); // Timestamp
   sheet.getRange(lastRow, 2).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#004b99").setHorizontalAlignment("center").setVerticalAlignment("middle"); // Order ID
-  sheet.getRange(lastRow, 3).setHorizontalAlignment("center").setVerticalAlignment("middle"); // Auto Date
-  sheet.getRange(lastRow, 4).setFontWeight("bold").setVerticalAlignment("middle"); // Party Name
   
-  if (hasPiecesCol) {
-    // Quantity (Pieces) in Column 8
-    sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setFontColor("#1e40af").setBackground("#f0fdf4");
-    // Total Boxes in Column 9
-    sheet.getRange(lastRow, 9).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff");
-    // Status in Column 11
-    sheet.getRange(lastRow, 11).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle");
+  // Column 3: Party Code (Formatted with high contrast monospace bold)
+  sheet.getRange(lastRow, 3).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#003366").setBackground("#eff6ff").setHorizontalAlignment("center").setVerticalAlignment("middle");
+  
+  // Column 4: Party Name
+  sheet.getRange(lastRow, 4).setFontWeight("bold").setVerticalAlignment("middle");
+  
+  // Column 5 & 6: Billing & Delivery Address (Wrapped neatly without clipping)
+  sheet.getRange(lastRow, 5).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
+  sheet.getRange(lastRow, 6).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
+  sheet.setColumnWidth(5, 230);
+  sheet.setColumnWidth(6, 260);
+  
+  if (hasPiecesCol && hasConsentCol) {
+    sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setFontColor("#1e40af").setBackground("#f0fdf4"); // Pieces
+    sheet.getRange(lastRow, 9).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff"); // Boxes
     
-    // Rich text for Column 10 (Breakdown)
+    // Column 10: Items Breakdown
+    const cellBreakdown = sheet.getRange(lastRow, 10);
+    if (itemsList.length > 0) {
+      try {
+        cellBreakdown.setRichTextValue(buildRichItemsBreakdown(itemsList, itemsSummary));
+      } catch (e) {
+        cellBreakdown.setValue(itemsSummary);
+      }
+    }
+    cellBreakdown.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
+    sheet.setColumnWidth(10, 320);
+
+    // Column 11: Customer Consent (Green verified chip)
+    sheet.getRange(lastRow, 11).setFontWeight("bold").setFontSize(10.5).setFontColor("#15803d").setBackground("#f0fdf4").setHorizontalAlignment("center").setVerticalAlignment("middle");
+    // Column 12: Status
+    sheet.getRange(lastRow, 12).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle");
+  } else if (hasPiecesCol) {
+    sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setFontColor("#1e40af").setBackground("#f0fdf4");
+    sheet.getRange(lastRow, 9).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff");
+    sheet.getRange(lastRow, 11).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle");
     const cellBreakdown = sheet.getRange(lastRow, 10);
     if (itemsList.length > 0) {
       try {
@@ -239,8 +313,8 @@ function appendOrderToSheet(order) {
     }
     cellBreakdown.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
   } else {
-    sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff"); // Total Boxes
-    sheet.getRange(lastRow, 10).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle"); // Status
+    sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff");
+    sheet.getRange(lastRow, 10).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle");
     const cellBreakdown = sheet.getRange(lastRow, 9);
     if (itemsList.length > 0) {
       try {
@@ -253,7 +327,7 @@ function appendOrderToSheet(order) {
   }
 
   // Dynamic spacious row height
-  const calculatedHeight = Math.max(38, itemsList.length * 24 + 10);
+  const calculatedHeight = Math.max(42, itemsList.length * 24 + 14);
   sheet.setRowHeight(lastRow, calculatedHeight);
 }
 
