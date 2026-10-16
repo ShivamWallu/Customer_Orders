@@ -494,17 +494,17 @@
       cursor: not-allowed;
     }
 
-    /* 🔒 PRIVACY CONSENT STRIP WITH CHECKBOX */
+    /* 🔒 PRIVACY CONSENT STRIP WITH CHECKBOX (Subtle Modern Enterprise Assurance) */
     .privacy-consent-strip {
-      margin: 14px 12px 18px 12px;
-      padding: 12px 14px;
-      background: #f0fdf4;
-      border: 1.5px solid #86efac;
-      border-radius: 10px;
+      margin: 14px 12px 16px 12px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 12px;
-      box-shadow: 0 1px 4px rgba(22, 101, 52, 0.06);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
       box-sizing: border-box;
       cursor: pointer;
       user-select: none;
@@ -513,25 +513,23 @@
     }
 
     .privacy-consent-strip:hover {
-      background: #ecfdf5;
-      border-color: #4ade80;
+      background: #f1f5f9;
+      border-color: #cbd5e1;
     }
 
     .privacy-check-col {
       flex-shrink: 0;
-      margin-top: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .privacy-check-col input[type="checkbox"] {
-      width: 19px;
-      height: 19px;
-      accent-color: #16a34a;
+      width: 17px;
+      height: 17px;
+      accent-color: #0284c7;
       cursor: pointer;
       margin: 0;
-      border-radius: 4px;
     }
 
     .privacy-content-col {
@@ -541,21 +539,20 @@
 
     .privacy-badge-title {
       font-size: 12px;
-      font-weight: 800;
-      color: #15803d;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      margin-bottom: 3px;
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: 0.01em;
+      margin-bottom: 2px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
     .privacy-badge-desc {
-      font-size: 11.5px;
-      line-height: 1.45;
-      color: #166534;
-      font-weight: 500;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #64748b;
+      font-weight: 400;
     }
 
     /* 🌟 ANIMATED GREEN CHECKMARK MODAL */
@@ -957,7 +954,7 @@
         </div>
         <div class="privacy-content-col">
           <div class="privacy-badge-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
@@ -1584,57 +1581,52 @@
         totalBoxes += bxs;
         totalPieces += pcs;
         
-        // Pieces Column (Centered at 570)
+        // Pieces Column (Centered at 570 - Crisp Bold Navy Blue)
         ctx.fillStyle = "#1e40af";
-        ctx.font = "bold 13.5px 'Arial', sans-serif";
+        ctx.font = "bold 14px 'Arial', sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(pcs.toLocaleString() + " Pcs", 570, curY + 23);
 
-        // Boxes Column (Centered at 750)
-        ctx.fillStyle = "#003366";
-        ctx.font = "bold 15px 'Courier New', monospace";
+        // Boxes Column (Centered at 750 - Distinct Bold Dark Charcoal)
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 14.5px 'Arial', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(bxs + " bxs", 750, curY + 23);
+        ctx.fillText(bxs.toLocaleString() + " Boxes", 750, curY + 23);
         
         curY += rowHeight;
       });
       
-      // Grand Total Banner
+      // Grand Total Banner (Prominent Boxes & Pieces Distinction)
       const bannerY = curY + 12;
       const bannerH = 48;
       ctx.fillStyle = "#003366";
       ctx.fillRect(12, bannerY, width - 24, bannerH);
       
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 17px 'Arial', sans-serif";
+      ctx.font = "bold 16.5px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  (" + totalPieces.toLocaleString() + " PIECES)", width / 2, bannerY + 31);
+      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  |  " + totalPieces.toLocaleString() + " PIECES", width / 2, bannerY + 31);
       
-      // 🛡️ Footer Notes, Official Customer Care Support & Stamp
-      // Banner ends at curY + 60. Footer starts at curY + 84 (24px clean gap!)
+      // 🛡️ Footer Notes & Customer Care Support (Clean 3-line layout, Zero Overlap!)
       const footY = bannerY + bannerH + 24;
       ctx.fillStyle = "#16a34a";
       ctx.font = "bold 12px 'Arial', sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText("✔ OFFICIALLY RECORDED & VERIFIED ORDER", 24, footY);
+      ctx.fillText("✔ OFFICIALLY RECORDED & VERIFIED ORDER", 24, footY + 4);
       
       ctx.fillStyle = "#0f172a";
       ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.fillText("Customer Care: 📞 Toll-Free: 1800 103 3211   |   ✉ customercare@khandelia.com", 24, footY + 19);
+      ctx.fillText("Customer Care: 📞 Toll-Free: 1800 103 3211   |   ✉ customercare@khandelia.com", 24, footY + 24);
       
-      ctx.fillStyle = "#475569";
+      ctx.fillStyle = "#64748b";
       ctx.font = "10.5px 'Arial', sans-serif";
-      ctx.fillText("Thank you for choosing Khandelia! Our Customer Care team is always ready to assist you — just a call or click away!", 24, footY + 35);
-
-      ctx.fillStyle = "#94a3b8";
-      ctx.font = "10px 'Arial', sans-serif";
-      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 50);
+      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 44);
       
-      // 🛡️ Verified Factory Stamp on Right with Live Scannable QR Code (Scanner)
-      const stampBoxW = 280;
-      const stampBoxH = 72;
+      // 🛡️ Verified Factory Stamp on Right with Live Scannable QR Code (Zero Overlap Guaranteed!)
+      const stampBoxW = 310;
+      const stampBoxH = 76;
       const stampBoxX = width - stampBoxW - 16;
-      const stampBoxY = footY - 12;
+      const stampBoxY = footY - 14;
       
       ctx.fillStyle = "#f0fdf4";
       ctx.strokeStyle = "#16a34a";
@@ -1649,32 +1641,33 @@
         ctx.strokeRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH);
       }
 
-      // Live Scannable QR Code (56x56) inside stamp box
-      const qrSize = 56;
+      // Live Scannable QR Code (60x60) inside stamp box
+      const qrSize = 60;
       const qrX = stampBoxX + 8;
       const qrY = stampBoxY + 8;
-      const qrUrl = "https://order.khandelia.online/verify/" + (order.id || "").replace("#", "").trim();
+      const cleanOrderId = (order.id || "").replace("#", "").trim();
+      const qrUrl = "https://order.khandelia.online/verify/" + cleanOrderId;
       drawOrderQRCode(ctx, qrUrl, qrX, qrY, qrSize);
       
-      // Stamp Text on right of QR Code
-      const textLeftX = stampBoxX + 72;
+      // Stamp Text on right of QR Code with clean padding
+      const textLeftX = stampBoxX + 76;
       ctx.textAlign = "left";
       ctx.fillStyle = "#15803d";
       ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.fillText("✔ VERIFIED FACTORY RECORD", textLeftX, stampBoxY + 19);
+      ctx.fillText("✔ VERIFIED FACTORY RECORD", textLeftX, stampBoxY + 18);
       
       ctx.fillStyle = "#003366";
       ctx.font = "bold 12px 'Courier New', monospace";
-      ctx.fillText("#" + order.id, textLeftX, stampBoxY + 34);
+      ctx.fillText("#" + cleanOrderId, textLeftX, stampBoxY + 34);
       
       ctx.fillStyle = "#0284c7";
       ctx.font = "bold 10px 'Courier New', monospace";
       const sealText = order.securityHash || "SEC-AUTHENTIC";
-      ctx.fillText("SEAL: " + sealText, textLeftX, stampBoxY + 48);
+      ctx.fillText("SEAL: " + sealText, textLeftX, stampBoxY + 49);
 
       ctx.fillStyle = "#16a34a";
       ctx.font = "bold 9px 'Arial', sans-serif";
-      ctx.fillText("📷 SCAN TO VERIFY AUTHENTICITY", textLeftX, stampBoxY + 62);
+      ctx.fillText("📷 SCAN TO VERIFY AUTHENTICITY", textLeftX, stampBoxY + 65);
       
       return canvas;
     }
@@ -1756,10 +1749,10 @@
         const multiplier = (it.item && it.item.match(/x\s*(\d+)/i)) ? parseInt(it.item.match(/x\s*(\d+)/i)[1], 10) : 1;
         const pcs = bxs * multiplier;
         totalPieces += pcs;
-        msg += `${i + 1}. ${icon} [${it.brand}] ${it.item} ➔ *${bxs} Boxes* (${pcs.toLocaleString()} Pcs)\n`;
+        msg += `${i + 1}. ${icon} [${it.brand}] ${it.item} ➔ *${pcs.toLocaleString()} Pcs*  |  *[ ${bxs} Boxes ]*\n`;
       });
       msg += `------------------------------------\n`;
-      msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES* (${totalPieces.toLocaleString()} PIECES)\n`;
+      msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES*  |  *${totalPieces.toLocaleString()} PIECES*\n`;
       msg += `------------------------------------\n`;
       if (o.id) {
         const slipLink = window.location.origin + `/order_slips/${o.id}.png`;

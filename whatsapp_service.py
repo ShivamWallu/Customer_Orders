@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import time
 from datetime import datetime
@@ -116,12 +117,18 @@ def format_whatsapp_message(item: Dict[str, Any]) -> str:
     msg += f"*Delivery Godown:* {delivery}\n"
     msg += f"------------------------------------\n"
     msg += f"*ITEMS BREAKDOWN:*\n"
+    total_pieces = 0
     for i, it in enumerate(items_list, 1):
         brand = it.get("brand", "Mashal")
         icon = "🔵" if brand.lower() == "mashal" else "🟢"
-        msg += f"{icon} {brand} {it.get('item')} ➔ *{it.get('boxes')} bxs*\n"
+        match = re.search(r'x\s*(\d+)', it.get('item', ''), re.IGNORECASE)
+        mult = int(match.group(1)) if match else 1
+        bxs = int(it.get('boxes', 0))
+        pcs = bxs * mult
+        total_pieces += pcs
+        msg += f"{icon} {brand} {it.get('item')} ➔ *{pcs:,} Pcs*  |  *[ {bxs:,} Boxes ]*\n"
     msg += f"------------------------------------\n"
-    msg += f"🏆 *TOTAL QUANTITY: {total} BOXES*\n"
+    msg += f"🏆 *TOTAL QUANTITY: {total} BOXES*  |  *{total_pieces:,} PIECES*\n"
     msg += f"------------------------------------\n"
     msg += f"✔ _Official Order Record • Khandelia Oil & General Mills Pvt. Ltd._\n"
     msg += f"🖼 _Slip Image Attached Above_"

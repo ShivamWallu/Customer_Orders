@@ -104,7 +104,7 @@ function migrateAndFormatSheet(sheet) {
         // Calculate total pieces from items summary or estimate
         let totalPiecesVal = 0;
         if (typeof itemsSummaryVal === "string" && itemsSummaryVal.length > 0) {
-          const matches = itemsSummaryVal.match(/➔\s*(\d+)\s*Pcs/g);
+          const matches = itemsSummaryVal.match(/➔\s*([\d,]+)\s*Pcs/g);
           if (matches) {
             matches.forEach(function(m) {
               const num = parseInt(m.replace(/\D/g, ""), 10);
@@ -284,7 +284,7 @@ function appendOrderToSheet(order) {
       const mult = match ? parseInt(match[1], 10) : 1;
       const bxs = parseInt(it.boxes, 10) || 0;
       const pcs = bxs * mult;
-      return icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + pcs + " Pcs (" + bxs + " bxs)";
+      return icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + pcs.toLocaleString() + " Pcs  |  [ " + bxs.toLocaleString() + " Boxes ]";
     }).join("\n");
   }
 
@@ -381,7 +381,7 @@ function buildRichItemsBreakdown(itemsList, fallbackText) {
     const mult = match ? parseInt(match[1], 10) : 1;
     const bxs = parseInt(it.boxes, 10) || 0;
     const pcs = bxs * mult;
-    const line = icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + pcs + " Pcs (" + bxs + " bxs)";
+    const line = icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + pcs.toLocaleString() + " Pcs  |  [ " + bxs.toLocaleString() + " Boxes ]";
     
     const startIdx = fullText.length;
     fullText += (idx > 0 ? "\n" : "") + line;
@@ -396,7 +396,7 @@ function buildRichItemsBreakdown(itemsList, fallbackText) {
 
   richTextBuilder.setText(fullText || fallbackText);
 
-  // Apply Brand Colors
+  // Apply Brand Colors & Boldness
   brandRanges.forEach(function(r) {
     const style = SpreadsheetApp.newTextStyle()
       .setBold(true)
