@@ -8,6 +8,7 @@ from datetime import datetime
 import json
 import os
 import re
+import urllib.parse
 import base64
 import io
 try:
@@ -179,6 +180,18 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     order["formattedTimestamp"] = now_dt.strftime("%d/%m/%Y %I:%M:%S %p")
     order["formattedDate"] = now_dt.strftime("%d/%m/%Y")
     order["synced_to_sheet"] = False
+    
+    # 🔗 Dynamic Verification Portal URL (Ngrok Tunnel support for local mobile testing)
+    forwarded_host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
+    scheme = request.headers.get("x-forwarded-proto") or ("https" if ("ngrok" in forwarded_host or "online" in forwarded_host) else request.url.scheme)
+    if "sevenfold-blazer-pacific.ngrok-free.dev" in forwarded_host or "localhost" in forwarded_host or "127.0.0.1" in forwarded_host:
+        verify_base = "https://sevenfold-blazer-pacific.ngrok-free.dev"
+    elif forwarded_host:
+        verify_base = f"{scheme}://{forwarded_host}"
+    else:
+        verify_base = "https://order.khandelia.online"
+    clean_uid = str(order_id).replace("#", "").strip()
+    order["verifyUrl"] = f"{verify_base}/verify/{clean_uid}"
     
     # Ensure party code is resolved from CRM or auto-generated for new customers
     party_code = (order.get("partyCode") or "").strip()
@@ -360,6 +373,7 @@ def send_order_email_notification(order: dict):
         party_name = (order.get("partyName") or "Customer").strip()
         party_code = (order.get("partyCode") or "").strip()
         clean_order_id = str(order.get("id", "")).replace("#", "").strip()
+        verify_url = order.get("verifyUrl") or f"https://sevenfold-blazer-pacific.ngrok-free.dev/verify/{clean_order_id}"
         p_code_str = f" [{party_code}]" if party_code else ""
         msg_root["Subject"] = f"Order Confirmation: #{order.get('id')} - {party_name}{p_code_str} | {total_bxs:,} Boxes ({total_pcs:,} Pcs)"
         msg_root["From"] = f"Mashal Order System <{SMTP_USER}>"
@@ -444,11 +458,11 @@ def send_order_email_notification(order: dict):
                       </div>
                     </td>
                     <td style="text-align: right; vertical-align: middle; width: 34%;">
-                      <a href="https://order.khandelia.online/verify/{clean_order_id}" target="_blank" style="text-decoration: none; display: inline-block;">
+                      <a href="{verify_url}" target="_blank" style="text-decoration: none; display: inline-block;">
                         <table style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; border-collapse: collapse; display: inline-table;">
                           <tr>
                             <td style="padding: 6px; vertical-align: middle;">
-                              <img src="https://quickchart.io/qr?text=https%3A%2F%2Forder.khandelia.online%2Fverify%2F{clean_order_id}&size=200&margin=2&ecLevel=L" width="58" height="58" alt="QR Code" style="display: block; border-radius: 4px; border: 1px solid #cbd5e1;">
+                              <img src="https://quickchart.io/qr?text={urllib.parse.quote(verify_url)}&size=200&margin=2&ecLevel=L" width="58" height="58" alt="QR Code" style="display: block; border-radius: 4px; border: 1px solid #cbd5e1;">
                             </td>
                             <td style="padding: 6px 10px 6px 2px; text-align: left; vertical-align: middle; line-height: 1.3;">
                               <div style="color: #15803d; font-size: 10px; font-weight: bold; letter-spacing: 0.5px;">✔ SCAN TO VERIFY</div>
@@ -564,10 +578,18 @@ async def api_mark_whatsapp_sent(request: Request):
 
 # ----------------- 🛡️ CENTRAL ANTI-TAMPER VERIFICATION SYSTEM -----------------
 @app.get("/api/orders/{order_id}/qr.png")
-def get_order_qr_code(order_id: str):
+def get_order_qr_code(order_id: str, request: Request):
     """Dynamic high-resolution QR code generator pointing to live factory verification portal"""
     clean_id = order_id.replace("#", "").strip()
-    verify_url = f"https://order.khandelia.online/verify/{clean_id}"
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
+    if "sevenfold-blazer-pacific.ngrok-free.dev" in host or "localhost" in host or "127.0.0.1" in host:
+        base = "https://sevenfold-blazer-pacific.ngrok-free.dev"
+    elif host:
+        scheme = request.headers.get("x-forwarded-proto") or "https"
+        base = f"{scheme}://{host}"
+    else:
+        base = "https://order.khandelia.online"
+    verify_url = f"{base}/verify/{clean_id}"
     if qrcode is not None:
         try:
             qr = qrcode.QRCode(
