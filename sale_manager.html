@@ -1843,21 +1843,51 @@
       ctx.fillText("*" + clean + "*", x + (w / 2), y + h - 1);
     }
 
-    // 📷 Dynamic Scannable QR Code Generator for Live Verification
+    // 📷 Dynamic Scannable QR Code Generator for Live Verification (Ultra-Clear High Precision)
     function drawOrderQRCode(ctx, text, x, y, size) {
       try {
         if (typeof QRCode !== "undefined") {
           const temp = document.createElement("div");
           temp.style.display = "none";
           document.body.appendChild(temp);
-          new QRCode(temp, {
+          const qr = new QRCode(temp, {
             text: text,
-            width: size,
-            height: size,
-            correctLevel: QRCode.CorrectLevel.M
+            width: 256,
+            height: 256,
+            correctLevel: QRCode.CorrectLevel.L
           });
+          
+          const qrObj = qr._oQRCode;
+          if (qrObj && qrObj.getModuleCount) {
+            const count = qrObj.getModuleCount();
+            const quietZone = 2; // 2-module pure white quiet zone for guaranteed instant scanner lock
+            const totalModules = count + (quietZone * 2);
+            const cellSize = size / totalModules;
+            
+            // 1. Solid pure white quiet zone background
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(x, y, size, size);
+            
+            // 2. High-contrast pure black modules (zero blur, zero anti-alias bleeding)
+            ctx.fillStyle = "#000000";
+            for (let r = 0; r < count; r++) {
+              for (let c = 0; c < count; c++) {
+                if (qrObj.isDark(r, c)) {
+                  const mx = Math.round(x + (c + quietZone) * cellSize);
+                  const my = Math.round(y + (r + quietZone) * cellSize);
+                  const mw = Math.round(x + (c + quietZone + 1) * cellSize) - mx;
+                  const mh = Math.round(y + (r + quietZone + 1) * cellSize) - my;
+                  ctx.fillRect(mx, my, mw, mh);
+                }
+              }
+            }
+            document.body.removeChild(temp);
+            return true;
+          }
+          
           const qCanvas = temp.querySelector("canvas");
           if (qCanvas) {
+            ctx.imageSmoothingEnabled = false;
             ctx.drawImage(qCanvas, x, y, size, size);
             document.body.removeChild(temp);
             return true;
@@ -1866,30 +1896,6 @@
         }
       } catch (err) {
         console.warn("QRCode canvas draw error:", err);
-      }
-      
-      // Fallback: Crisp deterministic micro-matrix representation
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x, y, size, size);
-      ctx.fillStyle = "#003366";
-      const mod = size / 21;
-      function drawProbe(px, py) {
-        ctx.fillRect(px, py, 7 * mod, 7 * mod);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(px + mod, py + mod, 5 * mod, 5 * mod);
-        ctx.fillStyle = "#003366";
-        ctx.fillRect(px + 2 * mod, py + 2 * mod, 3 * mod, 3 * mod);
-      }
-      drawProbe(x, y);
-      drawProbe(x + 14 * mod, y);
-      drawProbe(x, y + 14 * mod);
-      for (let r = 0; r < 21; r++) {
-        for (let c = 0; c < 21; c++) {
-          if ((r < 8 && (c < 8 || c > 13)) || (r > 13 && c < 8)) continue;
-          if ((r * 7 + c * 13 + text.length) % 3 === 0) {
-            ctx.fillRect(x + c * mod, y + r * mod, mod, mod);
-          }
-        }
       }
       return false;
     }
@@ -2062,10 +2068,10 @@
       const qrUrl = "https://order.khandelia.online/verify/" + cleanOrderId;
       const sealText = order.securityHash || "SEC-AUTHENTIC";
 
-      const qrCardW = 210;
-      const qrCardH = 68;
-      const qrCardX = width - qrCardW - 24;
-      const qrCardY = custBoxY + 8;
+      const qrCardW = 216;
+      const qrCardH = 74;
+      const qrCardX = width - qrCardW - 20;
+      const qrCardY = custBoxY + 7;
 
       ctx.fillStyle = "#f8fafc";
       ctx.strokeStyle = "#cbd5e1";
@@ -2080,18 +2086,18 @@
         ctx.strokeRect(qrCardX, qrCardY, qrCardW, qrCardH);
       }
 
-      // Live Scannable QR Code
-      const qrSize = 54;
-      const qrX = qrCardX + 7;
-      const qrY = qrCardY + 7;
+      // Live Scannable High-Precision QR Code (64x64)
+      const qrSize = 64;
+      const qrX = qrCardX + 5;
+      const qrY = qrCardY + 5;
       drawOrderQRCode(ctx, qrUrl, qrX, qrY, qrSize);
 
       // Verification Text beside QR Code
-      const textX = qrCardX + 68;
+      const textX = qrCardX + qrSize + 12;
       ctx.textAlign = "left";
       ctx.fillStyle = "#15803d";
       ctx.font = "bold 10px 'Arial', sans-serif";
-      ctx.fillText("✔ SCAN TO VERIFY", textX, qrCardY + 19);
+      ctx.fillText("✔ SCAN TO VERIFY", textX, qrCardY + 18);
 
       ctx.fillStyle = "#003366";
       ctx.font = "bold 11px 'Courier New', monospace";
@@ -2099,11 +2105,11 @@
 
       ctx.fillStyle = "#0284c7";
       ctx.font = "bold 9.5px 'Courier New', monospace";
-      ctx.fillText("SEAL: " + sealText, textX, qrCardY + 48);
+      ctx.fillText("SEAL: " + sealText, textX, qrCardY + 49);
 
       ctx.fillStyle = "#64748b";
       ctx.font = "bold 8.5px 'Arial', sans-serif";
-      ctx.fillText("OFFICIAL RECORD", textX, qrCardY + 61);
+      ctx.fillText("OFFICIAL RECORD", textX, qrCardY + 63);
       
       // Table Header (5 Columns with Centered Pieces)
       const tableY = 278;

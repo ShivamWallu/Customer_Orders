@@ -448,7 +448,7 @@ def send_order_email_notification(order: dict):
                         <table style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; border-collapse: collapse; display: inline-table;">
                           <tr>
                             <td style="padding: 6px; vertical-align: middle;">
-                              <img src="https://quickchart.io/qr?text=https%3A%2F%2Forder.khandelia.online%2Fverify%2F{clean_order_id}&size=120&margin=1" width="52" height="52" alt="QR Code" style="display: block; border-radius: 4px; border: 1px solid #cbd5e1;">
+                              <img src="https://quickchart.io/qr?text=https%3A%2F%2Forder.khandelia.online%2Fverify%2F{clean_order_id}&size=200&margin=2&ecLevel=L" width="58" height="58" alt="QR Code" style="display: block; border-radius: 4px; border: 1px solid #cbd5e1;">
                             </td>
                             <td style="padding: 6px 10px 6px 2px; text-align: left; vertical-align: middle; line-height: 1.3;">
                               <div style="color: #15803d; font-size: 10px; font-weight: bold; letter-spacing: 0.5px;">✔ SCAN TO VERIFY</div>
