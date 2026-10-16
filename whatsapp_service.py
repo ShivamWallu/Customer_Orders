@@ -123,6 +123,6 @@ def format_whatsapp_message(item: Dict[str, Any]) -> str:
     msg += f"------------------------------------\n"
     msg += f"🏆 *TOTAL QUANTITY: {total} BOXES*\n"
     msg += f"------------------------------------\n"
-    msg += f"✔ _Digitally recorded in Google Sheet 'Customers Orders'_\n"
+    msg += f"✔ _Official Order Record • Khandelia Oil & General Mills Pvt. Ltd._\n"
     msg += f"🖼 _Slip Image Attached Above_"
     return msg

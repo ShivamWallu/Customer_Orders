@@ -413,7 +413,7 @@ def send_order_email_notification(order: dict):
               <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; color: #64748b;">
                 <tr>
                   <td style="text-align: left;">
-                    <div style="color: #16a34a; font-weight: bold; margin-bottom: 2px;">✔ DIGITALLY RECORDED INTO GOOGLE SHEETS 'CUSTOMERS ORDERS'</div>
+                    <div style="color: #16a34a; font-weight: bold; margin-bottom: 2px;">✔ OFFICIALLY RECORDED & VERIFIED ORDER</div>
                     <div>Submission: {order.get('formattedTimestamp', order.get('timestamp'))} • Khandelia Oil & General Mills Pvt. Ltd.</div>
                   </td>
                   <td style="text-align: right; width: 170px;">
