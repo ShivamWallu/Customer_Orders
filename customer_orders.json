@@ -1545,5 +1545,2675 @@
     "securityHash": "SEC-17C8-D680",
     "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-1872.png",
     "slipImageUrl": "/order_slips/KOGM-20261016-1872.png"
+  },
+  {
+    "id": "KOGM-20261016-6635",
+    "partyName": "Sierra Thornton",
+    "partyCode": "SDMONEW1002",
+    "partyAddress": "Minus ab numquam rer",
+    "deliveryAddress": "Minus ab numquam rer",
+    "orderDate": "2016-12-27",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 9124,
+    "formattedTimestamp": "16/10/2026 02:05:43 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 444,
+        "pieces": 6660
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 459,
+        "pieces": 13770
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 475,
+        "pieces": 28500
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 52,
+        "pieces": 2080
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 528,
+        "pieces": 63360
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 546,
+        "pieces": 2184
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 492,
+        "pieces": 2952
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 805,
+        "pieces": 7245
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 182,
+        "pieces": 2912
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 490,
+        "pieces": 15680
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 281,
+        "pieces": 281
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 968,
+        "pieces": 968
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 66,
+        "pieces": 66
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 604,
+        "pieces": 604
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 589,
+        "pieces": 8835
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 351,
+        "pieces": 10530
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 367,
+        "pieces": 5872
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 729,
+        "pieces": 729
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 696,
+        "pieces": 696
+      }
+    ],
+    "contactInput": "Odio vel nemo dolore",
+    "timestamp": "2026-10-16T14:05:43.081718",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 173924,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 6660 Pcs (444 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 13770 Pcs (459 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 28500 Pcs (475 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 2080 Pcs (52 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 63360 Pcs (528 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 2184 Pcs (546 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 2952 Pcs (492 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 7245 Pcs (805 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 2912 Pcs (182 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 15680 Pcs (490 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 281 Pcs (281 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 968 Pcs (968 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 66 Pcs (66 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 604 Pcs (604 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 8835 Pcs (589 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 10530 Pcs (351 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 5872 Pcs (367 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 729 Pcs (729 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 696 Pcs (696 bxs)",
+    "securityHash": "SEC-A8CE-F9BE",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-6635.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-6635.png"
+  },
+  {
+    "id": "KOGM-20261016-5145",
+    "partyName": "Adena Dawson",
+    "partyCode": "SDMONEW1003",
+    "partyAddress": "Reiciendis sed in pr",
+    "deliveryAddress": "Reiciendis sed in pr",
+    "orderDate": "2009-01-20",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 9702,
+    "formattedTimestamp": "16/10/2026 02:06:22 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 244,
+        "pieces": 3660
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 460,
+        "pieces": 13800
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 376,
+        "pieces": 22560
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 663,
+        "pieces": 26520
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 257,
+        "pieces": 30840
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 265,
+        "pieces": 1060
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 931,
+        "pieces": 5586
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 681,
+        "pieces": 6129
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 638,
+        "pieces": 10208
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 263,
+        "pieces": 8416
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 974,
+        "pieces": 974
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 363,
+        "pieces": 363
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 520,
+        "pieces": 520
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 691,
+        "pieces": 691
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 664,
+        "pieces": 9960
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 346,
+        "pieces": 10380
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 330,
+        "pieces": 5280
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 509,
+        "pieces": 509
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 527,
+        "pieces": 527
+      }
+    ],
+    "contactInput": "Elit aut voluptate",
+    "timestamp": "2026-10-16T14:06:22.468530",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 157983,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 3660 Pcs (244 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 13800 Pcs (460 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 22560 Pcs (376 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 26520 Pcs (663 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 30840 Pcs (257 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 1060 Pcs (265 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 5586 Pcs (931 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 6129 Pcs (681 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 10208 Pcs (638 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 8416 Pcs (263 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 974 Pcs (974 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 363 Pcs (363 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 520 Pcs (520 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 691 Pcs (691 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 9960 Pcs (664 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 10380 Pcs (346 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 5280 Pcs (330 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 509 Pcs (509 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 527 Pcs (527 bxs)",
+    "securityHash": "SEC-E4F7-5E3B",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-5145.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-5145.png"
+  },
+  {
+    "id": "KOGM-20261016-5018",
+    "partyName": "Olga Conrad",
+    "partyCode": "SDMONEW1004",
+    "partyAddress": "Neque et officiis oc",
+    "deliveryAddress": "Neque et officiis oc",
+    "orderDate": "1983-01-13",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 9204,
+    "formattedTimestamp": "16/10/2026 02:11:36 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 815,
+        "pieces": 12225
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 552,
+        "pieces": 16560
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 34,
+        "pieces": 2040
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 532,
+        "pieces": 21280
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 177,
+        "pieces": 21240
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 246,
+        "pieces": 984
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 379,
+        "pieces": 2274
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 827,
+        "pieces": 7443
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 108,
+        "pieces": 1728
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 354,
+        "pieces": 11328
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 445,
+        "pieces": 445
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 999,
+        "pieces": 999
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 862,
+        "pieces": 862
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 294,
+        "pieces": 294
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 734,
+        "pieces": 11010
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 985,
+        "pieces": 29550
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 630,
+        "pieces": 10080
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 126,
+        "pieces": 126
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 105,
+        "pieces": 105
+      }
+    ],
+    "contactInput": "Error eos est volup",
+    "timestamp": "2026-10-16T14:11:36.905020",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 150573,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 12225 Pcs (815 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 16560 Pcs (552 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 2040 Pcs (34 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 21280 Pcs (532 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 21240 Pcs (177 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 984 Pcs (246 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 2274 Pcs (379 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 7443 Pcs (827 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 1728 Pcs (108 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 11328 Pcs (354 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 445 Pcs (445 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 999 Pcs (999 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 862 Pcs (862 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 294 Pcs (294 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 11010 Pcs (734 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 29550 Pcs (985 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 10080 Pcs (630 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 126 Pcs (126 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 105 Pcs (105 bxs)",
+    "securityHash": "SEC-47AA-DE7B",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-5018.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-5018.png"
+  },
+  {
+    "id": "KOGM-20261016-9055",
+    "partyName": "Mallory Bailey",
+    "partyCode": "SDMONEW1005",
+    "partyAddress": "Aut ut nulla ullam f",
+    "deliveryAddress": "Aut ut nulla ullam f",
+    "orderDate": "2014-05-13",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 8833,
+    "formattedTimestamp": "16/10/2026 02:11:36 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 776,
+        "pieces": 11640
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 18,
+        "pieces": 540
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 168,
+        "pieces": 10080
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 268,
+        "pieces": 10720
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 295,
+        "pieces": 35400
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 78,
+        "pieces": 312
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 445,
+        "pieces": 2670
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 983,
+        "pieces": 8847
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 580,
+        "pieces": 9280
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 869,
+        "pieces": 27808
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 126,
+        "pieces": 126
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 254,
+        "pieces": 254
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 499,
+        "pieces": 499
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 951,
+        "pieces": 951
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 713,
+        "pieces": 10695
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 438,
+        "pieces": 13140
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 203,
+        "pieces": 3248
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 246,
+        "pieces": 246
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 923,
+        "pieces": 923
+      }
+    ],
+    "contactInput": "Quis in excepturi nu",
+    "timestamp": "2026-10-16T14:11:36.978329",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 147379,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 11640 Pcs (776 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 540 Pcs (18 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 10080 Pcs (168 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 10720 Pcs (268 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 35400 Pcs (295 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 312 Pcs (78 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 2670 Pcs (445 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 8847 Pcs (983 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 9280 Pcs (580 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 27808 Pcs (869 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 126 Pcs (126 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 254 Pcs (254 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 499 Pcs (499 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 951 Pcs (951 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 10695 Pcs (713 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 13140 Pcs (438 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 3248 Pcs (203 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 246 Pcs (246 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 923 Pcs (923 bxs)",
+    "securityHash": "SEC-1726-6908",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-9055.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-9055.png"
+  },
+  {
+    "id": "KOGM-20261016-7481",
+    "partyName": "Ignatius Mckay",
+    "partyCode": "SDMONEW1006",
+    "partyAddress": "Ex explicabo Volupt",
+    "deliveryAddress": "Ex explicabo Volupt",
+    "orderDate": "1974-10-03",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 9215,
+    "formattedTimestamp": "16/10/2026 02:25:32 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 357,
+        "pieces": 5355
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 415,
+        "pieces": 12450
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 9,
+        "pieces": 540
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 224,
+        "pieces": 8960
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 800,
+        "pieces": 96000
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 695,
+        "pieces": 2780
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 580,
+        "pieces": 3480
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 450,
+        "pieces": 4050
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 644,
+        "pieces": 10304
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 317,
+        "pieces": 10144
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 296,
+        "pieces": 296
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 521,
+        "pieces": 521
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 195,
+        "pieces": 195
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 604,
+        "pieces": 604
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 660,
+        "pieces": 9900
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 346,
+        "pieces": 10380
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 713,
+        "pieces": 11408
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 552,
+        "pieces": 552
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 837,
+        "pieces": 837
+      }
+    ],
+    "contactInput": "Nemo consectetur re",
+    "timestamp": "2026-10-16T14:25:32.044673",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 188756,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 5355 Pcs (357 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 12450 Pcs (415 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 540 Pcs (9 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 8960 Pcs (224 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 96000 Pcs (800 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 2780 Pcs (695 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 3480 Pcs (580 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 4050 Pcs (450 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 10304 Pcs (644 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 10144 Pcs (317 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 296 Pcs (296 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 521 Pcs (521 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 195 Pcs (195 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 604 Pcs (604 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 9900 Pcs (660 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 10380 Pcs (346 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 11408 Pcs (713 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 552 Pcs (552 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 837 Pcs (837 bxs)",
+    "securityHash": "SEC-E1EB-D988",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-7481.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-7481.png"
+  },
+  {
+    "id": "KOGM-20261016-8033",
+    "partyName": "Leila Wall",
+    "partyCode": "SDMONEW1007",
+    "partyAddress": "Recusandae Quo volu",
+    "deliveryAddress": "Recusandae Quo volu",
+    "orderDate": "2020-08-01",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 11325,
+    "formattedTimestamp": "16/10/2026 02:33:43 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 667,
+        "pieces": 10005
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 923,
+        "pieces": 27690
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 682,
+        "pieces": 40920
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 459,
+        "pieces": 18360
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 689,
+        "pieces": 82680
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 742,
+        "pieces": 2968
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 509,
+        "pieces": 3054
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 381,
+        "pieces": 3429
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 847,
+        "pieces": 13552
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 732,
+        "pieces": 23424
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 957,
+        "pieces": 957
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 883,
+        "pieces": 883
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 418,
+        "pieces": 418
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 724,
+        "pieces": 724
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 33,
+        "pieces": 495
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 634,
+        "pieces": 19020
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 740,
+        "pieces": 11840
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 131,
+        "pieces": 131
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 174,
+        "pieces": 174
+      }
+    ],
+    "contactInput": "Eiusmod quas elit e",
+    "timestamp": "2026-10-16T14:33:43.845142",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 260724,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 10005 Pcs (667 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 27690 Pcs (923 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 40920 Pcs (682 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 18360 Pcs (459 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 82680 Pcs (689 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 2968 Pcs (742 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 3054 Pcs (509 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 3429 Pcs (381 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 13552 Pcs (847 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 23424 Pcs (732 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 957 Pcs (957 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 883 Pcs (883 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 418 Pcs (418 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 724 Pcs (724 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 495 Pcs (33 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 19020 Pcs (634 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 11840 Pcs (740 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 131 Pcs (131 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 174 Pcs (174 bxs)",
+    "securityHash": "SEC-254B-1B79",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-8033.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-8033.png"
+  },
+  {
+    "id": "KOGM-20261016-3131",
+    "partyName": "Mariam Dean",
+    "partyCode": "SDMONEW1008",
+    "partyAddress": "Ratione dolore sapie",
+    "deliveryAddress": "Ratione dolore sapie",
+    "orderDate": "2023-09-03",
+    "salesPerson": "Enim sequi aliquid n",
+    "totalBoxes": 8623,
+    "formattedTimestamp": "16/10/2026 02:34:52 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 829,
+        "pieces": 12435
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 334,
+        "pieces": 10020
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 791,
+        "pieces": 47460
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 853,
+        "pieces": 34120
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 779,
+        "pieces": 93480
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 156,
+        "pieces": 624
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 635,
+        "pieces": 3810
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 488,
+        "pieces": 4392
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 526,
+        "pieces": 8416
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 76,
+        "pieces": 2432
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 498,
+        "pieces": 498
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 49,
+        "pieces": 49
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 655,
+        "pieces": 655
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 450,
+        "pieces": 450
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 320,
+        "pieces": 4800
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 140,
+        "pieces": 4200
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 527,
+        "pieces": 8432
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 228,
+        "pieces": 228
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 289,
+        "pieces": 289
+      }
+    ],
+    "timestamp": "2026-10-16T14:34:52.076749",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 236790,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 12435 Pcs (829 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 10020 Pcs (334 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 47460 Pcs (791 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 34120 Pcs (853 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 93480 Pcs (779 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 624 Pcs (156 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 3810 Pcs (635 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 4392 Pcs (488 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 8416 Pcs (526 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 2432 Pcs (76 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 498 Pcs (498 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 49 Pcs (49 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 655 Pcs (655 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 450 Pcs (450 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 4800 Pcs (320 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 4200 Pcs (140 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 8432 Pcs (527 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 228 Pcs (228 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 289 Pcs (289 bxs)",
+    "securityHash": "SEC-ED16-5BF7",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-3131.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-3131.png"
+  },
+  {
+    "id": "KOGM-20261016-3456",
+    "partyName": "Yvonne Jackson",
+    "partyCode": "SDMONEW1009",
+    "partyAddress": "Quidem velit rem id",
+    "deliveryAddress": "Quidem velit rem id",
+    "orderDate": "2011-08-30",
+    "salesPerson": "Similique repellendu",
+    "totalBoxes": 9715,
+    "formattedTimestamp": "16/10/2026 02:57:25 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 287,
+        "pieces": 4305
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 228,
+        "pieces": 6840
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 246,
+        "pieces": 14760
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 536,
+        "pieces": 21440
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 195,
+        "pieces": 23400
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 329,
+        "pieces": 1316
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 134,
+        "pieces": 804
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 633,
+        "pieces": 5697
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 518,
+        "pieces": 8288
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 898,
+        "pieces": 28736
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 675,
+        "pieces": 675
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 347,
+        "pieces": 347
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 705,
+        "pieces": 705
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 809,
+        "pieces": 809
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 487,
+        "pieces": 7305
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 631,
+        "pieces": 18930
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 578,
+        "pieces": 9248
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 894,
+        "pieces": 894
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 585,
+        "pieces": 585
+      }
+    ],
+    "timestamp": "2026-10-16T14:57:25.444097",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 155084,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 4305 Pcs (287 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 6840 Pcs (228 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 14760 Pcs (246 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 21440 Pcs (536 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 23400 Pcs (195 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 1316 Pcs (329 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 804 Pcs (134 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 5697 Pcs (633 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 8288 Pcs (518 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 28736 Pcs (898 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 675 Pcs (675 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 347 Pcs (347 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 705 Pcs (705 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 809 Pcs (809 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 7305 Pcs (487 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 18930 Pcs (631 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 9248 Pcs (578 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 894 Pcs (894 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 585 Pcs (585 bxs)",
+    "securityHash": "SEC-AE87-F40F",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-3456.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-3456.png"
+  },
+  {
+    "id": "KOGM-20261016-9477",
+    "partyName": "Bianca Rutledge",
+    "partyCode": "SDMONEW1010",
+    "partyAddress": "Eligendi iste in eos",
+    "deliveryAddress": "Eligendi iste in eos",
+    "orderDate": "2023-05-31",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 8437,
+    "formattedTimestamp": "16/10/2026 03:01:54 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 693,
+        "pieces": 10395
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 811,
+        "pieces": 24330
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 207,
+        "pieces": 12420
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 297,
+        "pieces": 11880
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 209,
+        "pieces": 25080
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 74,
+        "pieces": 296
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 816,
+        "pieces": 4896
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 76,
+        "pieces": 684
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 405,
+        "pieces": 6480
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 913,
+        "pieces": 29216
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 300,
+        "pieces": 300
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 409,
+        "pieces": 409
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 681,
+        "pieces": 681
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 745,
+        "pieces": 745
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 317,
+        "pieces": 4755
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 101,
+        "pieces": 3030
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 585,
+        "pieces": 9360
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 25,
+        "pieces": 25
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 773,
+        "pieces": 773
+      }
+    ],
+    "contactInput": "Nostrud duis odit et",
+    "timestamp": "2026-10-16T15:01:54.226279",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 145755,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15 ➔ 10395 Pcs (693 bxs)\n🔵 Mashal 500 ML BOTTLE x 30 ➔ 24330 Pcs (811 bxs)\n🔵 Mashal 200 ML BOTTLE x 60 ➔ 12420 Pcs (207 bxs)\n🔵 Mashal 200 ML BOTTLE x 40 ➔ 11880 Pcs (297 bxs)\n🔵 Mashal 100 ML BOTTLE x 120 ➔ 25080 Pcs (209 bxs)\n🔵 Mashal 5 LTR CAN x 4 ➔ 296 Pcs (74 bxs)\n🔵 Mashal 2 LTR CAN x 6 ➔ 4896 Pcs (816 bxs)\n🔵 Mashal 2 LTR BOTTLE x 9 ➔ 684 Pcs (76 bxs)\n🔵 Mashal 1 LTR. POUCH x 16 ➔ 6480 Pcs (405 bxs)\n🔵 Mashal 1/2 LTR. POUCH x 32 ➔ 29216 Pcs (913 bxs)\n🔵 Mashal 15 KG CAN x 1 ➔ 300 Pcs (300 bxs)\n🔵 Mashal 15 KG TIN x 1 ➔ 409 Pcs (409 bxs)\n🔵 Mashal 15 LTR CAN x 1 ➔ 681 Pcs (681 bxs)\n🔵 Mashal 15 LTR TIN x 1 ➔ 745 Pcs (745 bxs)\n🟢 Fauji 1 LTR. BOTTLE x 15 ➔ 4755 Pcs (317 bxs)\n🟢 Fauji 500 ML BOTTLE x 30 ➔ 3030 Pcs (101 bxs)\n🟢 Fauji 1 LTR. POUCH x 16 ➔ 9360 Pcs (585 bxs)\n🟢 Fauji 15 KG CAN x 1 ➔ 25 Pcs (25 bxs)\n🟢 Fauji 15 KG TIN x 1 ➔ 773 Pcs (773 bxs)",
+    "securityHash": "SEC-F252-B1C0",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-9477.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-9477.png"
+  },
+  {
+    "id": "KOGM-20261016-2255",
+    "partyName": "Summer Beard",
+    "partyCode": "SDMONEW1011",
+    "partyAddress": "Commodi perspiciatis",
+    "deliveryAddress": "Commodi perspiciatis",
+    "orderDate": "2004-04-04",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 8754,
+    "formattedTimestamp": "16/10/2026 03:25:21 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 468,
+        "pieces": 7020
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 171,
+        "pieces": 5130
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 284,
+        "pieces": 17040
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 393,
+        "pieces": 15720
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 12,
+        "pieces": 1440
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 957,
+        "pieces": 3828
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 424,
+        "pieces": 2544
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 894,
+        "pieces": 8046
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 155,
+        "pieces": 2480
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 617,
+        "pieces": 19744
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 41,
+        "pieces": 41
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 367,
+        "pieces": 367
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 382,
+        "pieces": 382
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 819,
+        "pieces": 819
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 854,
+        "pieces": 12810
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 214,
+        "pieces": 6420
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 475,
+        "pieces": 7600
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 609,
+        "pieces": 609
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 618,
+        "pieces": 618
+      }
+    ],
+    "contactInput": "Nihil assumenda volu",
+    "timestamp": "2026-10-16T15:25:21.067727",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 112658,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15  ➔  7,020 Pcs  |  [ 468 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30  ➔  5,130 Pcs  |  [ 171 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60  ➔  17,040 Pcs  |  [ 284 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40  ➔  15,720 Pcs  |  [ 393 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120  ➔  1,440 Pcs  |  [ 12 Boxes ]\n🔵 Mashal 5 LTR CAN x 4  ➔  3,828 Pcs  |  [ 957 Boxes ]\n🔵 Mashal 2 LTR CAN x 6  ➔  2,544 Pcs  |  [ 424 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9  ➔  8,046 Pcs  |  [ 894 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16  ➔  2,480 Pcs  |  [ 155 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32  ➔  19,744 Pcs  |  [ 617 Boxes ]\n🔵 Mashal 15 KG CAN x 1  ➔  41 Pcs  |  [ 41 Boxes ]\n🔵 Mashal 15 KG TIN x 1  ➔  367 Pcs  |  [ 367 Boxes ]\n🔵 Mashal 15 LTR CAN x 1  ➔  382 Pcs  |  [ 382 Boxes ]\n🔵 Mashal 15 LTR TIN x 1  ➔  819 Pcs  |  [ 819 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15  ➔  12,810 Pcs  |  [ 854 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30  ➔  6,420 Pcs  |  [ 214 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16  ➔  7,600 Pcs  |  [ 475 Boxes ]\n🟢 Fauji 15 KG CAN x 1  ➔  609 Pcs  |  [ 609 Boxes ]\n🟢 Fauji 15 KG TIN x 1  ➔  618 Pcs  |  [ 618 Boxes ]",
+    "securityHash": "SEC-9275-A117",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-2255.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-2255.png"
+  },
+  {
+    "id": "KOGM-20261016-9097",
+    "partyName": "Ishmael Callahan",
+    "partyCode": "SDMONEW1012",
+    "partyAddress": "Sed odit suscipit qu",
+    "deliveryAddress": "Sed odit suscipit qu",
+    "orderDate": "1970-10-28",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 9998,
+    "formattedTimestamp": "16/10/2026 03:32:08 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 293,
+        "pieces": 4395
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 72,
+        "pieces": 2160
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 727,
+        "pieces": 43620
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 518,
+        "pieces": 20720
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 427,
+        "pieces": 51240
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 472,
+        "pieces": 1888
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 820,
+        "pieces": 4920
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 626,
+        "pieces": 5634
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 902,
+        "pieces": 14432
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 587,
+        "pieces": 18784
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 716,
+        "pieces": 716
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 267,
+        "pieces": 267
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 225,
+        "pieces": 225
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 24,
+        "pieces": 24
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 669,
+        "pieces": 10035
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 602,
+        "pieces": 18060
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 583,
+        "pieces": 9328
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 593,
+        "pieces": 593
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 875,
+        "pieces": 875
+      }
+    ],
+    "contactInput": "Veniam esse cillum",
+    "timestamp": "2026-10-16T15:32:08.544608",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 207916,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15  ➔  4,395 Pcs  |  [ 293 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30  ➔  2,160 Pcs  |  [ 72 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60  ➔  43,620 Pcs  |  [ 727 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40  ➔  20,720 Pcs  |  [ 518 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120  ➔  51,240 Pcs  |  [ 427 Boxes ]\n🔵 Mashal 5 LTR CAN x 4  ➔  1,888 Pcs  |  [ 472 Boxes ]\n🔵 Mashal 2 LTR CAN x 6  ➔  4,920 Pcs  |  [ 820 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9  ➔  5,634 Pcs  |  [ 626 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16  ➔  14,432 Pcs  |  [ 902 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32  ➔  18,784 Pcs  |  [ 587 Boxes ]\n🔵 Mashal 15 KG CAN x 1  ➔  716 Pcs  |  [ 716 Boxes ]\n🔵 Mashal 15 KG TIN x 1  ➔  267 Pcs  |  [ 267 Boxes ]\n🔵 Mashal 15 LTR CAN x 1  ➔  225 Pcs  |  [ 225 Boxes ]\n🔵 Mashal 15 LTR TIN x 1  ➔  24 Pcs  |  [ 24 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15  ➔  10,035 Pcs  |  [ 669 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30  ➔  18,060 Pcs  |  [ 602 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16  ➔  9,328 Pcs  |  [ 583 Boxes ]\n🟢 Fauji 15 KG CAN x 1  ➔  593 Pcs  |  [ 593 Boxes ]\n🟢 Fauji 15 KG TIN x 1  ➔  875 Pcs  |  [ 875 Boxes ]",
+    "securityHash": "SEC-47F4-4DB4",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-9097.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-9097.png"
+  },
+  {
+    "id": "KOGM-20261016-1653",
+    "partyName": "Kareem Weber",
+    "partyCode": "SDMONEW1013",
+    "partyAddress": "Soluta in pariatur",
+    "deliveryAddress": "Soluta in pariatur",
+    "orderDate": "2012-03-24",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 8400,
+    "formattedTimestamp": "16/10/2026 03:52:49 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 722,
+        "pieces": 10830
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 757,
+        "pieces": 22710
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 92,
+        "pieces": 5520
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 348,
+        "pieces": 13920
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 334,
+        "pieces": 40080
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 665,
+        "pieces": 2660
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 599,
+        "pieces": 3594
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 255,
+        "pieces": 2295
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 210,
+        "pieces": 3360
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 531,
+        "pieces": 16992
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 572,
+        "pieces": 572
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 341,
+        "pieces": 341
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 206,
+        "pieces": 206
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 257,
+        "pieces": 257
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 898,
+        "pieces": 13470
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 269,
+        "pieces": 8070
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 272,
+        "pieces": 4352
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 742,
+        "pieces": 742
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 330,
+        "pieces": 330
+      }
+    ],
+    "contactInput": "Quaerat perferendis",
+    "timestamp": "2026-10-16T15:52:49.963638",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 150301,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   10,830 Pcs   |   [ 722 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   22,710 Pcs   |   [ 757 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   5,520 Pcs   |   [ 92 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   13,920 Pcs   |   [ 348 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   40,080 Pcs   |   [ 334 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   2,660 Pcs   |   [ 665 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   3,594 Pcs   |   [ 599 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   2,295 Pcs   |   [ 255 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   3,360 Pcs   |   [ 210 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   16,992 Pcs   |   [ 531 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   572 Pcs   |   [ 572 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   341 Pcs   |   [ 341 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   206 Pcs   |   [ 206 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   257 Pcs   |   [ 257 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   13,470 Pcs   |   [ 898 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   8,070 Pcs   |   [ 269 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   4,352 Pcs   |   [ 272 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   742 Pcs   |   [ 742 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   330 Pcs   |   [ 330 Boxes ]",
+    "securityHash": "SEC-D3FF-9750",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-1653.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-1653.png"
+  },
+  {
+    "id": "KOGM-20261016-4432",
+    "partyName": "Kaitlin Morrison",
+    "partyCode": "SDMONEW1014",
+    "partyAddress": "Et explicabo Sed an",
+    "deliveryAddress": "Et explicabo Sed an",
+    "orderDate": "2006-06-11",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 8444,
+    "formattedTimestamp": "16/10/2026 03:54:11 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 474,
+        "pieces": 7110
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 716,
+        "pieces": 21480
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 884,
+        "pieces": 53040
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 72,
+        "pieces": 2880
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 384,
+        "pieces": 46080
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 567,
+        "pieces": 2268
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 229,
+        "pieces": 1374
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 869,
+        "pieces": 7821
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 171,
+        "pieces": 2736
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 214,
+        "pieces": 6848
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 432,
+        "pieces": 432
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 54,
+        "pieces": 54
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 639,
+        "pieces": 639
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 279,
+        "pieces": 279
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 479,
+        "pieces": 7185
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 917,
+        "pieces": 27510
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 673,
+        "pieces": 10768
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 25,
+        "pieces": 25
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 366,
+        "pieces": 366
+      }
+    ],
+    "contactInput": "Do omnis minim aliqu",
+    "timestamp": "2026-10-16T15:54:11.931655",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 198895,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   7,110 Pcs   |   [ 474 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   21,480 Pcs   |   [ 716 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   53,040 Pcs   |   [ 884 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   2,880 Pcs   |   [ 72 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   46,080 Pcs   |   [ 384 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   2,268 Pcs   |   [ 567 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   1,374 Pcs   |   [ 229 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   7,821 Pcs   |   [ 869 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   2,736 Pcs   |   [ 171 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   6,848 Pcs   |   [ 214 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   432 Pcs   |   [ 432 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   54 Pcs   |   [ 54 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   639 Pcs   |   [ 639 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   279 Pcs   |   [ 279 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   7,185 Pcs   |   [ 479 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   27,510 Pcs   |   [ 917 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   10,768 Pcs   |   [ 673 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   25 Pcs   |   [ 25 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   366 Pcs   |   [ 366 Boxes ]",
+    "securityHash": "SEC-E15A-5634",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-4432.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-4432.png"
+  },
+  {
+    "id": "KOGM-20261016-4350",
+    "partyName": "Imogene Rodgers",
+    "partyCode": "SDMONEW1015",
+    "partyAddress": "Consequuntur dolore",
+    "deliveryAddress": "Consequuntur dolore",
+    "orderDate": "1994-06-02",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 7085,
+    "formattedTimestamp": "16/10/2026 04:02:39 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 160,
+        "pieces": 2400
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 56,
+        "pieces": 1680
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 482,
+        "pieces": 28920
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 22,
+        "pieces": 880
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 50,
+        "pieces": 6000
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 545,
+        "pieces": 2180
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 103,
+        "pieces": 618
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 262,
+        "pieces": 2358
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 44,
+        "pieces": 704
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 360,
+        "pieces": 11520
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 944,
+        "pieces": 944
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 626,
+        "pieces": 626
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 454,
+        "pieces": 454
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 820,
+        "pieces": 820
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 464,
+        "pieces": 6960
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 715,
+        "pieces": 21450
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 265,
+        "pieces": 4240
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 18,
+        "pieces": 18
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 695,
+        "pieces": 695
+      }
+    ],
+    "contactInput": "Quo minus ad volupta",
+    "timestamp": "2026-10-16T16:02:39.206474",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 93467,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   2,400 Pcs   |   [ 160 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   1,680 Pcs   |   [ 56 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   28,920 Pcs   |   [ 482 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   880 Pcs   |   [ 22 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   6,000 Pcs   |   [ 50 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   2,180 Pcs   |   [ 545 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   618 Pcs   |   [ 103 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   2,358 Pcs   |   [ 262 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   704 Pcs   |   [ 44 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   11,520 Pcs   |   [ 360 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   944 Pcs   |   [ 944 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   626 Pcs   |   [ 626 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   454 Pcs   |   [ 454 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   820 Pcs   |   [ 820 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   6,960 Pcs   |   [ 464 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   21,450 Pcs   |   [ 715 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   4,240 Pcs   |   [ 265 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   18 Pcs   |   [ 18 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   695 Pcs   |   [ 695 Boxes ]",
+    "securityHash": "SEC-F36C-0901",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-4350.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-4350.png"
+  },
+  {
+    "id": "KOGM-20261016-7844",
+    "partyName": "Serena Underwood",
+    "partyCode": "SDMONEW1016",
+    "partyAddress": "Cumque non amet in",
+    "deliveryAddress": "Cumque non amet in",
+    "orderDate": "2009-01-22",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 8050,
+    "formattedTimestamp": "16/10/2026 04:12:51 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 197,
+        "pieces": 2955
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 851,
+        "pieces": 25530
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 538,
+        "pieces": 32280
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 894,
+        "pieces": 35760
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 341,
+        "pieces": 40920
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 528,
+        "pieces": 2112
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 440,
+        "pieces": 2640
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 361,
+        "pieces": 3249
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 551,
+        "pieces": 8816
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 719,
+        "pieces": 23008
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 434,
+        "pieces": 434
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 131,
+        "pieces": 131
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 19,
+        "pieces": 19
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 198,
+        "pieces": 198
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 45,
+        "pieces": 675
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 728,
+        "pieces": 21840
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 419,
+        "pieces": 6704
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 286,
+        "pieces": 286
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 370,
+        "pieces": 370
+      }
+    ],
+    "contactInput": "Voluptate dolores si",
+    "timestamp": "2026-10-16T16:12:51.882362",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 207927,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   2,955 Pcs   |   [ 197 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   25,530 Pcs   |   [ 851 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   32,280 Pcs   |   [ 538 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   35,760 Pcs   |   [ 894 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   40,920 Pcs   |   [ 341 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   2,112 Pcs   |   [ 528 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   2,640 Pcs   |   [ 440 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   3,249 Pcs   |   [ 361 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   8,816 Pcs   |   [ 551 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   23,008 Pcs   |   [ 719 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   434 Pcs   |   [ 434 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   131 Pcs   |   [ 131 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   19 Pcs   |   [ 19 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   198 Pcs   |   [ 198 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   675 Pcs   |   [ 45 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   21,840 Pcs   |   [ 728 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   6,704 Pcs   |   [ 419 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   286 Pcs   |   [ 286 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   370 Pcs   |   [ 370 Boxes ]",
+    "securityHash": "SEC-C23B-EF6C",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-7844.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-7844.png"
+  },
+  {
+    "id": "KOGM-20261016-4238",
+    "partyName": "Aladdin Galloway",
+    "partyCode": "SDMONEW1017",
+    "partyAddress": "Commodo harum est in",
+    "deliveryAddress": "Commodo harum est in",
+    "orderDate": "1979-02-17",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 8934,
+    "formattedTimestamp": "16/10/2026 04:13:05 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 658,
+        "pieces": 9870
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 861,
+        "pieces": 25830
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 874,
+        "pieces": 52440
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 321,
+        "pieces": 12840
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 588,
+        "pieces": 70560
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 658,
+        "pieces": 2632
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 335,
+        "pieces": 2010
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 19,
+        "pieces": 171
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 176,
+        "pieces": 2816
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 306,
+        "pieces": 9792
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 96,
+        "pieces": 96
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 156,
+        "pieces": 156
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 148,
+        "pieces": 148
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 942,
+        "pieces": 942
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 878,
+        "pieces": 13170
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 465,
+        "pieces": 13950
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 358,
+        "pieces": 5728
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 808,
+        "pieces": 808
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 287,
+        "pieces": 287
+      }
+    ],
+    "contactInput": "Assumenda velit corr",
+    "timestamp": "2026-10-16T16:13:05.689005",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 224246,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   9,870 Pcs   |   [ 658 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   25,830 Pcs   |   [ 861 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   52,440 Pcs   |   [ 874 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   12,840 Pcs   |   [ 321 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   70,560 Pcs   |   [ 588 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   2,632 Pcs   |   [ 658 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   2,010 Pcs   |   [ 335 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   171 Pcs   |   [ 19 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   2,816 Pcs   |   [ 176 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   9,792 Pcs   |   [ 306 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   96 Pcs   |   [ 96 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   156 Pcs   |   [ 156 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   148 Pcs   |   [ 148 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   942 Pcs   |   [ 942 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   13,170 Pcs   |   [ 878 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   13,950 Pcs   |   [ 465 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   5,728 Pcs   |   [ 358 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   808 Pcs   |   [ 808 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   287 Pcs   |   [ 287 Boxes ]",
+    "securityHash": "SEC-2974-6B1C",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-4238.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-4238.png"
+  },
+  {
+    "id": "KOGM-20261016-8610",
+    "partyName": "Tatum Bridges",
+    "partyCode": "SDMONEW1018",
+    "partyAddress": "Voluptatibus aut cum",
+    "deliveryAddress": "Voluptatibus aut cum",
+    "orderDate": "2011-11-11",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 9509,
+    "formattedTimestamp": "16/10/2026 04:24:47 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 309,
+        "pieces": 4635
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 193,
+        "pieces": 5790
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 635,
+        "pieces": 38100
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 782,
+        "pieces": 31280
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 278,
+        "pieces": 33360
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 385,
+        "pieces": 1540
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 328,
+        "pieces": 1968
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 669,
+        "pieces": 6021
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 883,
+        "pieces": 14128
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 635,
+        "pieces": 20320
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 151,
+        "pieces": 151
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 320,
+        "pieces": 320
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 525,
+        "pieces": 525
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 173,
+        "pieces": 173
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 792,
+        "pieces": 11880
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 994,
+        "pieces": 29820
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 375,
+        "pieces": 6000
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 372,
+        "pieces": 372
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 710,
+        "pieces": 710
+      }
+    ],
+    "contactInput": "Iure porro sed aut e",
+    "timestamp": "2026-10-16T16:24:47.673697",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 207093,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   4,635 Pcs   |   [ 309 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   5,790 Pcs   |   [ 193 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   38,100 Pcs   |   [ 635 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   31,280 Pcs   |   [ 782 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   33,360 Pcs   |   [ 278 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   1,540 Pcs   |   [ 385 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   1,968 Pcs   |   [ 328 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   6,021 Pcs   |   [ 669 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   14,128 Pcs   |   [ 883 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   20,320 Pcs   |   [ 635 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   151 Pcs   |   [ 151 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   320 Pcs   |   [ 320 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   525 Pcs   |   [ 525 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   173 Pcs   |   [ 173 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   11,880 Pcs   |   [ 792 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   29,820 Pcs   |   [ 994 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   6,000 Pcs   |   [ 375 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   372 Pcs   |   [ 372 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   710 Pcs   |   [ 710 Boxes ]",
+    "securityHash": "SEC-855A-95AB",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-8610.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-8610.png"
+  },
+  {
+    "id": "KOGM-20261016-7099",
+    "partyName": "Nell Valentine",
+    "partyCode": "SDMONEW1019",
+    "partyAddress": "Facilis qui enim mai",
+    "deliveryAddress": "Facilis qui enim mai",
+    "orderDate": "1981-08-30",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 9174,
+    "formattedTimestamp": "16/10/2026 04:33:42 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 466,
+        "pieces": 6990
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 161,
+        "pieces": 4830
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 584,
+        "pieces": 35040
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 445,
+        "pieces": 17800
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 181,
+        "pieces": 21720
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 359,
+        "pieces": 1436
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 229,
+        "pieces": 1374
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 525,
+        "pieces": 4725
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 785,
+        "pieces": 12560
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 194,
+        "pieces": 6208
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 779,
+        "pieces": 779
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 861,
+        "pieces": 861
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 662,
+        "pieces": 662
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 531,
+        "pieces": 531
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 141,
+        "pieces": 2115
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 463,
+        "pieces": 13890
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 772,
+        "pieces": 12352
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 855,
+        "pieces": 855
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 181,
+        "pieces": 181
+      }
+    ],
+    "contactInput": "Voluptatum ut eos o",
+    "timestamp": "2026-10-16T16:33:42.514161",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 144909,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   6,990 Pcs   |   [ 466 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   4,830 Pcs   |   [ 161 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   35,040 Pcs   |   [ 584 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   17,800 Pcs   |   [ 445 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   21,720 Pcs   |   [ 181 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   1,436 Pcs   |   [ 359 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   1,374 Pcs   |   [ 229 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   4,725 Pcs   |   [ 525 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   12,560 Pcs   |   [ 785 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   6,208 Pcs   |   [ 194 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   779 Pcs   |   [ 779 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   861 Pcs   |   [ 861 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   662 Pcs   |   [ 662 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   531 Pcs   |   [ 531 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   2,115 Pcs   |   [ 141 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   13,890 Pcs   |   [ 463 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   12,352 Pcs   |   [ 772 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   855 Pcs   |   [ 855 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   181 Pcs   |   [ 181 Boxes ]",
+    "securityHash": "SEC-C6CB-6323",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-7099.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-7099.png"
+  },
+  {
+    "id": "KOGM-20261016-3108",
+    "partyName": "Ashton Kane",
+    "partyCode": "SDMONEW1020",
+    "partyAddress": "Anim a omnis quidem",
+    "deliveryAddress": "Anim a omnis quidem",
+    "orderDate": "1982-08-23",
+    "salesPerson": "Officia irure mollit",
+    "totalBoxes": 8894,
+    "formattedTimestamp": "16/10/2026 04:42:59 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 425,
+        "pieces": 6375
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 612,
+        "pieces": 18360
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 665,
+        "pieces": 39900
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 639,
+        "pieces": 25560
+      },
+      {
+        "brand": "Mashal",
+        "item": "100 ML BOTTLE x 120",
+        "boxes": 195,
+        "pieces": 23400
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 232,
+        "pieces": 928
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR CAN x 6",
+        "boxes": 646,
+        "pieces": 3876
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 236,
+        "pieces": 2124
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 635,
+        "pieces": 10160
+      },
+      {
+        "brand": "Mashal",
+        "item": "1/2 LTR. POUCH x 32",
+        "boxes": 502,
+        "pieces": 16064
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG CAN x 1",
+        "boxes": 786,
+        "pieces": 786
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 KG TIN x 1",
+        "boxes": 533,
+        "pieces": 533
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 671,
+        "pieces": 671
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 680,
+        "pieces": 680
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 21,
+        "pieces": 315
+      },
+      {
+        "brand": "Fauji",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 30,
+        "pieces": 900
+      },
+      {
+        "brand": "Fauji",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 422,
+        "pieces": 6752
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG CAN x 1",
+        "boxes": 251,
+        "pieces": 251
+      },
+      {
+        "brand": "Fauji",
+        "item": "15 KG TIN x 1",
+        "boxes": 713,
+        "pieces": 713
+      }
+    ],
+    "timestamp": "2026-10-16T16:42:59.759191",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 158348,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   6,375 Pcs   |   [ 425 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   18,360 Pcs   |   [ 612 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   39,900 Pcs   |   [ 665 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   25,560 Pcs   |   [ 639 Boxes ]\n🔵 Mashal 100 ML BOTTLE x 120   ➔   23,400 Pcs   |   [ 195 Boxes ]\n🔵 Mashal 5 LTR CAN x 4   ➔   928 Pcs   |   [ 232 Boxes ]\n🔵 Mashal 2 LTR CAN x 6   ➔   3,876 Pcs   |   [ 646 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   2,124 Pcs   |   [ 236 Boxes ]\n🔵 Mashal 1 LTR. POUCH x 16   ➔   10,160 Pcs   |   [ 635 Boxes ]\n🔵 Mashal 1/2 LTR. POUCH x 32   ➔   16,064 Pcs   |   [ 502 Boxes ]\n🔵 Mashal 15 KG CAN x 1   ➔   786 Pcs   |   [ 786 Boxes ]\n🔵 Mashal 15 KG TIN x 1   ➔   533 Pcs   |   [ 533 Boxes ]\n🔵 Mashal 15 LTR CAN x 1   ➔   671 Pcs   |   [ 671 Boxes ]\n🔵 Mashal 15 LTR TIN x 1   ➔   680 Pcs   |   [ 680 Boxes ]\n🟢 Fauji 1 LTR. BOTTLE x 15   ➔   315 Pcs   |   [ 21 Boxes ]\n🟢 Fauji 500 ML BOTTLE x 30   ➔   900 Pcs   |   [ 30 Boxes ]\n🟢 Fauji 1 LTR. POUCH x 16   ➔   6,752 Pcs   |   [ 422 Boxes ]\n🟢 Fauji 15 KG CAN x 1   ➔   251 Pcs   |   [ 251 Boxes ]\n🟢 Fauji 15 KG TIN x 1   ➔   713 Pcs   |   [ 713 Boxes ]",
+    "securityHash": "SEC-F4E2-8DA1",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-3108.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-3108.png"
+  },
+  {
+    "id": "KOGM-20261016-9075",
+    "partyName": "Hshjs",
+    "partyCode": "SDMONEW1021",
+    "partyAddress": "Hdhdjh",
+    "deliveryAddress": "Hdhdjh",
+    "orderDate": "2026-10-16",
+    "salesPerson": "Nxnnsn",
+    "totalBoxes": 6,
+    "formattedTimestamp": "16/10/2026 05:15:16 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 3,
+        "pieces": 45
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 3,
+        "pieces": 90
+      }
+    ],
+    "timestamp": "2026-10-16T17:15:16.177638",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "verifyUrl": "https://sevenfold-blazer-pacific.ngrok-free.dev/verify/KOGM-20261016-9075",
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 135,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   45 Pcs   |   [ 3 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   90 Pcs   |   [ 3 Boxes ]",
+    "securityHash": "SEC-07C7-369B",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-9075.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-9075.png"
+  },
+  {
+    "id": "KOGM-20261016-3687",
+    "partyName": "Hshsj",
+    "partyCode": "SDMONEW1022",
+    "partyAddress": "Jdjxjx",
+    "deliveryAddress": "Jdjxjx",
+    "orderDate": "2026-10-16",
+    "salesPerson": "Nxnxnn",
+    "totalBoxes": 4,
+    "formattedTimestamp": "16/10/2026 05:29:35 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 2,
+        "pieces": 30
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 2,
+        "pieces": 60
+      }
+    ],
+    "timestamp": "2026-10-16T17:29:35.150298",
+    "formattedDate": "16/10/2026",
+    "synced_to_sheet": true,
+    "verifyUrl": "https://sevenfold-blazer-pacific.ngrok-free.dev/verify/KOGM-20261016-3687",
+    "dataConsent": "YES (Verified)",
+    "totalPieces": 90,
+    "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   30 Pcs   |   [ 2 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   60 Pcs   |   [ 2 Boxes ]",
+    "securityHash": "SEC-2865-38E3",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-3687.png",
+    "slipImageUrl": "/order_slips/KOGM-20261016-3687.png"
   }
 ]
