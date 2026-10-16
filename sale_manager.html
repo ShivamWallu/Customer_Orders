@@ -1903,7 +1903,7 @@
       
       const rowHeight = 36;
       const tableHeaderHeight = 40;
-      const baseHeight = 480; // 🎯 Dynamically trimmed: perfectly removes empty bottom white void while preserving 14px clean padding
+      const baseHeight = 510;
       const totalHeight = baseHeight + (items.length * rowHeight);
       
       canvas.width = width * scale;
@@ -2057,12 +2057,53 @@
       ctx.font = "bold 14px 'Courier New', monospace";
       ctx.fillText(pCode, width / 2, badgeY + 34);
 
-      // 3. Right: Vector Barcode (Replacing previous Party Code location)
-      const barW = 180;
-      const barH = 54;
-      const barX = width - barW - 24;
-      const barY = custBoxY + 16;
-      drawOrderBarcode(ctx, order.id, barX, barY, barW, barH);
+      // 3. Right: Live Scannable Verification QR Code (Replacing 1D Barcode)
+      const cleanOrderId = (order.id || "").replace("#", "").trim();
+      const qrUrl = "https://order.khandelia.online/verify/" + cleanOrderId;
+      const sealText = order.securityHash || "SEC-AUTHENTIC";
+
+      const qrCardW = 210;
+      const qrCardH = 68;
+      const qrCardX = width - qrCardW - 24;
+      const qrCardY = custBoxY + 8;
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.strokeStyle = "#cbd5e1";
+      ctx.lineWidth = 1.2;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(qrCardX, qrCardY, qrCardW, qrCardH, 8);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillRect(qrCardX, qrCardY, qrCardW, qrCardH);
+        ctx.strokeRect(qrCardX, qrCardY, qrCardW, qrCardH);
+      }
+
+      // Live Scannable QR Code
+      const qrSize = 54;
+      const qrX = qrCardX + 7;
+      const qrY = qrCardY + 7;
+      drawOrderQRCode(ctx, qrUrl, qrX, qrY, qrSize);
+
+      // Verification Text beside QR Code
+      const textX = qrCardX + 68;
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#15803d";
+      ctx.font = "bold 10px 'Arial', sans-serif";
+      ctx.fillText("✔ SCAN TO VERIFY", textX, qrCardY + 19);
+
+      ctx.fillStyle = "#003366";
+      ctx.font = "bold 11px 'Courier New', monospace";
+      ctx.fillText("#" + cleanOrderId, textX, qrCardY + 34);
+
+      ctx.fillStyle = "#0284c7";
+      ctx.font = "bold 9.5px 'Courier New', monospace";
+      ctx.fillText("SEAL: " + sealText, textX, qrCardY + 48);
+
+      ctx.fillStyle = "#64748b";
+      ctx.font = "bold 8.5px 'Arial', sans-serif";
+      ctx.fillText("OFFICIAL RECORD", textX, qrCardY + 61);
       
       // Table Header (5 Columns with Centered Pieces)
       const tableY = 278;
@@ -2148,68 +2189,46 @@
       ctx.textAlign = "center";
       ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  |  " + totalPieces.toLocaleString() + " PIECES", width / 2, bannerY + 31);
       
-      // 🛡️ Footer Notes & Customer Care Support (Clean 3-line layout, Zero Overlap!)
-      const footY = bannerY + bannerH + 24;
-      ctx.fillStyle = "#16a34a";
-      ctx.font = "bold 12px 'Arial', sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText("✔ OFFICIALLY RECORDED & VERIFIED ORDER", 24, footY + 4);
-      
-      ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.fillText("Customer Care: 📞 Toll-Free: 1800 103 3211   |   ✉ customercare@khandelia.com", 24, footY + 24);
-      
-      ctx.fillStyle = "#64748b";
-      ctx.font = "10.5px 'Arial', sans-serif";
-      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", 24, footY + 44);
-      
-      // 🛡️ Verified Factory Stamp on Right with Live Scannable QR Code (Zero Overlap Guaranteed!)
-      const stampBoxW = 310;
-      const stampBoxH = 76;
-      const stampBoxX = width - stampBoxW - 16;
-      const stampBoxY = footY - 14;
-      
-      ctx.fillStyle = "#f0fdf4";
-      ctx.strokeStyle = "#16a34a";
-      ctx.lineWidth = 1.5;
+      // 🛡️ Footer Card: Thank You & Customer Care Support (Clean, Wide & Elegant)
+      const footCardW = width - 24;
+      const footCardH = 96;
+      const footCardX = 12;
+      const footCardY = bannerY + bannerH + 16;
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.strokeStyle = "#e2e8f0";
+      ctx.lineWidth = 1;
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH, 8);
+        ctx.roundRect(footCardX, footCardY, footCardW, footCardH, 8);
         ctx.fill();
         ctx.stroke();
       } else {
-        ctx.fillRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH);
-        ctx.strokeRect(stampBoxX, stampBoxY, stampBoxW, stampBoxH);
+        ctx.fillRect(footCardX, footCardY, footCardW, footCardH);
+        ctx.strokeRect(footCardX, footCardY, footCardW, footCardH);
       }
 
-      // Live Scannable QR Code (60x60) inside stamp box
-      const qrSize = 60;
-      const qrX = stampBoxX + 8;
-      const qrY = stampBoxY + 8;
-      const cleanOrderId = (order.id || "").replace("#", "").trim();
-      const qrUrl = "https://order.khandelia.online/verify/" + cleanOrderId;
-      drawOrderQRCode(ctx, qrUrl, qrX, qrY, qrSize);
-      
-      // Stamp Text on right of QR Code with clean padding
-      const textLeftX = stampBoxX + 76;
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#15803d";
-      ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.fillText("✔ VERIFIED FACTORY RECORD", textLeftX, stampBoxY + 18);
-      
+      ctx.textAlign = "center";
       ctx.fillStyle = "#003366";
-      ctx.font = "bold 12px 'Courier New', monospace";
-      ctx.fillText("#" + cleanOrderId, textLeftX, stampBoxY + 34);
-      
-      ctx.fillStyle = "#0284c7";
-      ctx.font = "bold 10px 'Courier New', monospace";
-      const sealText = order.securityHash || "SEC-AUTHENTIC";
-      ctx.fillText("SEAL: " + sealText, textLeftX, stampBoxY + 49);
+      ctx.font = "bold 14px 'Arial', sans-serif";
+      ctx.fillText("Thank You for Your Order!", width / 2, footCardY + 22);
 
-      ctx.fillStyle = "#16a34a";
-      ctx.font = "bold 9px 'Arial', sans-serif";
-      ctx.fillText("📷 SCAN TO VERIFY AUTHENTICITY", textLeftX, stampBoxY + 65);
-      
+      ctx.fillStyle = "#334155";
+      ctx.font = "11.5px 'Arial', sans-serif";
+      ctx.fillText("Our Customer Care team is always available to assist you.", width / 2, footCardY + 40);
+
+      ctx.fillStyle = "#0284c7";
+      ctx.font = "bold 12px 'Arial', sans-serif";
+      ctx.fillText("📞 Toll-Free: 1800 103 3211   |   📧 Email: customercare@khandelia.com", width / 2, footCardY + 58);
+
+      ctx.fillStyle = "#64748b";
+      ctx.font = "11px 'Arial', sans-serif";
+      ctx.fillText("For any queries or assistance, feel free to call or email us. We're always happy to help!", width / 2, footCardY + 75);
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "9px 'Arial', sans-serif";
+      ctx.fillText("Khandelia Oil and General Mills Pvt. Ltd. • Official Digital OMS", width / 2, footCardY + 89);
+
       return canvas;
     }
 
