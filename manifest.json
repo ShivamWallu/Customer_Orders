@@ -1,12 +1,12 @@
 {
-  "name": "KOGM Sales Manager - Khandelia Oil",
-  "short_name": "KOGM Sales",
-  "description": "Area Sales Manager Order Booking Portal for Khandelia Oil & General Mills Pvt. Ltd. (Mashal & Fauji Mustard Oil).",
+  "name": "Mashal Sales Manager - Khandelia Oil",
+  "short_name": "Mashal Sales",
+  "description": "Official Area Sales Manager Order Booking Portal for Mashal & Fauji Mustard Oil (Khandelia Oil & General Mills Pvt. Ltd.).",
   "start_url": "/sale_manage",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#003366",
+  "background_color": "#f9df83",
   "theme_color": "#003366",
   "categories": ["business", "productivity", "utilities"],
   "icons": [
