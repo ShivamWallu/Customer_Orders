@@ -263,8 +263,8 @@ function appendOrderToSheet(order) {
     sheet = ss.getSheets()[0];
   }
 
-  // 1. Fast Check: Only run Migration if sheet is empty or headers need standardizing (Bypasses 3-5 sec delay on normal appends!)
-  if (sheet.getLastRow() === 0 || sheet.getLastColumn() < 11 || String(sheet.getRange(1, 3).getValue()).toLowerCase().indexOf("code") === -1) {
+  // 1. Fast Check: Only run Migration if sheet is completely empty (Saves 600ms on every single order!)
+  if (sheet.getLastRow() === 0) {
     migrateAndFormatSheet(sheet);
   }
 
@@ -334,27 +334,17 @@ function appendOrderToSheet(order) {
   sheet.appendRow(row);
   const lastRow = sheet.getLastRow();
   
-  // Format Row Cells
-  sheet.getRange(lastRow, 1).setHorizontalAlignment("center").setVerticalAlignment("middle"); // Timestamp
-  sheet.getRange(lastRow, 2).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#004b99").setHorizontalAlignment("center").setVerticalAlignment("middle"); // Order ID
-  
-  // Column 3: Party Code (Monospace bold on soft blue chip)
-  sheet.getRange(lastRow, 3).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#003366").setBackground("#eff6ff").setHorizontalAlignment("center").setVerticalAlignment("middle");
-  
-  // Column 4: Party Name
-  sheet.getRange(lastRow, 4).setFontWeight("bold").setVerticalAlignment("middle");
-  
-  // Column 5: Single Party Address (Wrapped, 260px wide)
-  sheet.getRange(lastRow, 5).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
-  
-  // Column 6: Area Sales Manager
-  sheet.getRange(lastRow, 6).setHorizontalAlignment("center").setVerticalAlignment("middle");
+  // ⚡ BATCH ROW FORMATTING (1 network call for whole row vertical alignment!)
+  sheet.getRange(lastRow, 1, 1, 11).setVerticalAlignment("middle");
 
-  // Column 7: Quantity (Pieces)
-  sheet.getRange(lastRow, 7).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setFontColor("#1e40af").setBackground("#f0fdf4");
-
-  // Column 8: Total Boxes
-  sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff");
+  sheet.getRange(lastRow, 1).setHorizontalAlignment("center"); // Timestamp
+  sheet.getRange(lastRow, 2).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#004b99").setHorizontalAlignment("center"); // Order ID
+  sheet.getRange(lastRow, 3).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#003366").setBackground("#eff6ff").setHorizontalAlignment("center"); // Party Code
+  sheet.getRange(lastRow, 4).setFontWeight("bold"); // Party Name
+  sheet.getRange(lastRow, 5).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP); // Address
+  sheet.getRange(lastRow, 6).setHorizontalAlignment("center"); // ASM
+  sheet.getRange(lastRow, 7).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setFontColor("#1e40af").setBackground("#f0fdf4"); // Pieces
+  sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setBackground("#eff6ff"); // Boxes
   
   // Column 9: Items Breakdown (Always Rich Colored: Blue Pieces & Amber Boxes)
   const cellBreakdown = sheet.getRange(lastRow, 9);
@@ -368,13 +358,10 @@ function appendOrderToSheet(order) {
     console.warn("Could not set rich text on append:", e);
     cellBreakdown.setValue(itemsSummary);
   }
-  cellBreakdown.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
+  cellBreakdown.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
 
-  // Column 10: Customer Consent (Verified Green Chip)
-  sheet.getRange(lastRow, 10).setFontWeight("bold").setFontSize(10.5).setFontColor("#15803d").setBackground("#f0fdf4").setHorizontalAlignment("center").setVerticalAlignment("middle");
-  
-  // Column 11: Status (CONFIRMED)
-  sheet.getRange(lastRow, 11).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center").setVerticalAlignment("middle");
+  sheet.getRange(lastRow, 10).setFontWeight("bold").setFontSize(10.5).setFontColor("#15803d").setBackground("#f0fdf4").setHorizontalAlignment("center"); // Consent
+  sheet.getRange(lastRow, 11).setFontWeight("bold").setFontColor("#15803d").setHorizontalAlignment("center"); // Status
 
   // Dynamic spacious row height
   const calculatedHeight = Math.max(44, itemsList.length * 24 + 14);
