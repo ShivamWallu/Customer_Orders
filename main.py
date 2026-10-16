@@ -234,7 +234,7 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
         it["pieces"] = pcs
         total_pieces += pcs
         total_boxes += bxs
-        summary_parts.append(f"{icon} {brand} {item_name}  ➔  {pcs:,} Pcs  |  [ {bxs:,} Boxes ]")
+        summary_parts.append(f"{icon} {brand} {item_name}   ➔   {pcs:,} Pcs   |   [ {bxs:,} Boxes ]")
     order["totalPieces"] = total_pieces
     if not order.get("totalBoxes"):
         order["totalBoxes"] = total_boxes

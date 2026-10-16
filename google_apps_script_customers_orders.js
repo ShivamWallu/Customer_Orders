@@ -171,14 +171,26 @@ function migrateAndFormatSheet(sheet) {
   sheet.setColumnWidth(6, 155); // Area Sales Manager
   sheet.setColumnWidth(7, 130); // Quantity (Pieces)
   sheet.setColumnWidth(8, 110); // Total Boxes
-  sheet.setColumnWidth(9, 330); // Ordered Items Breakdown
+  sheet.setColumnWidth(9, 420); // Ordered Items Breakdown (Spacious for clear un-cramped reading)
   sheet.setColumnWidth(10, 135); // Customer Consent
   sheet.setColumnWidth(11, 120); // Status
 
-  // Wrap text on Party Address and Items Breakdown
+  // Wrap text and apply rich styled colors to Breakdown column
   if (sheet.getLastRow() > 1) {
     sheet.getRange(2, 5, sheet.getLastRow() - 1, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
     sheet.getRange(2, 9, sheet.getLastRow() - 1, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
+
+    for (let r = 2; r <= sheet.getLastRow(); r++) {
+      const cell = sheet.getRange(r, 9);
+      const val = cell.getValue();
+      if (val && typeof val === "string" && val.indexOf("➔") !== -1) {
+        try {
+          cell.setRichTextValue(buildRichBreakdownFromString(val));
+        } catch (e) {
+          console.warn("Could not set rich breakdown on row " + r, e);
+        }
+      }
+    }
   }
 }
 
@@ -367,43 +379,133 @@ function appendOrderToSheet(order) {
 }
 
 /**
- * 🎨 Builds Rich Text with Navy bullets for Mashal & Green bullets for Fauji
+ * 🎨 Builds Rich Text with Bold Brand, Bold Blue Pieces, and Bold Amber Boxes
  */
 function buildRichItemsBreakdown(itemsList, fallbackText) {
   const richTextBuilder = SpreadsheetApp.newRichTextValue();
   let fullText = "";
   const brandRanges = [];
+  const pcsRanges = [];
+  const bxsRanges = [];
 
-  itemsList.forEach(function(it, idx) {
-    const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
-    const icon = isMashal ? "🔵" : "🟢";
-    const match = (it.item || "").match(/x\s*(\d+)/i);
-    const mult = match ? parseInt(match[1], 10) : 1;
-    const bxs = parseInt(it.boxes, 10) || 0;
-    const pcs = bxs * mult;
-    const line = icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + " ➔ " + pcs.toLocaleString() + " Pcs  |  [ " + bxs.toLocaleString() + " Boxes ]";
-    
-    const startIdx = fullText.length;
-    fullText += (idx > 0 ? "\n" : "") + line;
-    const lineStart = idx > 0 ? startIdx + 1 : startIdx;
-    
-    brandRanges.push({
-      start: lineStart,
-      end: lineStart + icon.length + 1 + (it.brand || "Mashal").length,
-      isMashal: isMashal
+  if (itemsList && itemsList.length > 0) {
+    itemsList.forEach(function(it, idx) {
+      const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
+      const icon = isMashal ? "🔵" : "🟢";
+      const match = (it.item || "").match(/x\s*(\d+)/i);
+      const mult = match ? parseInt(match[1], 10) : 1;
+      const bxs = parseInt(it.boxes, 10) || 0;
+      const pcs = (typeof it.pieces !== "undefined" && Number(it.pieces) > 0) ? Number(it.pieces) : (bxs * mult);
+
+      const pcsStr = pcs.toLocaleString() + " Pcs";
+      const bxsStr = "[ " + bxs.toLocaleString() + " Boxes ]";
+      const line = icon + " " + (it.brand || "Mashal") + " " + (it.item || "") + "   ➔   " + pcsStr + "   |   " + bxsStr;
+
+      const startIdx = fullText.length;
+      fullText += (idx > 0 ? "\n" : "") + line;
+      const lineStart = idx > 0 ? startIdx + 1 : startIdx;
+
+      // 1. Brand range
+      const brandEnd = lineStart + icon.length + 1 + (it.brand || "Mashal").length;
+      brandRanges.push({
+        start: lineStart,
+        end: brandEnd,
+        isMashal: isMashal
+      });
+
+      // 2. Pieces range
+      const pcsIdx = line.indexOf(pcsStr);
+      if (pcsIdx !== -1) {
+        pcsRanges.push({
+          start: lineStart + pcsIdx,
+          end: lineStart + pcsIdx + pcsStr.length
+        });
+      }
+
+      // 3. Boxes range
+      const bxsIdx = line.indexOf(bxsStr);
+      if (bxsIdx !== -1) {
+        bxsRanges.push({
+          start: lineStart + bxsIdx,
+          end: lineStart + bxsIdx + bxsStr.length
+        });
+      }
     });
-  });
+  } else if (fallbackText) {
+    return buildRichBreakdownFromString(fallbackText);
+  }
 
-  richTextBuilder.setText(fullText || fallbackText);
+  richTextBuilder.setText(fullText || fallbackText || "");
 
-  // Apply Brand Colors & Boldness
+  // Apply Brand Colors (Mashal = Bold Navy #003366, Fauji = Bold Forest Green #007a3d)
   brandRanges.forEach(function(r) {
     const style = SpreadsheetApp.newTextStyle()
       .setBold(true)
-      .setForegroundColor(r.isMashal ? "#004b99" : "#007a3d")
+      .setForegroundColor(r.isMashal ? "#003366" : "#007a3d")
       .build();
     richTextBuilder.setTextStyle(r.start, r.end, style);
   });
 
+  // Apply Pieces Styling (Bold Royal Blue #1d4ed8)
+  const pcsStyle = SpreadsheetApp.newTextStyle()
+    .setBold(true)
+    .setForegroundColor("#1d4ed8")
+    .build();
+  pcsRanges.forEach(function(r) {
+    richTextBuilder.setTextStyle(r.start, r.end, pcsStyle);
+  });
+
+  // Apply Boxes Styling (Bold Warm Amber #b45309)
+  const bxsStyle = SpreadsheetApp.newTextStyle()
+    .setBold(true)
+    .setForegroundColor("#b45309")
+    .build();
+  bxsRanges.forEach(function(r) {
+    richTextBuilder.setTextStyle(r.start, r.end, bxsStyle);
+  });
+
   return richTextBuilder.build();
+}
+
+/**
+ * 🔄 Parses raw breakdown text and builds styled rich text with bold colored numbers
+ */
+function buildRichBreakdownFromString(rawText) {
+  if (!rawText) return SpreadsheetApp.newRichTextValue().setText("").build();
+  const lines = String(rawText).split("\n");
+  const parsedItems = [];
+  lines.forEach(function(l) {
+    if (!l.trim()) return;
+    const isMashal = l.indexOf("Mashal") !== -1;
+    const brand = isMashal ? "Mashal" : "Fauji";
+    
+    // Parse pieces and boxes (handles both "4395 Pcs (293 bxs)" and "4,395 Pcs | [ 293 Boxes ]")
+    const m = l.match(/➔\s*([\d,]+)\s*Pcs.*?([\d,]+)\s*(?:bxs|boxes)/i);
+    let pcs = 0;
+    let bxs = 0;
+    if (m) {
+      pcs = parseInt(m[1].replace(/,/g, ""), 10) || 0;
+      bxs = parseInt(m[2].replace(/,/g, ""), 10) || 0;
+    }
+    
+    // Extract item packaging name
+    let itemPart = "";
+    const brandPos = l.indexOf(brand);
+    const arrowPos = l.indexOf("➔");
+    if (brandPos !== -1 && arrowPos !== -1) {
+      itemPart = l.substring(brandPos + brand.length, arrowPos).trim();
+    }
+    
+    parsedItems.push({
+      brand: brand,
+      item: itemPart || "Packaging",
+      boxes: bxs,
+      pieces: pcs
+    });
+  });
+
+  if (parsedItems.length === 0) {
+    return SpreadsheetApp.newRichTextValue().setText(rawText).build();
+  }
+  return buildRichItemsBreakdown(parsedItems, rawText);
 }
