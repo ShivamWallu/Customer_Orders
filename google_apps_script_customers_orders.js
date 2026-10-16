@@ -356,14 +356,17 @@ function appendOrderToSheet(order) {
   // Column 8: Total Boxes
   sheet.getRange(lastRow, 8).setFontWeight("bold").setFontSize(11).setHorizontalAlignment("center").setVerticalAlignment("middle").setBackground("#eff6ff");
   
-  // Column 9: Items Breakdown (Rich colored bullets & wrapped)
+  // Column 9: Items Breakdown (Always Rich Colored: Blue Pieces & Amber Boxes)
   const cellBreakdown = sheet.getRange(lastRow, 9);
-  if (itemsList.length > 0) {
-    try {
+  try {
+    if (itemsList && itemsList.length > 0) {
       cellBreakdown.setRichTextValue(buildRichItemsBreakdown(itemsList, itemsSummary));
-    } catch (e) {
-      cellBreakdown.setValue(itemsSummary);
+    } else if (itemsSummary) {
+      cellBreakdown.setRichTextValue(buildRichBreakdownFromString(itemsSummary));
     }
+  } catch (e) {
+    console.warn("Could not set rich text on append:", e);
+    cellBreakdown.setValue(itemsSummary);
   }
   cellBreakdown.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP).setVerticalAlignment("middle");
 
