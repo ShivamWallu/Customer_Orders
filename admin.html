@@ -12,20 +12,27 @@
   <script src="/js/qrcode.min.js"></script>
   <style>
     :root {
-      /* Clean Modern White Theme Palette */
+      /* Clean Modern High-Readability White Theme */
       --bg-page: #f8fafc;
       --card-bg: #ffffff;
       --card-border: #e2e8f0;
       --card-border-subtle: #f1f5f9;
       --header-bg: #ffffff;
-      --primary: #003366;
-      --primary-hover: #002244;
-      --primary-light: #eff6ff;
-      --accent-gold: #d97706;
-      --accent-gold-light: #fef3c7;
       
+      --brand-mashal: #003366;
+      --brand-mashal-light: #eff6ff;
+      --brand-mashal-border: #bfdbfe;
+      
+      --brand-fauji: #059669;
+      --brand-fauji-light: #ecfdf5;
+      --brand-fauji-border: #a7f3d0;
+      
+      --accent-gold: #d97706;
+      --accent-gold-light: #fffbeb;
+      --accent-gold-border: #fde68a;
+
       --text-main: #0f172a;
-      --text-secondary: #475569;
+      --text-secondary: #334155;
       --text-muted: #64748b;
       --text-dim: #94a3b8;
 
@@ -41,9 +48,10 @@
       --danger-border: #fecaca;
       --danger-text: #991b1b;
 
-      --table-header-bg: #f1f5f9;
-      --table-row-hover: #f8fafc;
-      --table-row-alt: #fafafa;
+      --table-header-bg: #f8fafc;
+      --table-row-hover: #f1f5f9;
+      --table-row-even: #ffffff;
+      --table-row-odd: #fafafa;
       --table-border: #e2e8f0;
 
       --radius-sm: 6px;
@@ -108,7 +116,7 @@
       font-size: 16.5px;
       font-weight: 800;
       letter-spacing: -0.2px;
-      color: var(--primary);
+      color: var(--brand-mashal);
       line-height: 1.2;
     }
 
@@ -148,21 +156,9 @@
       background: var(--card-bg);
       box-shadow: var(--shadow-sm);
     }
-    .role-badge-pill.admin {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border-color: #bfdbfe;
-    }
-    .role-badge-pill.manager {
-      background: #ecfdf5;
-      color: #047857;
-      border-color: #a7f3d0;
-    }
-    .role-badge-pill.analyst {
-      background: #faf5ff;
-      color: #7e22ce;
-      border-color: #e9d5ff;
-    }
+    .role-badge-pill.admin { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .role-badge-pill.manager { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    .role-badge-pill.analyst { background: #faf5ff; color: #7e22ce; border-color: #e9d5ff; }
 
     .btn-logout {
       background: #ffffff;
@@ -186,9 +182,9 @@
     /* 📊 KPI Summary Dashboard */
     .kpi-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 16px;
-      padding: 24px 28px 12px 28px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      padding: 20px 28px 8px 28px;
     }
 
     .kpi-card {
@@ -218,7 +214,7 @@
     }
 
     .kpi-info .kpi-num {
-      font-size: 26px;
+      font-size: 25px;
       font-weight: 800;
       color: var(--text-main);
       font-family: 'JetBrains Mono', monospace;
@@ -234,8 +230,8 @@
     }
 
     .kpi-icon {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
@@ -249,9 +245,218 @@
     .kpi-icon.indigo { background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; }
     .kpi-icon.purple { background: #faf5ff; color: #9333ea; border: 1px solid #e9d5ff; }
 
+    /* 🏭 WAREHOUSE PRODUCTION & PACKING SUMMARY SECTION */
+    .warehouse-section {
+      margin: 8px 28px 12px 28px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .warehouse-header-bar {
+      padding: 12px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .warehouse-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .warehouse-title-wrap h2 {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--brand-mashal);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .warehouse-badge-live {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .warehouse-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-warehouse-toggle {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .btn-warehouse-toggle:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .warehouse-body-content {
+      padding: 16px 20px;
+      display: block; /* default expanded for immediate warehouse visibility */
+    }
+
+    .warehouse-grand-banner {
+      background: linear-gradient(135deg, #003366 0%, #004b99 100%);
+      color: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 2px 8px rgba(0, 51, 102, 0.15);
+    }
+
+    .banner-stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .banner-stat-item .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #bfdbfe;
+      font-weight: 700;
+    }
+    .banner-stat-item .stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ffffff;
+    }
+
+    .warehouse-brands-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 16px;
+    }
+
+    .brand-production-card {
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .brand-card-header {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .brand-card-header.mashal {
+      background: #eff6ff;
+      border-bottom-color: #bfdbfe;
+    }
+    .brand-card-header.fauji {
+      background: #ecfdf5;
+      border-bottom-color: #a7f3d0;
+    }
+
+    .brand-card-header h3 {
+      font-size: 13.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-card-header.mashal h3 { color: #1e40af; }
+    .brand-card-header.fauji h3 { color: #065f46; }
+
+    .brand-summary-pills {
+      display: flex;
+      gap: 8px;
+    }
+    .brand-stat-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+    }
+
+    .production-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .production-table th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--card-border);
+      text-align: left;
+    }
+    .production-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--card-border-subtle);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+    .production-table tr:hover td {
+      background: #f8fafc;
+    }
+    .production-table .sku-name {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-main);
+    }
+    .production-table .boxes-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 12.5px;
+      color: #0f172a;
+    }
+    .production-table .pieces-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 12px;
+      color: #0284c7;
+    }
+
     /* 🛠️ Modern Toolbar & Filters */
     .controls-panel {
-      padding: 10px 28px;
+      padding: 4px 28px 10px 28px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -266,7 +471,7 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-md);
-      padding: 14px 18px;
+      padding: 12px 18px;
       box-shadow: var(--shadow-sm);
     }
 
@@ -327,9 +532,9 @@
       border-color: #cbd5e1;
     }
     .date-pill.active {
-      background: var(--primary);
+      background: var(--brand-mashal);
       color: #ffffff;
-      border-color: var(--primary);
+      border-color: var(--brand-mashal);
       box-shadow: 0 2px 4px rgba(0, 51, 102, 0.2);
     }
 
@@ -360,39 +565,64 @@
       gap: 12px;
     }
 
-    /* Status Segmented Tabs */
-    .status-tabs {
+    /* 2 & 4. SEPARATE PROMINENT TABS: PENDING ORDERS, CONFIRMED ORDERS, ALL ORDERS */
+    .status-tabs-container {
       display: inline-flex;
       background: #e2e8f0;
-      padding: 3px;
-      border-radius: var(--radius-sm);
-      gap: 3px;
+      padding: 4px;
+      border-radius: var(--radius-md);
+      gap: 4px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
     }
+
     .status-tab {
       background: transparent;
       border: none;
-      padding: 6px 14px;
+      padding: 8px 18px;
       border-radius: var(--radius-sm);
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text-secondary);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.15s;
+      user-select: none;
+    }
+    .status-tab:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.5);
+      color: var(--text-main);
     }
     .status-tab.active {
       background: #ffffff;
       color: var(--text-main);
       box-shadow: var(--shadow-sm);
     }
-    .status-tab .badge {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: var(--radius-full);
-      background: rgba(0,0,0,0.06);
+    .status-tab.active.pending-tab {
+      color: #92400e;
+      border-bottom: 2px solid #d97706;
     }
+    .status-tab.active.confirmed-tab {
+      color: #065f46;
+      border-bottom: 2px solid #059669;
+    }
+    .status-tab.active.all-tab {
+      color: var(--brand-mashal);
+      border-bottom: 2px solid var(--brand-mashal);
+    }
+
+    .status-tab .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .status-tab.active.pending-tab .badge { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .status-tab.active.confirmed-tab .badge { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .status-tab.active.all-tab .badge { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
 
     .table-actions-group {
       display: flex;
@@ -422,8 +652,8 @@
       border-color: #cbd5e1;
     }
     .btn-tool.primary {
-      background: #003366;
-      border-color: #003366;
+      background: var(--brand-mashal);
+      border-color: var(--brand-mashal);
       color: #ffffff;
     }
     .btn-tool.primary:hover {
@@ -435,7 +665,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 28px 8px 28px;
+      padding: 2px 28px 8px 28px;
     }
     .scroll-nav-hint {
       font-size: 12px;
@@ -479,13 +709,13 @@
       border-color: #94a3b8;
     }
 
-    /* 📋 Orders Table with Fixed 3 Columns & Horizontal Scroll */
+    /* 1. ORDER TABLE - HIGHEST VISUAL PRIORITY & READABILITY */
     .table-card-wrapper {
       margin: 0 28px 20px 28px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-md);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -500,7 +730,7 @@
 
     .orders-table {
       width: 100%;
-      min-width: 1450px;
+      min-width: 1520px;
       border-collapse: separate;
       border-spacing: 0;
       font-size: 13px;
@@ -514,7 +744,7 @@
       text-transform: uppercase;
       letter-spacing: 0.6px;
       padding: 12px 14px;
-      border-bottom: 1px solid var(--card-border);
+      border-bottom: 2px solid var(--card-border);
       text-align: left;
       white-space: nowrap;
       position: sticky;
@@ -526,12 +756,14 @@
       padding: 12px 14px;
       border-bottom: 1px solid var(--card-border-subtle);
       vertical-align: middle;
-      background: #ffffff;
       transition: background 0.1s;
     }
 
+    .orders-table tr:nth-child(even) td { background: var(--table-row-even); }
+    .orders-table tr:nth-child(odd) td { background: var(--table-row-odd); }
+
     .orders-table tr:hover td {
-      background: #f8fafc !important;
+      background: var(--table-row-hover) !important;
     }
 
     .orders-table th.center, .orders-table td.center {
@@ -539,14 +771,13 @@
     }
 
     /* 📌 FIXED FIRST 3 COLUMNS */
-    /* Col 1: # */
     .orders-table th.sticky-col-1,
     .orders-table td.sticky-col-1 {
       position: sticky;
       left: 0;
-      width: 50px;
-      min-width: 50px;
-      max-width: 50px;
+      width: 48px;
+      min-width: 48px;
+      max-width: 48px;
       z-index: 5;
       background: #ffffff;
       border-right: 1px solid var(--card-border);
@@ -556,11 +787,10 @@
       background: var(--table-header-bg);
     }
 
-    /* Col 2: Order ID */
     .orders-table th.sticky-col-2,
     .orders-table td.sticky-col-2 {
       position: sticky;
-      left: 50px;
+      left: 48px;
       width: 175px;
       min-width: 175px;
       max-width: 175px;
@@ -573,17 +803,16 @@
       background: var(--table-header-bg);
     }
 
-    /* Col 3: Date & Time */
     .orders-table th.sticky-col-3,
     .orders-table td.sticky-col-3 {
       position: sticky;
-      left: 225px;
+      left: 223px;
       width: 155px;
       min-width: 155px;
       max-width: 155px;
       z-index: 5;
       background: #ffffff;
-      border-right: 2px solid #cbd5e1; /* Visual separator after sticky freeze */
+      border-right: 2px solid #cbd5e1; /* Visual delimiter */
       box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.06);
     }
     .orders-table th.sticky-col-3 {
@@ -591,12 +820,11 @@
       background: var(--table-header-bg);
     }
 
-    /* Badges & Content Styling */
     .order-id-link {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
       font-size: 12.5px;
-      color: #003366;
+      color: var(--brand-mashal);
       background: #eff6ff;
       border: 1px solid #bfdbfe;
       padding: 4px 8px;
@@ -606,16 +834,24 @@
       transition: all 0.15s;
     }
     .order-id-link:hover {
-      background: #003366;
+      background: var(--brand-mashal);
       color: #ffffff;
-      border-color: #003366;
+      border-color: var(--brand-mashal);
     }
 
+    /* Long Text Auto-Wrapping & Optimization */
+    .party-cell-wrap {
+      max-width: 250px;
+      word-break: break-word;
+      white-space: normal;
+      line-height: 1.4;
+    }
     .party-title {
       font-weight: 700;
       color: var(--text-main);
       font-size: 13.5px;
     }
+
     .party-code-tag {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -626,14 +862,16 @@
       padding: 2px 6px;
       border-radius: 4px;
       display: inline-block;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
-    .address-cell {
+    .address-cell-wrap {
+      max-width: 260px;
+      word-break: break-word;
+      white-space: normal;
       font-size: 12px;
       color: var(--text-secondary);
-      max-width: 240px;
-      line-height: 1.35;
+      line-height: 1.45;
     }
 
     .asm-badge {
@@ -669,8 +907,8 @@
       gap: 8px;
       color: var(--text-main);
     }
-    .product-item-chip.mashal { border-left: 3px solid #003366; }
-    .product-item-chip.fauji { border-left: 3px solid #059669; }
+    .product-item-chip.mashal { border-left: 3px solid var(--brand-mashal); }
+    .product-item-chip.fauji { border-left: 3px solid var(--brand-fauji); }
     .product-item-chip .calc-detail {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -845,9 +1083,9 @@
       transition: all 0.15s;
     }
     .page-num-pill.active {
-      background: var(--primary);
+      background: var(--brand-mashal);
       color: #ffffff;
-      border-color: var(--primary);
+      border-color: var(--brand-mashal);
     }
 
     /* 🔐 Login Modal */
@@ -883,7 +1121,7 @@
     .login-card h2 {
       font-size: 19px;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--brand-mashal);
       margin-bottom: 4px;
     }
     .login-card p {
@@ -902,9 +1140,7 @@
       margin-bottom: 16px;
       line-height: 1.5;
     }
-    .role-helper-note strong {
-      color: var(--text-main);
-    }
+    .role-helper-note strong { color: var(--text-main); }
     .login-input {
       width: 100%;
       background: #f8fafc;
@@ -924,7 +1160,7 @@
     }
     .btn-login-submit {
       width: 100%;
-      background: var(--primary);
+      background: var(--brand-mashal);
       border: none;
       color: #ffffff;
       padding: 12px;
@@ -934,9 +1170,7 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn-login-submit:hover {
-      background: var(--primary-hover);
-    }
+    .btn-login-submit:hover { background: #002244; }
     .login-err {
       color: #dc2626;
       font-size: 12.5px;
@@ -945,7 +1179,7 @@
       display: none;
     }
 
-    /* 🛡️ Modals: Generic Overlay */
+    /* 🛡️ Modals */
     .generic-modal-overlay {
       position: fixed;
       inset: 0;
@@ -995,7 +1229,6 @@
       gap: 10px;
     }
 
-    /* Git-Style Multi-Step Deletion Modal */
     .git-delete-warning {
       background: #fef2f2;
       border: 1px solid #fecaca;
@@ -1052,7 +1285,6 @@
       cursor: not-allowed;
     }
 
-    /* Order Slip Modal */
     .slip-preview-container {
       max-height: 65vh;
       overflow-y: auto;
@@ -1074,6 +1306,25 @@
       color: var(--text-muted);
       font-size: 14px;
     }
+
+    /* Print styling for Warehouse Packing Sheet */
+    @media print {
+      header, .controls-panel, .kpi-container, .scroll-nav-bar, .pagination-bar, .action-btn-group, .btn-warehouse-toggle {
+        display: none !important;
+      }
+      .warehouse-section {
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .warehouse-body-content {
+        display: block !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1086,7 +1337,7 @@
         <h1>Khandelia Oil & General Mills Pvt. Ltd.</h1>
         <div class="portal-tag">
           <span class="dot"></span>
-          <span>Order Management System • Executive Portal</span>
+          <span>Enterprise Order Management System • Live Portal</span>
         </div>
       </div>
     </div>
@@ -1105,27 +1356,27 @@
       <div class="kpi-info">
         <h3>Total Orders</h3>
         <div class="kpi-num" id="kpiTotalOrders">0</div>
-        <div class="kpi-sub" id="kpiTotalOrdersSub">All filtered records</div>
+        <div class="kpi-sub" id="kpiTotalOrdersSub">Filtered view</div>
       </div>
       <div class="kpi-icon blue">📦</div>
     </div>
 
-    <div class="kpi-card">
-      <div class="kpi-info">
-        <h3>Confirmed Orders</h3>
-        <div class="kpi-num" style="color: #059669;" id="kpiConfirmedOrders">0</div>
-        <div class="kpi-sub">SO Assigned & Verified</div>
-      </div>
-      <div class="kpi-icon green">✔</div>
-    </div>
-
-    <div class="kpi-card">
+    <div class="kpi-card" style="border-color: #fde68a;">
       <div class="kpi-info">
         <h3>Pending Orders</h3>
         <div class="kpi-num" style="color: #d97706;" id="kpiPendingOrders">0</div>
         <div class="kpi-sub">Awaiting Sales Order (SO)</div>
       </div>
       <div class="kpi-icon amber">⏳</div>
+    </div>
+
+    <div class="kpi-card" style="border-color: #a7f3d0;">
+      <div class="kpi-info">
+        <h3>Confirmed Orders</h3>
+        <div class="kpi-num" style="color: #059669;" id="kpiConfirmedOrders">0</div>
+        <div class="kpi-sub">SO Assigned & Sent</div>
+      </div>
+      <div class="kpi-icon green">✔</div>
     </div>
 
     <div class="kpi-card">
@@ -1147,7 +1398,109 @@
     </div>
   </div>
 
-  <!-- 🛠️ Toolbar: Search, Date Filters, Status Tabs & Actions -->
+  <!-- 🏭 3. WAREHOUSE PRODUCTION & PACKING SUMMARY (PENDING ORDERS ONLY) -->
+  <div class="warehouse-section" id="warehouseSection" style="display: none;">
+    <div class="warehouse-header-bar" onclick="toggleWarehouseSection()">
+      <div class="warehouse-title-wrap">
+        <h2>
+          <span>🏭</span>
+          <span>Warehouse Production & Packing Summary</span>
+        </h2>
+        <span class="warehouse-badge-live">
+          <span style="font-weight: 800;">PENDING ORDERS ONLY</span>
+        </span>
+      </div>
+      <div class="warehouse-header-actions" onclick="event.stopPropagation()">
+        <button class="btn-warehouse-toggle" onclick="printWarehouseSummary()" title="Print packing sheet for factory clipboard">
+          <span>🖨️</span>
+          <span>Print Packing Sheet</span>
+        </button>
+        <button class="btn-warehouse-toggle" id="btnToggleWarehouse" onclick="toggleWarehouseSection()">
+          <span id="warehouseToggleIcon">▲</span>
+          <span id="warehouseToggleText">Collapse</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="warehouse-body-content" id="warehouseBodyContent">
+      <!-- Grand Total Highlight Banner -->
+      <div class="warehouse-grand-banner">
+        <div class="banner-stat-item">
+          <span class="stat-label">Pending Orders Queue</span>
+          <span class="stat-val" id="whPendingOrdersCount">0 Orders</span>
+        </div>
+        <div class="banner-stat-item">
+          <span class="stat-label">Total Boxes To Prepare</span>
+          <span class="stat-val" id="whGrandTotalBoxes">0 Boxes</span>
+        </div>
+        <div class="banner-stat-item">
+          <span class="stat-label">Total Pieces To Pack</span>
+          <span class="stat-val" id="whGrandTotalPieces">0 Pieces</span>
+        </div>
+        <div class="banner-stat-item" style="text-align: right;">
+          <span class="stat-label">Factory Status</span>
+          <span class="stat-val" style="font-size: 15px; color: #a7f3d0;">Active Production</span>
+        </div>
+      </div>
+
+      <!-- Brands Grid: Brand MASHAL (14 SKUs) & Brand FAUJI (5 SKUs) -->
+      <div class="warehouse-brands-grid">
+        <!-- Brand: MASHAL -->
+        <div class="brand-production-card">
+          <div class="brand-card-header mashal">
+            <h3>
+              <span>🔵</span>
+              <span>Brand: MASHAL</span>
+            </h3>
+            <div class="brand-summary-pills">
+              <span class="brand-stat-pill" id="whMashalTotalBoxes" style="color: #1e40af;">0 Bxs</span>
+              <span class="brand-stat-pill" id="whMashalTotalPieces" style="color: #0284c7;">0 Pcs</span>
+            </div>
+          </div>
+          <table class="production-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Product Type & Packaging</th>
+                <th style="width: 25%; text-align: right;">Boxes To Prepare</th>
+                <th style="width: 25%; text-align: right;">Total Pieces</th>
+              </tr>
+            </thead>
+            <tbody id="whMashalTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Brand: FAUJI -->
+        <div class="brand-production-card">
+          <div class="brand-card-header fauji">
+            <h3>
+              <span>🟢</span>
+              <span>Brand: FAUJI</span>
+            </h3>
+            <div class="brand-summary-pills">
+              <span class="brand-stat-pill" id="whFaujiTotalBoxes" style="color: #065f46;">0 Bxs</span>
+              <span class="brand-stat-pill" id="whFaujiTotalPieces" style="color: #059669;">0 Pcs</span>
+            </div>
+          </div>
+          <table class="production-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Product Type & Packaging</th>
+                <th style="width: 25%; text-align: right;">Boxes To Prepare</th>
+                <th style="width: 25%; text-align: right;">Total Pieces</th>
+              </tr>
+            </thead>
+            <tbody id="whFaujiTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🛠️ Toolbar: Search, Date Filters, Tabs & Actions -->
   <div class="controls-panel" id="controlsPanel" style="display: none;">
     <!-- Filter Row Top: Search & Date Filters -->
     <div class="filter-row-top">
@@ -1169,26 +1522,28 @@
       </div>
     </div>
 
-    <!-- Filter Row Bottom: Status Tabs & Table Actions -->
+    <!-- Filter Row Bottom: 2 & 4. Separate Tabs: Pending Orders, Confirmed Orders, All Orders -->
     <div class="filter-row-bottom">
-      <!-- 6. Status Tabs: All, Confirmed, Pending -->
-      <div class="status-tabs">
-        <button class="status-tab active" id="tabStatusAll" onclick="setStatusTab('ALL')">
-          <span>All Orders</span>
-          <span class="badge" id="badgeAllCount">0</span>
-        </button>
-        <button class="status-tab" id="tabStatusPending" onclick="setStatusTab('PENDING')">
+      <div class="status-tabs-container">
+        <!-- Prominent Pending Orders Tab -->
+        <button class="status-tab pending-tab" id="tabStatusPending" onclick="setStatusTab('PENDING')" title="Orders not yet confirmed with SO">
           <span>⏳ Pending Orders</span>
           <span class="badge" id="badgePendingCount">0</span>
         </button>
-        <button class="status-tab" id="tabStatusConfirmed" onclick="setStatusTab('CONFIRMED')">
+        <!-- Confirmed Orders Tab -->
+        <button class="status-tab confirmed-tab" id="tabStatusConfirmed" onclick="setStatusTab('CONFIRMED')" title="Orders verified with SO number">
           <span>✔ Confirmed Orders</span>
           <span class="badge" id="badgeConfirmedCount">0</span>
+        </button>
+        <!-- All Orders Tab -->
+        <button class="status-tab all-tab active" id="tabStatusAll" onclick="setStatusTab('ALL')" title="All orders across database">
+          <span>📋 All Orders</span>
+          <span class="badge" id="badgeAllCount">0</span>
         </button>
       </div>
 
       <div class="table-actions-group">
-        <button class="btn-tool" onclick="exportOrdersToCSV()" title="Export current filtered view to CSV">
+        <button class="btn-tool" onclick="exportOrdersToCSV()" title="Export current filtered view to CSV / Excel">
           <span>📊</span>
           <span>Export CSV</span>
         </button>
@@ -1207,15 +1562,15 @@
   <!-- Horizontal Scroll Navigation Controls Hint & Buttons -->
   <div class="scroll-nav-bar" id="scrollNavBar" style="display: none;">
     <div class="scroll-nav-hint">
-      <span>💡 Use <kbd>◀</kbd> <kbd>▶</kbd> keyboard arrows or scroll buttons to navigate columns:</span>
+      <span>💡 Navigate columns with <kbd>◀</kbd> <kbd>▶</kbd> keyboard arrows or scroll buttons:</span>
     </div>
     <div class="scroll-buttons">
-      <button class="btn-scroll" onclick="scrollTableHorizontally(-350)" title="Scroll Left (Shift + Wheel)">◀</button>
+      <button class="btn-scroll" onclick="scrollTableHorizontally(-350)" title="Scroll Left">◀</button>
       <button class="btn-scroll" onclick="scrollTableHorizontally(350)" title="Scroll Right">▶</button>
     </div>
   </div>
 
-  <!-- 📋 Orders Table Card with Fixed 3 Columns & Horizontal Scroll -->
+  <!-- 1. ORDER TABLE - HIGHEST VISUAL PRIORITY WITH FIXED 3 COLUMNS -->
   <div class="table-card-wrapper" id="tableCardWrapper" style="display: none;">
     <div class="table-scroll-container" id="tableScrollContainer" tabindex="0">
       <table class="orders-table">
@@ -1227,15 +1582,15 @@
             <th class="sticky-col-2">Order ID</th>
             <!-- Fixed Column 3 -->
             <th class="sticky-col-3">Date & Time</th>
-            <!-- Horizontally Scrolling Columns -->
-            <th style="min-width: 240px;">Customer / Party Name</th>
+            <!-- Horizontally Scrolling Columns with Auto-Wrap -->
+            <th style="min-width: 250px;">Customer / Party Name</th>
             <th style="min-width: 130px;">Party Code</th>
-            <th style="min-width: 220px;">Address</th>
+            <th style="min-width: 260px;">Delivery / Billing Address</th>
             <th style="min-width: 150px;">Area Sales Manager</th>
             <th style="min-width: 320px;">Product Quantities & Pieces</th>
-            <th style="min-width: 130px;" class="center">Total Boxes</th>
-            <th style="min-width: 130px;" class="center">Total Pieces</th>
-            <th style="min-width: 130px;" class="center">Sheet Sync</th>
+            <th style="min-width: 120px;" class="center">Total Boxes</th>
+            <th style="min-width: 120px;" class="center">Total Pieces</th>
+            <th style="min-width: 120px;" class="center">Sheet Sync</th>
             <!-- Status & Confirmation Columns at end of table -->
             <th style="min-width: 140px;" class="center">Order Status</th>
             <th style="min-width: 130px;" class="center">SO Number</th>
@@ -1305,7 +1660,7 @@
 
         <div style="background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; padding: 12px; margin-bottom: 14px;">
           <div style="font-size: 12px; color: var(--text-muted);">ORDER DETAILS:</div>
-          <div style="font-weight: 800; color: var(--primary); font-size: 14px;" id="confirmSoOrderDisplay">#KOGM-XXXX</div>
+          <div style="font-weight: 800; color: var(--brand-mashal); font-size: 14px;" id="confirmSoOrderDisplay">#KOGM-XXXX</div>
           <div style="font-size: 13px; font-weight: 600; color: var(--text-main);" id="confirmSoPartyDisplay">Party Name</div>
           <div style="font-size: 12px; color: var(--text-secondary);" id="confirmSoQtyDisplay">0 Boxes • 0 Pieces</div>
         </div>
@@ -1384,6 +1739,32 @@
     let allOrdersData = [];
     let filteredOrdersData = [];
 
+    // Master SKU lists requested by user
+    const MASHAL_MASTER_SKUS = [
+      { name: "1 LTR. BOTTLE x 15", mult: 15 },
+      { name: "200 ML BOTTLE x 60", mult: 60 },
+      { name: "100 ML BOTTLE x 120", mult: 120 },
+      { name: "2 LTR CAN x 6", mult: 6 },
+      { name: "1 LTR. POUCH x 16", mult: 16 },
+      { name: "15 KG CAN x 1", mult: 1 },
+      { name: "15 LTR CAN x 1", mult: 1 },
+      { name: "500 ML BOTTLE x 30", mult: 30 },
+      { name: "200 ML BOTTLE x 40", mult: 40 },
+      { name: "5 LTR CAN x 4", mult: 4 },
+      { name: "2 LTR BOTTLE x 9", mult: 9 },
+      { name: "1/2 LTR. POUCH x 32", mult: 32 },
+      { name: "15 KG TIN x 1", mult: 1 },
+      { name: "15 LTR TIN x 1", mult: 1 }
+    ];
+
+    const FAUJI_MASTER_SKUS = [
+      { name: "1 LTR. BOTTLE x 15", mult: 15 },
+      { name: "500 ML BOTTLE x 30", mult: 30 },
+      { name: "1 LTR. POUCH x 16", mult: 16 },
+      { name: "15 KG CAN x 1", mult: 1 },
+      { name: "15 KG TIN x 1", mult: 1 }
+    ];
+
     // Filter states
     let activeDateFilter = "ALL"; // 'ALL', 'TODAY', 'YESTERDAY', 'CUSTOM'
     let customSelectedDate = "";
@@ -1408,14 +1789,12 @@
       }
 
       // Keyboard navigation for horizontal table scrolling
-      const tableContainer = document.getElementById("tableScrollContainer");
       window.addEventListener("keydown", (e) => {
-        // If an input is focused, don't trigger table scroll
         if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
         if (e.key === "ArrowLeft") {
-          scrollTableHorizontally(-150);
+          scrollTableHorizontally(-180);
         } else if (e.key === "ArrowRight") {
-          scrollTableHorizontally(150);
+          scrollTableHorizontally(180);
         }
       });
     });
@@ -1424,6 +1803,7 @@
       document.getElementById("loginOverlay").style.display = "flex";
       document.getElementById("headerRight").style.display = "none";
       document.getElementById("kpiContainer").style.display = "none";
+      document.getElementById("warehouseSection").style.display = "none";
       document.getElementById("controlsPanel").style.display = "none";
       document.getElementById("scrollNavBar").style.display = "none";
       document.getElementById("tableCardWrapper").style.display = "none";
@@ -1433,6 +1813,7 @@
       document.getElementById("loginOverlay").style.display = "none";
       document.getElementById("headerRight").style.display = "flex";
       document.getElementById("kpiContainer").style.display = "grid";
+      document.getElementById("warehouseSection").style.display = "block";
       document.getElementById("controlsPanel").style.display = "flex";
       document.getElementById("scrollNavBar").style.display = "flex";
       document.getElementById("tableCardWrapper").style.display = "flex";
@@ -1547,7 +1928,7 @@
         const data = await res.json();
         if (res.ok && data.orders) {
           allOrdersData = data.orders.map(o => {
-            // Standardize dynamic calculation of box & pieces
+            // Dynamic multiplier and piece calculation
             const items = Array.isArray(o.items) ? o.items : [];
             let calcBoxes = 0;
             let calcPieces = 0;
@@ -1591,7 +1972,7 @@
 
       if (filterType === "CUSTOM") {
         customSelectedDate = document.getElementById("customDatePicker").value;
-        if (!customSelectedDate) return; // Wait until date selected
+        if (!customSelectedDate) return;
       } else {
         document.getElementById("customDatePicker").value = "";
         customSelectedDate = "";
@@ -1601,7 +1982,7 @@
       applyAllFilters();
     }
 
-    // Status Tab Filtering Logic
+    // 2 & 4. Status Tab Filtering Logic
     function setStatusTab(statusType) {
       activeStatusTab = statusType;
       document.getElementById("tabStatusAll").classList.toggle("active", statusType === "ALL");
@@ -1629,39 +2010,39 @@
 
       let customFormatted = "";
       if (activeDateFilter === "CUSTOM" && customSelectedDate) {
-        // customSelectedDate format is YYYY-MM-DD
         const parts = customSelectedDate.split("-");
         if (parts.length === 3) {
           customFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
         }
       }
 
-      // Counts for status tabs
+      // 1. Tally date-filtered counts for tabs
+      let dateFilteredOrders = allOrdersData.filter(o => {
+        const orderDateStr = extractDateString(o);
+        if (activeDateFilter === "TODAY" && !orderDateStr.includes(todayStr)) return false;
+        if (activeDateFilter === "YESTERDAY" && !orderDateStr.includes(yesterdayStr)) return false;
+        if (activeDateFilter === "CUSTOM" && customFormatted && !orderDateStr.includes(customFormatted) && !orderDateStr.includes(customSelectedDate)) return false;
+        return true;
+      });
+
       let pendingTotal = 0;
       let confirmedTotal = 0;
-
-      filteredOrdersData = allOrdersData.filter(o => {
-        const orderDateStr = extractDateString(o);
-
-        // Date Filter Check
-        if (activeDateFilter === "TODAY") {
-          if (!orderDateStr.includes(todayStr)) return false;
-        } else if (activeDateFilter === "YESTERDAY") {
-          if (!orderDateStr.includes(yesterdayStr)) return false;
-        } else if (activeDateFilter === "CUSTOM" && customFormatted) {
-          if (!orderDateStr.includes(customFormatted) && !orderDateStr.includes(customSelectedDate)) return false;
-        }
-
-        // Tally pending/confirmed
-        const isConf = o.orderStatus === "CONFIRMED";
-        if (isConf) confirmedTotal++;
+      dateFilteredOrders.forEach(o => {
+        if (o.orderStatus === "CONFIRMED") confirmedTotal++;
         else pendingTotal++;
+      });
 
-        // Status Tab Check
+      // Update Tab Badges Dynamically
+      document.getElementById("badgeAllCount").textContent = dateFilteredOrders.length;
+      document.getElementById("badgePendingCount").textContent = pendingTotal;
+      document.getElementById("badgeConfirmedCount").textContent = confirmedTotal;
+
+      // 2. Filter dataset for table display (applying status tab and search term)
+      filteredOrdersData = dateFilteredOrders.filter(o => {
+        const isConf = o.orderStatus === "CONFIRMED";
         if (activeStatusTab === "PENDING" && isConf) return false;
         if (activeStatusTab === "CONFIRMED" && !isConf) return false;
 
-        // Search Term Check
         if (currentSearchTerm) {
           const haystack = [
             o.cleanId,
@@ -1681,15 +2062,15 @@
         return true;
       });
 
-      // Update Tab Badges
-      document.getElementById("badgeAllCount").textContent = allOrdersData.length;
-      document.getElementById("badgePendingCount").textContent = pendingTotal;
-      document.getElementById("badgeConfirmedCount").textContent = confirmedTotal;
+      // 3. Update Dashboard Summary Cards (KPIs)
+      updateDashboardSummaryCards(dateFilteredOrders, filteredOrdersData);
 
-      // Update KPI Cards Dynamically
-      updateDashboardSummaryCards(filteredOrdersData);
+      // 4. Update Warehouse Production Summary (Strictly Pending Orders)
+      // Pending orders within current date filter:
+      const pendingOrdersForWarehouse = dateFilteredOrders.filter(o => o.orderStatus !== "CONFIRMED");
+      updateWarehouseProductionSummary(pendingOrdersForWarehouse);
 
-      // Render Table with Pagination
+      // 5. Render Table with Pagination
       renderTableWithPagination();
     }
 
@@ -1708,30 +2089,151 @@
       return `${dd}/${mm}/${yyyy}`;
     }
 
-    // 7. Dynamic Summary Cards (KPI Cards)
-    function updateDashboardSummaryCards(records) {
-      let totalOrders = records.length;
+    // Dashboard Summary Cards (KPIs)
+    function updateDashboardSummaryCards(dateFilteredRecords, activeViewRecords) {
+      let totalOrders = activeViewRecords.length;
       let confirmedOrders = 0;
       let pendingOrders = 0;
       let totalBoxes = 0;
       let totalPieces = 0;
 
-      records.forEach(o => {
-        if (o.orderStatus === "CONFIRMED") {
-          confirmedOrders++;
-        } else {
-          pendingOrders++;
-        }
+      // Calculate totals for active view
+      activeViewRecords.forEach(o => {
+        if (o.orderStatus === "CONFIRMED") confirmedOrders++;
+        else pendingOrders++;
         totalBoxes += (parseInt(o.totalBoxes, 10) || 0);
         totalPieces += (parseInt(o.totalPieces, 10) || 0);
       });
 
       document.getElementById("kpiTotalOrders").textContent = totalOrders.toLocaleString();
-      document.getElementById("kpiTotalOrdersSub").textContent = activeDateFilter === "ALL" ? "All active records" : `Filtered by ${activeDateFilter.toLowerCase()}`;
+      document.getElementById("kpiTotalOrdersSub").textContent = activeStatusTab === "ALL" ? "All active records" : `${activeStatusTab.toLowerCase()} orders view`;
       document.getElementById("kpiConfirmedOrders").textContent = confirmedOrders.toLocaleString();
       document.getElementById("kpiPendingOrders").textContent = pendingOrders.toLocaleString();
       document.getElementById("kpiTotalBoxes").textContent = totalBoxes.toLocaleString();
       document.getElementById("kpiTotalPieces").textContent = totalPieces.toLocaleString();
+    }
+
+    // 3. WAREHOUSE PRODUCTION & PACKING SUMMARY ENGINE (PENDING ORDERS ONLY)
+    function updateWarehouseProductionSummary(pendingOrders) {
+      const mashalMap = {};
+      const faujiMap = {};
+
+      MASHAL_MASTER_SKUS.forEach(s => {
+        mashalMap[s.name.toLowerCase()] = { name: s.name, boxes: 0, pieces: 0, mult: s.mult };
+      });
+
+      FAUJI_MASTER_SKUS.forEach(s => {
+        faujiMap[s.name.toLowerCase()] = { name: s.name, boxes: 0, pieces: 0, mult: s.mult };
+      });
+
+      let grandTotalBoxes = 0;
+      let grandTotalPieces = 0;
+      let mashalBoxes = 0;
+      let mashalPieces = 0;
+      let faujiBoxes = 0;
+      let faujiPieces = 0;
+
+      pendingOrders.forEach(ord => {
+        const items = Array.isArray(ord.items) ? ord.items : [];
+        items.forEach(it => {
+          const rawBrand = String(it.brand || "Mashal").toLowerCase().trim();
+          const itemName = String(it.item || "").trim();
+          const bxs = parseInt(it.boxes, 10) || 0;
+          if (bxs <= 0) return;
+
+          const match = itemName.match(/x\s*(\d+)/i);
+          const mult = match ? parseInt(match[1], 10) : (parseInt(it.multiplier, 10) || 1);
+          const pcs = bxs * mult;
+
+          grandTotalBoxes += bxs;
+          grandTotalPieces += pcs;
+
+          const isFauji = rawBrand.includes("fauji") || itemName.toLowerCase().includes("fauji");
+          const targetMap = isFauji ? faujiMap : mashalMap;
+          const key = itemName.toLowerCase();
+
+          if (!targetMap[key]) {
+            targetMap[key] = { name: itemName, boxes: 0, pieces: 0, mult: mult };
+          }
+
+          targetMap[key].boxes += bxs;
+          targetMap[key].pieces += pcs;
+
+          if (isFauji) {
+            faujiBoxes += bxs;
+            faujiPieces += pcs;
+          } else {
+            mashalBoxes += bxs;
+            mashalPieces += pcs;
+          }
+        });
+      });
+
+      // Update Highlights Banner
+      document.getElementById("whPendingOrdersCount").textContent = `${pendingOrders.length.toLocaleString()} Orders`;
+      document.getElementById("whGrandTotalBoxes").textContent = `${grandTotalBoxes.toLocaleString()} Boxes`;
+      document.getElementById("whGrandTotalPieces").textContent = `${grandTotalPieces.toLocaleString()} Pieces`;
+
+      document.getElementById("whMashalTotalBoxes").textContent = `${mashalBoxes.toLocaleString()} Bxs`;
+      document.getElementById("whMashalTotalPieces").textContent = `${mashalPieces.toLocaleString()} Pcs`;
+
+      document.getElementById("whFaujiTotalBoxes").textContent = `${faujiBoxes.toLocaleString()} Bxs`;
+      document.getElementById("whFaujiTotalPieces").textContent = `${faujiPieces.toLocaleString()} Pcs`;
+
+      // Render Mashal SKUs Table
+      const mashalTbody = document.getElementById("whMashalTableBody");
+      let mashalHtml = "";
+      MASHAL_MASTER_SKUS.forEach(sku => {
+        const itemObj = mashalMap[sku.name.toLowerCase()] || { boxes: 0, pieces: 0 };
+        const b = itemObj.boxes || 0;
+        const p = itemObj.pieces || 0;
+        const isNonZero = b > 0;
+        mashalHtml += `
+          <tr style="${isNonZero ? 'font-weight: 600;' : 'opacity: 0.55;'}">
+            <td class="sku-name">${escapeHtml(sku.name)}</td>
+            <td class="boxes-val" style="text-align: right; ${isNonZero ? 'color: #1e40af;' : ''}">${b.toLocaleString()} Bxs</td>
+            <td class="pieces-val" style="text-align: right;">${p.toLocaleString()} Pcs</td>
+          </tr>
+        `;
+      });
+      mashalTbody.innerHTML = mashalHtml;
+
+      // Render Fauji SKUs Table
+      const faujiTbody = document.getElementById("whFaujiTableBody");
+      let faujiHtml = "";
+      FAUJI_MASTER_SKUS.forEach(sku => {
+        const itemObj = faujiMap[sku.name.toLowerCase()] || { boxes: 0, pieces: 0 };
+        const b = itemObj.boxes || 0;
+        const p = itemObj.pieces || 0;
+        const isNonZero = b > 0;
+        faujiHtml += `
+          <tr style="${isNonZero ? 'font-weight: 600;' : 'opacity: 0.55;'}">
+            <td class="sku-name">${escapeHtml(sku.name)}</td>
+            <td class="boxes-val" style="text-align: right; ${isNonZero ? 'color: #065f46;' : ''}">${b.toLocaleString()} Bxs</td>
+            <td class="pieces-val" style="text-align: right;">${p.toLocaleString()} Pcs</td>
+          </tr>
+        `;
+      });
+      faujiTbody.innerHTML = faujiHtml;
+    }
+
+    function toggleWarehouseSection() {
+      const content = document.getElementById("warehouseBodyContent");
+      const icon = document.getElementById("warehouseToggleIcon");
+      const text = document.getElementById("warehouseToggleText");
+      if (content.style.display === "none") {
+        content.style.display = "block";
+        icon.textContent = "▲";
+        text.textContent = "Collapse";
+      } else {
+        content.style.display = "none";
+        icon.textContent = "▼";
+        text.textContent = "Expand";
+      }
+    }
+
+    function printWarehouseSummary() {
+      window.print();
     }
 
     // 8. Pagination Implementation
@@ -1751,7 +2253,7 @@
       const tbody = document.getElementById("ordersTableBody");
 
       if (totalRecords === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" class="empty-state-cell">No matching orders found for the selected criteria.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" class="empty-state-cell">No matching orders found in the ${activeStatusTab.toLowerCase()} orders queue.</td></tr>`;
         document.getElementById("paginationInfoText").textContent = "Showing 0 of 0 records";
         document.getElementById("paginationPillsContainer").innerHTML = "";
         return;
@@ -1772,14 +2274,14 @@
 
       const pageSlice = filteredOrdersData.slice(startIdx, endIdx);
 
-      // Render Table Rows
+      // Render Table Rows with Highest Priority Layout
       let html = "";
       pageSlice.forEach((o, index) => {
         const rowNumber = startIdx + index + 1;
         const cleanId = o.cleanId;
         const isConfirmed = o.orderStatus === "CONFIRMED";
 
-        // Format Product Quantities: 1 LTR. BOTTLE x 15 (2 Bxs = 30 Pcs)
+        // Format Product Quantities: 1 LTR. BOTTLE x 15 (2 Bxs: 30 Pcs)
         let itemsHtml = `<div class="product-breakdown-list">`;
         const items = Array.isArray(o.items) ? o.items : [];
         if (items.length > 0) {
@@ -1857,15 +2359,17 @@
             <td class="sticky-col-3" style="font-size: 12px; color: var(--text-secondary); white-space: nowrap;">
               <div>${escapeHtml(o.formattedTimestamp || o.formattedDate || o.orderDate || "-")}</div>
             </td>
-            <!-- Scrolling Columns -->
+            <!-- Horizontally Scrolling Columns with Auto-Text Wrap -->
             <td>
-              <div class="party-title">${escapeHtml(o.partyName || "Customer")}</div>
+              <div class="party-cell-wrap">
+                <div class="party-title">${escapeHtml(o.partyName || "Customer")}</div>
+              </div>
             </td>
             <td>
               <span class="party-code-tag">${escapeHtml(o.partyCode || "SDMOWB0307")}</span>
             </td>
             <td>
-              <div class="address-cell">${escapeHtml(o.partyAddress || o.deliveryAddress || "-")}</div>
+              <div class="address-cell-wrap">${escapeHtml(o.partyAddress || o.deliveryAddress || "-")}</div>
             </td>
             <td>
               <span class="asm-badge">👔 ${escapeHtml(o.salesPerson || "-")}</span>
@@ -1926,7 +2430,7 @@
       container.innerHTML = html;
     }
 
-    // Horizontal Scrolling Buttons & Keyboard Navigation
+    // Horizontal Scrolling
     function scrollTableHorizontally(offset) {
       const container = document.getElementById("tableScrollContainer");
       if (container) {
@@ -1992,6 +2496,7 @@
             ord.soNumber = soNumber;
           }
           closeGenericModal("confirmSoModalOverlay");
+          // Re-apply filters so order moves immediately to Confirmed tab and exits Warehouse pending load
           applyAllFilters();
         } else {
           errEl.textContent = data.detail || data.message || "Failed to confirm order. Please try again.";
@@ -2059,7 +2564,6 @@
 
         const data = await res.json();
         if (res.ok && data.status === "success") {
-          // Remove from local array
           allOrdersData = allOrdersData.filter(o => o.cleanId !== currentDeleteOrderId);
           closeGenericModal("deleteOrderModalOverlay");
           applyAllFilters();

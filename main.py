@@ -35,7 +35,8 @@ from database import (
     delete_admin_session,
     delete_order_from_db,
     confirm_order_in_db,
-    get_orders_stats
+    get_orders_stats,
+    get_warehouse_production_summary
 )
 from crm_service import (
     init_crm_db,
@@ -373,6 +374,16 @@ async def get_admin_dashboard_stats(request: Request):
     require_admin_auth(request)
     stats = get_orders_stats()
     return stats
+
+@app.get("/api/admin/warehouse-summary")
+async def get_admin_warehouse_summary(request: Request):
+    """
+    🏭 Returns real-time brand-wise warehouse packing & production load.
+    Calculates strictly from PENDING orders (confirmed orders excluded).
+    """
+    require_admin_auth(request)
+    summary = get_warehouse_production_summary()
+    return {"status": "success", "warehouseSummary": summary}
 
 @app.post("/api/admin/orders/confirm")
 async def confirm_admin_order(request: Request):

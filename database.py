@@ -613,6 +613,128 @@ def get_orders_stats() -> Dict[str, Any]:
     finally:
         conn.close()
 
+# Standard Master SKUs for Factory & Warehouse Production Packing
+MASHAL_MASTER_SKUS = [
+    "1 LTR. BOTTLE x 15",
+    "200 ML BOTTLE x 60",
+    "100 ML BOTTLE x 120",
+    "2 LTR CAN x 6",
+    "1 LTR. POUCH x 16",
+    "15 KG CAN x 1",
+    "15 LTR CAN x 1",
+    "500 ML BOTTLE x 30",
+    "200 ML BOTTLE x 40",
+    "5 LTR CAN x 4",
+    "2 LTR BOTTLE x 9",
+    "1/2 LTR. POUCH x 32",
+    "15 KG TIN x 1",
+    "15 LTR TIN x 1"
+]
+
+FAUJI_MASTER_SKUS = [
+    "1 LTR. BOTTLE x 15",
+    "500 ML BOTTLE x 30",
+    "1 LTR. POUCH x 16",
+    "15 KG CAN x 1",
+    "15 KG TIN x 1"
+]
+
+def get_warehouse_production_summary(orders_subset: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+    """
+    🏭 Aggregates warehouse-focused packing and production requirements for PENDING orders only.
+    Excludes all confirmed orders so warehouse dispatch teams pack exact pending requirements.
+    """
+    if orders_subset is None:
+        all_orders = get_all_orders_from_db(limit=1000)
+        # Filter strictly for PENDING orders
+        pending_orders = [o for o in all_orders if (o.get("orderStatus") or "").upper() == "PENDING"]
+    else:
+        pending_orders = [o for o in orders_subset if (o.get("orderStatus") or "").upper() == "PENDING"]
+
+    mashal_summary = {sku: {"sku": sku, "boxes": 0, "pieces": 0, "multiplier": 1} for sku in MASHAL_MASTER_SKUS}
+    fauji_summary = {sku: {"sku": sku, "boxes": 0, "pieces": 0, "multiplier": 1} for sku in FAUJI_MASTER_SKUS}
+
+    # Initialize multipliers
+    for sku in MASHAL_MASTER_SKUS:
+        m = re.search(r'x\s*(\d+)', sku, re.I)
+        if m:
+            mashal_summary[sku]["multiplier"] = int(m.group(1))
+
+    for sku in FAUJI_MASTER_SKUS:
+        m = re.search(r'x\s*(\d+)', sku, re.I)
+        if m:
+            fauji_summary[sku]["multiplier"] = int(m.group(1))
+
+    total_pending_boxes = 0
+    total_pending_pieces = 0
+    mashal_total_boxes = 0
+    mashal_total_pieces = 0
+    fauji_total_boxes = 0
+    fauji_total_pieces = 0
+
+    for ord_obj in pending_orders:
+        items = ord_obj.get("items") or []
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            raw_brand = str(it.get("brand") or "Mashal").strip().lower()
+            item_name = str(it.get("item") or "").strip()
+            boxes = int(it.get("boxes") or 0)
+            if boxes <= 0:
+                continue
+
+            m = re.search(r'x\s*(\d+)', item_name, re.I)
+            multiplier = int(m.group(1)) if m else int(it.get("multiplier") or 1)
+            pieces = boxes * multiplier
+
+            total_pending_boxes += boxes
+            total_pending_pieces += pieces
+
+            is_fauji = "fauji" in raw_brand or "fauji" in item_name.lower()
+            target_dict = fauji_summary if is_fauji else mashal_summary
+
+            # Fuzzy / clean match key
+            matched_key = None
+            for key in target_dict.keys():
+                if key.lower() == item_name.lower():
+                    matched_key = key
+                    break
+            if not matched_key:
+                # Add dynamically if not in master list
+                target_dict[item_name] = {"sku": item_name, "boxes": 0, "pieces": 0, "multiplier": multiplier}
+                matched_key = item_name
+
+            target_dict[matched_key]["boxes"] += boxes
+            target_dict[matched_key]["pieces"] += pieces
+            target_dict[matched_key]["multiplier"] = multiplier
+
+            if is_fauji:
+                fauji_total_boxes += boxes
+                fauji_total_pieces += pieces
+            else:
+                mashal_total_boxes += boxes
+                mashal_total_pieces += pieces
+
+    return {
+        "pendingOrdersCount": len(pending_orders),
+        "totalBoxes": total_pending_boxes,
+        "totalPieces": total_pending_pieces,
+        "brands": {
+            "MASHAL": {
+                "brandName": "MASHAL",
+                "totalBoxes": mashal_total_boxes,
+                "totalPieces": mashal_total_pieces,
+                "skus": list(mashal_summary.values())
+            },
+            "FAUJI": {
+                "brandName": "FAUJI",
+                "totalBoxes": fauji_total_boxes,
+                "totalPieces": fauji_total_pieces,
+                "skus": list(fauji_summary.values())
+            }
+        }
+    }
+
 if __name__ == "__main__":
     init_db()
     migrate_existing_json_orders()
