@@ -391,18 +391,20 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
         order["id"], order["formattedTimestamp"], order.get("partyName", ""), order["totalBoxes"]
     )
     
-    # Decode and save high-resolution Order Slip image if provided by client
+    # Preset deterministic slip URL and path so email, bot and web links always resolve
+    slip_filename = f"{order_id}.png"
+    slip_path = os.path.join(ORDER_SLIPS_DIR, slip_filename)
+    order["slipImagePath"] = os.path.abspath(slip_path)
+    order["slipImageUrl"] = f"/order_slips/{slip_filename}"
+
+    # Decode and save high-resolution Order Slip image if provided by client (or uploaded asynchronously)
     slip_data = order.get("slipImageData", "")
     if slip_data and slip_data.startswith("data:image"):
         try:
             _, base64_str = slip_data.split(",", 1)
             img_bytes = base64.b64decode(base64_str)
-            slip_filename = f"{order_id}.png"
-            slip_path = os.path.join(ORDER_SLIPS_DIR, slip_filename)
             with open(slip_path, "wb") as img_f:
                 img_f.write(img_bytes)
-            order["slipImagePath"] = os.path.abspath(slip_path)
-            order["slipImageUrl"] = f"/order_slips/{slip_filename}"
             print(f"[SLIP IMAGE SAVED] Saved #{order_id} image ({len(img_bytes)} bytes) at {slip_path}")
         except Exception as img_err:
             print(f"[SLIP IMAGE SAVE ERROR] {img_err}")
@@ -480,6 +482,51 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
         "slipImageUrl": order.get("slipImageUrl"),
         "message": "Order recorded successfully!"
     }
+
+@app.post("/api/orders/upload-slip")
+async def upload_order_slip(request: Request):
+    """
+    ⚡ Asynchronous Background Slip Upload Endpoint:
+    Allows mobile clients (APK) and browser to submit orders with sub-second response (<0.1s),
+    while streaming the high-res Order Slip image in the background.
+    """
+    try:
+        data = await request.json()
+        raw_id = data.get("orderId") or ""
+        order_id = str(raw_id).replace("#", "").strip()
+        slip_data = data.get("slipImageData", "")
+        if order_id and slip_data and slip_data.startswith("data:image"):
+            _, base64_str = slip_data.split(",", 1)
+            img_bytes = base64.b64decode(base64_str)
+            slip_filename = f"{order_id}.png"
+            slip_path = os.path.join(ORDER_SLIPS_DIR, slip_filename)
+            with open(slip_path, "wb") as img_f:
+                img_f.write(img_bytes)
+
+            abs_path = os.path.abspath(slip_path)
+            slip_url = f"/order_slips/{slip_filename}"
+
+            # Update customer_orders.json
+            try:
+                if os.path.exists(ORDERS_LOG):
+                    with open(ORDERS_LOG, "r", encoding="utf-8") as f:
+                        orders_list = json.load(f)
+                    for o in orders_list:
+                        if str(o.get("id", "")).replace("#", "").strip() == order_id:
+                            o["slipImagePath"] = abs_path
+                            o["slipImageUrl"] = slip_url
+                            break
+                    with open(ORDERS_LOG, "w", encoding="utf-8") as f:
+                        json.dump(orders_list, f, indent=2, ensure_ascii=False)
+            except Exception as j_err:
+                print(f"[ASYNC SLIP JSON WARN] {j_err}")
+
+            print(f"[ASYNC SLIP UPLOADED] #{order_id} slip saved ({len(img_bytes):,} bytes)")
+            return {"status": "success", "orderId": order_id, "slipImageUrl": slip_url}
+    except Exception as e:
+        print(f"[ASYNC SLIP UPLOAD ERROR] {e}")
+        return {"status": "error", "message": str(e)}
+    return {"status": "error", "message": "Invalid request payload"}
 
 SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
@@ -670,8 +717,15 @@ def send_order_email_notification(order: dict):
             except Exception as l_err:
                 print(f"[LOGO ATTACH WARN] {l_err}")
 
-        # Attach high-resolution slip image if saved on server
-        slip_img_path = order.get("slipImagePath")
+        # Attach high-resolution slip image if saved on server (allow brief wait for async mobile slip upload)
+        slip_img_path = order.get("slipImagePath") or os.path.join(ORDER_SLIPS_DIR, f"{order.get('id')}.png")
+        if not os.path.exists(slip_img_path):
+            import time
+            for _ in range(3):
+                time.sleep(0.5)
+                if os.path.exists(slip_img_path):
+                    break
+
         if slip_img_path and os.path.exists(slip_img_path):
             try:
                 with open(slip_img_path, "rb") as img_f:

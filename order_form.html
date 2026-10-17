@@ -1358,14 +1358,7 @@
         items
       };
 
-      // 📸 Generate high-res slip image directly on submit to save on server & send on WhatsApp
-      try {
-        const c = generateOrderSlipCanvas(payload);
-        payload.slipImageData = c.toDataURL("image/png");
-      } catch (imgErr) {
-        console.warn("Could not generate slip canvas data URL:", imgErr);
-      }
-
+      // ⚡ FAST ORDER SUBMISSION (< 0.1s): Send lightweight order metadata immediately
       try {
         const res = await fetch("/api/orders/submit", {
           method: "POST",
@@ -1383,15 +1376,30 @@
           localStorage.setItem("lastCompletedOrder", JSON.stringify(finalOrder));
         } catch (e) { }
 
-        // Populate Modal Fields
+        // Populate Modal Fields & Display Success IMMEDIATELY
         document.getElementById("displayOrderId").textContent = "#" + finalOrder.id;
         document.getElementById("displayOrderTime").textContent = finalOrder.formattedTimestamp;
         document.getElementById("displayPartyName").textContent = finalOrder.partyName;
         document.getElementById("displayTotalBoxes").textContent = `${finalOrder.totalBoxes.toLocaleString()} Boxes`;
         document.getElementById("displayItemsCount").textContent = `${finalOrder.items.length} packings`;
 
-        // Show Modal
+        // Instant Modal Popup
         document.getElementById("successModal").style.display = "flex";
+
+        // 🚀 Asynchronous Background Slip Generation & Upload (Zero delay for user)
+        setTimeout(() => {
+          try {
+            const c = generateOrderSlipCanvas(finalOrder);
+            const slipImageData = c.toDataURL("image/png");
+            fetch("/api/orders/upload-slip", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId: finalOrder.id, slipImageData: slipImageData })
+            }).catch(e => console.warn("Background slip upload notice:", e));
+          } catch (e) {
+            console.warn("Background slip generation error:", e);
+          }
+        }, 50);
 
       } catch (err) {
         alert("Submission failed: " + err.message + "\nPlease check internet connection.");
@@ -1496,16 +1504,63 @@
       return false;
     }
 
+    // 🔤 Robust Canvas Word Wrapping Engine (Guarantees text never clips or overflows)
+    function wrapCanvasText(ctx, text, maxWidth) {
+      const rawText = String(text || "").trim();
+      if (!rawText) return ["-"];
+      const words = rawText.split(/\s+/);
+      const lines = [];
+      let currentLine = "";
+      for (let i = 0; i < words.length; i++) {
+        const testLine = currentLine ? (currentLine + " " + words[i]) : words[i];
+        if (ctx.measureText(testLine).width <= maxWidth) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) lines.push(currentLine);
+          // If a single long word exceeds maxWidth, wrap by character
+          if (ctx.measureText(words[i]).width > maxWidth) {
+            let subWord = "";
+            for (let ch of words[i]) {
+              if (ctx.measureText(subWord + ch).width <= maxWidth) {
+                subWord += ch;
+              } else {
+                lines.push(subWord);
+                subWord = ch;
+              }
+            }
+            currentLine = subWord;
+          } else {
+            currentLine = words[i];
+          }
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      return lines.length > 0 ? lines : ["-"];
+    }
+
     function generateOrderSlipCanvas(order) {
       const items = order.items || [];
       const scale = 2;
       const canvas = document.createElement("canvas");
       const width = 850;
 
+      // 📏 Pre-measure Address Lines to calculate dynamic Customer Box Height
+      const measureCtx = canvas.getContext("2d");
+      measureCtx.font = "12px 'Arial', sans-serif";
+      const rawAddress = (order.partyAddress && String(order.partyAddress).trim()) ? String(order.partyAddress).trim() : "-";
+      const fullAddressText = "Address: " + rawAddress;
+      // 570px wide corridor (from X=24 to X=594, safely clear of QR card at X=614)
+      const addressLines = wrapCanvasText(measureCtx, fullAddressText, 570);
+      const addressLineHeight = 18;
+      const custBoxY = 180;
+      // Box height expands dynamically based on number of address lines so nothing is ever clipped
+      const custBoxH = Math.max(90, 62 + (addressLines.length * addressLineHeight) + 10);
+      const extraCustH = Math.max(0, custBoxH - 88);
+
       const rowHeight = 36;
       const tableHeaderHeight = 40;
       const baseHeight = 510;
-      const totalHeight = baseHeight + (items.length * rowHeight);
+      const totalHeight = baseHeight + (items.length * rowHeight) + extraCustH;
 
       canvas.width = width * scale;
       canvas.height = totalHeight * scale;
@@ -1607,34 +1662,29 @@
       ctx.textAlign = "right";
       ctx.fillText("Area Sales Manager: " + (order.salesPerson || "-"), width - 24, 153);
 
-      // Customer Details Box (Y=180, H=88)
-      const custBoxY = 180;
-      const custBoxH = 88;
+      // 👤 Customer Details Box (Dynamic Height custBoxH >= 90)
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 1;
       ctx.strokeRect(12, custBoxY, width - 24, custBoxH);
 
-      // 1. Left: Customer / Billing Details
+      // 1. Left: Customer / Billing Details & Party Name
       ctx.textAlign = "left";
       ctx.fillStyle = "#64748b";
-      ctx.font = "bold 11px 'Arial', sans-serif";
-      ctx.fillText("CUSTOMER / BILLING DETAILS", 24, custBoxY + 20);
+      ctx.font = "bold 10.5px 'Arial', sans-serif";
+      ctx.fillText("CUSTOMER / BILLING DETAILS", 24, custBoxY + 18);
 
       ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 16px 'Arial', sans-serif";
-      ctx.fillText(order.partyName || "Customer", 24, custBoxY + 44);
+      ctx.font = "bold 15.5px 'Arial', sans-serif";
+      // Max width 295px so party name never overlaps center badge
+      ctx.fillText(order.partyName || "Customer", 24, custBoxY + 38, 295);
 
-      ctx.fillStyle = "#475569";
-      ctx.font = "12px 'Arial', sans-serif";
-      ctx.fillText("Address: " + (order.partyAddress || "-"), 24, custBoxY + 68);
-
-      // 2. Center: Prominent Party Code Badge (Requested: Center Placement)
+      // 2. Center: Prominent Party Code Badge (Sleek, elevated & strictly ends at custBoxY + 46)
       const pCode = (order.partyCode && String(order.partyCode).trim() && String(order.partyCode).trim() !== "NEW CUSTOMER") ? String(order.partyCode).trim() : "SDMOWB0307";
-      const badgeW = 200;
-      const badgeH = 46;
+      const badgeW = 190;
+      const badgeH = 38;
       const badgeX = (width / 2) - (badgeW / 2);
-      const badgeY = custBoxY + 21;
+      const badgeY = custBoxY + 8;
 
       ctx.fillStyle = "#eff6ff";
       ctx.strokeStyle = "#93c5fd";
@@ -1651,14 +1701,14 @@
 
       ctx.textAlign = "center";
       ctx.fillStyle = "#0284c7";
-      ctx.font = "bold 9.5px 'Arial', sans-serif";
-      ctx.fillText("REGISTERED PARTY CODE", width / 2, badgeY + 16);
+      ctx.font = "bold 9px 'Arial', sans-serif";
+      ctx.fillText("REGISTERED PARTY CODE", width / 2, badgeY + 14);
 
       ctx.fillStyle = "#003366";
-      ctx.font = "bold 14px 'Courier New', monospace";
-      ctx.fillText(pCode, width / 2, badgeY + 34);
+      ctx.font = "bold 13.5px 'Courier New', monospace";
+      ctx.fillText(pCode, width / 2, badgeY + 29);
 
-      // 3. Right: Live Scannable Verification QR Code (Replacing 1D Barcode)
+      // 3. Right: Live Scannable Verification QR Code (64x64)
       const cleanOrderId = (order.id || "").replace("#", "").trim();
       const qrUrl = "https://order.khandelia.online/verify/" + cleanOrderId;
       const sealText = order.securityHash || "SEC-AUTHENTIC";
@@ -1706,8 +1756,17 @@
       ctx.font = "bold 8.5px 'Arial', sans-serif";
       ctx.fillText("OFFICIAL RECORD", textX, qrCardY + 63);
 
-      // Table Header (5 Columns with Centered Pieces)
-      const tableY = 278;
+      // 4. Multi-Line Address Rendering (Starts at custBoxY + 62, strictly BELOW badge & NEVER hidden)
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#475569";
+      ctx.font = "12px 'Arial', sans-serif";
+      const addrStartY = custBoxY + 62;
+      addressLines.forEach((line, lIdx) => {
+        ctx.fillText(line, 24, addrStartY + (lIdx * addressLineHeight));
+      });
+
+      // Table Header (Dynamic tableY follows custBoxH)
+      const tableY = custBoxY + custBoxH + 12;
       ctx.fillStyle = "#004b99";
       ctx.fillRect(12, tableY, width - 24, tableHeaderHeight);
 
