@@ -69,6 +69,15 @@ def init_db():
                 created_at TEXT NOT NULL,
                 expires_at REAL NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS units (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                unit_code TEXT UNIQUE NOT NULL,
+                unit_name TEXT NOT NULL,
+                description TEXT DEFAULT '',
+                status TEXT DEFAULT 'ACTIVE',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -76,6 +85,7 @@ def init_db():
                 role TEXT NOT NULL,
                 party_code TEXT DEFAULT '',
                 party_name TEXT DEFAULT '',
+                assigned_units TEXT DEFAULT 'Unit 1',
                 status TEXT DEFAULT 'ACTIVE',
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
@@ -103,6 +113,8 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_users_status ON users (status);
             CREATE INDEX IF NOT EXISTS idx_cust_token ON customer_sessions (token);
             CREATE INDEX IF NOT EXISTS idx_cust_phone ON customer_sessions (phone);
+            CREATE INDEX IF NOT EXISTS idx_units_code ON units (unit_code);
+            CREATE INDEX IF NOT EXISTS idx_units_status ON units (status);
             """)
         # Safe migration for new columns
         try:
@@ -134,37 +146,87 @@ def init_db():
         except Exception:
             pass
         try:
+            conn.execute("ALTER TABLE orders ADD COLUMN unit TEXT DEFAULT 'Unit 1';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN assigned_units TEXT DEFAULT 'Unit 1';")
+        except Exception:
+            pass
+        try:
             conn.execute("ALTER TABLE admin_sessions ADD COLUMN role TEXT DEFAULT 'admin';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE admin_sessions ADD COLUMN assigned_units TEXT DEFAULT 'ALL';")
         except Exception:
             pass
         try:
             conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (order_status);")
         except Exception:
             pass
+        try:
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_unit ON orders (unit);")
+        except Exception:
+            pass
 
-        # Seed initial authorized accounts if users table is empty
+        # Seed initial Warehouse Units (Unit 1 to Unit 6) if units table is empty
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT count(*) FROM units;")
+            if cur.fetchone()[0] == 0:
+                now_iso = datetime.now().isoformat()
+                default_units = [
+                    ("UNIT-1", "Unit 1", "Main Production & Packing Plant", "ACTIVE", now_iso, now_iso),
+                    ("UNIT-2", "Unit 2", "Warehouse & Dispatch Unit 2", "ACTIVE", now_iso, now_iso),
+                    ("UNIT-3", "Unit 3", "Processing & Storage Unit 3", "ACTIVE", now_iso, now_iso),
+                    ("UNIT-4", "Unit 4", "Packaging Material & Logistics Unit 4", "ACTIVE", now_iso, now_iso),
+                    ("UNIT-5", "Unit 5", "Bulk Storage & Refining Unit 5", "ACTIVE", now_iso, now_iso),
+                    ("UNIT-6", "Unit 6", "Cold Storage & Distribution Unit 6", "ACTIVE", now_iso, now_iso),
+                ]
+                with conn:
+                    conn.executemany("""
+                    INSERT OR IGNORE INTO units (unit_code, unit_name, description, status, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """, default_units)
+                print("[DATABASE] Default Warehouse Units (Unit 1 to Unit 6) successfully seeded.")
+        except Exception as e:
+            print("[DATABASE] Units seeding error:", e)
+
+        # Seed / Upgrade initial authorized accounts (Shivam Wallu -> Super Admin with ALL units access)
         try:
             cur = conn.cursor()
             cur.execute("SELECT count(*) FROM users;")
             if cur.fetchone()[0] == 0:
                 now_iso = datetime.now().isoformat()
                 default_users = [
-                    ("Shivam Wallu", "7814749816", "admin", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
-                    ("Pankaj Kumar", "9914565011", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
-                    ("Ramesh Kumar", "9876543211", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
-                    ("Sunil Sharma", "9876543212", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
-                    ("Deepak Verma", "9876543213", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
-                    ("Vikas Gupta", "9876543214", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
-                    ("Krishna Traders", "9812345678", "customer", "SDMOWB0307", "Krishna Traders", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Shivam Wallu", "7814749816", "super_admin", "", "", "ALL", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Pankaj Kumar", "9914565011", "asm", "", "", "Unit 1", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Ramesh Kumar", "9876543211", "asm", "", "", "Unit 1", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Sunil Sharma", "9876543212", "asm", "", "", "Unit 2", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Deepak Verma", "9876543213", "asm", "", "", "Unit 3", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Vikas Gupta", "9876543214", "asm", "", "", "Unit 4", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Krishna Traders", "9812345678", "customer", "SDMOWB0307", "Krishna Traders", "Unit 1", "ACTIVE", now_iso, now_iso, "SYSTEM"),
                 ]
                 with conn:
                     conn.executemany("""
-                    INSERT OR IGNORE INTO users (name, phone, role, party_code, party_name, status, created_at, updated_at, created_by)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT OR IGNORE INTO users (name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, default_users)
                 print("[DATABASE] Default authorized users successfully seeded.")
+            else:
+                # Upgrade existing Shivam Wallu to Super Admin with ALL units
+                with conn:
+                    conn.execute("""
+                    UPDATE users SET role = 'super_admin', assigned_units = 'ALL' 
+                    WHERE phone = '7814749816' OR LOWER(name) LIKE '%shivam%'
+                    """)
+                    conn.execute("""
+                    UPDATE users SET assigned_units = 'Unit 1'
+                    WHERE LOWER(name) LIKE '%pankaj%'
+                    """)
         except Exception as e:
-            print("[DATABASE] User seeding error:", e)
+            print("[DATABASE] User seeding/upgrade error:", e)
 
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
     finally:
@@ -250,6 +312,99 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
     finally:
         conn.close()
 
+# ----------------- 🏭 WAREHOUSE UNIT MANAGEMENT SYSTEM -----------------
+def get_all_units() -> List[Dict[str, Any]]:
+    """Fetches all warehouse units with order counts"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT u.id, u.unit_code, u.unit_name, u.description, u.status, u.created_at, u.updated_at,
+               (SELECT COUNT(*) FROM orders o WHERE o.unit = u.unit_name OR o.unit = u.unit_code) AS total_orders,
+               (SELECT COALESCE(SUM(total_boxes), 0) FROM orders o WHERE o.unit = u.unit_name OR o.unit = u.unit_code) AS total_boxes,
+               (SELECT COALESCE(SUM(total_pieces), 0) FROM orders o WHERE o.unit = u.unit_name OR o.unit = u.unit_code) AS total_pieces
+        FROM units u
+        ORDER BY u.id ASC
+        """)
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+def create_or_update_unit(unit_code: str, unit_name: str, description: str = "", status: str = "ACTIVE") -> Dict[str, Any]:
+    """Super Admin dynamically creates or updates warehouse units"""
+    code_clean = (unit_code or "").strip().upper()
+    name_clean = (unit_name or "").strip()
+    if not code_clean or not name_clean:
+        return {"status": "error", "message": "Unit Code and Unit Name are required."}
+    
+    now_iso = datetime.now().isoformat()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            INSERT INTO units (unit_code, unit_name, description, status, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(unit_code) DO UPDATE SET
+                unit_name = excluded.unit_name,
+                description = excluded.description,
+                status = excluded.status,
+                updated_at = excluded.updated_at;
+            """, (code_clean, name_clean, description.strip(), status.upper(), now_iso, now_iso))
+        
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM units WHERE unit_code = ?", (code_clean,))
+        row = cur.fetchone()
+        return {"status": "success", "message": f"Unit '{name_clean}' saved successfully.", "unit": dict(row) if row else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def toggle_unit_status(unit_id: int, new_status: str) -> Dict[str, Any]:
+    """Super Admin activates or deactivates a warehouse unit"""
+    new_status = new_status.upper().strip()
+    if new_status not in ["ACTIVE", "INACTIVE"]:
+        return {"status": "error", "message": "Status must be ACTIVE or INACTIVE"}
+    conn = get_connection()
+    try:
+        now_iso = datetime.now().isoformat()
+        with conn:
+            cur = conn.cursor()
+            cur.execute("UPDATE units SET status = ?, updated_at = ? WHERE id = ?", (new_status, now_iso, unit_id))
+            if cur.rowcount == 0:
+                return {"status": "error", "message": "Unit not found"}
+        return {"status": "success", "message": f"Unit status updated to {new_status}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def delete_unit_by_id(unit_id: int) -> Dict[str, Any]:
+    """Super Admin permanently removes a custom unit"""
+    conn = get_connection()
+    try:
+        with conn:
+            cur = conn.cursor()
+            # Do not allow deleting core units 1 to 6 if they have orders
+            cur.execute("SELECT unit_name FROM units WHERE id = ?", (unit_id,))
+            row = cur.fetchone()
+            if not row:
+                return {"status": "error", "message": "Unit not found"}
+            unit_name = row["unit_name"]
+            
+            cur.execute("SELECT COUNT(*) FROM orders WHERE unit = ?", (unit_name,))
+            ord_count = cur.fetchone()[0]
+            if ord_count > 0:
+                return {"status": "error", "message": f"Cannot delete unit '{unit_name}' because it has {ord_count} associated orders. Please reassign orders first or mark unit INACTIVE."}
+
+            cur.execute("DELETE FROM units WHERE id = ?", (unit_id,))
+        return {"status": "success", "message": f"Unit '{unit_name}' deleted successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+# ----------------- 👥 SUPER ADMIN USER & ACCOUNT MANAGEMENT -----------------
 def get_user_by_phone(phone: str) -> Optional[Dict[str, Any]]:
     """Fetches user record by clean 10-digit mobile number"""
     digits = "".join(filter(str.isdigit, str(phone)))
@@ -258,7 +413,7 @@ def get_user_by_phone(phone: str) -> Optional[Dict[str, Any]]:
     try:
         cur = conn.cursor()
         cur.execute("""
-        SELECT id, name, phone, role, party_code, party_name, status, created_at, updated_at, created_by
+        SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by
         FROM users WHERE phone = ? LIMIT 1
         """, (clean_p,))
         row = cur.fetchone()
@@ -273,49 +428,54 @@ def get_all_users(role: Optional[str] = None) -> List[Dict[str, Any]]:
         cur = conn.cursor()
         if role:
             cur.execute("""
-            SELECT id, name, phone, role, party_code, party_name, status, created_at, updated_at, created_by
+            SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by
             FROM users WHERE LOWER(role) = LOWER(?) ORDER BY id DESC
             """, (role.strip(),))
         else:
             cur.execute("""
-            SELECT id, name, phone, role, party_code, party_name, status, created_at, updated_at, created_by
+            SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by
             FROM users ORDER BY id DESC
             """)
         return [dict(r) for r in cur.fetchall()]
     finally:
         conn.close()
 
-def create_or_update_user(name: str, phone: str, role: str, party_code: str = "", party_name: str = "", status: str = "ACTIVE", created_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
-    """Super Admin creates or updates an authorized user"""
+def create_or_update_user(name: str, phone: str, role: str, party_code: str = "", party_name: str = "", assigned_units: str = "Unit 1", status: str = "ACTIVE", created_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
+    """Super Admin creates or updates an authorized user with assigned unit(s)"""
     digits = "".join(filter(str.isdigit, str(phone)))
     clean_p = digits[-10:] if len(digits) >= 10 else digits
     if len(clean_p) != 10:
         return {"status": "error", "message": "Phone number must be exactly 10 digits"}
     
     role = role.lower().strip()
-    valid_roles = ["admin", "manager", "analyst", "asm", "customer"]
+    valid_roles = ["super_admin", "admin", "manager", "analyst", "asm", "customer"]
     if role not in valid_roles:
         return {"status": "error", "message": f"Invalid role '{role}'. Allowed roles: {', '.join(valid_roles)}"}
+
+    assigned_units_clean = (assigned_units or "Unit 1").strip()
+    if role == "super_admin":
+        assigned_units_clean = "ALL"
 
     now_iso = datetime.now().isoformat()
     conn = get_connection()
     try:
         with conn:
             conn.execute("""
-            INSERT INTO users (name, phone, role, party_code, party_name, status, created_at, updated_at, created_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(phone) DO UPDATE SET
                 name = excluded.name,
                 role = excluded.role,
                 party_code = excluded.party_code,
                 party_name = excluded.party_name,
+                assigned_units = excluded.assigned_units,
                 status = excluded.status,
                 updated_at = excluded.updated_at,
                 created_by = excluded.created_by;
-            """, (name.strip(), clean_p, role, party_code.strip(), party_name.strip(), status.upper(), now_iso, now_iso, created_by))
+            """, (name.strip(), clean_p, role, party_code.strip(), party_name.strip(), assigned_units_clean, status.upper(), now_iso, now_iso, created_by))
         
         user = get_user_by_phone(clean_p)
-        return {"status": "success", "message": f"User '{name}' saved successfully with role '{role}'", "user": user}
+        return {"status": "success", "message": f"User '{name}' saved successfully with role '{role}' in '{assigned_units_clean}'", "user": user}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
@@ -657,14 +817,15 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
         slip_image_url = order.get("slipImageUrl") or order.get("slip_image_url", f"/order_slips/{order_id}.png" if order_id else "")
         synced_to_sheet = 1 if order.get("synced_to_sheet") else 0
         
+        unit = order.get("unit") or "Unit 1"
         with conn:
             conn.execute("""
             INSERT INTO orders (
                 order_id, party_name, party_code, party_address, delivery_address, sales_person,
                 order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
-                synced_to_sheet, data_consent, order_status, so_number, confirmed_at, confirmed_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                synced_to_sheet, data_consent, order_status, so_number, confirmed_at, confirmed_by, unit
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(order_id) DO UPDATE SET
                 party_name = excluded.party_name,
                 party_code = excluded.party_code,
@@ -682,14 +843,15 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                 confirmed_by = COALESCE(NULLIF(excluded.confirmed_by, ''), orders.confirmed_by),
                 slip_image_path = COALESCE(NULLIF(excluded.slip_image_path, ''), orders.slip_image_path),
                 slip_image_url = COALESCE(NULLIF(excluded.slip_image_url, ''), orders.slip_image_url),
-                synced_to_sheet = CASE WHEN excluded.synced_to_sheet = 1 THEN 1 ELSE orders.synced_to_sheet END;
+                synced_to_sheet = CASE WHEN excluded.synced_to_sheet = 1 THEN 1 ELSE orders.synced_to_sheet END,
+                unit = COALESCE(NULLIF(excluded.unit, ''), orders.unit);
             """, (
                 order_id, party_name, party_code, party_address, delivery_address, sales_person,
                 order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
-                synced_to_sheet, data_consent, order_status, so_number, confirmed_at, confirmed_by
+                synced_to_sheet, data_consent, order_status, so_number, confirmed_at, confirmed_by, unit
             ))
-        print(f"[DATABASE] Order #{order_id} permanently saved in orders.db ({total_boxes} Bxs, {total_pieces} Pcs)")
+        print(f"[DATABASE] Order #{order_id} permanently saved in orders.db ({total_boxes} Bxs, {total_pieces} Pcs, Unit: {unit})")
         return True
     except Exception as e:
         print(f"[DATABASE ERROR] Could not save order #{order.get('id')}: {e}")
@@ -769,12 +931,15 @@ def mark_whatsapp_sent_in_db(order_id: str):
     finally:
         conn.close()
 
-def get_all_orders_from_db(limit: int = 1000) -> List[Dict[str, Any]]:
-    """Retrieves all orders from database ordered by most recent with dynamic pieces calculation"""
+def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Retrieves all orders from database ordered by most recent with dynamic pieces calculation and optional unit filter"""
     conn = get_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?", (limit,))
+        if unit and unit.upper() != "ALL":
+            cursor.execute("SELECT * FROM orders WHERE unit = ? OR (unit IS NULL AND ? = 'Unit 1') ORDER BY created_at DESC LIMIT ?", (unit, unit, limit))
+        else:
+            cursor.execute("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?", (limit,))
         rows = cursor.fetchall()
         result = []
         for r in rows:
@@ -789,6 +954,7 @@ def get_all_orders_from_db(limit: int = 1000) -> List[Dict[str, Any]]:
             d["partyAddress"] = d["party_address"]
             d["deliveryAddress"] = d["delivery_address"]
             d["salesPerson"] = d["sales_person"]
+            d["unit"] = d.get("unit") or "Unit 1"
             
             # Recalculate pieces and boxes dynamically if missing or 0
             tot_bxs = int(d.get("total_boxes") or 0)
@@ -848,6 +1014,7 @@ def get_order_by_id(order_id: str) -> Optional[Dict[str, Any]]:
             d["partyCode"] = d.get("party_code", "")
             d["partyAddress"] = d["party_address"]
             d["salesPerson"] = d["sales_person"]
+            d["unit"] = d.get("unit") or "Unit 1"
             d["totalBoxes"] = d["total_boxes"]
             d["totalPieces"] = d.get("total_pieces", 0)
             d["orderStatus"] = d.get("order_status") or "PENDING"
@@ -880,8 +1047,8 @@ def migrate_existing_json_orders():
     except Exception as e:
         print(f"[DATABASE MIGRATION NOTICE] {e}")
 
-def create_admin_session(username: str = "admin", role: str = "admin") -> str:
-    """Creates a secure 7-day persistent session token for Admin Dashboard with user role"""
+def create_admin_session(username: str = "admin", role: str = "super_admin", assigned_units: str = "ALL") -> str:
+    """Creates a secure 7-day persistent session token for Admin Dashboard with user role and assigned units"""
     import secrets
     import time
     token = f"ADM_{secrets.token_hex(24)}"
@@ -892,31 +1059,33 @@ def create_admin_session(username: str = "admin", role: str = "admin") -> str:
     try:
         with conn:
             conn.execute("""
-            INSERT INTO admin_sessions (token, username, role, created_at, expires_at)
-            VALUES (?, ?, ?, ?, ?)
-            """, (token, username, role, now_str, expires_at))
+            INSERT INTO admin_sessions (token, username, role, assigned_units, created_at, expires_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """, (token, username, role, assigned_units, now_str, expires_at))
         return token
     finally:
         conn.close()
 
 def validate_admin_session(token: str) -> Optional[Dict[str, Any]]:
-    """Validates if admin token is active and not expired, returns role"""
+    """Validates if admin token is active and not expired, returns role and assigned_units"""
     import time
     if not token:
         return None
     master_token = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN_2026_XYZ")
     if token == master_token:
-        return {"username": "admin", "role": "admin", "token": master_token}
+        return {"username": "admin", "role": "super_admin", "assigned_units": "ALL", "token": master_token}
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT username, role, token, expires_at FROM admin_sessions WHERE token = ?", (token,))
+        cur.execute("SELECT username, role, assigned_units, token, expires_at FROM admin_sessions WHERE token = ?", (token,))
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
             role_val = row["role"] if "role" in row.keys() and row["role"] else "admin"
+            assigned_u = row["assigned_units"] if "assigned_units" in row.keys() and row["assigned_units"] else "ALL"
             return {
                 "username": row["username"],
                 "role": role_val,
+                "assigned_units": assigned_u,
                 "token": row["token"]
             }
         return None
@@ -957,44 +1126,122 @@ def delete_order_from_db(order_id: str) -> bool:
     finally:
         conn.close()
 
-def get_orders_stats() -> Dict[str, Any]:
-    """Calculates live KPI metrics directly from SQLite orders database"""
+def cleanup_orders_retain_pankaj_kumar() -> Dict[str, Any]:
+    """
+    🧹 Purges all order records EXCEPT Pankaj Kumar's.
+    Assigns Pankaj Kumar's orders to Unit 1.
+    Syncs customer_orders.json to match.
+    Guarantees 100% data integrity and zero leftover test records.
+    """
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(*), COALESCE(SUM(total_boxes), 0), COALESCE(SUM(total_pieces), 0) FROM orders")
+        # Find Pankaj Kumar's orders
+        cur.execute("SELECT order_id, sales_person, total_boxes, total_pieces FROM orders WHERE LOWER(sales_person) LIKE '%pankaj%'")
+        pankaj_orders = [dict(r) for r in cur.fetchall()]
+        
+        with conn:
+            # 1. Update Pankaj Kumar orders to Unit 1
+            conn.execute("UPDATE orders SET unit = 'Unit 1' WHERE LOWER(sales_person) LIKE '%pankaj%'")
+            # 2. Delete all other orders
+            conn.execute("DELETE FROM orders WHERE LOWER(sales_person) NOT LIKE '%pankaj%'")
+
+        # Also sync customer_orders.json
+        orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
+        cleaned_json_orders = []
+        if os.path.exists(orders_log):
+            try:
+                with open(orders_log, "r", encoding="utf-8") as f:
+                    all_json_orders = json.load(f)
+                for o in all_json_orders:
+                    sp = str(o.get("salesPerson") or o.get("sales_person", "")).lower()
+                    if "pankaj" in sp:
+                        o["unit"] = "Unit 1"
+                        cleaned_json_orders.append(o)
+                with open(orders_log, "w", encoding="utf-8") as f:
+                    json.dump(cleaned_json_orders, f, indent=2, ensure_ascii=False)
+            except Exception as j_err:
+                print(f"[CLEANUP JSON WARN] {j_err}")
+
+        # Verify final remaining count in DB
+        cur.execute("SELECT COUNT(*) FROM orders")
+        remaining_db = cur.fetchone()[0]
+
+        return {
+            "status": "success",
+            "message": "Data cleanup complete. Only Pankaj Kumar's order records are retained.",
+            "pankajOrdersCount": len(pankaj_orders),
+            "retainedInDb": remaining_db,
+            "retainedInJson": len(cleaned_json_orders),
+            "assignedUnit": "Unit 1",
+            "pankajOrders": pankaj_orders
+        }
+    finally:
+        conn.close()
+
+def get_orders_stats(unit: Optional[str] = None) -> Dict[str, Any]:
+    """Calculates live KPI metrics directly from SQLite orders database with optional unit filter"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        unit_clause = ""
+        params = []
+        if unit and unit.upper() != "ALL":
+            unit_clause = " WHERE (unit = ? OR (unit IS NULL AND ? = 'Unit 1'))"
+            params = [unit, unit]
+
+        cur.execute(f"SELECT COUNT(*), COALESCE(SUM(total_boxes), 0), COALESCE(SUM(total_pieces), 0) FROM orders{unit_clause}", params)
         row = cur.fetchone()
         total_orders = row[0] or 0
         total_boxes = row[1] or 0
         total_pieces = row[2] or 0
 
         # Confirmed vs Pending
-        cur.execute("SELECT COUNT(*) FROM orders WHERE order_status = 'CONFIRMED'")
+        conf_clause = "WHERE order_status = 'CONFIRMED'"
+        conf_params = []
+        if unit and unit.upper() != "ALL":
+            conf_clause += " AND (unit = ? OR (unit IS NULL AND ? = 'Unit 1'))"
+            conf_params = [unit, unit]
+        cur.execute(f"SELECT COUNT(*) FROM orders {conf_clause}", conf_params)
         confirmed_count = cur.fetchone()[0] or 0
         pending_count = total_orders - confirmed_count
 
-        cur.execute("SELECT COUNT(*) FROM orders WHERE synced_to_sheet = 1")
+        sync_clause = "WHERE synced_to_sheet = 1"
+        sync_params = []
+        if unit and unit.upper() != "ALL":
+            sync_clause += " AND (unit = ? OR (unit IS NULL AND ? = 'Unit 1'))"
+            sync_params = [unit, unit]
+        cur.execute(f"SELECT COUNT(*) FROM orders {sync_clause}", sync_params)
         synced_count = cur.fetchone()[0] or 0
         pending_sync = total_orders - synced_count
 
-        cur.execute("SELECT COUNT(DISTINCT party_name) FROM orders")
+        cur.execute(f"SELECT COUNT(DISTINCT party_name) FROM orders{unit_clause}", params)
         unique_parties = cur.fetchone()[0] or 0
 
-        cur.execute("SELECT COUNT(DISTINCT sales_person) FROM orders WHERE sales_person IS NOT NULL AND sales_person != ''")
+        sales_clause = "WHERE sales_person IS NOT NULL AND sales_person != ''"
+        sales_params = []
+        if unit and unit.upper() != "ALL":
+            sales_clause += " AND (unit = ? OR (unit IS NULL AND ? = 'Unit 1'))"
+            sales_params = [unit, unit]
+        cur.execute(f"SELECT COUNT(DISTINCT sales_person) FROM orders {sales_clause}", sales_params)
         sales_reps = cur.fetchone()[0] or 0
 
         today_str = datetime.now().strftime("%d/%m/%Y")
         today_iso = datetime.now().strftime("%Y-%m-%d")
-        cur.execute("""
-        SELECT COUNT(*), COALESCE(SUM(total_boxes), 0), COALESCE(SUM(total_pieces), 0) FROM orders 
-        WHERE formatted_timestamp LIKE ? OR order_date LIKE ? OR created_at LIKE ?
-        """, (f"%{today_str}%", f"%{today_str}%", f"{today_iso}%"))
+        today_clause = "WHERE (formatted_timestamp LIKE ? OR order_date LIKE ? OR created_at LIKE ?)"
+        today_params = [f"%{today_str}%", f"%{today_str}%", f"{today_iso}%"]
+        if unit and unit.upper() != "ALL":
+            today_clause += " AND (unit = ? OR (unit IS NULL AND ? = 'Unit 1'))"
+            today_params.extend([unit, unit])
+
+        cur.execute(f"SELECT COUNT(*), COALESCE(SUM(total_boxes), 0), COALESCE(SUM(total_pieces), 0) FROM orders {today_clause}", today_params)
         t_row = cur.fetchone()
         today_orders = t_row[0] or 0
         today_boxes = t_row[1] or 0
         today_pieces = t_row[2] or 0
 
         return {
+            "unit": unit or "ALL",
             "totalOrders": total_orders,
             "totalConfirmedOrders": confirmed_count,
             "totalPendingOrders": pending_count,
@@ -1037,17 +1284,20 @@ FAUJI_MASTER_SKUS = [
     "15 KG TIN x 1"
 ]
 
-def get_warehouse_production_summary(orders_subset: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+def get_warehouse_production_summary(orders_subset: Optional[List[Dict[str, Any]]] = None, unit: Optional[str] = None) -> Dict[str, Any]:
     """
     🏭 Aggregates warehouse-focused packing and production requirements for PENDING orders only.
     Excludes all confirmed orders so warehouse dispatch teams pack exact pending requirements.
+    Supports unit filter.
     """
     if orders_subset is None:
-        all_orders = get_all_orders_from_db(limit=1000)
+        all_orders = get_all_orders_from_db(limit=1000, unit=unit)
         # Filter strictly for PENDING orders
         pending_orders = [o for o in all_orders if (o.get("orderStatus") or "").upper() == "PENDING"]
     else:
         pending_orders = [o for o in orders_subset if (o.get("orderStatus") or "").upper() == "PENDING"]
+        if unit and unit.upper() != "ALL":
+            pending_orders = [o for o in pending_orders if (o.get("unit") or "Unit 1") == unit]
 
     mashal_summary = {sku: {"sku": sku, "boxes": 0, "pieces": 0, "multiplier": 1} for sku in MASHAL_MASTER_SKUS}
     fauji_summary = {sku: {"sku": sku, "boxes": 0, "pieces": 0, "multiplier": 1} for sku in FAUJI_MASTER_SKUS}

@@ -178,9 +178,100 @@
       background: var(--card-bg);
       box-shadow: var(--shadow-sm);
     }
+    .role-badge-pill.super_admin { 
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); 
+      color: #92400e; 
+      border: 1.5px solid #f59e0b; 
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25); 
+      font-weight: 800;
+    }
     .role-badge-pill.admin { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
     .role-badge-pill.manager { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
     .role-badge-pill.analyst { background: #faf5ff; color: #7e22ce; border-color: #e9d5ff; }
+
+    /* 🏭 WAREHOUSE UNIT SELECTOR BAR */
+    .unit-selector-bar {
+      margin: 16px 28px 0 28px;
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .unit-selector-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .unit-selector-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .unit-pills-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .unit-pill {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .unit-pill:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      transform: translateY(-1px);
+    }
+    .unit-pill.active {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+    .unit-pill .unit-badge-count {
+      background: rgba(0, 0, 0, 0.08);
+      color: inherit;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .unit-pill.active .unit-badge-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+    .unit-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
 
     .btn-logout {
       background: #ffffff;
@@ -1376,6 +1467,19 @@
     </div>
   </header>
 
+  <!-- 🏭 DYNAMIC WAREHOUSE UNIT SELECTOR BAR -->
+  <div class="unit-selector-bar" id="unitSelectorBar" style="display: none;">
+    <div class="unit-selector-left">
+      <span class="unit-selector-title">
+        <span>🏭</span>
+        <span>Warehouse Unit:</span>
+      </span>
+    </div>
+    <div class="unit-pills-row" id="unitPillsRow">
+      <!-- Rendered dynamically: All Units, Unit 1, Unit 2, Unit 3, Unit 4, Unit 5, Unit 6, + Custom -->
+    </div>
+  </div>
+
   <!-- 📊 Order Summary Dashboard (KPI Cards) -->
   <div class="kpi-container" id="kpiContainer" style="display: none;">
     <div class="kpi-card">
@@ -1565,6 +1669,11 @@
           <span>📋 All Orders</span>
           <span class="badge" id="badgeAllCount">0</span>
         </button>
+        <!-- Unit Management Tab (Super Admin Only) -->
+        <button class="status-tab units-tab" id="tabStatusUnits" onclick="setStatusTab('UNITS')" title="Manage warehouse units (Unit 1 to Unit 6 & Custom)">
+          <span>🏭 Unit Management</span>
+          <span class="badge" id="badgeUnitsCount" style="background: #fef3c7; color: #92400e;">6</span>
+        </button>
         <!-- User Management Tab (Super Admin Only) -->
         <button class="status-tab users-tab" id="tabStatusUsers" onclick="setStatusTab('USERS')" title="Manage user roles, accounts & mobile authorizations">
           <span>👥 User Management</span>
@@ -1613,6 +1722,7 @@
             <th style="min-width: 130px;">Party Code</th>
             <th style="min-width: 260px;">Delivery / Billing Address</th>
             <th style="min-width: 150px;">Area Sales Manager</th>
+            <th style="min-width: 110px;" class="center">Warehouse Unit</th>
             <th style="min-width: 320px;">Product Quantities & Pieces</th>
             <th style="min-width: 120px;" class="center">Total Boxes</th>
             <th style="min-width: 120px;" class="center">Total Pieces</th>
@@ -1675,6 +1785,7 @@
             <th style="min-width: 180px;">User Name</th>
             <th style="min-width: 140px;">Registered Mobile</th>
             <th class="center" style="min-width: 160px;">Assigned Role</th>
+            <th style="min-width: 140px;">Assigned Unit</th>
             <th style="min-width: 180px;">Party / Company Name</th>
             <th class="center" style="min-width: 110px;">Status</th>
             <th style="min-width: 140px;">Created Date</th>
@@ -1683,7 +1794,49 @@
         </thead>
         <tbody id="usersTableBody">
           <tr>
-            <td colspan="8" class="empty-state-cell">Loading accounts from database...</td>
+            <td colspan="9" class="empty-state-cell">Loading accounts from database...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 🏭 SUPER ADMIN WAREHOUSE UNIT MANAGEMENT PANEL -->
+  <div class="table-card-wrapper" id="unitsCardWrapper" style="display: none; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">🏭 Warehouse Unit Management</h2>
+        <p style="font-size: 13px; color: var(--text-secondary);">Manage warehouse units (Unit 1 to Unit 6 & Custom Units). Orders and user accounts are linked directly to assigned units.</p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-tool" onclick="loadWarehouseUnits()" title="Reload unit list">
+          <span>🔄</span> <span>Refresh</span>
+        </button>
+        <button class="btn-tool primary" onclick="openCreateUnitModal()" title="Add new warehouse unit">
+          <span>➕</span> <span>Add New Unit</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Units Table -->
+    <div style="overflow-x: auto; background: #ffffff; border-radius: 10px; border: 1px solid var(--border);">
+      <table class="orders-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th class="center" style="width: 50px;">#</th>
+            <th style="min-width: 120px;">Unit Code</th>
+            <th style="min-width: 160px;">Unit Name</th>
+            <th style="min-width: 250px;">Plant / Warehouse Description</th>
+            <th class="center" style="min-width: 120px;">Total Orders</th>
+            <th class="center" style="min-width: 120px;">Total Boxes</th>
+            <th class="center" style="min-width: 120px;">Total Pieces</th>
+            <th class="center" style="min-width: 110px;">Status</th>
+            <th class="center" style="min-width: 150px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="unitsTableBody">
+          <tr>
+            <td colspan="9" class="empty-state-cell">Loading units from database...</td>
           </tr>
         </tbody>
       </table>
@@ -1713,7 +1866,20 @@
             <option value="customer">Customer (Direct Buyer)</option>
             <option value="manager">Manager (Production & Packing)</option>
             <option value="analyst">Analyst (Read-Only)</option>
-            <option value="admin">Super Admin (Full Access)</option>
+            <option value="admin">Admin (Unit Specific)</option>
+            <option value="super_admin">Super Admin (Full Access All Units)</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Assigned Warehouse Unit(s) <span style="color: #dc2626;">*</span></label>
+          <select id="newUserAssignedUnits" class="login-input" style="margin-bottom: 0;">
+            <option value="ALL">ALL (All Units - Global Access)</option>
+            <option value="Unit 1" selected>Unit 1 (Main Production & Packing)</option>
+            <option value="Unit 2">Unit 2 (Warehouse & Dispatch)</option>
+            <option value="Unit 3">Unit 3 (Processing & Storage)</option>
+            <option value="Unit 4">Unit 4 (Packaging Material & Logistics)</option>
+            <option value="Unit 5">Unit 5 (Bulk Storage & Refining)</option>
+            <option value="Unit 6">Unit 6 (Cold Storage & Distribution)</option>
           </select>
         </div>
         <div id="customerExtraFields" style="display: none;">
@@ -1738,6 +1904,42 @@
       <div class="generic-modal-footer">
         <button class="btn-tool" onclick="closeCreateUserModal()">Cancel</button>
         <button class="btn-tool primary" id="btnSaveUserAccount" onclick="submitCreateUser()">Save User Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ➕ CREATE / EDIT UNIT MODAL -->
+  <div class="generic-modal-overlay" id="createUnitModalOverlay" style="display: none;" onclick="closeCreateUnitModal(event)">
+    <div class="generic-modal-box" onclick="event.stopPropagation()" style="max-width: 480px;">
+      <div class="generic-modal-header">
+        <h3 id="unitModalTitle">➕ Add Warehouse Unit</h3>
+        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeCreateUnitModal()">✕</button>
+      </div>
+      <div class="generic-modal-body" style="padding: 20px;">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Unit Code <span style="color: #dc2626;">*</span></label>
+          <input type="text" id="newUnitCode" class="login-input" placeholder="e.g. UNIT-7" style="margin-bottom: 0; text-transform: uppercase;">
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Unit Name <span style="color: #dc2626;">*</span></label>
+          <input type="text" id="newUnitName" class="login-input" placeholder="e.g. Unit 7 / Mustard Refinery Unit" style="margin-bottom: 0;">
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Description / Location Details</label>
+          <input type="text" id="newUnitDesc" class="login-input" placeholder="e.g. Mustard Crushing Plant & Packaging" style="margin-bottom: 0;">
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Status</label>
+          <select id="newUnitStatus" class="login-input" style="margin-bottom: 0;">
+            <option value="ACTIVE" selected>ACTIVE (Operational)</option>
+            <option value="INACTIVE">INACTIVE (Temporarily Closed)</option>
+          </select>
+        </div>
+        <div id="unitModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none;"></div>
+      </div>
+      <div class="generic-modal-footer">
+        <button class="btn-tool" onclick="closeCreateUnitModal()">Cancel</button>
+        <button class="btn-tool primary" id="btnSaveUnit" onclick="submitCreateUnit()">Save Unit</button>
       </div>
     </div>
   </div>
@@ -1849,10 +2051,16 @@
   <script>
     // State Management
     const ADMIN_TOKEN_KEY = "KOGM_ADMIN_SESSION_TOKEN";
-    let currentUserRole = "admin"; // 'admin', 'manager', 'analyst'
+    let currentUserRole = "admin"; // 'super_admin', 'admin', 'manager', 'analyst'
     let currentUsername = "admin";
     let canConfirmOrders = true;
     let canDeleteOrders = true;
+    let canManageUnits = false;
+    let canManageUsers = false;
+    let userAssignedUnits = "ALL";
+    let activeUnitFilter = "ALL"; // 'ALL', 'Unit 1', 'Unit 2', etc.
+    let allWarehouseUnits = [];
+    let editingUnitId = null;
 
     let allOrdersData = [];
     let filteredOrdersData = [];
@@ -1886,7 +2094,7 @@
     // Filter states
     let activeDateFilter = "ALL"; // 'ALL', 'TODAY', 'YESTERDAY', 'CUSTOM'
     let customSelectedDate = "";
-    let activeStatusTab = "ALL"; // 'ALL', 'PENDING', 'CONFIRMED'
+    let activeStatusTab = "ALL"; // 'ALL', 'PENDING', 'CONFIRMED', 'USERS', 'UNITS'
     let currentSearchTerm = "";
 
     // Pagination states
@@ -1920,34 +2128,52 @@
     function showLoginOverlay() {
       document.getElementById("loginOverlay").style.display = "flex";
       document.getElementById("headerRight").style.display = "none";
+      if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "none";
       document.getElementById("kpiContainer").style.display = "none";
       document.getElementById("warehouseSection").style.display = "none";
       document.getElementById("controlsPanel").style.display = "none";
       document.getElementById("scrollNavBar").style.display = "none";
       document.getElementById("tableCardWrapper").style.display = "none";
+      if (document.getElementById("usersCardWrapper")) document.getElementById("usersCardWrapper").style.display = "none";
+      if (document.getElementById("unitsCardWrapper")) document.getElementById("unitsCardWrapper").style.display = "none";
     }
 
     function showDashboardUI() {
       document.getElementById("loginOverlay").style.display = "none";
       document.getElementById("headerRight").style.display = "flex";
+      if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "flex";
       document.getElementById("kpiContainer").style.display = "grid";
       document.getElementById("warehouseSection").style.display = "block";
       document.getElementById("controlsPanel").style.display = "flex";
       document.getElementById("scrollNavBar").style.display = "flex";
       document.getElementById("tableCardWrapper").style.display = "flex";
+      if (document.getElementById("usersCardWrapper")) document.getElementById("usersCardWrapper").style.display = "none";
+      if (document.getElementById("unitsCardWrapper")) document.getElementById("unitsCardWrapper").style.display = "none";
     }
 
     function updateRoleUI() {
       const container = document.getElementById("roleBadgeContainer");
-      const roleCls = currentUserRole.toLowerCase();
+      const roleCls = (currentUserRole || "admin").toLowerCase();
       let roleIcon = "🛡️";
-      if (roleCls === "manager") roleIcon = "👔";
-      if (roleCls === "analyst") roleIcon = "📈";
+      let roleTitle = currentUserRole.toUpperCase();
+
+      if (roleCls === "super_admin" || roleCls === "admin") {
+        roleIcon = "👑";
+        roleTitle = "SUPER ADMIN";
+      } else if (roleCls === "manager") {
+        roleIcon = "👔";
+        roleTitle = "MANAGER";
+      } else if (roleCls === "analyst") {
+        roleIcon = "📈";
+        roleTitle = "ANALYST";
+      }
+
+      const unitNote = (userAssignedUnits === "ALL" || !userAssignedUnits) ? "ALL UNITS" : userAssignedUnits;
 
       container.innerHTML = `
         <div class="role-badge-pill ${roleCls}">
           <span>${roleIcon}</span>
-          <span>${escapeHtml(currentUsername)} (${currentUserRole.toUpperCase()})</span>
+          <span>${escapeHtml(currentUsername)} (${roleTitle}) • ${escapeHtml(unitNote)}</span>
         </div>
       `;
     }
@@ -1977,10 +2203,20 @@
           currentUsername = data.username || u;
           canConfirmOrders = Boolean(data.canConfirm);
           canDeleteOrders = Boolean(data.canDelete);
+          canManageUnits = Boolean(data.canManageUnits);
+          canManageUsers = Boolean(data.canManageUsers);
+          userAssignedUnits = data.assignedUnits || "ALL";
+
+          if (userAssignedUnits !== "ALL" && !userAssignedUnits.includes(",")) {
+            activeUnitFilter = userAssignedUnits;
+          } else {
+            activeUnitFilter = "ALL";
+          }
 
           updateRoleUI();
           showDashboardUI();
-          fetchOrdersData();
+          await loadWarehouseUnits();
+          await fetchOrdersData();
         } else {
           err.textContent = data.detail || data.message || "Invalid role credentials. Please check your username and password.";
           err.style.display = "block";
@@ -2006,10 +2242,20 @@
           currentUsername = profile.username || "admin";
           canConfirmOrders = Boolean(profile.canConfirm);
           canDeleteOrders = Boolean(profile.canDelete);
+          canManageUnits = Boolean(profile.canManageUnits);
+          canManageUsers = Boolean(profile.canManageUsers);
+          userAssignedUnits = profile.assignedUnits || "ALL";
+
+          if (userAssignedUnits !== "ALL" && !userAssignedUnits.includes(",")) {
+            activeUnitFilter = userAssignedUnits;
+          } else {
+            activeUnitFilter = "ALL";
+          }
 
           updateRoleUI();
           showDashboardUI();
-          fetchOrdersData();
+          await loadWarehouseUnits();
+          await fetchOrdersData();
         } else {
           localStorage.removeItem(ADMIN_TOKEN_KEY);
           showLoginOverlay();
@@ -2040,7 +2286,11 @@
       if (!token) return;
 
       try {
-        const res = await fetch("/api/admin/orders", {
+        let url = "/api/admin/orders";
+        if (activeUnitFilter && activeUnitFilter !== "ALL") {
+          url += `?unit=${encodeURIComponent(activeUnitFilter)}`;
+        }
+        const res = await fetch(url, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await res.json();
@@ -2065,6 +2315,7 @@
 
             return {
               ...o,
+              unit: o.unit || "Unit 1",
               totalBoxes: totalBxs,
               totalPieces: totalPcs,
               orderStatus: (o.orderStatus || o.order_status || "PENDING").toUpperCase(),
@@ -2109,19 +2360,32 @@
       if (document.getElementById("tabStatusUsers")) {
         document.getElementById("tabStatusUsers").classList.toggle("active", statusType === "USERS");
       }
+      if (document.getElementById("tabStatusUnits")) {
+        document.getElementById("tabStatusUnits").classList.toggle("active", statusType === "UNITS");
+      }
 
       const tableWrapper = document.getElementById("tableCardWrapper");
       const usersWrapper = document.getElementById("usersCardWrapper");
+      const unitsWrapper = document.getElementById("unitsCardWrapper");
       const warehouseCard = document.getElementById("warehouseSummaryCard");
 
       if (statusType === "USERS") {
         if (tableWrapper) tableWrapper.style.display = "none";
         if (warehouseCard) warehouseCard.style.display = "none";
+        if (unitsWrapper) unitsWrapper.style.display = "none";
         if (usersWrapper) usersWrapper.style.display = "block";
         loadAdminUsers();
         return;
+      } else if (statusType === "UNITS") {
+        if (tableWrapper) tableWrapper.style.display = "none";
+        if (warehouseCard) warehouseCard.style.display = "none";
+        if (usersWrapper) usersWrapper.style.display = "none";
+        if (unitsWrapper) unitsWrapper.style.display = "block";
+        loadWarehouseUnits();
+        return;
       } else {
         if (usersWrapper) usersWrapper.style.display = "none";
+        if (unitsWrapper) unitsWrapper.style.display = "none";
         if (tableWrapper) tableWrapper.style.display = "block";
         if (warehouseCard) warehouseCard.style.display = "block";
       }
@@ -2130,13 +2394,284 @@
       applyAllFilters();
     }
 
+    // 🏭 Warehouse Unit Management Functions
+    async function loadWarehouseUnits() {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      if (!token) return;
+
+      try {
+        const res = await fetch("/api/admin/units", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const d = await res.json();
+        if (res.ok && d.status === "success") {
+          allWarehouseUnits = d.units || [];
+
+          if (document.getElementById("badgeUnitsCount")) {
+            document.getElementById("badgeUnitsCount").textContent = allWarehouseUnits.length;
+          }
+
+          renderUnitSelectorPills();
+          populateUserModalUnits();
+
+          if (activeStatusTab === "UNITS") {
+            renderUnitsTable();
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load warehouse units:", e);
+      }
+    }
+
+    function renderUnitSelectorPills() {
+      const row = document.getElementById("unitPillsRow");
+      if (!row) return;
+
+      const isSuper = (userAssignedUnits === "ALL" || currentUserRole === "admin" || currentUserRole === "super_admin");
+      const allowedUnits = (userAssignedUnits || "").split(",").map(s => s.trim().toLowerCase());
+
+      let html = "";
+      if (isSuper) {
+        const isAllActive = activeUnitFilter === "ALL";
+        html += `
+          <div class="unit-pill ${isAllActive ? 'active' : ''}" onclick="selectUnitFilter('ALL')">
+            <span>🌐 All Units</span>
+          </div>
+        `;
+      }
+
+      allWarehouseUnits.forEach(u => {
+        const uName = u.unit_name || u.unit_code;
+        const isAllowed = isSuper || allowedUnits.includes(uName.toLowerCase()) || allowedUnits.includes(u.unit_code.toLowerCase());
+        if (!isAllowed) return;
+
+        const isActive = activeUnitFilter === uName;
+        const badgeText = (u.total_orders || 0) > 0 ? `<span class="unit-pill-count">${u.total_orders}</span>` : "";
+
+        html += `
+          <div class="unit-pill ${isActive ? 'active' : ''}" onclick="selectUnitFilter('${escapeHtml(uName)}')">
+            <span>🏭 ${escapeHtml(uName)}</span>
+            ${badgeText}
+          </div>
+        `;
+      });
+
+      row.innerHTML = html;
+    }
+
+    function selectUnitFilter(unitName) {
+      activeUnitFilter = unitName;
+      renderUnitSelectorPills();
+      currentPage = 1;
+      fetchOrdersData();
+    }
+
+    function renderUnitsTable() {
+      const tbody = document.getElementById("unitsTableBody");
+      if (!tbody) return;
+
+      if (!allWarehouseUnits || allWarehouseUnits.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">No warehouse units registered. Click "Add New Unit" to create.</td></tr>`;
+        return;
+      }
+
+      let html = "";
+      allWarehouseUnits.forEach((u, idx) => {
+        const isAct = (u.status || "ACTIVE") === "ACTIVE";
+        const statusBadge = isAct
+          ? `<span class="status-badge confirmed">✔ ACTIVE</span>`
+          : `<span class="status-badge pending" style="background:#fee2e2;color:#b91c1c;border-color:#fca5a5;">⛔ INACTIVE</span>`;
+
+        const toggleText = isAct ? "⏸️ Deactivate" : "▶️ Activate";
+        const toggleTarget = isAct ? "INACTIVE" : "ACTIVE";
+        const isSystemUnit = ["UNIT-1", "UNIT-2", "UNIT-3", "UNIT-4", "UNIT-5", "UNIT-6"].includes(u.unit_code);
+
+        let deleteBtn = "";
+        if (!isSystemUnit) {
+          deleteBtn = `
+            <button class="btn-row-action delete-danger" title="Permanently delete custom unit" onclick="deleteUnitAction(${u.id}, '${escapeHtml(u.unit_name)}')">
+              🗑️
+            </button>
+          `;
+        }
+
+        const safeUnitObj = JSON.stringify(u).replace(/"/g, '&quot;');
+
+        html += `
+          <tr>
+            <td class="center" style="font-weight: 700; color: var(--text-dim);">${idx + 1}</td>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--brand-mashal);">${escapeHtml(u.unit_code)}</code></td>
+            <td><strong>${escapeHtml(u.unit_name)}</strong></td>
+            <td><div style="font-size: 12.5px; color: var(--text-secondary);">${escapeHtml(u.description || "—")}</div></td>
+            <td class="center"><span class="so-badge">${(u.total_orders || 0).toLocaleString()}</span></td>
+            <td class="center"><span class="boxes-badge">${(u.total_boxes || 0).toLocaleString()} Bxs</span></td>
+            <td class="center"><span class="pieces-badge">${(u.total_pieces || 0).toLocaleString()} Pcs</span></td>
+            <td class="center">${statusBadge}</td>
+            <td class="center">
+              <div style="display: flex; gap: 6px; justify-content: center;">
+                <button class="btn-row-action" title="Edit unit" onclick="openCreateUnitModal(true, ${safeUnitObj})">
+                  ✏️ Edit
+                </button>
+                <button class="btn-row-action" title="Toggle active status" onclick="toggleUnitStatusAction(${u.id}, '${toggleTarget}')">
+                  ${toggleText}
+                </button>
+                ${deleteBtn}
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function openCreateUnitModal(isEdit = false, unitObj = null) {
+      const errBox = document.getElementById("unitModalError");
+      if (errBox) errBox.style.display = "none";
+
+      if (isEdit && unitObj) {
+        editingUnitId = unitObj.id;
+        document.getElementById("unitModalTitle").textContent = "✏️ Edit Warehouse Unit";
+        document.getElementById("newUnitCode").value = unitObj.unit_code;
+        document.getElementById("newUnitCode").disabled = true;
+        document.getElementById("newUnitName").value = unitObj.unit_name;
+        document.getElementById("newUnitDesc").value = unitObj.description || "";
+        document.getElementById("newUnitStatus").value = unitObj.status || "ACTIVE";
+      } else {
+        editingUnitId = null;
+        document.getElementById("unitModalTitle").textContent = "➕ Add Warehouse Unit";
+        document.getElementById("newUnitCode").value = "";
+        document.getElementById("newUnitCode").disabled = false;
+        document.getElementById("newUnitName").value = "";
+        document.getElementById("newUnitDesc").value = "";
+        document.getElementById("newUnitStatus").value = "ACTIVE";
+      }
+      document.getElementById("createUnitModalOverlay").style.display = "flex";
+    }
+
+    function closeCreateUnitModal() {
+      document.getElementById("createUnitModalOverlay").style.display = "none";
+      editingUnitId = null;
+    }
+
+    async function submitCreateUnit() {
+      const code = document.getElementById("newUnitCode").value.trim().toUpperCase();
+      const name = document.getElementById("newUnitName").value.trim();
+      const desc = document.getElementById("newUnitDesc").value.trim();
+      const status = document.getElementById("newUnitStatus").value;
+      const errBox = document.getElementById("unitModalError");
+
+      if (!code) {
+        errBox.textContent = "Please enter a unique unit code (e.g. UNIT-7)";
+        errBox.style.display = "block";
+        return;
+      }
+      if (!name) {
+        errBox.textContent = "Please enter a unit name (e.g. Unit 7)";
+        errBox.style.display = "block";
+        return;
+      }
+
+      errBox.style.display = "none";
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const btn = document.getElementById("btnSaveUnit");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const res = await fetch("/api/admin/units", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            unit_code: code,
+            unit_name: name,
+            description: desc,
+            status: status
+          })
+        });
+        const d = await res.json();
+        if (res.ok && d.status === "success") {
+          closeCreateUnitModal();
+          alert(d.message || "Unit saved successfully!");
+          await loadWarehouseUnits();
+        } else {
+          errBox.textContent = d.detail || d.message || "Failed to save unit";
+          errBox.style.display = "block";
+        }
+      } catch (e) {
+        errBox.textContent = e.message;
+        errBox.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Save Unit";
+      }
+    }
+
+    async function toggleUnitStatusAction(unitId, newStatus) {
+      if (!confirm(`Are you sure you want to change unit status to ${newStatus}?`)) return;
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      try {
+        const res = await fetch(`/api/admin/units/${unitId}/status`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const d = await res.json();
+        if (res.ok && d.status === "success") {
+          await loadWarehouseUnits();
+        } else {
+          alert("Error: " + (d.detail || d.message));
+        }
+      } catch (e) {
+        alert("Request error: " + e.message);
+      }
+    }
+
+    async function deleteUnitAction(unitId, unitName) {
+      if (!confirm(`Permanently delete custom unit "${unitName}"? Orders assigned to this unit will be preserved.`)) return;
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      try {
+        const res = await fetch(`/api/admin/units/${unitId}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const d = await res.json();
+        if (res.ok && d.status === "success") {
+          await loadWarehouseUnits();
+        } else {
+          alert("Error: " + (d.detail || d.message));
+        }
+      } catch (e) {
+        alert("Request error: " + e.message);
+      }
+    }
+
+    function populateUserModalUnits() {
+      const sel = document.getElementById("newUserAssignedUnits");
+      if (!sel) return;
+
+      const currentVal = sel.value || "Unit 1";
+      let html = `<option value="ALL">🌐 ALL Units (Super Admin Access)</option>`;
+      allWarehouseUnits.forEach(u => {
+        const uName = u.unit_name || u.unit_code;
+        html += `<option value="${escapeHtml(uName)}">🏭 ${escapeHtml(uName)} (${escapeHtml(u.unit_code)})</option>`;
+      });
+      sel.innerHTML = html;
+      if (currentVal) sel.value = currentVal;
+    }
+
     // 👥 Super Admin User Management Functions
     let adminUsersList = [];
 
     async function loadAdminUsers() {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
       const tbody = document.getElementById("usersTableBody");
-      tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell">Loading accounts from database...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">Loading accounts from database...</td></tr>`;
 
       try {
         const res = await fetch("/api/admin/users", {
@@ -2150,17 +2685,17 @@
           }
           renderUsersTable(adminUsersList);
         } else {
-          tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell" style="color: #dc2626;">Failed to load accounts: ${escapeHtml(data.detail || data.message || "Unauthorized")}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell" style="color: #dc2626;">Failed to load accounts: ${escapeHtml(data.detail || data.message || "Unauthorized")}</td></tr>`;
         }
       } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell" style="color: #dc2626;">Error: ${escapeHtml(e.message)}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell" style="color: #dc2626;">Error: ${escapeHtml(e.message)}</td></tr>`;
       }
     }
 
     function renderUsersTable(users) {
       const tbody = document.getElementById("usersTableBody");
       if (!users || users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell">No user accounts found. Click "Add New Account" above to authorize.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">No user accounts found. Click "Add New Account" above to authorize.</td></tr>`;
         return;
       }
 
@@ -2181,6 +2716,7 @@
           : `<span style="color: var(--text-dim); font-size: 12px;">—</span>`;
 
         const createdDate = u.created_at ? u.created_at.split("T")[0] : "-";
+        const unitDisplay = `<span class="unit-tag">🏭 ${escapeHtml(u.assigned_units || "Unit 1")}</span>`;
 
         html += `
           <tr>
@@ -2188,6 +2724,7 @@
             <td><strong>${escapeHtml(u.name)}</strong></td>
             <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600;">+91 ${escapeHtml(u.phone)}</code></td>
             <td class="center">${roleBadge}</td>
+            <td class="center">${unitDisplay}</td>
             <td>${partyInfo}</td>
             <td class="center">${statusBadge}</td>
             <td style="font-size: 12px; color: var(--text-secondary);">${createdDate}</td>
@@ -2209,7 +2746,7 @@
 
     function getRoleBadgeHtml(role) {
       const r = (role || "").toLowerCase();
-      if (r === "admin") {
+      if (r === "admin" || r === "super_admin") {
         return `<span class="status-badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">👑 Super Admin</span>`;
       } else if (r === "manager") {
         return `<span class="status-badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">👔 Manager</span>`;
@@ -2227,6 +2764,9 @@
       document.getElementById("newUserName").value = "";
       document.getElementById("newUserPhone").value = "";
       document.getElementById("newUserRole").value = "asm";
+      if (document.getElementById("newUserAssignedUnits")) {
+        document.getElementById("newUserAssignedUnits").value = "Unit 1";
+      }
       document.getElementById("newUserPartyName").value = "";
       document.getElementById("newUserPartyCode").value = "";
       document.getElementById("newUserStatus").value = "ACTIVE";
@@ -2245,8 +2785,9 @@
 
     async function submitCreateUser() {
       const name = document.getElementById("newUserName").value.trim();
-      const phone = document.getElementById("newUserPhone").value.trim().replace(/\\D/g, "");
+      const phone = document.getElementById("newUserPhone").value.trim().replace(/\D/g, "");
       const role = document.getElementById("newUserRole").value;
+      const assignedUnits = document.getElementById("newUserAssignedUnits") ? document.getElementById("newUserAssignedUnits").value : "Unit 1";
       const partyName = document.getElementById("newUserPartyName").value.trim();
       const partyCode = document.getElementById("newUserPartyCode").value.trim();
       const status = document.getElementById("newUserStatus").value;
@@ -2277,7 +2818,7 @@
             "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify({
-            name, phone, role, party_name: partyName, party_code: partyCode, status
+            name, phone, role, assigned_units: assignedUnits, party_name: partyName, party_code: partyCode, status
           })
         });
         const d = await res.json();
@@ -2695,8 +3236,8 @@
           `;
         }
 
-        // Delete button: STRICTLY ADMIN ONLY (Hidden for Manager and Analyst)
-        if (canDeleteOrders && currentUserRole === "admin") {
+        // Delete button: STRICTLY ADMIN / SUPER ADMIN ONLY (Hidden for Manager and Analyst)
+        if (canDeleteOrders && (currentUserRole === "admin" || currentUserRole === "super_admin")) {
           actionButtons += `
             <button class="btn-row-action delete-danger" title="Permanently delete this order" onclick="openGitDeleteModal('${cleanId}')">
               <span>🗑️</span>
@@ -2732,6 +3273,9 @@
             </td>
             <td>
               <span class="asm-badge">👔 ${escapeHtml(o.salesPerson || "-")}</span>
+            </td>
+            <td class="center">
+              <span class="unit-tag">🏭 ${escapeHtml(o.unit || "Unit 1")}</span>
             </td>
             <td>${itemsHtml}</td>
             <td class="center">
@@ -3056,6 +3600,7 @@
         "Party Code",
         "Address",
         "Sales Manager",
+        "Warehouse Unit",
         "Total Boxes",
         "Total Pieces",
         "Order Status",
@@ -3070,6 +3615,7 @@
         `"${o.partyCode || ''}"`,
         `"${(o.partyAddress || '').replace(/"/g, '""')}"`,
         `"${(o.salesPerson || '').replace(/"/g, '""')}"`,
+        `"${(o.unit || 'Unit 1').replace(/"/g, '""')}"`,
         o.totalBoxes || 0,
         o.totalPieces || 0,
         `"${o.orderStatus}"`,
@@ -3081,7 +3627,7 @@
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Khandelia_Orders_${new Date().toISOString().slice(0,10)}.csv`);
+      link.setAttribute("download", `Khandelia_Orders_${activeUnitFilter !== 'ALL' ? activeUnitFilter + '_' : ''}${new Date().toISOString().slice(0,10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

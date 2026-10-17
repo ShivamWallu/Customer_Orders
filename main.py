@@ -46,7 +46,12 @@ from database import (
     validate_customer_session,
     get_orders_for_asm,
     get_orders_for_customer,
-    search_sales_orders_db
+    search_sales_orders_db,
+    get_all_units,
+    create_or_update_unit,
+    toggle_unit_status,
+    delete_unit_by_id,
+    cleanup_orders_retain_pankaj_kumar
 )
 from crm_service import (
     init_crm_db,
@@ -277,31 +282,41 @@ GOOGLE_SHEET_ORDERS_WEBAPP_URL = os.environ.get(
     "https://script.google.com/macros/s/AKfycbz34gzaUCbs5znZrvoQ49FSiZPt9bgWK6WToz5Ek3_Y0k7H5hZTeqg0AhoSPaqxUQqA/exec"
 )
 
-# 🛡️ Executive Authentication Credentials (3 Role-Based Access)
-# Admin: View, Confirm SO, Multi-step Delete
-# Manager: View, Confirm SO (NO Delete)
-# Analyst: View-only Analytics (NO Delete, NO Confirm)
+# 🛡️ Executive Authentication Credentials (Upgraded to Super Admin System)
+# Super Admin: Complete access to all units, dashboards, accounts, dynamic unit management
+# Admin: Access to assigned unit(s), Confirm SO, Multi-step Delete within unit
+# Manager: View, Confirm SO within assigned unit (NO Delete)
+# Analyst: View-only Analytics within assigned unit (NO Delete, NO Confirm)
 ROLE_CREDENTIALS = {
     "admin": {
         "password": os.environ.get("ADMIN_PASSWORD", "Admin@123#"),
-        "role": "admin",
-        "name": "System Administrator",
+        "role": "super_admin",
+        "name": "Super Administrator",
         "can_confirm": True,
-        "can_delete": True
+        "can_delete": True,
+        "can_manage_units": True,
+        "can_manage_users": True,
+        "assigned_units": "ALL"
     },
     "manager": {
         "password": os.environ.get("MANAGER_PASSWORD", "Manager@123#"),
         "role": "manager",
         "name": "Operations Manager",
         "can_confirm": True,
-        "can_delete": False
+        "can_delete": False,
+        "can_manage_units": False,
+        "can_manage_users": False,
+        "assigned_units": "Unit 1"
     },
     "analyst": {
         "password": os.environ.get("ANALYST_PASSWORD", "Analyst@123#"),
         "role": "analyst",
         "name": "Data Analyst",
         "can_confirm": False,
-        "can_delete": False
+        "can_delete": False,
+        "can_manage_units": False,
+        "can_manage_users": False,
+        "assigned_units": "Unit 1"
     }
 }
 AUTH_SECRET_TOKEN = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN_2026_XYZ")
@@ -310,8 +325,8 @@ AUTH_SECRET_TOKEN = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN
 @app.post("/api/admin/login")
 async def admin_portal_login(request: Request):
     """
-    🔐 Authenticates Executive Roles (Admin, Manager, Analyst)
-    Admin: admin / Admin@123#
+    🔐 Authenticates Executive Roles (Super Admin, Admin, Manager, Analyst)
+    Super Admin: admin / Admin@123# (or registered super_admin accounts)
     Manager: manager / Manager@123#
     Analyst: analyst / Analyst@123#
     """
@@ -322,15 +337,19 @@ async def admin_portal_login(request: Request):
     user_info = ROLE_CREDENTIALS.get(username)
     if user_info and user_info["password"] == password:
         role = user_info["role"]
-        token = create_admin_session(username=username, role=role)
+        assigned_units = user_info.get("assigned_units", "ALL")
+        token = create_admin_session(username=username, role=role, assigned_units=assigned_units)
         return {
             "status": "success",
             "token": token,
             "username": username,
             "role": role,
             "roleName": user_info["name"],
+            "assignedUnits": assigned_units,
             "canConfirm": user_info["can_confirm"],
             "canDelete": user_info["can_delete"],
+            "canManageUnits": user_info.get("can_manage_units", role == "super_admin"),
+            "canManageUsers": user_info.get("can_manage_users", role == "super_admin"),
             "message": f"Welcome {user_info['name']} ({role.upper()})"
         }
     raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -356,44 +375,80 @@ async def get_admin_profile(request: Request):
     """Returns current authenticated session user and role permissions"""
     admin_session = require_admin_auth(request)
     role = admin_session.get("role", "admin")
+    assigned_units = admin_session.get("assigned_units", "ALL")
     user_info = ROLE_CREDENTIALS.get(admin_session.get("username", "admin"), {
         "role": role,
-        "name": role.title(),
-        "can_confirm": role in ["admin", "manager"],
-        "can_delete": role == "admin"
+        "name": "Super Administrator" if role == "super_admin" else role.title(),
+        "can_confirm": role in ["super_admin", "admin", "manager"],
+        "can_delete": role in ["super_admin", "admin"],
+        "can_manage_units": role == "super_admin",
+        "can_manage_users": role == "super_admin",
+        "assigned_units": assigned_units
     })
     return {
         "status": "success",
         "username": admin_session.get("username"),
         "role": role,
-        "roleName": user_info.get("name", role.title()),
-        "canConfirm": user_info.get("can_confirm", False),
-        "canDelete": user_info.get("can_delete", False)
+        "roleName": user_info.get("name", "Super Administrator" if role == "super_admin" else role.title()),
+        "assignedUnits": assigned_units,
+        "canConfirm": user_info.get("can_confirm", True if role in ["super_admin", "admin", "manager"] else False),
+        "canDelete": user_info.get("can_delete", True if role in ["super_admin", "admin"] else False),
+        "canManageUnits": role == "super_admin",
+        "canManageUsers": role == "super_admin"
     }
 
 @app.get("/api/admin/orders")
 async def get_admin_orders(request: Request):
-    """Fetches all permanent orders from SQLite orders.db for the Admin Portal"""
-    require_admin_auth(request)
-    orders = get_all_orders_from_db(limit=1000)
-    return {"status": "success", "count": len(orders), "orders": orders}
+    """Fetches permanent orders with strict unit-based permission enforcement"""
+    admin = require_admin_auth(request)
+    user_role = admin.get("role", "admin")
+    user_units = admin.get("assigned_units", "ALL")
+    requested_unit = request.query_params.get("unit")
+
+    target_unit = requested_unit
+    if user_role != "super_admin" and user_units != "ALL":
+        allowed_units = [u.strip() for u in user_units.split(",") if u.strip()]
+        if requested_unit and requested_unit != "ALL" and requested_unit not in allowed_units:
+            raise HTTPException(status_code=403, detail=f"Permission Denied: You do not have access to {requested_unit}. Allowed: {user_units}")
+        target_unit = requested_unit if (requested_unit and requested_unit in allowed_units) else (allowed_units[0] if allowed_units else "Unit 1")
+
+    orders = get_all_orders_from_db(limit=1000, unit=target_unit)
+    return {"status": "success", "count": len(orders), "unit": target_unit or "ALL", "orders": orders}
 
 @app.get("/api/admin/stats")
 async def get_admin_dashboard_stats(request: Request):
-    """Fetches live KPI analytics metrics directly from SQLite database"""
-    require_admin_auth(request)
-    stats = get_orders_stats()
+    """Fetches live KPI analytics metrics directly from SQLite database with unit filtering"""
+    admin = require_admin_auth(request)
+    user_role = admin.get("role", "admin")
+    user_units = admin.get("assigned_units", "ALL")
+    requested_unit = request.query_params.get("unit")
+
+    target_unit = requested_unit
+    if user_role != "super_admin" and user_units != "ALL":
+        allowed_units = [u.strip() for u in user_units.split(",") if u.strip()]
+        target_unit = requested_unit if (requested_unit and requested_unit in allowed_units) else (allowed_units[0] if allowed_units else "Unit 1")
+
+    stats = get_orders_stats(unit=target_unit)
     return stats
 
 @app.get("/api/admin/warehouse-summary")
 async def get_admin_warehouse_summary(request: Request):
     """
-    🏭 Returns real-time brand-wise warehouse packing & production load.
-    Calculates strictly from PENDING orders (confirmed orders excluded).
+    🏭 Returns real-time brand-wise warehouse packing & production load for pending orders.
+    Respects unit-based permissions.
     """
-    require_admin_auth(request)
-    summary = get_warehouse_production_summary()
-    return {"status": "success", "warehouseSummary": summary}
+    admin = require_admin_auth(request)
+    user_role = admin.get("role", "admin")
+    user_units = admin.get("assigned_units", "ALL")
+    requested_unit = request.query_params.get("unit")
+
+    target_unit = requested_unit
+    if user_role != "super_admin" and user_units != "ALL":
+        allowed_units = [u.strip() for u in user_units.split(",") if u.strip()]
+        target_unit = requested_unit if (requested_unit and requested_unit in allowed_units) else (allowed_units[0] if allowed_units else "Unit 1")
+
+    summary = get_warehouse_production_summary(unit=target_unit)
+    return {"status": "success", "unit": target_unit or "ALL", "warehouseSummary": summary}
 
 @app.post("/api/admin/orders/confirm")
 async def confirm_admin_order(request: Request):
@@ -512,6 +567,54 @@ async def logout_admin(request: Request):
         delete_admin_session(token)
     return {"status": "success", "message": "Logged out successfully"}
 
+# 🏭 DYNAMIC WAREHOUSE UNIT MANAGEMENT API (SUPER ADMIN)
+@app.get("/api/admin/units")
+def api_get_admin_units(request: Request):
+    """Returns all warehouse units with live order counts (Super Admin / Admin)"""
+    require_admin_auth(request)
+    return {"status": "success", "units": get_all_units()}
+
+@app.post("/api/admin/units")
+async def api_create_or_update_unit(request: Request):
+    """Super Admin dynamically creates or updates warehouse unit"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required for Unit Management")
+    body = await request.json()
+    res = create_or_update_unit(
+        unit_code=body.get("unit_code", ""),
+        unit_name=body.get("unit_name", ""),
+        description=body.get("description", ""),
+        status=body.get("status", "ACTIVE")
+    )
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
+@app.post("/api/admin/units/{unit_id}/status")
+async def api_toggle_unit_status(unit_id: int, request: Request):
+    """Super Admin toggles unit ACTIVE/INACTIVE status"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required")
+    body = await request.json()
+    status = body.get("status", "ACTIVE")
+    res = toggle_unit_status(unit_id, status)
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
+@app.delete("/api/admin/units/{unit_id}")
+async def api_delete_unit(unit_id: int, request: Request):
+    """Super Admin deletes a custom warehouse unit"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required")
+    res = delete_unit_by_id(unit_id)
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
 # 👥 SUPER ADMIN USER & ACCOUNT MANAGEMENT API
 @app.get("/api/admin/users")
 async def api_get_admin_users(request: Request):
@@ -522,9 +625,9 @@ async def api_get_admin_users(request: Request):
 
 @app.post("/api/admin/users")
 async def api_save_admin_user(request: Request):
-    """Creates or updates user account (Super Admin only)"""
+    """Creates or updates user account with role and assigned unit (Super Admin only)"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "admin":
+    if admin.get("role") != "super_admin":
         raise HTTPException(status_code=403, detail="Super Admin permission required for account management")
     body = await request.json()
     res = create_or_update_user(
@@ -533,6 +636,7 @@ async def api_save_admin_user(request: Request):
         role=body.get("role", "asm"),
         party_code=body.get("party_code", ""),
         party_name=body.get("party_name", ""),
+        assigned_units=body.get("assigned_units", "Unit 1"),
         status=body.get("status", "ACTIVE"),
         created_by=admin.get("username", "SUPER_ADMIN")
     )
@@ -544,7 +648,7 @@ async def api_save_admin_user(request: Request):
 async def api_toggle_user_status(user_id: int, request: Request):
     """Blocks or unblocks user account (Super Admin only)"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "admin":
+    if admin.get("role") != "super_admin":
         raise HTTPException(status_code=403, detail="Super Admin permission required")
     body = await request.json()
     status = body.get("status", "ACTIVE")
@@ -557,12 +661,20 @@ async def api_toggle_user_status(user_id: int, request: Request):
 async def api_delete_admin_user(user_id: int, request: Request):
     """Permanently deletes user account (Super Admin only)"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "admin":
+    if admin.get("role") != "super_admin":
         raise HTTPException(status_code=403, detail="Super Admin permission required")
     res = delete_user_by_id(user_id)
     if res.get("status") == "error":
         raise HTTPException(status_code=400, detail=res.get("message"))
     return res
+
+@app.post("/api/admin/cleanup-pankaj")
+async def api_cleanup_pankaj(request: Request):
+    """Super Admin utility to retain ONLY Pankaj Kumar orders and assign to Unit 1"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required")
+    return cleanup_orders_retain_pankaj_kumar()
 
 import secrets
 import hmac
@@ -653,6 +765,22 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
 
     order["partyCode"] = party_code
     order["dataConsent"] = order.get("dataConsent") or "YES (Verified)"
+    
+    # 🏢 Automatic Unit Assignment (Unit 1 to Unit 6)
+    assigned_unit = (order.get("unit") or "").strip()
+    if not assigned_unit:
+        sp = str(order.get("salesPerson") or "").strip()
+        if "pankaj" in sp.lower():
+            assigned_unit = "Unit 1"
+        else:
+            contact_val = str(order.get("contactInput") or "").strip()
+            clean_p = "".join(filter(str.isdigit, contact_val))[-10:] if contact_val else ""
+            user_rec = get_user_by_phone(clean_p) if clean_p else None
+            if user_rec and user_rec.get("assigned_units"):
+                assigned_unit = user_rec.get("assigned_units")
+            else:
+                assigned_unit = "Unit 1"
+    order["unit"] = assigned_unit
     
     # Format items summary with brand icons, calculate total pieces & clean multi-line layout
     items = order.get("items", [])
