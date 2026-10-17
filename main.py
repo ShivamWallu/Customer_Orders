@@ -1688,11 +1688,29 @@ async def api_manager_send_otp(request: Request):
     clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
     user = get_user_by_phone(clean_p)
     if not user:
-        return {"status": "error", "message": "Mobile number is not authorized as Area Sales Manager. Please contact Super Admin."}
+        return {
+            "status": "error",
+            "error_type": "UNAUTHORIZED_ASM",
+            "message": "Mobile number is not registered as Area Sales Manager. Please contact Super Admin or Support to authorize your account.\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "toll_free": "1800 103 3211",
+            "email": "customercare@khandelia.com"
+        }
     if user.get("status") == "BLOCKED":
-        return {"status": "error", "message": "Your account has been temporarily blocked. Please contact Super Admin."}
-    if user.get("role") not in ["asm", "admin", "manager"]:
-        return {"status": "error", "message": "This mobile number is not authorized for Area Sales Manager access."}
+        return {
+            "status": "error",
+            "error_type": "BLOCKED_ASM",
+            "message": "Your Area Sales Manager account has been temporarily blocked by Super Admin. Please contact Customer Care:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "toll_free": "1800 103 3211",
+            "email": "customercare@khandelia.com"
+        }
+    if user.get("role") not in ["asm", "admin", "manager", "super_admin"]:
+        return {
+            "status": "error",
+            "error_type": "ROLE_MISMATCH",
+            "message": "This mobile number is not authorized for Area Sales Manager access. Please contact Super Admin:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "toll_free": "1800 103 3211",
+            "email": "customercare@khandelia.com"
+        }
     
     res = send_kit19_otp(clean_p)
     res["manager_name"] = user.get("name", "")
@@ -1754,11 +1772,29 @@ async def api_customer_send_otp(request: Request):
     clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
     user = get_user_by_phone(clean_p)
     if not user:
-        return {"status": "error", "message": "Mobile number is not authorized as Customer. Please contact Super Admin."}
+        return {
+            "status": "error",
+            "error_type": "UNAUTHORIZED_CUSTOMER",
+            "message": "Mobile number is not registered as an authorized Customer. Please contact Super Admin or Customer Care to create your account:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "toll_free": "1800 103 3211",
+            "email": "customercare@khandelia.com"
+        }
     if user.get("status") == "BLOCKED":
-        return {"status": "error", "message": "Your customer account has been blocked. Please contact Administrator."}
-    if user.get("role") not in ["customer", "admin"]:
-        return {"status": "error", "message": "This mobile number is not registered for Customer access."}
+        return {
+            "status": "error",
+            "error_type": "BLOCKED_CUSTOMER",
+            "message": "Your Customer account has been temporarily blocked by Super Admin. Please contact Customer Care:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "toll_free": "1800 103 3211",
+            "email": "customercare@khandelia.com"
+        }
+    if user.get("role") not in ["customer", "admin", "super_admin"]:
+        return {
+            "status": "error",
+            "error_type": "ROLE_MISMATCH",
+            "message": "This mobile number is not registered for Customer access. Please contact Super Admin:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "toll_free": "1800 103 3211",
+            "email": "customercare@khandelia.com"
+        }
     
     res = send_kit19_otp(clean_p)
     res["customer_name"] = user.get("name", "")
@@ -1772,6 +1808,7 @@ async def api_customer_verify_otp(request: Request):
     body = await request.json()
     phone = body.get("phone", "")
     otp = body.get("otp", "")
+    customer_input_name = (body.get("customer_name") or "").strip()
     clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
     user = get_user_by_phone(clean_p)
     if not user:
@@ -1781,22 +1818,23 @@ async def api_customer_verify_otp(request: Request):
     if verify_res.get("status") != "success":
         return verify_res
 
+    resolved_name = customer_input_name or user.get("name") or user.get("party_name") or "Customer"
     session = create_customer_session(
         phone=clean_p,
-        customer_name=user.get("name", ""),
+        customer_name=resolved_name,
         party_code=user.get("party_code", ""),
-        party_name=user.get("party_name", "")
+        party_name=user.get("party_name", "") or resolved_name
     )
     return {
         "status": "success",
         "token": session["token"],
         "phone": clean_p,
-        "customer_name": user.get("name", ""),
+        "customer_name": resolved_name,
         "party_code": user.get("party_code", ""),
-        "party_name": user.get("party_name", ""),
+        "party_name": user.get("party_name", "") or resolved_name,
         "role": user.get("role", "customer"),
         "expires_at": session["expires_at"],
-        "message": f"Welcome, {user.get('name')}!"
+        "message": f"Welcome, {resolved_name}!"
     }
 
 @app.post("/api/customer/check-session")

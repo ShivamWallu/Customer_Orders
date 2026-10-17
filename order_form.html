@@ -1258,27 +1258,39 @@
 
     .date-filter-bar {
       display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .date-pills-row {
+      display: flex;
+      flex-wrap: wrap;
       gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-      -webkit-overflow-scrolling: touch;
+      align-items: center;
+      flex: 1 1 auto;
     }
 
     .btn-date-pill {
-      padding: 7px 14px;
-      background: #f1f5f9;
+      padding: 6px 12px;
+      background: #ffffff;
       border: 1px solid #cbd5e1;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       color: #475569;
       cursor: pointer;
       white-space: nowrap;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 4px;
       transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
 
     .btn-date-pill.active {
@@ -1288,15 +1300,27 @@
       box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
     }
 
-    .date-picker-inline {
-      padding: 4px 10px;
+    .custom-date-pill-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
       border: 1px solid #cbd5e1;
       border-radius: 20px;
+      padding: 3px 10px;
+      flex-shrink: 0;
+      max-width: 100%;
+    }
+
+    .date-picker-inline {
+      border: none;
       font-size: 12px;
       font-family: inherit;
       color: #334155;
-      background: #ffffff;
+      background: transparent;
       outline: none;
+      cursor: pointer;
+      max-width: 130px;
     }
 
     .customer-kpi-row {
@@ -1545,6 +1569,15 @@
           <span>Track Order</span>
         </button>
         <div class="sidebar-divider"></div>
+        <button type="button" class="sidebar-nav-item" id="btnSidebarInstallApp" onclick="triggerPWAInstall(); closeCustomerSidebar();">
+          <span class="nav-icon">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </span>
+          <span>Install Mobile App (2X Fast)</span>
+        </button>
         <button type="button" class="sidebar-nav-item logout" onclick="logoutCustomer()">
           <span class="nav-icon">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1558,10 +1591,10 @@
       </nav>
     </div>
 
-    <!-- Customer Status Bar -->
+    <!-- Customer Status Bar (Cleaned - Switch Account removed, available in slide menu) -->
     <div class="customer-status-strip" id="customerStatusStrip" style="display: none;">
-      <span>Logged in: <strong id="loggedCustomerName">Customer</strong> <span id="loggedPartyCodeBadge" style="color: #15803d; font-weight: 700;"></span></span>
-      <button type="button" class="btn-view-slip-sm" style="font-size: 11px; padding: 2px 8px;" onclick="logoutCustomer()">Switch Account</button>
+      <span>👤 Logged in: <strong id="loggedCustomerName">Customer</strong> <span id="loggedPartyCodeBadge" style="color: #15803d; font-weight: 700;"></span></span>
+      <span style="font-size: 11.5px; color: #166534; font-weight: 700; background: #dcfce7; padding: 2px 8px; border-radius: 12px;">🛒 Customer Portal</span>
     </div>
 
     <!-- 📝 SECTION 1: BOOK NEW ORDER FORM -->
@@ -1650,18 +1683,21 @@
 
     <!-- 📦 SECTION 2: CUSTOMER MY ORDERS & HISTORY -->
     <div id="sectionCustomerOrders" class="customer-orders-wrap" style="display: none;">
-      <!-- Date Filter Bar -->
+      <!-- Date Filter Bar (Responsive wrap - no mm/dd clipping) -->
       <div class="date-filter-bar">
-        <button type="button" class="btn-date-pill active" id="btnCustDateToday" onclick="setCustomerDateFilter('TODAY')">
-          <span>📅 Today</span>
-        </button>
-        <button type="button" class="btn-date-pill" id="btnCustDateYesterday" onclick="setCustomerDateFilter('YESTERDAY')">
-          <span>⏪ Yesterday</span>
-        </button>
-        <button type="button" class="btn-date-pill" id="btnCustDateAll" onclick="setCustomerDateFilter('ALL')">
-          <span>📋 All Orders</span>
-        </button>
-        <div style="display: inline-flex; align-items: center; gap: 4px;">
+        <div class="date-pills-row">
+          <button type="button" class="btn-date-pill active" id="btnCustDateToday" onclick="setCustomerDateFilter('TODAY')">
+            <span>📅 Today</span>
+          </button>
+          <button type="button" class="btn-date-pill" id="btnCustDateYesterday" onclick="setCustomerDateFilter('YESTERDAY')">
+            <span>⏪ Yesterday</span>
+          </button>
+          <button type="button" class="btn-date-pill" id="btnCustDateAll" onclick="setCustomerDateFilter('ALL')">
+            <span>📋 All Orders</span>
+          </button>
+        </div>
+        <div class="custom-date-pill-wrap">
+          <span style="font-size: 12px;">🗓️</span>
           <input type="date" id="custCustomDatePicker" class="date-picker-inline" onchange="setCustomerDateFilter('CUSTOM')" title="Pick specific date">
         </div>
       </div>
@@ -1723,8 +1759,15 @@
           🛡️ <strong>Authorized Access:</strong> Only mobile numbers registered & approved by Super Admin can sign in.
         </div>
 
-        <input type="tel" id="loginCustPhone" class="auth-input" placeholder="Enter 10-digit mobile number" maxlength="10" required>
-        <div id="custLoginError" style="color: #dc2626; font-size: 12px; font-weight: 600; margin-bottom: 12px; display: none;"></div>
+        <div style="text-align: left; margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Customer / Firm Name <span style="color: #dc2626;">*</span></label>
+          <input type="text" id="loginCustName" class="auth-input" placeholder="Enter full customer or firm name" required style="margin-bottom: 0;">
+        </div>
+        <div style="text-align: left; margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Registered Mobile Number <span style="color: #dc2626;">*</span></label>
+          <input type="tel" id="loginCustPhone" class="auth-input" placeholder="Enter 10-digit mobile number" maxlength="10" required style="margin-bottom: 0;">
+        </div>
+        <div id="custLoginError" style="margin-bottom: 12px; display: none;"></div>
 
         <button type="button" class="btn-primary-auth" id="btnSendCustOtp" onclick="requestCustomerOtp()">
           Send Verification OTP
@@ -2831,21 +2874,62 @@
       document.getElementById("custLoginError").style.display = "none";
     }
 
+    function showCustomerAuthError(data) {
+      const errBox = document.getElementById("custLoginError");
+      if (!errBox) return;
+      if (data.error_type === "UNAUTHORIZED_CUSTOMER" || data.error_type === "BLOCKED_CUSTOMER" || data.error_type === "ROLE_MISMATCH") {
+        errBox.innerHTML = `
+          <div style="background: #fef2f2; border: 1.5px solid #f87171; border-radius: 10px; padding: 12px; text-align: left;">
+            <div style="color: #991b1b; font-weight: 800; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>⚠️</span> <span>Customer Account Not Authorized</span>
+            </div>
+            <div style="font-size: 12px; color: #7f1d1d; line-height: 1.45; margin-bottom: 8px;">
+              Yeh mobile number Customer ke roop me registered nahi hai. Kripya Super Admin se call karke account create karwayein:
+            </div>
+            <div style="background: #ffffff; border: 1px solid #fee2e2; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #991b1b;">
+              <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 6px;">
+                <span>📞</span> <span><strong>Toll-Free:</strong> <a href="tel:18001033211" style="color: #dc2626; font-weight: 700; text-decoration: none;">1800 103 3211</a></span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span>✉️</span> <span><strong>Email:</strong> <a href="mailto:customercare@khandelia.com" style="color: #dc2626; font-weight: 700; text-decoration: none;">customercare@khandelia.com</a></span>
+              </div>
+            </div>
+          </div>
+        `;
+        errBox.style.display = "block";
+      } else {
+        errBox.innerHTML = `
+          <div style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 12px; font-weight: 600; padding: 10px; border-radius: 8px;">
+            ${data.message || "Error sending OTP"}
+          </div>
+        `;
+        errBox.style.display = "block";
+      }
+    }
+
     function applyCustomerSession(sess) {
+      if (!sess) return;
       document.getElementById("customerAuthModal").style.display = "none";
       const name = sess.customer_name || sess.party_name || "Customer";
       const code = sess.party_code || "";
       const phone = sess.phone || "";
 
       document.getElementById("loggedCustomerName").textContent = name;
-      if (code) {
+      if (code && document.getElementById("loggedPartyCodeBadge")) {
         document.getElementById("loggedPartyCodeBadge").textContent = `[${code}]`;
       }
       document.getElementById("customerStatusStrip").style.display = "flex";
 
-      document.getElementById("sidebarCustomerName").textContent = name;
-      document.getElementById("sidebarCustomerPartyCode").textContent = code ? `Party: ${code}` : "Direct Buyer";
-      document.getElementById("sidebarCustomerPhone").textContent = `+91 ${phone}`;
+      // 👤 Update Slide-Out Sidebar User Header (Customer View: Name, Designation, Phone)
+      if (document.getElementById("sidebarCustomerName")) {
+        document.getElementById("sidebarCustomerName").textContent = name;
+      }
+      if (document.getElementById("sidebarCustomerPartyCode")) {
+        document.getElementById("sidebarCustomerPartyCode").textContent = code ? `Party Code: ${code}` : "🛒 Customer (Direct Buyer)";
+      }
+      if (document.getElementById("sidebarCustomerPhone")) {
+        document.getElementById("sidebarCustomerPhone").textContent = phone ? `+91 ${phone}` : "+91 —";
+      }
 
       // Auto-populate form fields
       const pNameInput = document.getElementById("partyName");
@@ -2867,17 +2951,27 @@
     }
 
     async function requestCustomerOtp() {
+      const nameInput = document.getElementById("loginCustName");
+      const name = nameInput ? nameInput.value.trim() : "";
       const phoneInput = document.getElementById("loginCustPhone");
-      const phone = phoneInput.value.replace(/\D/g, "");
+      const phone = phoneInput ? phoneInput.value.replace(/\D/g, "") : "";
       const errBox = document.getElementById("custLoginError");
       const btn = document.getElementById("btnSendCustOtp");
 
-      if (phone.length !== 10) {
-        errBox.textContent = "Please enter a valid 10-digit mobile number.";
-        errBox.style.display = "block";
+      if (!name) {
+        showCustomerAuthError({ message: "Please enter your Name / Firm Name before requesting OTP." });
+        if (nameInput) nameInput.focus();
         return;
       }
 
+      if (phone.length !== 10) {
+        showCustomerAuthError({ message: "Please enter a valid 10-digit mobile number." });
+        if (phoneInput) phoneInput.focus();
+        return;
+      }
+
+      window._pendingCustName = name;
+      window._pendingCustPhone = phone;
       errBox.style.display = "none";
       btn.disabled = true;
       btn.textContent = "Sending OTP...";
@@ -2891,20 +2985,17 @@
         const data = await res.json();
 
         if (data.status === "success") {
-          window._pendingCustPhone = phone;
           document.getElementById("custAuthStep1").style.display = "none";
           document.getElementById("custAuthStep2").style.display = "block";
           document.getElementById("custAuthSentMsg").textContent = `OTP sent to +91 ${phone}`;
           startCustCountdown(120);
         } else {
-          errBox.textContent = data.message || "Mobile number not authorized.";
-          errBox.style.display = "block";
+          showCustomerAuthError(data);
           btn.disabled = false;
           btn.textContent = "Send Verification OTP";
         }
       } catch (e) {
-        errBox.textContent = "Network error: " + e.message;
-        errBox.style.display = "block";
+        showCustomerAuthError({ message: "Network error: " + e.message });
         btn.disabled = false;
         btn.textContent = "Send Verification OTP";
       }
@@ -2928,7 +3019,8 @@
     }
 
     async function submitCustomerOtp() {
-      const phone = window._pendingCustPhone || document.getElementById("loginCustPhone").value.replace(/\D/g, "");
+      const phone = window._pendingCustPhone || (document.getElementById("loginCustPhone") ? document.getElementById("loginCustPhone").value.replace(/\D/g, "") : "");
+      const name = window._pendingCustName || (document.getElementById("loginCustName") ? document.getElementById("loginCustName").value.trim() : "");
       const otp = document.getElementById("loginCustOtp").value.trim();
       const errBox = document.getElementById("custOtpError");
       const btn = document.getElementById("btnVerifyCustOtp");
@@ -2947,11 +3039,15 @@
         const res = await fetch("/api/customer/verify-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, otp })
+          body: JSON.stringify({ phone, otp, customer_name: name })
         });
         const data = await res.json();
 
         if (data.status === "success") {
+          if (name && (!data.customer_name || data.customer_name === "Customer")) {
+            data.customer_name = name;
+            data.party_name = name;
+          }
           localStorage.setItem(CUSTOMER_SESSION_KEY, JSON.stringify(data));
           applyCustomerSession(data);
         } else {
@@ -3133,7 +3229,29 @@
 
     renderItemList();
     checkCustomerSession();
-  </script>
+  
+    // PWA Install helper for mobile drawer
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
+
+    function triggerPWAInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('Customer installed PWA');
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        alert("To install this app on your phone:\n• Chrome/Android: Tap menu (⋮) -> 'Install App' or 'Add to Home screen'\n• iOS Safari: Tap Share (⎋) -> 'Add to Home Screen'");
+      }
+    }
+    
+</script>
 </body>
 
 </html>

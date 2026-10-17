@@ -1320,15 +1320,27 @@
 
     .date-filter-bar {
       display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .date-pills-row {
+      display: flex;
       gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-      -webkit-overflow-scrolling: touch;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .btn-date-pill {
-      padding: 7px 14px;
+      padding: 7px 13px;
       background: #f1f5f9;
       border: 1px solid #cbd5e1;
       border-radius: 20px;
@@ -1336,29 +1348,43 @@
       font-weight: 700;
       color: #475569;
       cursor: pointer;
-      white-space: nowrap;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      white-space: nowrap;
       transition: all 0.15s ease;
     }
 
     .btn-date-pill.active {
-      background: #2563eb;
+      background: #003366;
       color: #ffffff;
-      border-color: #2563eb;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+      border-color: #003366;
+      box-shadow: 0 2px 6px rgba(0, 51, 102, 0.25);
+    }
+
+    .custom-date-pill-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 4px 12px;
+      flex: 1;
+      min-width: 140px;
+      max-width: 200px;
+      justify-content: center;
     }
 
     .date-picker-inline {
-      padding: 4px 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 20px;
+      border: none;
+      background: transparent;
       font-size: 12px;
       font-family: inherit;
-      color: #334155;
-      background: #ffffff;
+      color: #0f172a;
+      font-weight: 600;
       outline: none;
+      width: 100%;
     }
 
     /* Metrics Strip */
@@ -1664,7 +1690,7 @@
 
     /* 📱 PWA INSTALL BANNER & MODAL (⚡ 2X Fast Mobile App) */
     .app-install-banner {
-      display: none;
+      display: none !important; /* Kept exclusively inside slide-out menu drawer per design requirement */
       align-items: center;
       justify-content: space-between;
       gap: 12px;
@@ -1910,31 +1936,13 @@
 
     <!-- Manager Bar -->
     <div class="manager-status-strip" id="managerStatusStrip">
-      <span>Executive: <strong id="loggedManagerName">Sales Manager</strong></span>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <button type="button" class="btn-install-header-badge" onclick="triggerPWAInstall()" title="Install Mobile App (2X Fast)">
-          📲 Install App
-        </button>
-        <button type="button" class="btn-switch-account" onclick="logoutManager()">Switch User</button>
+        <span style="color: #64748b; font-size: 13px;">Executive:</span>
+        <strong id="loggedManagerName" style="color: #0f172a; font-weight: 800; font-size: 14px;">Sales Manager</strong>
+        <span class="label-tag tag-blue" style="font-size: 11px; padding: 3px 8px; font-weight: 700;">Area Sales Manager</span>
       </div>
     </div>
 
-    <!-- 📱 Mobile App Installation Banner (Auto-detects Android/iOS) -->
-    <div id="pwaInstallBanner" class="app-install-banner">
-      <div class="install-banner-left">
-        <img src="/images/icons/icon-192.png" alt="App Icon" class="install-banner-icon">
-        <div class="install-banner-text">
-          <h4>Mashal Sales App</h4>
-          <p>⚡ 2X Fast • Install Native Android App</p>
-        </div>
-      </div>
-      <div class="install-actions-wrap">
-        <button type="button" class="btn-install-app" onclick="triggerPWAInstall()">
-          📲 Install
-        </button>
-        <button type="button" class="btn-close-banner" onclick="dismissInstallBanner()" title="Close">✕</button>
-      </div>
-    </div>
 
     <!-- 📝 SECTION 1: BOOK NEW ORDER FORM -->
     <div id="sectionBooking">
@@ -2046,18 +2054,22 @@
 
     <!-- 📊 SECTION 2: AREA SALES MANAGER ORDERS & HISTORY -->
     <div id="sectionMyOrders" class="asm-orders-wrap" style="display: none;">
-      <!-- Date Filter Bar -->
+      <!-- Date Filter Bar (Responsive Auto-Fitting Layout) -->
       <div class="date-filter-bar">
-        <button type="button" class="btn-date-pill active" id="btnDateToday" onclick="setAsmDateFilter('TODAY')">
-          <span>📅 Today</span>
-        </button>
-        <button type="button" class="btn-date-pill" id="btnDateYesterday" onclick="setAsmDateFilter('YESTERDAY')">
-          <span>⏪ Yesterday</span>
-        </button>
-        <button type="button" class="btn-date-pill" id="btnDateAll" onclick="setAsmDateFilter('ALL')">
-          <span>📋 All Orders</span>
-        </button>
-        <div style="display: inline-flex; align-items: center; gap: 4px;">
+        <div class="date-pills-row">
+          <button type="button" class="btn-date-pill active" id="btnDateToday" onclick="setAsmDateFilter('TODAY')">
+            <span>📅 Today</span>
+          </button>
+          <button type="button" class="btn-date-pill" id="btnDateYesterday" onclick="setAsmDateFilter('YESTERDAY')">
+            <span>⏪ Yesterday</span>
+          </button>
+          <button type="button" class="btn-date-pill" id="btnDateAll" onclick="setAsmDateFilter('ALL')">
+            <span>📋 All Orders</span>
+          </button>
+        </div>
+        <div class="custom-date-pill-wrap">
+          <span style="font-size: 14px;">📅</span>
+          <span style="font-size: 12px; font-weight: 700; color: #475569; white-space: nowrap;">Date:</span>
           <input type="date" id="asmCustomDatePicker" class="date-picker-inline" onchange="setAsmDateFilter('CUSTOM')" title="Pick specific date">
         </div>
       </div>
@@ -2281,6 +2293,8 @@
           Mobile Number</div>
         <input type="tel" id="loginManagerPhone" class="auth-input" placeholder="e.g. 7814749816" maxlength="10"
           required>
+
+        <div id="managerLoginErrorBox" style="display: none; margin-top: 14px; text-align: left;"></div>
 
         <button type="button" class="btn-primary-auth" id="btnSendOtp" onclick="requestManagerLoginOtp()">
           Send Verification Code
@@ -2512,17 +2526,32 @@
       if (!sess) return;
       document.getElementById("managerAuthModal").style.display = "none";
       let name = sess.manager_name;
+      const phone = sess.phone || "";
       if (!name || name.startsWith("Manager (")) {
-        if (sess.phone === "9914565011" || sess.phone === "7814749816") {
+        if (phone === "9914565011") {
+          name = "Pankaj Kumar";
+        } else if (phone === "7814749816") {
           name = "Shivam Wallu";
-          sess.manager_name = name;
-          try { localStorage.setItem(SESSION_KEY, JSON.stringify(sess)); } catch (e) { }
         } else {
-          name = sess.phone ? `Manager (${sess.phone})` : "Area Sales Manager";
+          name = phone ? `Manager (${phone})` : "Area Sales Manager";
         }
+        sess.manager_name = name;
+        try { localStorage.setItem(SESSION_KEY, JSON.stringify(sess)); } catch (e) { }
       }
       document.getElementById("loggedManagerName").textContent = name;
       document.getElementById("managerStatusStrip").style.display = "flex";
+
+      // 👤 Update Slide-Out Sidebar User Header (Images 2 & 3 Fix)
+      if (document.getElementById("sidebarUserName")) {
+        document.getElementById("sidebarUserName").textContent = name;
+      }
+      if (document.getElementById("sidebarUserPhone")) {
+        document.getElementById("sidebarUserPhone").textContent = phone ? `+91 ${phone}` : "+91 —";
+      }
+      const roleBadgeEl = document.querySelector(".sidebar-user-role");
+      if (roleBadgeEl) {
+        roleBadgeEl.textContent = "💼 Area Sales Manager";
+      }
 
       const spInput = document.getElementById("salesPerson");
       if (spInput) {
@@ -2870,7 +2899,45 @@
       window.open(`/order-slip?id=${encodeURIComponent(orderId)}`, '_blank');
     }
 
-    async function requestManagerLoginOtp() {
+        function showManagerAuthError(data) {
+      const errBox = document.getElementById("managerLoginErrorBox");
+      if (!errBox) {
+        alert(data.message || "Could not send verification code.");
+        return;
+      }
+      const isUnauthorized = data.error_type === "UNAUTHORIZED_ASM" || data.error_type === "BLOCKED_ASM" || data.error_type === "ROLE_MISMATCH";
+
+      if (isUnauthorized) {
+        errBox.innerHTML = `
+          <div style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 6px; color: #991b1b; font-weight: 800; font-size: 13px; margin-bottom: 4px;">
+              <span>⚠️</span> <span>Account Not Authorized</span>
+            </div>
+            <div style="font-size: 12px; color: #7f1d1d; line-height: 1.45; margin-bottom: 8px;">
+              Yeh mobile number Area Sales Manager ke roop me registered nahi hai. Kripya Super Admin ya Support team se call/email karke account create/authorize karwayein:
+            </div>
+            <div style="background: #ffffff; border: 1px solid #fee2e2; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #991b1b;">
+              <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 6px;">
+                <span>📞</span> <span><strong>Toll-Free:</strong> <a href="tel:18001033211" style="color: #dc2626; font-weight: 700;">1800 103 3211</a></span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span>✉️</span> <span><strong>Email:</strong> <a href="mailto:customercare@khandelia.com" style="color: #dc2626; font-weight: 700;">customercare@khandelia.com</a></span>
+              </div>
+            </div>
+          </div>
+        `;
+        errBox.style.display = "block";
+      } else {
+        errBox.innerHTML = `
+          <div style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 12px; font-weight: 600; padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+            ${escapeHtml(data.message || "Error sending code")}
+          </div>
+        `;
+        errBox.style.display = "block";
+      }
+    }
+
+async function requestManagerLoginOtp() {
       const name = document.getElementById("loginManagerName").value.trim();
       const phone = document.getElementById("loginManagerPhone").value.replace(/\D/g, "");
 
@@ -2906,12 +2973,12 @@
           document.getElementById("authSentMessage").textContent = `Code sent to +91 ${phone}`;
           startCountdown(120); // 2 Minutes (120s)
         } else {
-          alert(data.message || "Could not send verification code.");
+          showManagerAuthError(data);
           btn.disabled = false;
           btn.textContent = "Send Verification Code";
         }
       } catch (e) {
-        alert("Network error: " + e.message);
+        showManagerAuthError({ message: "Network error: " + e.message });
         btn.disabled = false;
         btn.textContent = "Send Verification Code";
       }
