@@ -36,7 +36,17 @@ from database import (
     delete_order_from_db,
     confirm_order_in_db,
     get_orders_stats,
-    get_warehouse_production_summary
+    get_warehouse_production_summary,
+    get_user_by_phone,
+    get_all_users,
+    create_or_update_user,
+    toggle_user_status,
+    delete_user_by_id,
+    create_customer_session,
+    validate_customer_session,
+    get_orders_for_asm,
+    get_orders_for_customer,
+    search_sales_orders_db
 )
 from crm_service import (
     init_crm_db,
@@ -501,6 +511,58 @@ async def logout_admin(request: Request):
     if token:
         delete_admin_session(token)
     return {"status": "success", "message": "Logged out successfully"}
+
+# 👥 SUPER ADMIN USER & ACCOUNT MANAGEMENT API
+@app.get("/api/admin/users")
+async def api_get_admin_users(request: Request):
+    """Returns list of authorized users (Super Admin only)"""
+    admin = require_admin_auth(request)
+    role = request.query_params.get("role")
+    return {"status": "success", "users": get_all_users(role)}
+
+@app.post("/api/admin/users")
+async def api_save_admin_user(request: Request):
+    """Creates or updates user account (Super Admin only)"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required for account management")
+    body = await request.json()
+    res = create_or_update_user(
+        name=body.get("name", ""),
+        phone=body.get("phone", ""),
+        role=body.get("role", "asm"),
+        party_code=body.get("party_code", ""),
+        party_name=body.get("party_name", ""),
+        status=body.get("status", "ACTIVE"),
+        created_by=admin.get("username", "SUPER_ADMIN")
+    )
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
+@app.post("/api/admin/users/{user_id}/status")
+async def api_toggle_user_status(user_id: int, request: Request):
+    """Blocks or unblocks user account (Super Admin only)"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required")
+    body = await request.json()
+    status = body.get("status", "ACTIVE")
+    res = toggle_user_status(user_id, status)
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
+@app.delete("/api/admin/users/{user_id}")
+async def api_delete_admin_user(user_id: int, request: Request):
+    """Permanently deletes user account (Super Admin only)"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required")
+    res = delete_user_by_id(user_id)
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
 
 import secrets
 import hmac
@@ -1492,10 +1554,21 @@ async def api_verify_otp(request: Request):
 # 🔐 1-YEAR SALES MANAGER OTP AUTHENTICATION
 @app.post("/api/sales-manager/send-otp")
 async def api_manager_send_otp(request: Request):
-    """Dispatches Kit19 OTP to Sales Manager's phone for 1-year device authentication"""
+    """Dispatches Kit19 OTP to authorized Sales Manager's phone for 1-year device authentication"""
     body = await request.json()
     phone = body.get("phone", "")
-    return send_kit19_otp(phone)
+    clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
+    user = get_user_by_phone(clean_p)
+    if not user:
+        return {"status": "error", "message": "Mobile number is not authorized as Area Sales Manager. Please contact Super Admin."}
+    if user.get("status") == "BLOCKED":
+        return {"status": "error", "message": "Your account has been temporarily blocked. Please contact Super Admin."}
+    if user.get("role") not in ["asm", "admin", "manager"]:
+        return {"status": "error", "message": "This mobile number is not authorized for Area Sales Manager access."}
+    
+    res = send_kit19_otp(clean_p)
+    res["manager_name"] = user.get("name", "")
+    return res
 
 @app.post("/api/sales-manager/verify-otp")
 async def api_manager_verify_otp(request: Request):
@@ -1503,8 +1576,14 @@ async def api_manager_verify_otp(request: Request):
     body = await request.json()
     phone = body.get("phone", "")
     otp = body.get("otp", "")
-    name = body.get("manager_name", "")
-    return verify_manager_login_otp(phone, otp, name)
+    clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
+    user = get_user_by_phone(clean_p)
+    name = body.get("manager_name", "") or (user.get("name") if user else "")
+    res = verify_manager_login_otp(clean_p, otp, name)
+    if res.get("status") == "success" and user:
+        res["role"] = user.get("role", "asm")
+        res["manager_name"] = user.get("name", name)
+    return res
 
 @app.post("/api/sales-manager/check-session")
 async def api_manager_check_session(request: Request):
@@ -1515,6 +1594,129 @@ async def api_manager_check_session(request: Request):
     if session:
         return {"status": "valid", "session": session}
     return {"status": "invalid"}
+
+@app.get("/api/sales-manager/my-orders")
+async def api_get_manager_orders(request: Request):
+    """Returns orders strictly assigned to the authenticated Area Sales Manager"""
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.split(" ", 1)[1].strip() if auth_header.startswith("Bearer ") else request.query_params.get("token", "")
+    session = validate_manager_session(token)
+    mgr_name = session.get("manager_name", "") if session else request.query_params.get("manager_name", "")
+    if not mgr_name:
+        raise HTTPException(status_code=401, detail="Valid Area Sales Manager session required")
+
+    date_filter = request.query_params.get("filter", "ALL")
+    specific_date = request.query_params.get("date", "")
+    orders = get_orders_for_asm(sales_person_name=mgr_name, phone=session.get("phone", "") if session else "", date_filter=date_filter, specific_date=specific_date)
+    return {
+        "status": "success",
+        "managerName": mgr_name,
+        "filter": date_filter,
+        "date": specific_date,
+        "totalOrders": len(orders),
+        "orders": orders
+    }
+
+# 📱 CUSTOMER MOBILE OTP LOGIN & ORDERS
+@app.post("/api/customer/send-otp")
+async def api_customer_send_otp(request: Request):
+    """Dispatches Kit19 OTP to authorized Customer's phone"""
+    body = await request.json()
+    phone = body.get("phone", "")
+    clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
+    user = get_user_by_phone(clean_p)
+    if not user:
+        return {"status": "error", "message": "Mobile number is not authorized as Customer. Please contact Super Admin."}
+    if user.get("status") == "BLOCKED":
+        return {"status": "error", "message": "Your customer account has been blocked. Please contact Administrator."}
+    if user.get("role") not in ["customer", "admin"]:
+        return {"status": "error", "message": "This mobile number is not registered for Customer access."}
+    
+    res = send_kit19_otp(clean_p)
+    res["customer_name"] = user.get("name", "")
+    res["party_name"] = user.get("party_name", "")
+    res["party_code"] = user.get("party_code", "")
+    return res
+
+@app.post("/api/customer/verify-otp")
+async def api_customer_verify_otp(request: Request):
+    """Verifies Customer OTP and creates persistent session"""
+    body = await request.json()
+    phone = body.get("phone", "")
+    otp = body.get("otp", "")
+    clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
+    user = get_user_by_phone(clean_p)
+    if not user:
+        return {"status": "error", "message": "Unauthorized customer account."}
+    
+    verify_res = verify_kit19_otp(clean_p, otp)
+    if verify_res.get("status") != "success":
+        return verify_res
+
+    session = create_customer_session(
+        phone=clean_p,
+        customer_name=user.get("name", ""),
+        party_code=user.get("party_code", ""),
+        party_name=user.get("party_name", "")
+    )
+    return {
+        "status": "success",
+        "token": session["token"],
+        "phone": clean_p,
+        "customer_name": user.get("name", ""),
+        "party_code": user.get("party_code", ""),
+        "party_name": user.get("party_name", ""),
+        "role": user.get("role", "customer"),
+        "expires_at": session["expires_at"],
+        "message": f"Welcome, {user.get('name')}!"
+    }
+
+@app.post("/api/customer/check-session")
+async def api_customer_check_session(request: Request):
+    """Validates Customer session"""
+    body = await request.json()
+    token = body.get("token", "")
+    session = validate_customer_session(token)
+    if session:
+        return {"status": "valid", "session": session}
+    return {"status": "invalid"}
+
+@app.get("/api/customer/my-orders")
+async def api_get_customer_orders(request: Request):
+    """Returns orders strictly belonging to the authenticated customer"""
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.split(" ", 1)[1].strip() if auth_header.startswith("Bearer ") else request.query_params.get("token", "")
+    session = validate_customer_session(token)
+    if not session:
+        party_code = request.query_params.get("party_code", "")
+        party_name = request.query_params.get("party_name", "")
+        phone = request.query_params.get("phone", "")
+        if not (party_code or party_name or phone):
+            raise HTTPException(status_code=401, detail="Valid customer session required")
+    else:
+        party_code = session.get("party_code", "")
+        party_name = session.get("party_name", "")
+        phone = session.get("phone", "")
+
+    date_filter = request.query_params.get("filter", "ALL")
+    specific_date = request.query_params.get("date", "")
+    orders = get_orders_for_customer(party_name=party_name, party_code=party_code, phone=phone, date_filter=date_filter, specific_date=specific_date)
+    return {
+        "status": "success",
+        "partyName": party_name,
+        "partyCode": party_code,
+        "filter": date_filter,
+        "date": specific_date,
+        "totalOrders": len(orders),
+        "orders": orders
+    }
+
+# 🔍 DIRECT SALES ORDER SEARCH API
+@app.get("/api/sales-orders/search")
+def api_search_sales_orders(q: str = ""):
+    """Fast indexed search across orders in orders.db by SO Number, Order ID, Party Name or ASM"""
+    res = search_sales_orders_db(q, limit=50)
+    return {"status": "success", "query": q, "count": len(res), "orders": res}
 
 @app.get("/api/otp/kit19-balance")
 def api_get_kit19_balance():

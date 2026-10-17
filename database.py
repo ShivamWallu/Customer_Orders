@@ -69,6 +69,28 @@ def init_db():
                 created_at TEXT NOT NULL,
                 expires_at REAL NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                phone TEXT UNIQUE NOT NULL,
+                role TEXT NOT NULL,
+                party_code TEXT DEFAULT '',
+                party_name TEXT DEFAULT '',
+                status TEXT DEFAULT 'ACTIVE',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                created_by TEXT DEFAULT 'SUPER_ADMIN'
+            );
+            CREATE TABLE IF NOT EXISTS customer_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                token TEXT UNIQUE NOT NULL,
+                phone TEXT NOT NULL,
+                customer_name TEXT,
+                party_code TEXT,
+                party_name TEXT,
+                created_at TEXT NOT NULL,
+                expires_at REAL NOT NULL
+            );
             CREATE INDEX IF NOT EXISTS idx_orders_created ON orders (created_at DESC);
             CREATE INDEX IF NOT EXISTS idx_orders_party ON orders (party_name);
             CREATE INDEX IF NOT EXISTS idx_orders_synced ON orders (synced_to_sheet);
@@ -76,6 +98,11 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_mgr_token ON sales_manager_sessions (token);
             CREATE INDEX IF NOT EXISTS idx_mgr_phone ON sales_manager_sessions (phone);
             CREATE INDEX IF NOT EXISTS idx_admin_token ON admin_sessions (token);
+            CREATE INDEX IF NOT EXISTS idx_users_phone ON users (phone);
+            CREATE INDEX IF NOT EXISTS idx_users_role ON users (role);
+            CREATE INDEX IF NOT EXISTS idx_users_status ON users (status);
+            CREATE INDEX IF NOT EXISTS idx_cust_token ON customer_sessions (token);
+            CREATE INDEX IF NOT EXISTS idx_cust_phone ON customer_sessions (phone);
             """)
         # Safe migration for new columns
         try:
@@ -114,6 +141,31 @@ def init_db():
             conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (order_status);")
         except Exception:
             pass
+
+        # Seed initial authorized accounts if users table is empty
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT count(*) FROM users;")
+            if cur.fetchone()[0] == 0:
+                now_iso = datetime.now().isoformat()
+                default_users = [
+                    ("Shivam Wallu", "7814749816", "admin", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Pankaj Kumar", "9914565011", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Ramesh Kumar", "9876543211", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Sunil Sharma", "9876543212", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Deepak Verma", "9876543213", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Vikas Gupta", "9876543214", "asm", "", "", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                    ("Krishna Traders", "9812345678", "customer", "SDMOWB0307", "Krishna Traders", "ACTIVE", now_iso, now_iso, "SYSTEM"),
+                ]
+                with conn:
+                    conn.executemany("""
+                    INSERT OR IGNORE INTO users (name, phone, role, party_code, party_name, status, created_at, updated_at, created_by)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, default_users)
+                print("[DATABASE] Default authorized users successfully seeded.")
+        except Exception as e:
+            print("[DATABASE] User seeding error:", e)
+
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
     finally:
         conn.close()
@@ -195,6 +247,352 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
                 "expires_at": row["expires_at"]
             }
         return None
+    finally:
+        conn.close()
+
+def get_user_by_phone(phone: str) -> Optional[Dict[str, Any]]:
+    """Fetches user record by clean 10-digit mobile number"""
+    digits = "".join(filter(str.isdigit, str(phone)))
+    clean_p = digits[-10:] if len(digits) >= 10 else digits
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT id, name, phone, role, party_code, party_name, status, created_at, updated_at, created_by
+        FROM users WHERE phone = ? LIMIT 1
+        """, (clean_p,))
+        row = cur.fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+def get_all_users(role: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Returns list of users, optionally filtered by role"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        if role:
+            cur.execute("""
+            SELECT id, name, phone, role, party_code, party_name, status, created_at, updated_at, created_by
+            FROM users WHERE LOWER(role) = LOWER(?) ORDER BY id DESC
+            """, (role.strip(),))
+        else:
+            cur.execute("""
+            SELECT id, name, phone, role, party_code, party_name, status, created_at, updated_at, created_by
+            FROM users ORDER BY id DESC
+            """)
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+def create_or_update_user(name: str, phone: str, role: str, party_code: str = "", party_name: str = "", status: str = "ACTIVE", created_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
+    """Super Admin creates or updates an authorized user"""
+    digits = "".join(filter(str.isdigit, str(phone)))
+    clean_p = digits[-10:] if len(digits) >= 10 else digits
+    if len(clean_p) != 10:
+        return {"status": "error", "message": "Phone number must be exactly 10 digits"}
+    
+    role = role.lower().strip()
+    valid_roles = ["admin", "manager", "analyst", "asm", "customer"]
+    if role not in valid_roles:
+        return {"status": "error", "message": f"Invalid role '{role}'. Allowed roles: {', '.join(valid_roles)}"}
+
+    now_iso = datetime.now().isoformat()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            INSERT INTO users (name, phone, role, party_code, party_name, status, created_at, updated_at, created_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(phone) DO UPDATE SET
+                name = excluded.name,
+                role = excluded.role,
+                party_code = excluded.party_code,
+                party_name = excluded.party_name,
+                status = excluded.status,
+                updated_at = excluded.updated_at,
+                created_by = excluded.created_by;
+            """, (name.strip(), clean_p, role, party_code.strip(), party_name.strip(), status.upper(), now_iso, now_iso, created_by))
+        
+        user = get_user_by_phone(clean_p)
+        return {"status": "success", "message": f"User '{name}' saved successfully with role '{role}'", "user": user}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def toggle_user_status(user_id: int, new_status: str) -> Dict[str, Any]:
+    """Super Admin blocks or unblocks a user"""
+    new_status = new_status.upper().strip()
+    if new_status not in ["ACTIVE", "BLOCKED"]:
+        return {"status": "error", "message": "Status must be ACTIVE or BLOCKED"}
+    conn = get_connection()
+    try:
+        now_iso = datetime.now().isoformat()
+        with conn:
+            cur = conn.cursor()
+            cur.execute("UPDATE users SET status = ?, updated_at = ? WHERE id = ?", (new_status, now_iso, user_id))
+            if cur.rowcount == 0:
+                return {"status": "error", "message": "User not found"}
+        return {"status": "success", "message": f"User status updated to {new_status}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def delete_user_by_id(user_id: int) -> Dict[str, Any]:
+    """Super Admin permanently removes a user account"""
+    conn = get_connection()
+    try:
+        with conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM users WHERE id = ?", (user_id,))
+            if cur.rowcount == 0:
+                return {"status": "error", "message": "User not found"}
+        return {"status": "success", "message": "User deleted successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def create_customer_session(phone: str, customer_name: str = "", party_code: str = "", party_name: str = "") -> Dict[str, Any]:
+    """Creates a 1-year persistent session for verified Customer"""
+    import secrets
+    import time
+    token = f"CUST_{secrets.token_hex(24)}"
+    now = time.time()
+    expires_at = now + (365 * 24 * 3600)
+    now_str = datetime.now().isoformat()
+    conn = get_connection()
+    try:
+        digits = "".join(filter(str.isdigit, str(phone)))
+        clean_p = digits[-10:] if len(digits) >= 10 else digits
+        with conn:
+            conn.execute("""
+            INSERT INTO customer_sessions (token, phone, customer_name, party_code, party_name, created_at, expires_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (token, clean_p, customer_name, party_code, party_name, now_str, expires_at))
+        return {
+            "status": "success",
+            "token": token,
+            "phone": clean_p,
+            "customer_name": customer_name,
+            "party_code": party_code,
+            "party_name": party_name,
+            "expires_at": expires_at
+        }
+    finally:
+        conn.close()
+
+def validate_customer_session(token: str) -> Optional[Dict[str, Any]]:
+    """Validates Customer session token"""
+    import time
+    if not token:
+        return None
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT token, phone, customer_name, party_code, party_name, created_at, expires_at
+        FROM customer_sessions WHERE token = ?
+        """, (token,))
+        row = cur.fetchone()
+        if row and row["expires_at"] > time.time():
+            return dict(row)
+        return None
+    finally:
+        conn.close()
+
+def get_orders_for_asm(sales_person_name: str, phone: str = "", date_filter: str = "ALL", specific_date: str = "") -> List[Dict[str, Any]]:
+    """
+    Fetches orders strictly assigned to the logged-in Area Sales Manager.
+    Supports filters: TODAY, YESTERDAY, ALL, or specific date (YYYY-MM-DD or DD/MM/YYYY).
+    """
+    from datetime import date, timedelta
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        query = """
+        SELECT * FROM orders
+        WHERE (LOWER(sales_person) LIKE ? OR sales_person = ?)
+        """
+        params = [f"%{sales_person_name.strip().lower()}%", sales_person_name.strip()]
+
+        # Date calculations
+        today_iso = date.today().isoformat() # YYYY-MM-DD
+        today_slash = date.today().strftime("%d/%m/%Y")
+        yesterday_iso = (date.today() - timedelta(days=1)).isoformat()
+        yesterday_slash = (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
+
+        date_filter_clean = (date_filter or "ALL").upper().strip()
+        if date_filter_clean == "TODAY":
+            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
+            params.extend([f"{today_iso}%", f"%{today_iso}%", f"%{today_slash}%"])
+        elif date_filter_clean == "YESTERDAY":
+            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
+            params.extend([f"{yesterday_iso}%", f"%{yesterday_iso}%", f"%{yesterday_slash}%"])
+        elif date_filter_clean == "CUSTOM" and specific_date:
+            clean_date = specific_date.strip()
+            # If YYYY-MM-DD convert to DD/MM/YYYY as alternative
+            alt_date = clean_date
+            if "-" in clean_date:
+                parts = clean_date.split("-")
+                if len(parts) == 3:
+                    alt_date = f"{parts[2]}/{parts[1]}/{parts[0]}"
+            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
+            params.extend([f"{clean_date}%", f"%{clean_date}%", f"%{alt_date}%"])
+
+        query += " ORDER BY created_at DESC"
+        cur.execute(query, params)
+        rows = cur.fetchall()
+
+        result = []
+        for r in rows:
+            d = dict(r)
+            try:
+                d["items"] = json.loads(d.get("items_json") or "[]")
+            except Exception:
+                d["items"] = []
+            d["id"] = d.get("order_id")
+            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
+            d["partyName"] = d.get("party_name")
+            d["partyCode"] = d.get("party_code")
+            d["partyAddress"] = d.get("party_address")
+            d["salesPerson"] = d.get("sales_person")
+            d["totalBoxes"] = d.get("total_boxes", 0)
+            d["totalPieces"] = d.get("total_pieces", 0)
+            d["orderStatus"] = d.get("order_status") or "PENDING"
+            d["soNumber"] = d.get("so_number") or ""
+            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
+            result.append(d)
+        return result
+    finally:
+        conn.close()
+
+def get_orders_for_customer(party_name: str = "", party_code: str = "", phone: str = "", date_filter: str = "ALL", specific_date: str = "") -> List[Dict[str, Any]]:
+    """
+    Fetches orders strictly belonging to a Customer by Party Code, Party Name, or Phone.
+    Supports filters: TODAY, YESTERDAY, ALL, or specific date.
+    """
+    from datetime import date, timedelta
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        conditions = []
+        params = []
+
+        if party_code:
+            conditions.append("party_code = ?")
+            params.append(party_code.strip())
+        if party_name:
+            conditions.append("(LOWER(party_name) LIKE ?)")
+            params.append(f"%{party_name.strip().lower()}%")
+        if phone:
+            digits = "".join(filter(str.isdigit, str(phone)))
+            clean_p = digits[-10:] if len(digits) >= 10 else digits
+            conditions.append("(party_address LIKE ? OR delivery_address LIKE ?)")
+            params.append(f"%{clean_p}%")
+
+        if not conditions:
+            return []
+
+        base_cond = "(" + " OR ".join(conditions) + ")"
+        query = f"SELECT * FROM orders WHERE {base_cond}"
+
+        # Date filter
+        today_iso = date.today().isoformat()
+        today_slash = date.today().strftime("%d/%m/%Y")
+        yesterday_iso = (date.today() - timedelta(days=1)).isoformat()
+        yesterday_slash = (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
+
+        date_filter_clean = (date_filter or "ALL").upper().strip()
+        if date_filter_clean == "TODAY":
+            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
+            params.extend([f"{today_iso}%", f"%{today_iso}%", f"%{today_slash}%"])
+        elif date_filter_clean == "YESTERDAY":
+            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
+            params.extend([f"{yesterday_iso}%", f"%{yesterday_iso}%", f"%{yesterday_slash}%"])
+        elif date_filter_clean == "CUSTOM" and specific_date:
+            clean_date = specific_date.strip()
+            alt_date = clean_date
+            if "-" in clean_date:
+                parts = clean_date.split("-")
+                if len(parts) == 3:
+                    alt_date = f"{parts[2]}/{parts[1]}/{parts[0]}"
+            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
+            params.extend([f"{clean_date}%", f"%{clean_date}%", f"%{alt_date}%"])
+
+        query += " ORDER BY created_at DESC"
+        cur.execute(query, params)
+        rows = cur.fetchall()
+
+        result = []
+        for r in rows:
+            d = dict(r)
+            try:
+                d["items"] = json.loads(d.get("items_json") or "[]")
+            except Exception:
+                d["items"] = []
+            d["id"] = d.get("order_id")
+            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
+            d["partyName"] = d.get("party_name")
+            d["partyCode"] = d.get("party_code")
+            d["partyAddress"] = d.get("party_address")
+            d["salesPerson"] = d.get("sales_person")
+            d["totalBoxes"] = d.get("total_boxes", 0)
+            d["totalPieces"] = d.get("total_pieces", 0)
+            d["orderStatus"] = d.get("order_status") or "PENDING"
+            d["soNumber"] = d.get("so_number") or ""
+            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
+            result.append(d)
+        return result
+    finally:
+        conn.close()
+
+def search_sales_orders_db(query: str, limit: int = 50) -> List[Dict[str, Any]]:
+    """
+    Searches Sales Orders by SO Number, Order ID, Party Name, or Sales Person.
+    Returns 100% accurate database records for search functionality.
+    """
+    clean_q = (query or "").strip().lower()
+    if not clean_q:
+        return []
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        search_pattern = f"%{clean_q}%"
+        cur.execute("""
+        SELECT * FROM orders
+        WHERE LOWER(order_id) LIKE ?
+           OR LOWER(so_number) LIKE ?
+           OR LOWER(party_name) LIKE ?
+           OR LOWER(party_code) LIKE ?
+           OR LOWER(sales_person) LIKE ?
+        ORDER BY created_at DESC
+        LIMIT ?
+        """, (search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, limit))
+        rows = cur.fetchall()
+
+        result = []
+        for r in rows:
+            d = dict(r)
+            try:
+                d["items"] = json.loads(d.get("items_json") or "[]")
+            except Exception:
+                d["items"] = []
+            d["id"] = d.get("order_id")
+            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
+            d["partyName"] = d.get("party_name")
+            d["partyCode"] = d.get("party_code")
+            d["partyAddress"] = d.get("party_address")
+            d["salesPerson"] = d.get("sales_person")
+            d["totalBoxes"] = d.get("total_boxes", 0)
+            d["totalPieces"] = d.get("total_pieces", 0)
+            d["orderStatus"] = d.get("order_status") or "PENDING"
+            d["soNumber"] = d.get("so_number") or ""
+            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
+            result.append(d)
+        return result
     finally:
         conn.close()
 

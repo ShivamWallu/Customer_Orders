@@ -1565,6 +1565,11 @@
           <span>📋 All Orders</span>
           <span class="badge" id="badgeAllCount">0</span>
         </button>
+        <!-- User Management Tab (Super Admin Only) -->
+        <button class="status-tab users-tab" id="tabStatusUsers" onclick="setStatusTab('USERS')" title="Manage user roles, accounts & mobile authorizations">
+          <span>👥 User Management</span>
+          <span class="badge" id="badgeUsersCount" style="background: #e0f2fe; color: #0369a1;">0</span>
+        </button>
       </div>
 
       <div class="table-actions-group">
@@ -1640,6 +1645,99 @@
       </div>
       <div class="pagination-right" id="paginationPillsContainer">
         <!-- Rendered Prev, Page Pills, Next -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 👥 SUPER ADMIN USER & ACCOUNT MANAGEMENT PANEL -->
+  <div class="table-card-wrapper" id="usersCardWrapper" style="display: none; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">👥 User & Role Authorization Control</h2>
+        <p style="font-size: 13px; color: var(--text-secondary);">Manage authorized accounts (Super Admin Only). Only authorized mobile numbers can log in via OTP to APK & Web.</p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-tool" onclick="loadAdminUsers()" title="Reload user list">
+          <span>🔄</span> <span>Refresh</span>
+        </button>
+        <button class="btn-tool primary" onclick="openCreateUserModal()" title="Add new authorized user account">
+          <span>➕</span> <span>Add New Account</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div style="overflow-x: auto; background: #ffffff; border-radius: 10px; border: 1px solid var(--border);">
+      <table class="orders-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th class="center" style="width: 50px;">#</th>
+            <th style="min-width: 180px;">User Name</th>
+            <th style="min-width: 140px;">Registered Mobile</th>
+            <th class="center" style="min-width: 160px;">Assigned Role</th>
+            <th style="min-width: 180px;">Party / Company Name</th>
+            <th class="center" style="min-width: 110px;">Status</th>
+            <th style="min-width: 140px;">Created Date</th>
+            <th class="center" style="min-width: 160px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody">
+          <tr>
+            <td colspan="8" class="empty-state-cell">Loading accounts from database...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ➕ CREATE / EDIT USER MODAL -->
+  <div class="generic-modal-overlay" id="createUserModalOverlay" style="display: none;" onclick="closeCreateUserModal(event)">
+    <div class="generic-modal-box" onclick="event.stopPropagation()" style="max-width: 480px;">
+      <div class="generic-modal-header">
+        <h3 id="userModalTitle">➕ Create Authorized User Account</h3>
+        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeCreateUserModal()">✕</button>
+      </div>
+      <div class="generic-modal-body" style="padding: 20px;">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Full Name <span style="color: #dc2626;">*</span></label>
+          <input type="text" id="newUserName" class="login-input" placeholder="e.g. Shivam Wallu / Pankaj Kumar" style="margin-bottom: 0;">
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">10-Digit Mobile Number <span style="color: #dc2626;">*</span> (Linked to OTP Login)</label>
+          <input type="tel" id="newUserPhone" class="login-input" maxlength="10" placeholder="e.g. 7814749816" style="margin-bottom: 0;">
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Role <span style="color: #dc2626;">*</span></label>
+          <select id="newUserRole" class="login-input" style="margin-bottom: 0;" onchange="handleUserRoleChange(this.value)">
+            <option value="asm">Area Sales Manager (ASM)</option>
+            <option value="customer">Customer (Direct Buyer)</option>
+            <option value="manager">Manager (Production & Packing)</option>
+            <option value="analyst">Analyst (Read-Only)</option>
+            <option value="admin">Super Admin (Full Access)</option>
+          </select>
+        </div>
+        <div id="customerExtraFields" style="display: none;">
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Party / Firm Name</label>
+            <input type="text" id="newUserPartyName" class="login-input" placeholder="e.g. Krishna Traders" style="margin-bottom: 0;">
+          </div>
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Party Code</label>
+            <input type="text" id="newUserPartyCode" class="login-input" placeholder="e.g. SDMOWB0307" style="margin-bottom: 0;">
+          </div>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Initial Status</label>
+          <select id="newUserStatus" class="login-input" style="margin-bottom: 0;">
+            <option value="ACTIVE" selected>ACTIVE (Allowed to log in)</option>
+            <option value="BLOCKED">BLOCKED (Access Denied)</option>
+          </select>
+        </div>
+        <div id="userModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none;"></div>
+      </div>
+      <div class="generic-modal-footer">
+        <button class="btn-tool" onclick="closeCreateUserModal()">Cancel</button>
+        <button class="btn-tool primary" id="btnSaveUserAccount" onclick="submitCreateUser()">Save User Account</button>
       </div>
     </div>
   </div>
@@ -2008,9 +2106,238 @@
       document.getElementById("tabStatusAll").classList.toggle("active", statusType === "ALL");
       document.getElementById("tabStatusPending").classList.toggle("active", statusType === "PENDING");
       document.getElementById("tabStatusConfirmed").classList.toggle("active", statusType === "CONFIRMED");
+      if (document.getElementById("tabStatusUsers")) {
+        document.getElementById("tabStatusUsers").classList.toggle("active", statusType === "USERS");
+      }
+
+      const tableWrapper = document.getElementById("tableCardWrapper");
+      const usersWrapper = document.getElementById("usersCardWrapper");
+      const warehouseCard = document.getElementById("warehouseSummaryCard");
+
+      if (statusType === "USERS") {
+        if (tableWrapper) tableWrapper.style.display = "none";
+        if (warehouseCard) warehouseCard.style.display = "none";
+        if (usersWrapper) usersWrapper.style.display = "block";
+        loadAdminUsers();
+        return;
+      } else {
+        if (usersWrapper) usersWrapper.style.display = "none";
+        if (tableWrapper) tableWrapper.style.display = "block";
+        if (warehouseCard) warehouseCard.style.display = "block";
+      }
 
       currentPage = 1;
       applyAllFilters();
+    }
+
+    // 👥 Super Admin User Management Functions
+    let adminUsersList = [];
+
+    async function loadAdminUsers() {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const tbody = document.getElementById("usersTableBody");
+      tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell">Loading accounts from database...</td></tr>`;
+
+      try {
+        const res = await fetch("/api/admin/users", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          adminUsersList = data.users || [];
+          if (document.getElementById("badgeUsersCount")) {
+            document.getElementById("badgeUsersCount").textContent = adminUsersList.length;
+          }
+          renderUsersTable(adminUsersList);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell" style="color: #dc2626;">Failed to load accounts: ${escapeHtml(data.detail || data.message || "Unauthorized")}</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell" style="color: #dc2626;">Error: ${escapeHtml(e.message)}</td></tr>`;
+      }
+    }
+
+    function renderUsersTable(users) {
+      const tbody = document.getElementById("usersTableBody");
+      if (!users || users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell">No user accounts found. Click "Add New Account" above to authorize.</td></tr>`;
+        return;
+      }
+
+      let html = "";
+      users.forEach((u, idx) => {
+        const roleBadge = getRoleBadgeHtml(u.role);
+        const isBlocked = u.status === "BLOCKED";
+        const statusBadge = isBlocked
+          ? `<span class="status-badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">⛔ BLOCKED</span>`
+          : `<span class="status-badge confirmed">✔ ACTIVE</span>`;
+
+        const blockBtnText = isBlocked ? "🔓 Unblock" : "⛔ Block";
+        const blockBtnTitle = isBlocked ? "Allow this account to log in" : "Temporarily block this account";
+        const newStatus = isBlocked ? "ACTIVE" : "BLOCKED";
+
+        const partyInfo = u.role === "customer"
+          ? `<strong>${escapeHtml(u.party_name || "-")}</strong> <div style="font-size: 11px; color: var(--text-dim);">${escapeHtml(u.party_code || "")}</div>`
+          : `<span style="color: var(--text-dim); font-size: 12px;">—</span>`;
+
+        const createdDate = u.created_at ? u.created_at.split("T")[0] : "-";
+
+        html += `
+          <tr>
+            <td class="center" style="font-weight: 700; color: var(--text-dim);">${idx + 1}</td>
+            <td><strong>${escapeHtml(u.name)}</strong></td>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600;">+91 ${escapeHtml(u.phone)}</code></td>
+            <td class="center">${roleBadge}</td>
+            <td>${partyInfo}</td>
+            <td class="center">${statusBadge}</td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${createdDate}</td>
+            <td class="center">
+              <div style="display: flex; gap: 6px; justify-content: center;">
+                <button class="btn-row-action" title="${blockBtnTitle}" onclick="toggleUserStatusAction(${u.id}, '${newStatus}')">
+                  ${blockBtnText}
+                </button>
+                <button class="btn-row-action delete-danger" title="Permanently delete user" onclick="deleteUserAction(${u.id}, '${escapeHtml(u.name)}')">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function getRoleBadgeHtml(role) {
+      const r = (role || "").toLowerCase();
+      if (r === "admin") {
+        return `<span class="status-badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">👑 Super Admin</span>`;
+      } else if (r === "manager") {
+        return `<span class="status-badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">👔 Manager</span>`;
+      } else if (r === "analyst") {
+        return `<span class="status-badge" style="background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb;">📊 Analyst</span>`;
+      } else if (r === "asm") {
+        return `<span class="status-badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">💼 Area Sales Mgr</span>`;
+      } else if (r === "customer") {
+        return `<span class="status-badge" style="background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff;">🏬 Customer</span>`;
+      }
+      return `<span class="status-badge">${escapeHtml(role)}</span>`;
+    }
+
+    function openCreateUserModal() {
+      document.getElementById("newUserName").value = "";
+      document.getElementById("newUserPhone").value = "";
+      document.getElementById("newUserRole").value = "asm";
+      document.getElementById("newUserPartyName").value = "";
+      document.getElementById("newUserPartyCode").value = "";
+      document.getElementById("newUserStatus").value = "ACTIVE";
+      document.getElementById("customerExtraFields").style.display = "none";
+      document.getElementById("userModalError").style.display = "none";
+      document.getElementById("createUserModalOverlay").style.display = "flex";
+    }
+
+    function closeCreateUserModal() {
+      document.getElementById("createUserModalOverlay").style.display = "none";
+    }
+
+    function handleUserRoleChange(role) {
+      document.getElementById("customerExtraFields").style.display = role === "customer" ? "block" : "none";
+    }
+
+    async function submitCreateUser() {
+      const name = document.getElementById("newUserName").value.trim();
+      const phone = document.getElementById("newUserPhone").value.trim().replace(/\\D/g, "");
+      const role = document.getElementById("newUserRole").value;
+      const partyName = document.getElementById("newUserPartyName").value.trim();
+      const partyCode = document.getElementById("newUserPartyCode").value.trim();
+      const status = document.getElementById("newUserStatus").value;
+      const errBox = document.getElementById("userModalError");
+
+      if (!name) {
+        errBox.textContent = "Please enter full name";
+        errBox.style.display = "block";
+        return;
+      }
+      if (phone.length !== 10) {
+        errBox.textContent = "Please enter a valid 10-digit mobile number";
+        errBox.style.display = "block";
+        return;
+      }
+
+      errBox.style.display = "none";
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const btn = document.getElementById("btnSaveUserAccount");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const res = await fetch("/api/admin/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name, phone, role, party_name: partyName, party_code: partyCode, status
+          })
+        });
+        const d = await res.json();
+        if (res.ok && d.status === "success") {
+          closeCreateUserModal();
+          alert(d.message || "User account saved successfully!");
+          loadAdminUsers();
+        } else {
+          errBox.textContent = d.detail || d.message || "Failed to save user";
+          errBox.style.display = "block";
+        }
+      } catch (e) {
+        errBox.textContent = e.message;
+        errBox.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Save User Account";
+      }
+    }
+
+    async function toggleUserStatusAction(userId, newStatus) {
+      if (!confirm(`Are you sure you want to change this account status to ${newStatus}?`)) return;
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      try {
+        const res = await fetch(`/api/admin/users/${userId}/status`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const d = await res.json();
+        if (res.ok && d.status === "success") {
+          loadAdminUsers();
+        } else {
+          alert("Error: " + (d.detail || d.message));
+        }
+      } catch (e) {
+        alert("Request error: " + e.message);
+      }
+    }
+
+    async function deleteUserAction(userId, userName) {
+      if (!confirm(`Permanently delete account for "${userName}"? This cannot be undone.`)) return;
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const d = await res.json();
+        if (res.ok && d.status === "success") {
+          loadAdminUsers();
+        } else {
+          alert("Error: " + (d.detail || d.message));
+        }
+      } catch (e) {
+        alert("Request error: " + e.message);
+      }
     }
 
     function handleSearchInput() {
