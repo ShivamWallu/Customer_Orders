@@ -1364,7 +1364,7 @@
       </div>
     </div>
     <div class="header-right" id="headerRight" style="display: none;">
-      <div class="db-source-pill" title="100% Sourced from permanent SQLite orders.db (Zero Google Sheets delay)">
+      <div class="db-source-pill" title="100% Sourced from permanent SQLite orders.db (Zero delay)">
         <span class="db-dot"></span>
         <span>DB: SQLite orders.db</span>
       </div>
@@ -1416,11 +1416,11 @@
 
     <div class="kpi-card">
       <div class="kpi-info">
-        <h3>Google Sheet Sync</h3>
-        <div class="kpi-num" style="color: #0284c7;" id="kpiSyncStatus">100%</div>
-        <div class="kpi-sub" id="kpiSyncSub">0 synced | 0 pending</div>
+        <h3>Customer Parties</h3>
+        <div class="kpi-num" style="color: #0284c7;" id="kpiTotalParties">0</div>
+        <div class="kpi-sub" id="kpiPartiesSub">Active buyer accounts</div>
       </div>
-      <div class="kpi-icon blue">☁️</div>
+      <div class="kpi-icon blue">🏬</div>
     </div>
   </div>
 
@@ -1572,10 +1572,6 @@
           <span>📊</span>
           <span>Export CSV</span>
         </button>
-        <button class="btn-tool" onclick="resyncAllPendingOrders()" title="Push pending orders to Google Sheets">
-          <span>🚀</span>
-          <span>Sync Sheet</span>
-        </button>
         <button class="btn-tool primary" onclick="fetchOrdersData()" title="Reload fresh data from database">
           <span>🔄</span>
           <span>Refresh</span>
@@ -1615,7 +1611,6 @@
             <th style="min-width: 320px;">Product Quantities & Pieces</th>
             <th style="min-width: 120px;" class="center">Total Boxes</th>
             <th style="min-width: 120px;" class="center">Total Pieces</th>
-            <th style="min-width: 120px;" class="center">Sheet Sync</th>
             <!-- Status & Confirmation Columns at end of table -->
             <th style="min-width: 140px;" class="center">Order Status</th>
             <th style="min-width: 130px;" class="center">SO Number</th>
@@ -1624,7 +1619,7 @@
         </thead>
         <tbody id="ordersTableBody">
           <tr>
-            <td colspan="14" class="empty-state-cell">Loading database orders...</td>
+            <td colspan="13" class="empty-state-cell">Loading database orders...</td>
           </tr>
         </tbody>
       </table>
@@ -2125,6 +2120,8 @@
       const now = new Date();
       const todayStr = getFormattedDateStr(now);
 
+      const partiesSet = new Set();
+
       dateFilteredRecords.forEach(o => {
         if (o.orderStatus === "CONFIRMED") {
           confirmedOrders++;
@@ -2136,8 +2133,8 @@
         if (dStr.includes(todayStr)) {
           todayOrders++;
         }
-        if (o.synced_to_sheet) {
-          syncedCount++;
+        if (o.partyName && o.partyName.trim()) {
+          partiesSet.add(o.partyName.trim().toLowerCase());
         }
       });
 
@@ -2149,10 +2146,9 @@
       if (document.getElementById("kpiTodayOrders")) {
         document.getElementById("kpiTodayOrders").textContent = todayOrders.toLocaleString();
       }
-      if (document.getElementById("kpiSyncStatus")) {
-        const pct = totalOrders > 0 ? Math.round((syncedCount / totalOrders) * 100) : 100;
-        document.getElementById("kpiSyncStatus").textContent = `${pct}% Synced`;
-        document.getElementById("kpiSyncSub").textContent = `${syncedCount} synced | ${totalOrders - syncedCount} pending`;
+      if (document.getElementById("kpiTotalParties")) {
+        document.getElementById("kpiTotalParties").textContent = partiesSet.size.toLocaleString();
+        document.getElementById("kpiPartiesSub").textContent = `${partiesSet.size} active buyer accounts`;
       }
     }
 
@@ -2345,11 +2341,6 @@
         }
         itemsHtml += `</div>`;
 
-        // Sync Badge
-        const syncBadge = o.synced_to_sheet
-          ? `<span class="status-badge confirmed" title="Synced to Google Sheet">✔ Synced</span>`
-          : `<span class="status-badge pending" style="cursor: pointer;" onclick="resyncSingleOrder('${cleanId}')" title="Click to force sync to Google Sheet">⏳ Pending</span>`;
-
         // Status Badge
         const statusBadge = isConfirmed
           ? `<span class="status-badge confirmed">✔ CONFIRMED</span>`
@@ -2422,7 +2413,6 @@
             <td class="center">
               <span class="pieces-badge">${(o.totalPieces || 0).toLocaleString()} Pcs</span>
             </td>
-            <td class="center">${syncBadge}</td>
             <!-- Status & Confirmation at end of table -->
             <td class="center">${statusBadge}</td>
             <td class="center">${soDisplay}</td>
@@ -2619,10 +2609,10 @@
       }
     }
 
-    // Google Sheets Resync Handlers
+    // Background Sync Handlers
     async function resyncSingleOrder(orderId) {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
-      if (!confirm(`Force sync order #${orderId} to Google Sheet now?`)) return;
+      if (!confirm(`Force sync order #${orderId} now?`)) return;
 
       try {
         const res = await fetch("/api/admin/orders/resync", {
@@ -2638,7 +2628,7 @@
           const ord = allOrdersData.find(o => o.cleanId === orderId);
           if (ord) ord.synced_to_sheet = true;
           applyAllFilters();
-          alert(`Order #${orderId} synced to Google Sheet successfully!`);
+          alert(`Order #${orderId} synchronized successfully!`);
         } else {
           alert("Sync failed: " + (d.message || "Unknown error"));
         }
@@ -2649,7 +2639,7 @@
 
     async function resyncAllPendingOrders() {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
-      if (!confirm("Push all pending orders to Google Sheet now?")) return;
+      if (!confirm("Synchronize all pending records now?")) return;
 
       try {
         const res = await fetch("/api/admin/orders/resync", {
@@ -2743,7 +2733,6 @@
         "Total Pieces",
         "Order Status",
         "SO Number",
-        "Sheet Synced",
         "Items Summary"
       ];
 
@@ -2758,7 +2747,6 @@
         o.totalPieces || 0,
         `"${o.orderStatus}"`,
         `"${o.soNumber || ''}"`,
-        o.synced_to_sheet ? "YES" : "NO",
         `"${(o.itemsSummary || '').replace(/"/g, '""')}"`
       ]);
 
