@@ -1381,20 +1381,20 @@
 
     <div class="kpi-card">
       <div class="kpi-info">
-        <h3>Total Quantity (Boxes)</h3>
-        <div class="kpi-num" id="kpiTotalBoxes">0</div>
-        <div class="kpi-sub">Boxes calculated</div>
+        <h3>Today's Bookings</h3>
+        <div class="kpi-num" id="kpiTodayOrders">0</div>
+        <div class="kpi-sub">Live daily inflow</div>
       </div>
-      <div class="kpi-icon indigo">🛢️</div>
+      <div class="kpi-icon purple">📅</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-info">
-        <h3>Total Pieces</h3>
-        <div class="kpi-num" id="kpiTotalPieces">0</div>
-        <div class="kpi-sub">Exact unit pieces</div>
+        <h3>Google Sheet Sync</h3>
+        <div class="kpi-num" style="color: #0284c7;" id="kpiSyncStatus">100%</div>
+        <div class="kpi-sub" id="kpiSyncSub">0 synced | 0 pending</div>
       </div>
-      <div class="kpi-icon purple">🧩</div>
+      <div class="kpi-icon blue">☁️</div>
     </div>
   </div>
 
@@ -1423,23 +1423,22 @@
     </div>
 
     <div class="warehouse-body-content" id="warehouseBodyContent">
-      <!-- Grand Total Highlight Banner -->
+      <!-- Warehouse Dispatch Queue Banner -->
       <div class="warehouse-grand-banner">
         <div class="banner-stat-item">
           <span class="stat-label">Pending Orders Queue</span>
-          <span class="stat-val" id="whPendingOrdersCount">0 Orders</span>
+          <span class="stat-val" id="whPendingOrdersCount">0 Orders to Pack</span>
         </div>
         <div class="banner-stat-item">
-          <span class="stat-label">Total Boxes To Prepare</span>
-          <span class="stat-val" id="whGrandTotalBoxes">0 Boxes</span>
-        </div>
-        <div class="banner-stat-item">
-          <span class="stat-label">Total Pieces To Pack</span>
-          <span class="stat-val" id="whGrandTotalPieces">0 Pieces</span>
+          <span class="stat-label">Active Factory Brands</span>
+          <div style="display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap;">
+            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">🔵 MASHAL: 14 Packaging SKUs</span>
+            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">🟢 FAUJI: 5 Packaging SKUs</span>
+          </div>
         </div>
         <div class="banner-stat-item" style="text-align: right;">
-          <span class="stat-label">Factory Status</span>
-          <span class="stat-val" style="font-size: 15px; color: #a7f3d0;">Active Production</span>
+          <span class="stat-label">Factory Packing Status</span>
+          <span class="stat-val" style="font-size: 16px; color: #a7f3d0;">Active Production Queue</span>
         </div>
       </div>
 
@@ -2062,8 +2061,8 @@
         return true;
       });
 
-      // 3. Update Dashboard Summary Cards (KPIs)
-      updateDashboardSummaryCards(dateFilteredOrders, filteredOrdersData);
+      // 3. Update Dashboard Summary Cards (KPIs) - always reflects dateFilteredOrders accurately
+      updateDashboardSummaryCards(dateFilteredOrders);
 
       // 4. Update Warehouse Production Summary (Strictly Pending Orders)
       // Pending orders within current date filter:
@@ -2089,28 +2088,46 @@
       return `${dd}/${mm}/${yyyy}`;
     }
 
-    // Dashboard Summary Cards (KPIs)
-    function updateDashboardSummaryCards(dateFilteredRecords, activeViewRecords) {
-      let totalOrders = activeViewRecords.length;
+    // Dashboard Summary Cards (KPIs) - 100% Dynamic & Accurate
+    function updateDashboardSummaryCards(dateFilteredRecords) {
+      let totalOrders = dateFilteredRecords.length;
       let confirmedOrders = 0;
       let pendingOrders = 0;
-      let totalBoxes = 0;
-      let totalPieces = 0;
+      let todayOrders = 0;
+      let syncedCount = 0;
 
-      // Calculate totals for active view
-      activeViewRecords.forEach(o => {
-        if (o.orderStatus === "CONFIRMED") confirmedOrders++;
-        else pendingOrders++;
-        totalBoxes += (parseInt(o.totalBoxes, 10) || 0);
-        totalPieces += (parseInt(o.totalPieces, 10) || 0);
+      const now = new Date();
+      const todayStr = getFormattedDateStr(now);
+
+      dateFilteredRecords.forEach(o => {
+        if (o.orderStatus === "CONFIRMED") {
+          confirmedOrders++;
+        } else {
+          pendingOrders++;
+        }
+
+        const dStr = extractDateString(o);
+        if (dStr.includes(todayStr)) {
+          todayOrders++;
+        }
+        if (o.synced_to_sheet) {
+          syncedCount++;
+        }
       });
 
       document.getElementById("kpiTotalOrders").textContent = totalOrders.toLocaleString();
-      document.getElementById("kpiTotalOrdersSub").textContent = activeStatusTab === "ALL" ? "All active records" : `${activeStatusTab.toLowerCase()} orders view`;
+      document.getElementById("kpiTotalOrdersSub").textContent = activeDateFilter === "ALL" ? "All database records" : `Date: ${activeDateFilter.toLowerCase()}`;
       document.getElementById("kpiConfirmedOrders").textContent = confirmedOrders.toLocaleString();
       document.getElementById("kpiPendingOrders").textContent = pendingOrders.toLocaleString();
-      document.getElementById("kpiTotalBoxes").textContent = totalBoxes.toLocaleString();
-      document.getElementById("kpiTotalPieces").textContent = totalPieces.toLocaleString();
+
+      if (document.getElementById("kpiTodayOrders")) {
+        document.getElementById("kpiTodayOrders").textContent = todayOrders.toLocaleString();
+      }
+      if (document.getElementById("kpiSyncStatus")) {
+        const pct = totalOrders > 0 ? Math.round((syncedCount / totalOrders) * 100) : 100;
+        document.getElementById("kpiSyncStatus").textContent = `${pct}% Synced`;
+        document.getElementById("kpiSyncSub").textContent = `${syncedCount} synced | ${totalOrders - syncedCount} pending`;
+      }
     }
 
     // 3. WAREHOUSE PRODUCTION & PACKING SUMMARY ENGINE (PENDING ORDERS ONLY)
@@ -2170,9 +2187,7 @@
       });
 
       // Update Highlights Banner
-      document.getElementById("whPendingOrdersCount").textContent = `${pendingOrders.length.toLocaleString()} Orders`;
-      document.getElementById("whGrandTotalBoxes").textContent = `${grandTotalBoxes.toLocaleString()} Boxes`;
-      document.getElementById("whGrandTotalPieces").textContent = `${grandTotalPieces.toLocaleString()} Pieces`;
+      document.getElementById("whPendingOrdersCount").textContent = `${pendingOrders.length.toLocaleString()} Orders to Pack`;
 
       document.getElementById("whMashalTotalBoxes").textContent = `${mashalBoxes.toLocaleString()} Bxs`;
       document.getElementById("whMashalTotalPieces").textContent = `${mashalPieces.toLocaleString()} Pcs`;
