@@ -14,6 +14,7 @@ import json
 import sqlite3
 from datetime import datetime
 from typing import Dict, Any, List, Optional
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -87,6 +88,30 @@ def init_db():
             pass
         try:
             conn.execute("ALTER TABLE orders ADD COLUMN data_consent TEXT DEFAULT 'YES (Verified)';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN order_status TEXT DEFAULT 'PENDING';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN so_number TEXT DEFAULT '';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN confirmed_at TEXT DEFAULT '';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN confirmed_by TEXT DEFAULT '';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE admin_sessions ADD COLUMN role TEXT DEFAULT 'admin';")
+        except Exception:
+            pass
+        try:
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (order_status);")
         except Exception:
             pass
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
@@ -192,8 +217,41 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
         total_pieces = int(order.get("totalPieces") or order.get("total_pieces", 0))
         party_code = order.get("partyCode") or order.get("party_code", "")
         data_consent = order.get("dataConsent") or order.get("data_consent", "YES (Verified)")
+        order_status = order.get("orderStatus") or order.get("order_status") or "PENDING"
+        so_number = order.get("soNumber") or order.get("so_number") or ""
+        confirmed_at = order.get("confirmedAt") or order.get("confirmed_at") or ""
+        confirmed_by = order.get("confirmedBy") or order.get("confirmed_by") or ""
         
         items = order.get("items", [])
+        if isinstance(items, str):
+            try:
+                items = json.loads(items)
+            except Exception:
+                items = []
+
+        # ⚡ Dynamically recalculate pieces & boxes with 100% precision from packaging multipliers
+        calc_bxs = 0
+        calc_pcs = 0
+        if isinstance(items, list):
+            for it in items:
+                if not isinstance(it, dict):
+                    continue
+                try:
+                    b = int(it.get("boxes", 0) or 0)
+                except (ValueError, TypeError):
+                    b = 0
+                calc_bxs += b
+                m = re.search(r'x\s*(\d+)', str(it.get("item", "")), re.I)
+                mult = int(m.group(1)) if m else 1
+                it["multiplier"] = mult
+                it["pieces"] = b * mult
+                calc_pcs += (b * mult)
+
+        if total_pieces == 0 and calc_pcs > 0:
+            total_pieces = calc_pcs
+        if total_boxes == 0 and calc_bxs > 0:
+            total_boxes = calc_bxs
+
         items_json = json.dumps(items, ensure_ascii=False) if isinstance(items, list) else str(items)
         items_summary = order.get("itemsSummary") or order.get("items_summary", "")
         
@@ -207,8 +265,8 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                 order_id, party_name, party_code, party_address, delivery_address, sales_person,
                 order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
-                synced_to_sheet, data_consent
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                synced_to_sheet, data_consent, order_status, so_number, confirmed_at, confirmed_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(order_id) DO UPDATE SET
                 party_name = excluded.party_name,
                 party_code = excluded.party_code,
@@ -220,6 +278,10 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                 items_json = excluded.items_json,
                 items_summary = excluded.items_summary,
                 data_consent = excluded.data_consent,
+                order_status = COALESCE(NULLIF(excluded.order_status, ''), orders.order_status),
+                so_number = COALESCE(NULLIF(excluded.so_number, ''), orders.so_number),
+                confirmed_at = COALESCE(NULLIF(excluded.confirmed_at, ''), orders.confirmed_at),
+                confirmed_by = COALESCE(NULLIF(excluded.confirmed_by, ''), orders.confirmed_by),
                 slip_image_path = COALESCE(NULLIF(excluded.slip_image_path, ''), orders.slip_image_path),
                 slip_image_url = COALESCE(NULLIF(excluded.slip_image_url, ''), orders.slip_image_url),
                 synced_to_sheet = CASE WHEN excluded.synced_to_sheet = 1 THEN 1 ELSE orders.synced_to_sheet END;
@@ -227,12 +289,52 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                 order_id, party_name, party_code, party_address, delivery_address, sales_person,
                 order_date, formatted_timestamp, created_at, total_boxes, total_pieces,
                 items_json, items_summary, slip_image_path, slip_image_url,
-                synced_to_sheet, data_consent
+                synced_to_sheet, data_consent, order_status, so_number, confirmed_at, confirmed_by
             ))
-        print(f"[DATABASE] Order #{order_id} permanently saved in orders.db")
+        print(f"[DATABASE] Order #{order_id} permanently saved in orders.db ({total_boxes} Bxs, {total_pieces} Pcs)")
         return True
     except Exception as e:
         print(f"[DATABASE ERROR] Could not save order #{order.get('id')}: {e}")
+        return False
+    finally:
+        conn.close()
+
+def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admin") -> bool:
+    """Confirms an order and assigns official SO (Sales Order) Number"""
+    clean_id = (order_id or "").replace("#", "").strip()
+    clean_so = (so_number or "").strip()
+    if not clean_so:
+        return False
+    now_str = datetime.now().isoformat()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            UPDATE orders 
+            SET order_status = 'CONFIRMED', so_number = ?, confirmed_at = ?, confirmed_by = ?
+            WHERE order_id = ? OR order_id = ?
+            """, (clean_so, now_str, confirmed_by, clean_id, f"#{clean_id}"))
+        
+        # Also update in customer_orders.json
+        orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
+        if os.path.exists(orders_log):
+            try:
+                with open(orders_log, "r", encoding="utf-8") as f:
+                    orders_list = json.load(f)
+                for o in orders_list:
+                    if str(o.get("id", "")).replace("#", "").strip() == clean_id:
+                        o["order_status"] = "CONFIRMED"
+                        o["so_number"] = clean_so
+                        o["confirmed_at"] = now_str
+                        o["confirmed_by"] = confirmed_by
+                        break
+                with open(orders_log, "w", encoding="utf-8") as f:
+                    json.dump(orders_list, f, indent=2, ensure_ascii=False)
+            except Exception as j_err:
+                print(f"[CONFIRM JSON WARN] {j_err}")
+        return True
+    except Exception as e:
+        print(f"[DATABASE CONFIRM ERROR] {e}")
         return False
     finally:
         conn.close()
@@ -269,8 +371,8 @@ def mark_whatsapp_sent_in_db(order_id: str):
     finally:
         conn.close()
 
-def get_all_orders_from_db(limit: int = 500) -> List[Dict[str, Any]]:
-    """Retrieves all orders from database ordered by most recent"""
+def get_all_orders_from_db(limit: int = 1000) -> List[Dict[str, Any]]:
+    """Retrieves all orders from database ordered by most recent with dynamic pieces calculation"""
     conn = get_connection()
     try:
         cursor = conn.cursor()
@@ -285,12 +387,42 @@ def get_all_orders_from_db(limit: int = 500) -> List[Dict[str, Any]]:
                 d["items"] = []
             d["id"] = d["order_id"]
             d["partyName"] = d["party_name"]
+            d["partyCode"] = d.get("party_code", "")
             d["partyAddress"] = d["party_address"]
             d["deliveryAddress"] = d["delivery_address"]
             d["salesPerson"] = d["sales_person"]
-            d["totalBoxes"] = d["total_boxes"]
+            
+            # Recalculate pieces and boxes dynamically if missing or 0
+            tot_bxs = int(d.get("total_boxes") or 0)
+            tot_pcs = int(d.get("total_pieces") or 0)
+            calc_bxs = 0
+            calc_pcs = 0
+            if isinstance(d["items"], list):
+                for it in d["items"]:
+                    if not isinstance(it, dict):
+                        continue
+                    b = int(it.get("boxes", 0) or 0)
+                    calc_bxs += b
+                    m = re.search(r'x\s*(\d+)', str(it.get("item", "")), re.I)
+                    mult = int(m.group(1)) if m else 1
+                    it["multiplier"] = mult
+                    it["pieces"] = b * mult
+                    calc_pcs += (b * mult)
+
+            if tot_pcs == 0 and calc_pcs > 0:
+                tot_pcs = calc_pcs
+            if tot_bxs == 0 and calc_bxs > 0:
+                tot_bxs = calc_bxs
+
+            d["totalBoxes"] = tot_bxs
+            d["totalPieces"] = tot_pcs
+            d["orderStatus"] = d.get("order_status") or "PENDING"
+            d["soNumber"] = d.get("so_number") or ""
+            d["confirmedAt"] = d.get("confirmed_at") or ""
+            d["confirmedBy"] = d.get("confirmed_by") or ""
             d["formattedTimestamp"] = d["formatted_timestamp"]
             d["synced_to_sheet"] = bool(d["synced_to_sheet"])
+            d["slipImageUrl"] = d.get("slip_image_url") or f"/order_slips/{d['order_id']}.png"
             result.append(d)
         return result
     except Exception as e:
@@ -320,6 +452,8 @@ def get_order_by_id(order_id: str) -> Optional[Dict[str, Any]]:
             d["salesPerson"] = d["sales_person"]
             d["totalBoxes"] = d["total_boxes"]
             d["totalPieces"] = d.get("total_pieces", 0)
+            d["orderStatus"] = d.get("order_status") or "PENDING"
+            d["soNumber"] = d.get("so_number") or ""
             d["formattedTimestamp"] = d["formatted_timestamp"]
             d["dataConsent"] = d.get("data_consent", "YES (Verified)")
             return d
@@ -348,8 +482,8 @@ def migrate_existing_json_orders():
     except Exception as e:
         print(f"[DATABASE MIGRATION NOTICE] {e}")
 
-def create_admin_session(username: str = "admin") -> str:
-    """Creates a secure 7-day persistent session token for Admin Dashboard"""
+def create_admin_session(username: str = "admin", role: str = "admin") -> str:
+    """Creates a secure 7-day persistent session token for Admin Dashboard with user role"""
     import secrets
     import time
     token = f"ADM_{secrets.token_hex(24)}"
@@ -360,29 +494,33 @@ def create_admin_session(username: str = "admin") -> str:
     try:
         with conn:
             conn.execute("""
-            INSERT INTO admin_sessions (token, username, created_at, expires_at)
-            VALUES (?, ?, ?, ?)
-            """, (token, username, now_str, expires_at))
+            INSERT INTO admin_sessions (token, username, role, created_at, expires_at)
+            VALUES (?, ?, ?, ?, ?)
+            """, (token, username, role, now_str, expires_at))
         return token
     finally:
         conn.close()
 
 def validate_admin_session(token: str) -> Optional[Dict[str, Any]]:
-    """Validates if admin token is active and not expired"""
+    """Validates if admin token is active and not expired, returns role"""
     import time
     if not token:
         return None
-    # Support static master token from .env as fallback
     master_token = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN_2026_XYZ")
     if token == master_token:
-        return {"username": "admin", "token": master_token}
+        return {"username": "admin", "role": "admin", "token": master_token}
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT username, token, expires_at FROM admin_sessions WHERE token = ?", (token,))
+        cur.execute("SELECT username, role, token, expires_at FROM admin_sessions WHERE token = ?", (token,))
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
-            return {"username": row["username"], "token": row["token"]}
+            role_val = row["role"] if "role" in row.keys() and row["role"] else "admin"
+            return {
+                "username": row["username"],
+                "role": role_val,
+                "token": row["token"]
+            }
         return None
     finally:
         conn.close()
@@ -432,6 +570,11 @@ def get_orders_stats() -> Dict[str, Any]:
         total_boxes = row[1] or 0
         total_pieces = row[2] or 0
 
+        # Confirmed vs Pending
+        cur.execute("SELECT COUNT(*) FROM orders WHERE order_status = 'CONFIRMED'")
+        confirmed_count = cur.fetchone()[0] or 0
+        pending_count = total_orders - confirmed_count
+
         cur.execute("SELECT COUNT(*) FROM orders WHERE synced_to_sheet = 1")
         synced_count = cur.fetchone()[0] or 0
         pending_sync = total_orders - synced_count
@@ -445,15 +588,18 @@ def get_orders_stats() -> Dict[str, Any]:
         today_str = datetime.now().strftime("%d/%m/%Y")
         today_iso = datetime.now().strftime("%Y-%m-%d")
         cur.execute("""
-        SELECT COUNT(*), COALESCE(SUM(total_boxes), 0) FROM orders 
+        SELECT COUNT(*), COALESCE(SUM(total_boxes), 0), COALESCE(SUM(total_pieces), 0) FROM orders 
         WHERE formatted_timestamp LIKE ? OR order_date LIKE ? OR created_at LIKE ?
         """, (f"%{today_str}%", f"%{today_str}%", f"{today_iso}%"))
         t_row = cur.fetchone()
         today_orders = t_row[0] or 0
         today_boxes = t_row[1] or 0
+        today_pieces = t_row[2] or 0
 
         return {
             "totalOrders": total_orders,
+            "totalConfirmedOrders": confirmed_count,
+            "totalPendingOrders": pending_count,
             "totalBoxes": total_boxes,
             "totalPieces": total_pieces,
             "syncedCount": synced_count,
@@ -461,7 +607,8 @@ def get_orders_stats() -> Dict[str, Any]:
             "uniqueParties": unique_parties,
             "activeSalesManagers": sales_reps,
             "todayOrders": today_orders,
-            "todayBoxes": today_boxes
+            "todayBoxes": today_boxes,
+            "todayPieces": today_pieces
         }
     finally:
         conn.close()

@@ -4214,6 +4214,10 @@
     "itemsSummary": "🔵 Mashal 1 LTR. BOTTLE x 15   ➔   30 Pcs   |   [ 2 Boxes ]\n🔵 Mashal 500 ML BOTTLE x 30   ➔   60 Pcs   |   [ 2 Boxes ]",
     "securityHash": "SEC-2865-38E3",
     "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261016-3687.png",
-    "slipImageUrl": "/order_slips/KOGM-20261016-3687.png"
+    "slipImageUrl": "/order_slips/KOGM-20261016-3687.png",
+    "order_status": "CONFIRMED",
+    "so_number": "SO-TEST-2026",
+    "confirmed_at": "2026-10-17T12:07:53.814113",
+    "confirmed_by": "admin (admin)"
   }
 ]

@@ -34,6 +34,7 @@ from database import (
     validate_admin_session,
     delete_admin_session,
     delete_order_from_db,
+    confirm_order_in_db,
     get_orders_stats
 )
 from crm_service import (
@@ -265,31 +266,63 @@ GOOGLE_SHEET_ORDERS_WEBAPP_URL = os.environ.get(
     "https://script.google.com/macros/s/AKfycbz34gzaUCbs5znZrvoQ49FSiZPt9bgWK6WToz5Ek3_Y0k7H5hZTeqg0AhoSPaqxUQqA/exec"
 )
 
-# 🛡️ Executive Authentication Credentials
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Admin@123#")
+# 🛡️ Executive Authentication Credentials (3 Role-Based Access)
+# Admin: View, Confirm SO, Multi-step Delete
+# Manager: View, Confirm SO (NO Delete)
+# Analyst: View-only Analytics (NO Delete, NO Confirm)
+ROLE_CREDENTIALS = {
+    "admin": {
+        "password": os.environ.get("ADMIN_PASSWORD", "Admin@123#"),
+        "role": "admin",
+        "name": "System Administrator",
+        "can_confirm": True,
+        "can_delete": True
+    },
+    "manager": {
+        "password": os.environ.get("MANAGER_PASSWORD", "Manager@123#"),
+        "role": "manager",
+        "name": "Operations Manager",
+        "can_confirm": True,
+        "can_delete": False
+    },
+    "analyst": {
+        "password": os.environ.get("ANALYST_PASSWORD", "Analyst@123#"),
+        "role": "analyst",
+        "name": "Data Analyst",
+        "can_confirm": False,
+        "can_delete": False
+    }
+}
 AUTH_SECRET_TOKEN = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN_2026_XYZ")
 
 @app.post("/api/auth/login")
 @app.post("/api/admin/login")
 async def admin_portal_login(request: Request):
     """
-    🔐 Authenticates Executive Administrator to access Orders Database Portal
-    Default credentials: user - admin | pass - Admin@123#
+    🔐 Authenticates Executive Roles (Admin, Manager, Analyst)
+    Admin: admin / Admin@123#
+    Manager: manager / Manager@123#
+    Analyst: analyst / Analyst@123#
     """
     body = await request.json()
-    username = body.get("username", "").strip()
-    password = body.get("password", "")
-    
-    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-        token = create_admin_session(username)
+    username = str(body.get("username", "")).strip().lower()
+    password = str(body.get("password", "")).strip()
+
+    user_info = ROLE_CREDENTIALS.get(username)
+    if user_info and user_info["password"] == password:
+        role = user_info["role"]
+        token = create_admin_session(username=username, role=role)
         return {
             "status": "success",
             "token": token,
             "username": username,
-            "message": "Admin access granted"
+            "role": role,
+            "roleName": user_info["name"],
+            "canConfirm": user_info["can_confirm"],
+            "canDelete": user_info["can_delete"],
+            "message": f"Welcome {user_info['name']} ({role.upper()})"
         }
-    raise HTTPException(status_code=401, detail="Invalid administrator username or password")
+    raise HTTPException(status_code=401, detail="Invalid username or password")
 
 def require_admin_auth(request: Request) -> Dict[str, Any]:
     """Helper dependency to protect all admin database operations"""
@@ -304,8 +337,28 @@ def require_admin_auth(request: Request) -> Dict[str, Any]:
 
     admin = validate_admin_session(token)
     if not admin:
-        raise HTTPException(status_code=401, detail="Unauthorized: Valid administrator session required")
+        raise HTTPException(status_code=401, detail="Unauthorized: Valid authentication session required")
     return admin
+
+@app.get("/api/admin/me")
+async def get_admin_profile(request: Request):
+    """Returns current authenticated session user and role permissions"""
+    admin_session = require_admin_auth(request)
+    role = admin_session.get("role", "admin")
+    user_info = ROLE_CREDENTIALS.get(admin_session.get("username", "admin"), {
+        "role": role,
+        "name": role.title(),
+        "can_confirm": role in ["admin", "manager"],
+        "can_delete": role == "admin"
+    })
+    return {
+        "status": "success",
+        "username": admin_session.get("username"),
+        "role": role,
+        "roleName": user_info.get("name", role.title()),
+        "canConfirm": user_info.get("can_confirm", False),
+        "canDelete": user_info.get("can_delete", False)
+    }
 
 @app.get("/api/admin/orders")
 async def get_admin_orders(request: Request):
@@ -320,6 +373,45 @@ async def get_admin_dashboard_stats(request: Request):
     require_admin_auth(request)
     stats = get_orders_stats()
     return stats
+
+@app.post("/api/admin/orders/confirm")
+async def confirm_admin_order(request: Request):
+    """
+    Confirms an order with a validated SO (Sales Order) Number.
+    Permitted for Admin and Manager roles.
+    """
+    admin_session = require_admin_auth(request)
+    role = admin_session.get("role", "admin")
+    if role not in ["admin", "manager"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: Analysts have view-only access and cannot confirm orders."
+        )
+
+    data = await request.json()
+    order_id = str(data.get("orderId") or "").replace("#", "").strip()
+    so_number = str(data.get("soNumber") or "").strip()
+
+    if not order_id:
+        raise HTTPException(status_code=400, detail="Order ID is required")
+    if not so_number:
+        raise HTTPException(status_code=400, detail="Valid SO (Sales Order) Number is required to confirm order")
+    if len(so_number) < 2:
+        raise HTTPException(status_code=400, detail="SO Number must be at least 2 characters")
+
+    username = admin_session.get("username", "admin")
+    confirmed_by = f"{username} ({role})"
+
+    success = confirm_order_in_db(order_id, so_number, confirmed_by)
+    if success:
+        return {
+            "status": "success",
+            "orderId": order_id,
+            "soNumber": so_number,
+            "confirmedBy": confirmed_by,
+            "message": f"Order #{order_id} confirmed successfully with SO #{so_number}"
+        }
+    raise HTTPException(status_code=500, detail=f"Failed to confirm order #{order_id} in database")
 
 @app.post("/api/admin/orders/resync")
 async def resync_admin_orders(request: Request):
@@ -368,8 +460,18 @@ async def resync_admin_orders(request: Request):
 
 @app.post("/api/admin/orders/delete")
 async def delete_admin_order(request: Request):
-    """Permanently deletes an order record from orders.db and customer_orders.json"""
-    require_admin_auth(request)
+    """
+    Permanently deletes an order record from orders.db and customer_orders.json.
+    Strictly restricted to Admin role ONLY.
+    """
+    admin_session = require_admin_auth(request)
+    role = admin_session.get("role", "admin")
+    if role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: Only System Administrator has permission to delete orders. Managers and Analysts cannot delete records."
+        )
+
     data = await request.json()
     order_id = str(data.get("orderId") or "").replace("#", "").strip()
     if not order_id:

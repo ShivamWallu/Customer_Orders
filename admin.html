@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Orders Database | Khandelia Oil & General Mills</title>
-  <meta name="description" content="Executive Admin Portal for viewing, maintaining, and managing all customer order records and database.">
+  <title>Admin Order Management System | Khandelia Oil & General Mills</title>
+  <meta name="description" content="Enterprise Order Management System for Khandelia Oil & General Mills Pvt. Ltd.">
   <link rel="icon" type="image/png" href="/images/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,53 +12,79 @@
   <script src="/js/qrcode.min.js"></script>
   <style>
     :root {
-      --bg: #0b1120;
-      --card-bg: #131c31;
-      --card-border: rgba(255, 255, 255, 0.08);
-      --header-bg: #002244;
-      --primary: #004b99;
-      --accent: #d97706;
-      --accent-gold: #f59e0b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --mashal-blue: #1e40af;
-      --fauji-green: #15803d;
-      --row-even: #111a2e;
-      --row-odd: #141f38;
-      --row-hover: #1e2c4d;
+      /* Clean Modern White Theme Palette */
+      --bg-page: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --card-border-subtle: #f1f5f9;
+      --header-bg: #ffffff;
+      --primary: #003366;
+      --primary-hover: #002244;
+      --primary-light: #eff6ff;
+      --accent-gold: #d97706;
+      --accent-gold-light: #fef3c7;
+      
+      --text-main: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --success-text: #065f46;
+
+      --pending-bg: #fffbeb;
+      --pending-border: #fde68a;
+      --pending-text: #92400e;
+
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --danger-text: #991b1b;
+
+      --table-header-bg: #f1f5f9;
+      --table-row-hover: #f8fafc;
+      --table-row-alt: #fafafa;
+      --table-border: #e2e8f0;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --shadow-modal: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     body {
-      background: var(--bg);
-      color: var(--text);
+      background-color: var(--bg-page);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
 
-    /* 🏢 Executive Top Header */
+    /* 🏢 Executive Clean Top Header */
     header {
-      background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
-      border-bottom: 2px solid var(--accent);
-      padding: 12px 24px;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: var(--shadow-sm);
     }
 
     .brand-left {
@@ -70,36 +96,38 @@
     .brand-logo-img {
       width: 44px;
       height: 44px;
-      border-radius: 8px;
-      border: 2px solid var(--accent-gold);
-      background: #fff;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: #ffffff;
       object-fit: contain;
       padding: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
     .brand-text h1 {
-      font-size: 16px;
+      font-size: 16.5px;
       font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #fff;
-      text-transform: uppercase;
+      letter-spacing: -0.2px;
+      color: var(--primary);
+      line-height: 1.2;
     }
 
     .brand-text .portal-tag {
       font-size: 11.5px;
-      color: #fde68a;
+      color: var(--text-muted);
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-top: 2px;
     }
 
     .brand-text .portal-tag .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 8px var(--success);
+      background: #10b981;
+      display: inline-block;
     }
 
     .header-right {
@@ -108,61 +136,80 @@
       gap: 12px;
     }
 
-    .user-pill {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #e2e8f0;
-      display: flex;
+    .role-badge-pill {
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      box-shadow: var(--shadow-sm);
+    }
+    .role-badge-pill.admin {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+    .role-badge-pill.manager {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+    .role-badge-pill.analyst {
+      background: #faf5ff;
+      color: #7e22ce;
+      border-color: #e9d5ff;
     }
 
     .btn-logout {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
-      padding: 7px 16px;
-      border-radius: 8px;
-      font-size: 12px;
+      background: #ffffff;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 6px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.2s;
     }
     .btn-logout:hover {
-      background: var(--danger);
-      color: #fff;
+      background: #fef2f2;
+      border-color: #f87171;
     }
 
-    /* 📊 KPI Metric Cards */
+    /* 📊 KPI Summary Dashboard */
     .kpi-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 16px;
-      padding: 20px 24px 10px 24px;
+      padding: 24px 28px 12px 28px;
     }
 
     .kpi-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       padding: 16px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, border-color 0.2s;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
     }
     .kpi-card:hover {
       transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
     }
 
     .kpi-info h3 {
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -171,36 +218,141 @@
     }
 
     .kpi-info .kpi-num {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
-      color: #fff;
+      color: var(--text-main);
       font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
     }
 
     .kpi-info .kpi-sub {
-      font-size: 11px;
-      color: var(--text-dim);
-      margin-top: 4px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      font-weight: 500;
     }
 
     .kpi-icon {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 22px;
+      flex-shrink: 0;
+    }
+    .kpi-icon.blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .kpi-icon.green { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .kpi-icon.amber { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .kpi-icon.indigo { background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; }
+    .kpi-icon.purple { background: #faf5ff; color: #9333ea; border: 1px solid #e9d5ff; }
+
+    /* 🛠️ Modern Toolbar & Filters */
+    .controls-panel {
+      padding: 10px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .kpi-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-    .kpi-icon.gold { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .kpi-icon.green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .kpi-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .filter-row-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+    }
 
-    /* 🛠️ Action Toolbar */
-    .toolbar {
-      padding: 10px 24px;
+    .search-box-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 280px;
+      max-width: 440px;
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      color: var(--text-dim);
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .search-box {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px 9px 36px;
+      font-size: 13.5px;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-box:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Date Filter Pills */
+    .date-pills-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .date-pill {
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .date-pill:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+    .date-pill.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 4px rgba(0, 51, 102, 0.2);
+    }
+
+    .custom-date-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-full);
+      padding: 3px 12px;
+    }
+    .custom-date-input {
+      border: none;
+      background: transparent;
+      font-size: 12.5px;
+      color: var(--text-main);
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-row-bottom {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -208,440 +360,725 @@
       gap: 12px;
     }
 
-    .search-group {
-      display: flex;
+    /* Status Segmented Tabs */
+    .status-tabs {
+      display: inline-flex;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      gap: 3px;
+    }
+    .status-tab {
+      background: transparent;
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
-      flex: 1;
-      max-width: 480px;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .status-tab.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+    .status-tab .badge {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      background: rgba(0,0,0,0.06);
     }
 
-    .search-box {
-      width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13.5px;
-      color: #fff;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .search-box:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    .filters-group {
+    .table-actions-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
-    .select-filter {
-      background: var(--card-bg);
+    .btn-tool {
+      background: #ffffff;
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 9px 12px;
-      font-size: 13px;
-      color: #fff;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .btn-action {
-      background: #1e293b;
-      border: 1px solid var(--card-border);
-      color: #e2e8f0;
-      padding: 9px 16px;
-      border-radius: 8px;
+      color: var(--text-secondary);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
       font-size: 12.5px;
       font-weight: 700;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
       transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
     }
-    .btn-action:hover {
-      background: #334155;
-      color: #fff;
+    .btn-tool:hover {
+      background: #f8fafc;
+      color: var(--text-main);
+      border-color: #cbd5e1;
     }
-
-    .btn-action.primary {
-      background: linear-gradient(135deg, #1d4ed8, #2563eb);
-      border: none;
-      color: #fff;
+    .btn-tool.primary {
+      background: #003366;
+      border-color: #003366;
+      color: #ffffff;
     }
-    .btn-action.primary:hover {
-      background: #1d4ed8;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-    }
-
-    .btn-action.gold {
-      background: linear-gradient(135deg, #d97706, #f59e0b);
-      border: none;
-      color: #fff;
-    }
-    .btn-action.gold:hover {
-      background: #b45309;
+    .btn-tool.primary:hover {
+      background: #002244;
     }
 
-    /* 📋 Database Records Table */
-    .table-container {
-      flex: 1;
-      padding: 10px 24px 30px 24px;
-      overflow-x: auto;
+    /* Table Horizontal Scroll Navigation Controls */
+    .scroll-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 28px 8px 28px;
+    }
+    .scroll-nav-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-nav-hint kbd {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #334155;
+    }
+    .scroll-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-scroll {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s;
+    }
+    .btn-scroll:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
     }
 
-    .db-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
+    /* 📋 Orders Table with Fixed 3 Columns & Horizontal Scroll */
+    .table-card-wrapper {
+      margin: 0 28px 20px 28px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
     }
 
-    .db-table th {
-      background: #0f172a;
-      padding: 14px 12px;
+    .table-scroll-container {
+      overflow-x: auto;
+      position: relative;
+      width: 100%;
+      scroll-behavior: smooth;
+    }
+
+    .orders-table {
+      width: 100%;
+      min-width: 1450px;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+    }
+
+    .orders-table th {
+      background: var(--table-header-bg);
+      color: var(--text-secondary);
       font-size: 11.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      letter-spacing: 0.6px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--card-border);
       text-align: left;
       white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .db-table th.center, .db-table td.center {
+    .orders-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--card-border-subtle);
+      vertical-align: middle;
+      background: #ffffff;
+      transition: background 0.1s;
+    }
+
+    .orders-table tr:hover td {
+      background: #f8fafc !important;
+    }
+
+    .orders-table th.center, .orders-table td.center {
       text-align: center;
     }
 
-    .db-table td {
-      padding: 12px;
-      font-size: 12.5px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      vertical-align: middle;
+    /* 📌 FIXED FIRST 3 COLUMNS */
+    /* Col 1: # */
+    .orders-table th.sticky-col-1,
+    .orders-table td.sticky-col-1 {
+      position: sticky;
+      left: 0;
+      width: 50px;
+      min-width: 50px;
+      max-width: 50px;
+      z-index: 5;
+      background: #ffffff;
+      border-right: 1px solid var(--card-border);
+    }
+    .orders-table th.sticky-col-1 {
+      z-index: 15;
+      background: var(--table-header-bg);
     }
 
-    .db-table tr:nth-child(even) td { background: var(--row-even); }
-    .db-table tr:nth-child(odd) td { background: var(--row-odd); }
-    .db-table tr:hover td { background: var(--row-hover); }
+    /* Col 2: Order ID */
+    .orders-table th.sticky-col-2,
+    .orders-table td.sticky-col-2 {
+      position: sticky;
+      left: 50px;
+      width: 175px;
+      min-width: 175px;
+      max-width: 175px;
+      z-index: 5;
+      background: #ffffff;
+      border-right: 1px solid var(--card-border);
+    }
+    .orders-table th.sticky-col-2 {
+      z-index: 15;
+      background: var(--table-header-bg);
+    }
 
-    /* Custom Table Badges */
-    .order-id-badge {
+    /* Col 3: Date & Time */
+    .orders-table th.sticky-col-3,
+    .orders-table td.sticky-col-3 {
+      position: sticky;
+      left: 225px;
+      width: 155px;
+      min-width: 155px;
+      max-width: 155px;
+      z-index: 5;
+      background: #ffffff;
+      border-right: 2px solid #cbd5e1; /* Visual separator after sticky freeze */
+      box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.06);
+    }
+    .orders-table th.sticky-col-3 {
+      z-index: 15;
+      background: var(--table-header-bg);
+    }
+
+    /* Badges & Content Styling */
+    .order-id-link {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      color: #60a5fa;
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.3);
+      font-size: 12.5px;
+      color: #003366;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
       padding: 4px 8px;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       display: inline-block;
       cursor: pointer;
+      transition: all 0.15s;
     }
-    .order-id-badge:hover {
-      text-decoration: underline;
-      background: rgba(59, 130, 246, 0.25);
+    .order-id-link:hover {
+      background: #003366;
+      color: #ffffff;
+      border-color: #003366;
     }
 
-    .party-code-badge {
+    .party-title {
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 13.5px;
+    }
+    .party-code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0369a1;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .address-cell {
+      font-size: 12px;
+      color: var(--text-secondary);
+      max-width: 240px;
+      line-height: 1.35;
+    }
+
+    .asm-badge {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    /* Product Quantities: 1 LTR. BOTTLE x 15 (2 Bxs: 30 Pcs) */
+    .product-breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 340px;
+    }
+    .product-item-chip {
+      font-size: 11.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--text-main);
+    }
+    .product-item-chip.mashal { border-left: 3px solid #003366; }
+    .product-item-chip.fauji { border-left: 3px solid #059669; }
+    .product-item-chip .calc-detail {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       font-weight: 700;
       color: #0284c7;
-      background: #eff6ff;
-      border: 1px solid #93c5fd;
-      padding: 2px 7px;
-      border-radius: 4px;
-      display: inline-block;
-      margin-top: 3px;
-    }
-
-    .party-name {
-      font-weight: 700;
-      color: #fff;
-      font-size: 13.5px;
-    }
-
-    .party-addr {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      max-width: 260px;
-      white-space: normal;
-      line-height: 1.35;
-      margin-top: 2px;
-    }
-
-    .asm-pill {
-      background: rgba(148, 163, 184, 0.12);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      color: #cbd5e1;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11.5px;
-      font-weight: 600;
-      display: inline-block;
-    }
-
-    .items-chip-list {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      max-width: 320px;
-    }
-
-    .item-chip {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.04);
-      display: flex;
-      justify-content: space-between;
-      color: #e2e8f0;
       white-space: nowrap;
     }
-    .item-chip.mashal { border-left: 3px solid #3b82f6; }
-    .item-chip.fauji { border-left: 3px solid #10b981; }
 
-    .qty-badge {
+    .boxes-badge {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 800;
       font-size: 13.5px;
-      color: #f59e0b;
-      white-space: nowrap;
+      color: var(--text-main);
+      display: block;
     }
-    .pcs-badge {
-      font-size: 11px;
-      color: #60a5fa;
+    .pieces-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0284c7;
       display: block;
       margin-top: 2px;
     }
 
-    .sync-status {
+    /* Status Badges */
+    .status-badge {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 3px 8px;
-      border-radius: 20px;
-      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11.5px;
       font-weight: 700;
       white-space: nowrap;
     }
-    .sync-status.synced {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      color: #34d399;
+    .status-badge.confirmed {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
     }
-    .sync-status.pending {
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      color: #fbbf24;
-      cursor: pointer;
-    }
-    .sync-status.pending:hover {
-      background: rgba(245, 158, 11, 0.25);
+    .status-badge.pending {
+      background: var(--pending-bg);
+      border: 1px solid var(--pending-border);
+      color: var(--pending-text);
     }
 
-    .action-icons {
+    .so-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    /* Action Buttons in Row */
+    .action-btn-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-row-action {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      padding: 5px 9px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .btn-row-action:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border-color: #94a3b8;
+    }
+    .btn-row-action.confirm-so {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+    }
+    .btn-row-action.confirm-so:hover {
+      background: #1d4ed8;
+      color: #ffffff;
+      border-color: #1d4ed8;
+    }
+    .btn-row-action.delete-danger {
+      background: #fff5f5;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+    .btn-row-action.delete-danger:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+
+    /* 📄 Professional Pagination */
+    .pagination-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-top: 1px solid var(--card-border);
+      background: #ffffff;
+      gap: 12px;
+    }
+    .pagination-left {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .page-size-select {
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+      font-size: 12.5px;
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+    }
+    .pagination-right {
+      display: flex;
+      align-items: center;
       gap: 6px;
     }
-
-    .btn-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
+    .btn-page-nav {
+      background: #ffffff;
       border: 1px solid var(--card-border);
-      color: #cbd5e1;
-      display: flex;
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-page-nav:hover:not(:disabled) {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border-color: #94a3b8;
+    }
+    .btn-page-nav:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .page-num-pill {
+      min-width: 32px;
+      height: 32px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1px solid var(--card-border);
+      background: #ffffff;
+      color: var(--text-secondary);
       cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
-    .btn-icon:hover {
-      background: #3b82f6;
-      color: #fff;
-      border-color: #3b82f6;
-    }
-    .btn-icon.delete:hover {
-      background: var(--danger);
-      border-color: var(--danger);
+    .page-num-pill.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
     }
 
     /* 🔐 Login Modal */
     .login-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(6px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
     }
-
     .login-card {
-      background: #111c33;
-      border: 2px solid var(--accent);
-      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
       padding: 36px 32px;
       width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      max-width: 440px;
+      box-shadow: var(--shadow-modal);
       text-align: center;
     }
-
-    .login-logo {
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      border: 2px solid var(--accent-gold);
-      background: #fff;
+    .login-card .brand-img {
+      width: 68px;
+      height: 68px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--card-border);
       padding: 4px;
-      margin: 0 auto 16px auto;
+      margin: 0 auto 14px auto;
       object-fit: contain;
     }
-
-    .login-title {
-      font-size: 18px;
+    .login-card h2 {
+      font-size: 19px;
       font-weight: 800;
-      color: #fff;
-      margin-bottom: 6px;
-      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 4px;
     }
-
-    .login-subtitle {
-      font-size: 12px;
+    .login-card p {
+      font-size: 12.5px;
       color: var(--text-muted);
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
-
+    .role-helper-note {
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: left;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .role-helper-note strong {
+      color: var(--text-main);
+    }
     .login-input {
       width: 100%;
-      background: #090e1a;
+      background: #f8fafc;
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
       font-size: 14px;
-      color: #fff;
+      color: var(--text-main);
       outline: none;
-      margin-bottom: 14px;
-      transition: border-color 0.2s;
-    }
-    .login-input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    .btn-login-submit {
-      width: 100%;
-      background: linear-gradient(135deg, #004b99, #0284c7);
-      border: none;
-      color: #fff;
-      padding: 13px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      margin-bottom: 12px;
       transition: all 0.2s;
     }
-    .btn-login-submit:hover {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+    .login-input:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
-
+    .btn-login-submit {
+      width: 100%;
+      background: var(--primary);
+      border: none;
+      color: #ffffff;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-login-submit:hover {
+      background: var(--primary-hover);
+    }
     .login-err {
-      color: #f87171;
+      color: #dc2626;
       font-size: 12.5px;
       font-weight: 600;
-      margin-top: 12px;
+      margin-top: 10px;
       display: none;
     }
 
-    /* 🖼️ Slip Modal Preview */
-    .slip-modal-overlay {
+    /* 🛡️ Modals: Generic Overlay */
+    .generic-modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.88);
-      backdrop-filter: blur(6px);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 2000;
       padding: 20px;
     }
-
-    .slip-modal-box {
-      background: #0f172a;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 14px;
-      max-width: 900px;
+    .generic-modal-box {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 520px;
       width: 100%;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
+      box-shadow: var(--shadow-modal);
       overflow: hidden;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      animation: modalFadeIn 0.2s ease-out;
     }
-
-    .slip-modal-header {
-      padding: 14px 20px;
-      background: #002244;
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .generic-modal-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-
-    .slip-modal-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
+    .generic-modal-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .generic-modal-body {
+      padding: 20px 22px;
+    }
+    .generic-modal-footer {
+      padding: 14px 22px;
+      border-top: 1px solid var(--card-border);
+      background: #f8fafc;
       display: flex;
-      justify-content: center;
-      background: #1e293b;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
     }
 
-    .slip-modal-body canvas, .slip-modal-body img {
+    /* Git-Style Multi-Step Deletion Modal */
+    .git-delete-warning {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #991b1b;
+      line-height: 1.45;
+    }
+    .git-delete-prompt {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .git-delete-prompt code {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #0f172a;
+      user-select: all;
+    }
+    .git-delete-input {
+      width: 100%;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .git-delete-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+    .btn-git-delete {
+      background: #dc2626;
+      border: 1px solid #dc2626;
+      color: #ffffff;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-git-delete:disabled {
+      background: #fca5a5;
+      border-color: #fca5a5;
+      cursor: not-allowed;
+    }
+
+    /* Order Slip Modal */
+    .slip-preview-container {
+      max-height: 65vh;
+      overflow-y: auto;
+      text-align: center;
+      background: #f1f5f9;
+      border-radius: var(--radius-sm);
+      padding: 16px;
+    }
+    .slip-preview-container img {
       max-width: 100%;
       height: auto;
       border-radius: 6px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
     }
 
-    .slip-modal-footer {
-      padding: 12px 20px;
-      background: #0f172a;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .empty-state {
+    .empty-state-cell {
       padding: 60px 20px;
       text-align: center;
       color: var(--text-muted);
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
-  <!-- 🏢 Top Navbar -->
+  <!-- 🏢 Executive Clean Top Header -->
   <header>
     <div class="brand-left">
       <img src="/images/mashal_official_logo.png" alt="Mashal" class="brand-logo-img">
@@ -649,144 +1086,319 @@
         <h1>Khandelia Oil & General Mills Pvt. Ltd.</h1>
         <div class="portal-tag">
           <span class="dot"></span>
-          <span>ENTERPRISE ORDERS DATABASE & RECORD MANAGEMENT</span>
+          <span>Order Management System • Executive Portal</span>
         </div>
       </div>
     </div>
     <div class="header-right" id="headerRight" style="display: none;">
-      <div class="user-pill">
-        <span>👤</span>
-        <span id="adminUsernameDisplay">admin</span>
-      </div>
-      <button class="btn-logout" onclick="adminLogout()">Logout</button>
+      <div id="roleBadgeContainer"></div>
+      <button class="btn-logout" onclick="adminLogout()" title="Logout from system">
+        <span>🚪</span>
+        <span>Logout</span>
+      </button>
     </div>
   </header>
 
-  <!-- 📊 Live Analytics KPI Cards -->
+  <!-- 📊 Order Summary Dashboard (KPI Cards) -->
   <div class="kpi-container" id="kpiContainer" style="display: none;">
     <div class="kpi-card">
       <div class="kpi-info">
         <h3>Total Orders</h3>
         <div class="kpi-num" id="kpiTotalOrders">0</div>
-        <div class="kpi-sub">Permanent SQLite Records</div>
+        <div class="kpi-sub" id="kpiTotalOrdersSub">All filtered records</div>
       </div>
       <div class="kpi-icon blue">📦</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-info">
-        <h3>Total Quantity</h3>
-        <div class="kpi-num" id="kpiTotalBoxes">0 Bxs</div>
-        <div class="kpi-sub" id="kpiTotalPieces">0 Pcs</div>
+        <h3>Confirmed Orders</h3>
+        <div class="kpi-num" style="color: #059669;" id="kpiConfirmedOrders">0</div>
+        <div class="kpi-sub">SO Assigned & Verified</div>
       </div>
-      <div class="kpi-icon gold">🛢️</div>
+      <div class="kpi-icon green">✔</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-info">
-        <h3>Google Sheet Sync</h3>
-        <div class="kpi-num" id="kpiSyncStatus">0%</div>
-        <div class="kpi-sub" id="kpiSyncSub">0 synced | 0 pending</div>
+        <h3>Pending Orders</h3>
+        <div class="kpi-num" style="color: #d97706;" id="kpiPendingOrders">0</div>
+        <div class="kpi-sub">Awaiting Sales Order (SO)</div>
       </div>
-      <div class="kpi-icon green">📊</div>
+      <div class="kpi-icon amber">⏳</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-info">
-        <h3>Today's Bookings</h3>
-        <div class="kpi-num" id="kpiTodayOrders">0</div>
-        <div class="kpi-sub" id="kpiTodayBoxes">0 Boxes booked today</div>
+        <h3>Total Quantity (Boxes)</h3>
+        <div class="kpi-num" id="kpiTotalBoxes">0</div>
+        <div class="kpi-sub">Boxes calculated</div>
       </div>
-      <div class="kpi-icon purple">📅</div>
+      <div class="kpi-icon indigo">🛢️</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-info">
+        <h3>Total Pieces</h3>
+        <div class="kpi-num" id="kpiTotalPieces">0</div>
+        <div class="kpi-sub">Exact unit pieces</div>
+      </div>
+      <div class="kpi-icon purple">🧩</div>
     </div>
   </div>
 
-  <!-- 🛠️ Toolbar: Search, Filters & Export -->
-  <div class="toolbar" id="toolbar" style="display: none;">
-    <div class="search-group">
-      <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search Order ID, Party Name, Code, Sales Manager, City..." oninput="filterOrdersTable()">
+  <!-- 🛠️ Toolbar: Search, Date Filters, Status Tabs & Actions -->
+  <div class="controls-panel" id="controlsPanel" style="display: none;">
+    <!-- Filter Row Top: Search & Date Filters -->
+    <div class="filter-row-top">
+      <div class="search-box-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-box" placeholder="Search Order ID, Party Name, Code, SO #, City, Sales Manager..." oninput="handleSearchInput()">
+      </div>
+
+      <!-- 5. Order Date Filters: Today, Yesterday, All, Custom Date Picker -->
+      <div class="date-pills-group">
+        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-right: 4px;">DATE:</span>
+        <button class="date-pill active" id="datePillAll" onclick="setDateFilter('ALL')">All Orders</button>
+        <button class="date-pill" id="datePillToday" onclick="setDateFilter('TODAY')">Today's Orders</button>
+        <button class="date-pill" id="datePillYesterday" onclick="setDateFilter('YESTERDAY')">Yesterday's Orders</button>
+        <div class="custom-date-wrap">
+          <span style="font-size: 13px;">📅</span>
+          <input type="date" id="customDatePicker" class="custom-date-input" onchange="setDateFilter('CUSTOM')">
+        </div>
+      </div>
     </div>
-    <div class="filters-group">
-      <select id="syncFilter" class="select-filter" onchange="filterOrdersTable()">
-        <option value="ALL">All Orders (Database)</option>
-        <option value="SYNCED">🟢 Synced to Google Sheet</option>
-        <option value="PENDING">🟡 Pending Sync</option>
-      </select>
-      <button class="btn-action primary" onclick="exportOrdersToCSV()">
-        <span>📊</span><span>Export CSV / Excel</span>
-      </button>
-      <button class="btn-action gold" onclick="resyncAllPendingOrders()">
-        <span>🚀</span><span>Sync All to Sheet</span>
-      </button>
-      <button class="btn-action" onclick="fetchOrdersData()">
-        <span>🔄</span><span>Refresh</span>
-      </button>
+
+    <!-- Filter Row Bottom: Status Tabs & Table Actions -->
+    <div class="filter-row-bottom">
+      <!-- 6. Status Tabs: All, Confirmed, Pending -->
+      <div class="status-tabs">
+        <button class="status-tab active" id="tabStatusAll" onclick="setStatusTab('ALL')">
+          <span>All Orders</span>
+          <span class="badge" id="badgeAllCount">0</span>
+        </button>
+        <button class="status-tab" id="tabStatusPending" onclick="setStatusTab('PENDING')">
+          <span>⏳ Pending Orders</span>
+          <span class="badge" id="badgePendingCount">0</span>
+        </button>
+        <button class="status-tab" id="tabStatusConfirmed" onclick="setStatusTab('CONFIRMED')">
+          <span>✔ Confirmed Orders</span>
+          <span class="badge" id="badgeConfirmedCount">0</span>
+        </button>
+      </div>
+
+      <div class="table-actions-group">
+        <button class="btn-tool" onclick="exportOrdersToCSV()" title="Export current filtered view to CSV">
+          <span>📊</span>
+          <span>Export CSV</span>
+        </button>
+        <button class="btn-tool" onclick="resyncAllPendingOrders()" title="Push pending orders to Google Sheets">
+          <span>🚀</span>
+          <span>Sync Sheet</span>
+        </button>
+        <button class="btn-tool primary" onclick="fetchOrdersData()" title="Reload fresh data from database">
+          <span>🔄</span>
+          <span>Refresh</span>
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- 📋 Orders Table -->
-  <div class="table-container" id="tableContainer" style="display: none;">
-    <table class="db-table">
-      <thead>
-        <tr>
-          <th style="width: 45px;" class="center">#</th>
-          <th style="width: 175px;">Order ID</th>
-          <th style="width: 165px;">Date & Time</th>
-          <th style="width: 280px;">Customer / Party Name</th>
-          <th style="width: 260px;">Address</th>
-          <th style="width: 140px;">Area Sales Manager</th>
-          <th style="width: 280px;">Items Ordered</th>
-          <th style="width: 130px;" class="center">Total Quantity</th>
-          <th style="width: 130px;" class="center">Sheet Sync</th>
-          <th style="width: 130px;" class="center">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="ordersTableBody">
-        <tr>
-          <td colspan="10" class="empty-state">Loading database records...</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Horizontal Scroll Navigation Controls Hint & Buttons -->
+  <div class="scroll-nav-bar" id="scrollNavBar" style="display: none;">
+    <div class="scroll-nav-hint">
+      <span>💡 Use <kbd>◀</kbd> <kbd>▶</kbd> keyboard arrows or scroll buttons to navigate columns:</span>
+    </div>
+    <div class="scroll-buttons">
+      <button class="btn-scroll" onclick="scrollTableHorizontally(-350)" title="Scroll Left (Shift + Wheel)">◀</button>
+      <button class="btn-scroll" onclick="scrollTableHorizontally(350)" title="Scroll Right">▶</button>
+    </div>
   </div>
 
-  <!-- 🔐 Login Modal Overlay -->
+  <!-- 📋 Orders Table Card with Fixed 3 Columns & Horizontal Scroll -->
+  <div class="table-card-wrapper" id="tableCardWrapper" style="display: none;">
+    <div class="table-scroll-container" id="tableScrollContainer" tabindex="0">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <!-- Fixed Column 1 -->
+            <th class="sticky-col-1 center">#</th>
+            <!-- Fixed Column 2 -->
+            <th class="sticky-col-2">Order ID</th>
+            <!-- Fixed Column 3 -->
+            <th class="sticky-col-3">Date & Time</th>
+            <!-- Horizontally Scrolling Columns -->
+            <th style="min-width: 240px;">Customer / Party Name</th>
+            <th style="min-width: 130px;">Party Code</th>
+            <th style="min-width: 220px;">Address</th>
+            <th style="min-width: 150px;">Area Sales Manager</th>
+            <th style="min-width: 320px;">Product Quantities & Pieces</th>
+            <th style="min-width: 130px;" class="center">Total Boxes</th>
+            <th style="min-width: 130px;" class="center">Total Pieces</th>
+            <th style="min-width: 130px;" class="center">Sheet Sync</th>
+            <!-- Status & Confirmation Columns at end of table -->
+            <th style="min-width: 140px;" class="center">Order Status</th>
+            <th style="min-width: 130px;" class="center">SO Number</th>
+            <th style="min-width: 170px;" class="center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <tr>
+            <td colspan="14" class="empty-state-cell">Loading database orders...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 8. Professional Pagination Bar -->
+    <div class="pagination-bar" id="paginationBar">
+      <div class="pagination-left">
+        <span>Rows per page:</span>
+        <select id="pageSizeSelect" class="page-size-select" onchange="handlePageSizeChange(this.value)">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="ALL">All</option>
+        </select>
+        <span id="paginationInfoText">Showing 0-0 of 0 records</span>
+      </div>
+      <div class="pagination-right" id="paginationPillsContainer">
+        <!-- Rendered Prev, Page Pills, Next -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔐 Three Role-Based Login Modal Overlay -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
-      <img src="/images/mashal_official_logo.png" alt="Mashal" class="login-logo">
-      <div class="login-title">Admin Database Portal</div>
-      <div class="login-subtitle">Enter Administrator Credentials to Access Order Database</div>
+      <img src="/images/mashal_official_logo.png" alt="Mashal" class="brand-img">
+      <h2>Order Management Portal</h2>
+      <p>Sign in with your role-based executive credentials</p>
+
+      <div class="role-helper-note">
+        <div><strong>• Admin:</strong> Full access, SO confirmation & secure deletion</div>
+        <div><strong>• Manager:</strong> Full view & SO confirmation (No deletion)</div>
+        <div><strong>• Analyst:</strong> View-only analytics (No deletion/confirmation)</div>
+      </div>
+
       <form onsubmit="handleAdminLogin(event)">
-        <input type="text" id="loginUsername" class="login-input" placeholder="Admin Username (e.g. admin)" required autocomplete="username">
-        <input type="password" id="loginPassword" class="login-input" placeholder="Admin Password" required autocomplete="current-password">
-        <button type="submit" class="btn-login-submit" id="btnLoginSubmit">Login to Database</button>
-        <div class="login-err" id="loginError">Invalid username or password</div>
+        <input type="text" id="loginUsername" class="login-input" placeholder="Username (admin / manager / analyst)" required autocomplete="username">
+        <input type="password" id="loginPassword" class="login-input" placeholder="Password" required autocomplete="current-password">
+        <button type="submit" class="btn-login-submit" id="btnLoginSubmit">Sign In to Dashboard</button>
+        <div class="login-err" id="loginError">Invalid credentials. Please verify your role password.</div>
       </form>
     </div>
   </div>
 
+  <!-- 6. Sales Order (SO) Confirmation Modal -->
+  <div class="generic-modal-overlay" id="confirmSoModalOverlay" onclick="closeGenericModal('confirmSoModalOverlay', event)">
+    <div class="generic-modal-box" onclick="event.stopPropagation()">
+      <div class="generic-modal-header">
+        <h3 id="confirmSoModalTitle">Confirm Sales Order</h3>
+        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeGenericModal('confirmSoModalOverlay')">✕</button>
+      </div>
+      <div class="generic-modal-body">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+          Enter the verified <strong>Sales Order (SO) Number</strong> to confirm this booking into the factory production & dispatch pipeline.
+        </p>
+
+        <div style="background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; padding: 12px; margin-bottom: 14px;">
+          <div style="font-size: 12px; color: var(--text-muted);">ORDER DETAILS:</div>
+          <div style="font-weight: 800; color: var(--primary); font-size: 14px;" id="confirmSoOrderDisplay">#KOGM-XXXX</div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-main);" id="confirmSoPartyDisplay">Party Name</div>
+          <div style="font-size: 12px; color: var(--text-secondary);" id="confirmSoQtyDisplay">0 Boxes • 0 Pieces</div>
+        </div>
+
+        <label style="font-size: 12.5px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 6px;">
+          Sales Order (SO) Number <span style="color: #dc2626;">*</span>
+        </label>
+        <input type="text" id="inputSoNumber" class="login-input" placeholder="e.g. SO-98432 or SO-2026-102" required style="font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 0.5px;">
+        <div id="soModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none; margin-top: -6px;"></div>
+      </div>
+      <div class="generic-modal-footer">
+        <button class="btn-tool" onclick="closeGenericModal('confirmSoModalOverlay')">Cancel</button>
+        <button class="btn-tool primary" id="btnSubmitSoConfirm" onclick="submitOrderConfirmation()">
+          <span>✔</span>
+          <span>Confirm Order</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Secure Multi-Step Order Deletion Modal (Git-Style) -->
+  <div class="generic-modal-overlay" id="deleteOrderModalOverlay" onclick="closeGenericModal('deleteOrderModalOverlay', event)">
+    <div class="generic-modal-box" onclick="event.stopPropagation()">
+      <div class="generic-modal-header" style="border-bottom-color: #fecaca; background: #fff5f5;">
+        <h3 style="color: #991b1b;">⚠️ Permanent Order Deletion</h3>
+        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeGenericModal('deleteOrderModalOverlay')">✕</button>
+      </div>
+      <div class="generic-modal-body">
+        <div class="git-delete-warning">
+          <strong>CRITICAL WARNING:</strong> This will permanently erase order <strong id="deleteTargetOrderDisplay">#KOGM-XXXX</strong> from the SQLite database and JSON audit log. This action cannot be reversed.
+        </div>
+        <div class="git-delete-prompt">
+          To confirm deletion, please type <code id="deleteVerificationTarget">DELETE #KOGM-XXXX</code> in the field below:
+        </div>
+        <input type="text" id="inputDeleteVerification" class="git-delete-input" placeholder="Type confirmation string..." oninput="checkDeleteVerificationInput()" autocomplete="off">
+      </div>
+      <div class="generic-modal-footer">
+        <button class="btn-tool" onclick="closeGenericModal('deleteOrderModalOverlay')">Cancel</button>
+        <button class="btn-git-delete" id="btnConfirmDeleteFinal" disabled onclick="executeGitStyleDelete()">
+          I understand the consequences, delete this order
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 🖼️ Order Slip Modal Preview -->
-  <div class="slip-modal-overlay" id="slipModalOverlay" onclick="closeSlipModal(event)">
-    <div class="slip-modal-box" onclick="event.stopPropagation()">
-      <div class="slip-modal-header">
-        <div style="font-weight: 800; font-size: 15px; color: #fff;" id="slipModalTitle">Official Order Confirmation Slip</div>
-        <button class="btn-action" style="padding: 4px 10px;" onclick="closeSlipModal()">✕</button>
+  <div class="generic-modal-overlay" id="slipModalOverlay" onclick="closeGenericModal('slipModalOverlay', event)">
+    <div class="generic-modal-box" style="max-width: 820px;" onclick="event.stopPropagation()">
+      <div class="generic-modal-header">
+        <h3 id="slipModalTitle">Official Order Confirmation Slip</h3>
+        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeGenericModal('slipModalOverlay')">✕</button>
       </div>
-      <div class="slip-modal-body" id="slipModalBody">
-        <!-- Rendered Canvas or Image injected here -->
+      <div class="generic-modal-body">
+        <div class="slip-preview-container" id="slipModalBody">
+          <!-- Digital Slip Image Rendered Here -->
+        </div>
       </div>
-      <div class="slip-modal-footer">
-        <button class="btn-action gold" id="btnDownloadSlipModal">📥 Download Slip (PNG)</button>
-        <button class="btn-action primary" id="btnWhatsAppSlipModal">💬 Share on WhatsApp</button>
+      <div class="generic-modal-footer" style="justify-content: space-between;">
+        <div style="font-size: 12px; color: var(--text-muted);" id="slipModalMeta">Khandelia Oil & General Mills Pvt. Ltd.</div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-tool" id="btnDownloadSlipModal">📥 Download PNG</button>
+          <button class="btn-tool primary" id="btnWhatsAppSlipModal">💬 Share on WhatsApp</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
+    // State Management
     const ADMIN_TOKEN_KEY = "KOGM_ADMIN_SESSION_TOKEN";
-    let allOrders = [];
-    let currentFiltered = [];
+    let currentUserRole = "admin"; // 'admin', 'manager', 'analyst'
+    let currentUsername = "admin";
+    let canConfirmOrders = true;
+    let canDeleteOrders = true;
 
-    // Check existing login
+    let allOrdersData = [];
+    let filteredOrdersData = [];
+
+    // Filter states
+    let activeDateFilter = "ALL"; // 'ALL', 'TODAY', 'YESTERDAY', 'CUSTOM'
+    let customSelectedDate = "";
+    let activeStatusTab = "ALL"; // 'ALL', 'PENDING', 'CONFIRMED'
+    let currentSearchTerm = "";
+
+    // Pagination states
+    let currentPage = 1;
+    let pageSize = 25; // 10, 25, 50, 100, or 'ALL'
+
+    // Pending Action IDs
+    let currentConfirmOrderId = null;
+    let currentDeleteOrderId = null;
+
+    // Initialization
     window.addEventListener("DOMContentLoaded", () => {
       const savedToken = localStorage.getItem(ADMIN_TOKEN_KEY);
       if (savedToken) {
@@ -794,24 +1406,54 @@
       } else {
         showLoginOverlay();
       }
+
+      // Keyboard navigation for horizontal table scrolling
+      const tableContainer = document.getElementById("tableScrollContainer");
+      window.addEventListener("keydown", (e) => {
+        // If an input is focused, don't trigger table scroll
+        if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+        if (e.key === "ArrowLeft") {
+          scrollTableHorizontally(-150);
+        } else if (e.key === "ArrowRight") {
+          scrollTableHorizontally(150);
+        }
+      });
     });
 
     function showLoginOverlay() {
       document.getElementById("loginOverlay").style.display = "flex";
       document.getElementById("headerRight").style.display = "none";
       document.getElementById("kpiContainer").style.display = "none";
-      document.getElementById("toolbar").style.display = "none";
-      document.getElementById("tableContainer").style.display = "none";
+      document.getElementById("controlsPanel").style.display = "none";
+      document.getElementById("scrollNavBar").style.display = "none";
+      document.getElementById("tableCardWrapper").style.display = "none";
     }
 
-    function showAdminDashboard() {
+    function showDashboardUI() {
       document.getElementById("loginOverlay").style.display = "none";
       document.getElementById("headerRight").style.display = "flex";
       document.getElementById("kpiContainer").style.display = "grid";
-      document.getElementById("toolbar").style.display = "flex";
-      document.getElementById("tableContainer").style.display = "block";
+      document.getElementById("controlsPanel").style.display = "flex";
+      document.getElementById("scrollNavBar").style.display = "flex";
+      document.getElementById("tableCardWrapper").style.display = "flex";
     }
 
+    function updateRoleUI() {
+      const container = document.getElementById("roleBadgeContainer");
+      const roleCls = currentUserRole.toLowerCase();
+      let roleIcon = "🛡️";
+      if (roleCls === "manager") roleIcon = "👔";
+      if (roleCls === "analyst") roleIcon = "📈";
+
+      container.innerHTML = `
+        <div class="role-badge-pill ${roleCls}">
+          <span>${roleIcon}</span>
+          <span>${escapeHtml(currentUsername)} (${currentUserRole.toUpperCase()})</span>
+        </div>
+      `;
+    }
+
+    // Login Handler
     async function handleAdminLogin(e) {
       e.preventDefault();
       const u = document.getElementById("loginUsername").value.trim();
@@ -821,7 +1463,7 @@
 
       err.style.display = "none";
       btn.disabled = true;
-      btn.textContent = "Authenticating...";
+      btn.textContent = "Authenticating role credentials...";
 
       try {
         const res = await fetch("/api/admin/login", {
@@ -832,35 +1474,49 @@
         const data = await res.json();
         if (res.ok && data.status === "success") {
           localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-          document.getElementById("adminUsernameDisplay").textContent = data.username || u;
-          showAdminDashboard();
+          currentUserRole = data.role || "admin";
+          currentUsername = data.username || u;
+          canConfirmOrders = Boolean(data.canConfirm);
+          canDeleteOrders = Boolean(data.canDelete);
+
+          updateRoleUI();
+          showDashboardUI();
           fetchOrdersData();
         } else {
-          err.textContent = data.detail || data.message || "Invalid credentials. Please try again.";
+          err.textContent = data.detail || data.message || "Invalid role credentials. Please check your username and password.";
           err.style.display = "block";
         }
-      } catch (e) {
-        err.textContent = "Connection failed. Please check backend server.";
+      } catch (errExp) {
+        err.textContent = "Connection error: Unable to contact server. Please verify backend is running.";
         err.style.display = "block";
       } finally {
         btn.disabled = false;
-        btn.textContent = "Login to Database";
+        btn.textContent = "Sign In to Dashboard";
       }
     }
 
+    // Session Verification
     async function verifySessionAndLoad(token) {
       try {
-        const res = await fetch("/api/admin/stats", {
+        const meRes = await fetch("/api/admin/me", {
           headers: { "Authorization": `Bearer ${token}` }
         });
-        if (res.ok) {
-          showAdminDashboard();
+        if (meRes.ok) {
+          const profile = await meRes.json();
+          currentUserRole = profile.role || "admin";
+          currentUsername = profile.username || "admin";
+          canConfirmOrders = Boolean(profile.canConfirm);
+          canDeleteOrders = Boolean(profile.canDelete);
+
+          updateRoleUI();
+          showDashboardUI();
           fetchOrdersData();
         } else {
           localStorage.removeItem(ADMIN_TOKEN_KEY);
           showLoginOverlay();
         }
       } catch (e) {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
         showLoginOverlay();
       }
     }
@@ -873,154 +1529,552 @@
             method: "POST",
             headers: { "Authorization": `Bearer ${token}` }
           });
-        } catch (e) { }
+        } catch (e) {}
       }
       localStorage.removeItem(ADMIN_TOKEN_KEY);
       showLoginOverlay();
     }
 
-    // 🔄 Fetch All Orders & Stats from Backend
+    // 🔄 Fetch Orders & Recalculate
     async function fetchOrdersData() {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
       if (!token) return;
 
       try {
-        // Fetch stats
-        fetch("/api/admin/stats", { headers: { "Authorization": `Bearer ${token}` } })
-          .then(r => r.json())
-          .then(updateKpiCards)
-          .catch(e => console.warn("Stats error:", e));
-
-        // Fetch orders
         const res = await fetch("/api/admin/orders", {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await res.json();
         if (res.ok && data.orders) {
-          allOrders = data.orders;
-          filterOrdersTable();
+          allOrdersData = data.orders.map(o => {
+            // Standardize dynamic calculation of box & pieces
+            const items = Array.isArray(o.items) ? o.items : [];
+            let calcBoxes = 0;
+            let calcPieces = 0;
+            items.forEach(it => {
+              const b = parseInt(it.boxes, 10) || 0;
+              calcBoxes += b;
+              const match = String(it.item || "").match(/x\s*(\d+)/i);
+              const multiplier = match ? parseInt(match[1], 10) : (parseInt(it.multiplier, 10) || 1);
+              it.multiplier = multiplier;
+              it.pieces = b * multiplier;
+              calcPieces += (b * multiplier);
+            });
+
+            const totalBxs = (parseInt(o.totalBoxes, 10) || 0) || calcBoxes;
+            const totalPcs = (parseInt(o.totalPieces, 10) || 0) || calcPieces;
+
+            return {
+              ...o,
+              totalBoxes: totalBxs,
+              totalPieces: totalPcs,
+              orderStatus: (o.orderStatus || o.order_status || "PENDING").toUpperCase(),
+              soNumber: o.soNumber || o.so_number || "",
+              cleanId: String(o.id || "").replace("#", "").trim()
+            };
+          });
+
+          applyAllFilters();
         }
       } catch (e) {
-        console.error("Fetch orders failed:", e);
+        console.error("Failed to fetch orders:", e);
       }
     }
 
-    function updateKpiCards(s) {
-      if (!s) return;
-      document.getElementById("kpiTotalOrders").textContent = (s.totalOrders || 0).toLocaleString();
-      document.getElementById("kpiTotalBoxes").textContent = `${(s.totalBoxes || 0).toLocaleString()} Bxs`;
-      document.getElementById("kpiTotalPieces").textContent = `${(s.totalPieces || 0).toLocaleString()} Pcs`;
-      
-      const pct = s.totalOrders > 0 ? Math.round((s.syncedCount / s.totalOrders) * 100) : 100;
-      document.getElementById("kpiSyncStatus").textContent = `${pct}%`;
-      document.getElementById("kpiSyncSub").textContent = `${s.syncedCount || 0} Synced | ${s.pendingSync || 0} Pending`;
+    // 5. Date Filtering Logic
+    function setDateFilter(filterType) {
+      activeDateFilter = filterType;
 
-      document.getElementById("kpiTodayOrders").textContent = s.todayOrders || 0;
-      document.getElementById("kpiTodayBoxes").textContent = `${(s.todayBoxes || 0).toLocaleString()} Boxes booked today`;
+      document.getElementById("datePillAll").classList.toggle("active", filterType === "ALL");
+      document.getElementById("datePillToday").classList.toggle("active", filterType === "TODAY");
+      document.getElementById("datePillYesterday").classList.toggle("active", filterType === "YESTERDAY");
+
+      if (filterType === "CUSTOM") {
+        customSelectedDate = document.getElementById("customDatePicker").value;
+        if (!customSelectedDate) return; // Wait until date selected
+      } else {
+        document.getElementById("customDatePicker").value = "";
+        customSelectedDate = "";
+      }
+
+      currentPage = 1;
+      applyAllFilters();
     }
 
-    function filterOrdersTable() {
-      const q = document.getElementById("searchInput").value.toLowerCase().trim();
-      const syncFilter = document.getElementById("syncFilter").value;
+    // Status Tab Filtering Logic
+    function setStatusTab(statusType) {
+      activeStatusTab = statusType;
+      document.getElementById("tabStatusAll").classList.toggle("active", statusType === "ALL");
+      document.getElementById("tabStatusPending").classList.toggle("active", statusType === "PENDING");
+      document.getElementById("tabStatusConfirmed").classList.toggle("active", statusType === "CONFIRMED");
 
-      currentFiltered = allOrders.filter(o => {
-        // Sync filter
-        if (syncFilter === "SYNCED" && !o.synced_to_sheet) return false;
-        if (syncFilter === "PENDING" && o.synced_to_sheet) return false;
+      currentPage = 1;
+      applyAllFilters();
+    }
 
-        // Search query
-        if (!q) return true;
-        const haystack = [
-          o.id,
-          o.partyName,
-          o.partyCode,
-          o.salesPerson,
-          o.partyAddress,
-          o.deliveryAddress,
-          o.itemsSummary
-        ].join(" ").toLowerCase();
+    function handleSearchInput() {
+      currentSearchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+      currentPage = 1;
+      applyAllFilters();
+    }
 
-        return haystack.includes(q);
+    // Core Filtering Engine
+    function applyAllFilters() {
+      const now = new Date();
+      const todayStr = getFormattedDateStr(now); // "DD/MM/YYYY"
+      
+      const yesterday = new Date();
+      yesterday.setDate(now.getDate() - 1);
+      const yesterdayStr = getFormattedDateStr(yesterday); // "DD/MM/YYYY"
+
+      let customFormatted = "";
+      if (activeDateFilter === "CUSTOM" && customSelectedDate) {
+        // customSelectedDate format is YYYY-MM-DD
+        const parts = customSelectedDate.split("-");
+        if (parts.length === 3) {
+          customFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
+        }
+      }
+
+      // Counts for status tabs
+      let pendingTotal = 0;
+      let confirmedTotal = 0;
+
+      filteredOrdersData = allOrdersData.filter(o => {
+        const orderDateStr = extractDateString(o);
+
+        // Date Filter Check
+        if (activeDateFilter === "TODAY") {
+          if (!orderDateStr.includes(todayStr)) return false;
+        } else if (activeDateFilter === "YESTERDAY") {
+          if (!orderDateStr.includes(yesterdayStr)) return false;
+        } else if (activeDateFilter === "CUSTOM" && customFormatted) {
+          if (!orderDateStr.includes(customFormatted) && !orderDateStr.includes(customSelectedDate)) return false;
+        }
+
+        // Tally pending/confirmed
+        const isConf = o.orderStatus === "CONFIRMED";
+        if (isConf) confirmedTotal++;
+        else pendingTotal++;
+
+        // Status Tab Check
+        if (activeStatusTab === "PENDING" && isConf) return false;
+        if (activeStatusTab === "CONFIRMED" && !isConf) return false;
+
+        // Search Term Check
+        if (currentSearchTerm) {
+          const haystack = [
+            o.cleanId,
+            o.partyName,
+            o.partyCode,
+            o.salesPerson,
+            o.partyAddress,
+            o.deliveryAddress,
+            o.soNumber,
+            o.orderStatus,
+            o.itemsSummary
+          ].join(" ").toLowerCase();
+
+          if (!haystack.includes(currentSearchTerm)) return false;
+        }
+
+        return true;
       });
 
-      renderOrdersTable(currentFiltered);
+      // Update Tab Badges
+      document.getElementById("badgeAllCount").textContent = allOrdersData.length;
+      document.getElementById("badgePendingCount").textContent = pendingTotal;
+      document.getElementById("badgeConfirmedCount").textContent = confirmedTotal;
+
+      // Update KPI Cards Dynamically
+      updateDashboardSummaryCards(filteredOrdersData);
+
+      // Render Table with Pagination
+      renderTableWithPagination();
     }
 
-    function renderOrdersTable(orders) {
+    function extractDateString(o) {
+      if (o.formattedTimestamp) return o.formattedTimestamp;
+      if (o.formattedDate) return o.formattedDate;
+      if (o.orderDate) return o.orderDate;
+      if (o.created_at) return o.created_at;
+      return "";
+    }
+
+    function getFormattedDateStr(d) {
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    // 7. Dynamic Summary Cards (KPI Cards)
+    function updateDashboardSummaryCards(records) {
+      let totalOrders = records.length;
+      let confirmedOrders = 0;
+      let pendingOrders = 0;
+      let totalBoxes = 0;
+      let totalPieces = 0;
+
+      records.forEach(o => {
+        if (o.orderStatus === "CONFIRMED") {
+          confirmedOrders++;
+        } else {
+          pendingOrders++;
+        }
+        totalBoxes += (parseInt(o.totalBoxes, 10) || 0);
+        totalPieces += (parseInt(o.totalPieces, 10) || 0);
+      });
+
+      document.getElementById("kpiTotalOrders").textContent = totalOrders.toLocaleString();
+      document.getElementById("kpiTotalOrdersSub").textContent = activeDateFilter === "ALL" ? "All active records" : `Filtered by ${activeDateFilter.toLowerCase()}`;
+      document.getElementById("kpiConfirmedOrders").textContent = confirmedOrders.toLocaleString();
+      document.getElementById("kpiPendingOrders").textContent = pendingOrders.toLocaleString();
+      document.getElementById("kpiTotalBoxes").textContent = totalBoxes.toLocaleString();
+      document.getElementById("kpiTotalPieces").textContent = totalPieces.toLocaleString();
+    }
+
+    // 8. Pagination Implementation
+    function handlePageSizeChange(val) {
+      pageSize = val === "ALL" ? "ALL" : parseInt(val, 10);
+      currentPage = 1;
+      renderTableWithPagination();
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      renderTableWithPagination();
+    }
+
+    function renderTableWithPagination() {
+      const totalRecords = filteredOrdersData.length;
       const tbody = document.getElementById("ordersTableBody");
-      if (!orders || orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="empty-state">No matching orders found in database.</td></tr>`;
+
+      if (totalRecords === 0) {
+        tbody.innerHTML = `<tr><td colspan="14" class="empty-state-cell">No matching orders found for the selected criteria.</td></tr>`;
+        document.getElementById("paginationInfoText").textContent = "Showing 0 of 0 records";
+        document.getElementById("paginationPillsContainer").innerHTML = "";
         return;
       }
 
-      let html = "";
-      orders.forEach((o, idx) => {
-        const cleanId = String(o.id || "").replace("#", "").trim();
-        const pCode = o.partyCode || "SDMOWB0307";
+      let startIdx = 0;
+      let endIdx = totalRecords;
+      let totalPages = 1;
 
-        // Items chips
-        let itemsHtml = `<div class="items-chip-list">`;
-        const items = o.items || [];
-        items.forEach(it => {
-          const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
-          const brandCls = isMashal ? "mashal" : "fauji";
-          const icon = isMashal ? "🔵" : "🟢";
-          const bxs = parseInt(it.boxes, 10) || 0;
-          itemsHtml += `
-            <div class="item-chip ${brandCls}">
-              <span>${icon} ${it.item || ""}</span>
-              <strong style="color: #60a5fa;">[ ${bxs} Bxs ]</strong>
-            </div>
-          `;
-        });
+      if (pageSize !== "ALL") {
+        totalPages = Math.ceil(totalRecords / pageSize);
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        startIdx = (currentPage - 1) * pageSize;
+        endIdx = Math.min(startIdx + pageSize, totalRecords);
+      }
+
+      const pageSlice = filteredOrdersData.slice(startIdx, endIdx);
+
+      // Render Table Rows
+      let html = "";
+      pageSlice.forEach((o, index) => {
+        const rowNumber = startIdx + index + 1;
+        const cleanId = o.cleanId;
+        const isConfirmed = o.orderStatus === "CONFIRMED";
+
+        // Format Product Quantities: 1 LTR. BOTTLE x 15 (2 Bxs = 30 Pcs)
+        let itemsHtml = `<div class="product-breakdown-list">`;
+        const items = Array.isArray(o.items) ? o.items : [];
+        if (items.length > 0) {
+          items.forEach(it => {
+            const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
+            const brandCls = isMashal ? "mashal" : "fauji";
+            const bxs = parseInt(it.boxes, 10) || 0;
+            const mult = parseInt(it.multiplier, 10) || 1;
+            const pcs = bxs * mult;
+
+            itemsHtml += `
+              <div class="product-item-chip ${brandCls}">
+                <span>${escapeHtml(it.item || "")}</span>
+                <span class="calc-detail">${bxs} Bx • ${pcs} Pcs</span>
+              </div>
+            `;
+          });
+        } else {
+          itemsHtml += `<span style="color: var(--text-muted); font-size: 11.5px;">${escapeHtml(o.itemsSummary || "-")}</span>`;
+        }
         itemsHtml += `</div>`;
 
         // Sync Badge
         const syncBadge = o.synced_to_sheet
-          ? `<span class="sync-status synced">✔ Synced</span>`
-          : `<span class="sync-status pending" onclick="resyncSingleOrder('${cleanId}')" title="Click to force sync to Google Sheet">⏳ Pending (Sync Now)</span>`;
+          ? `<span class="status-badge confirmed" title="Synced to Google Sheet">✔ Synced</span>`
+          : `<span class="status-badge pending" style="cursor: pointer;" onclick="resyncSingleOrder('${cleanId}')" title="Click to force sync to Google Sheet">⏳ Pending</span>`;
+
+        // Status Badge
+        const statusBadge = isConfirmed
+          ? `<span class="status-badge confirmed">✔ CONFIRMED</span>`
+          : `<span class="status-badge pending">⏳ PENDING</span>`;
+
+        // SO Badge
+        const soDisplay = o.soNumber
+          ? `<span class="so-badge">#${escapeHtml(o.soNumber)}</span>`
+          : `<span style="color: var(--text-dim); font-size: 12px;">—</span>`;
+
+        // Action Buttons according to Role Permissions
+        let actionButtons = `
+          <div class="action-btn-group">
+            <button class="btn-row-action" title="View Digital Order Slip" onclick="previewSlipModal('${cleanId}')">
+              <span>👁️ Slip</span>
+            </button>
+        `;
+
+        // Confirm button: Only Admin & Manager
+        if (canConfirmOrders && !isConfirmed) {
+          actionButtons += `
+            <button class="btn-row-action confirm-so" title="Assign SO Number & Confirm Order" onclick="openConfirmSoModal('${cleanId}')">
+              <span>✔ Confirm SO</span>
+            </button>
+          `;
+        }
+
+        // Delete button: STRICTLY ADMIN ONLY (Hidden for Manager and Analyst)
+        if (canDeleteOrders && currentUserRole === "admin") {
+          actionButtons += `
+            <button class="btn-row-action delete-danger" title="Permanently delete this order" onclick="openGitDeleteModal('${cleanId}')">
+              <span>🗑️</span>
+            </button>
+          `;
+        }
+
+        actionButtons += `</div>`;
 
         html += `
           <tr>
-            <td class="center" style="color: var(--text-dim); font-weight: 700;">${idx + 1}</td>
-            <td>
-              <span class="order-id-badge" onclick="previewSlipModal('${cleanId}')">#${cleanId}</span>
+            <!-- Fixed Col 1 -->
+            <td class="sticky-col-1 center" style="color: var(--text-dim); font-weight: 700;">${rowNumber}</td>
+            <!-- Fixed Col 2 -->
+            <td class="sticky-col-2">
+              <span class="order-id-link" onclick="previewSlipModal('${cleanId}')" title="View Order Slip">#${cleanId}</span>
             </td>
-            <td style="color: #cbd5e1; font-size: 12px; white-space: nowrap;">
-              <div>${o.formattedTimestamp || o.orderDate || "-"}</div>
+            <!-- Fixed Col 3 -->
+            <td class="sticky-col-3" style="font-size: 12px; color: var(--text-secondary); white-space: nowrap;">
+              <div>${escapeHtml(o.formattedTimestamp || o.formattedDate || o.orderDate || "-")}</div>
+            </td>
+            <!-- Scrolling Columns -->
+            <td>
+              <div class="party-title">${escapeHtml(o.partyName || "Customer")}</div>
             </td>
             <td>
-              <div class="party-name">${escapeHtml(o.partyName || "Customer")}</div>
-              <span class="party-code-badge">${escapeHtml(pCode)}</span>
+              <span class="party-code-tag">${escapeHtml(o.partyCode || "SDMOWB0307")}</span>
             </td>
             <td>
-              <div class="party-addr">${escapeHtml(o.partyAddress || "-")}</div>
+              <div class="address-cell">${escapeHtml(o.partyAddress || o.deliveryAddress || "-")}</div>
             </td>
             <td>
-              <span class="asm-pill">👔 ${escapeHtml(o.salesPerson || "-")}</span>
+              <span class="asm-badge">👔 ${escapeHtml(o.salesPerson || "-")}</span>
             </td>
             <td>${itemsHtml}</td>
             <td class="center">
-              <span class="qty-badge">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
-              <span class="pcs-badge">${(o.totalPieces || 0).toLocaleString()} Pcs</span>
+              <span class="boxes-badge">${(o.totalBoxes || 0).toLocaleString()} Bxs</span>
+            </td>
+            <td class="center">
+              <span class="pieces-badge">${(o.totalPieces || 0).toLocaleString()} Pcs</span>
             </td>
             <td class="center">${syncBadge}</td>
-            <td class="center">
-              <div class="action-icons">
-                <button class="btn-icon" title="View Digital Slip" onclick="previewSlipModal('${cleanId}')">👁️</button>
-                <button class="btn-icon" title="Download Slip PNG" onclick="downloadSlipFile('${cleanId}')">📥</button>
-                <button class="btn-icon" title="WhatsApp Share" onclick="shareWhatsAppSingle('${cleanId}')">💬</button>
-                <button class="btn-icon delete" title="Delete Record" onclick="confirmDeleteOrder('${cleanId}')">🗑️</button>
-              </div>
-            </td>
+            <!-- Status & Confirmation at end of table -->
+            <td class="center">${statusBadge}</td>
+            <td class="center">${soDisplay}</td>
+            <td class="center">${actionButtons}</td>
           </tr>
         `;
       });
 
       tbody.innerHTML = html;
+
+      // Update Pagination Text
+      document.getElementById("paginationInfoText").textContent = `Showing ${startIdx + 1} to ${endIdx} of ${totalRecords.toLocaleString()} orders`;
+
+      // Render Pagination Buttons
+      renderPaginationControls(totalPages);
     }
 
-    // 🚀 Force Re-sync to Google Sheet
+    function renderPaginationControls(totalPages) {
+      const container = document.getElementById("paginationPillsContainer");
+      if (pageSize === "ALL" || totalPages <= 1) {
+        container.innerHTML = "";
+        return;
+      }
+
+      let html = "";
+      html += `<button class="btn-page-nav" ${currentPage === 1 ? "disabled" : ""} onclick="goToPage(${currentPage - 1})">◀ Prev</button>`;
+
+      let startP = Math.max(1, currentPage - 2);
+      let endP = Math.min(totalPages, currentPage + 2);
+
+      if (startP > 1) {
+        html += `<button class="page-num-pill" onclick="goToPage(1)">1</button>`;
+        if (startP > 2) html += `<span style="color: var(--text-dim); padding: 0 4px;">...</span>`;
+      }
+
+      for (let p = startP; p <= endP; p++) {
+        html += `<button class="page-num-pill ${p === currentPage ? "active" : ""}" onclick="goToPage(${p})">${p}</button>`;
+      }
+
+      if (endP < totalPages) {
+        if (endP < totalPages - 1) html += `<span style="color: var(--text-dim); padding: 0 4px;">...</span>`;
+        html += `<button class="page-num-pill" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      html += `<button class="btn-page-nav" ${currentPage === totalPages ? "disabled" : ""} onclick="goToPage(${currentPage + 1})">Next ▶</button>`;
+      container.innerHTML = html;
+    }
+
+    // Horizontal Scrolling Buttons & Keyboard Navigation
+    function scrollTableHorizontally(offset) {
+      const container = document.getElementById("tableScrollContainer");
+      if (container) {
+        container.scrollBy({ left: offset, behavior: "smooth" });
+      }
+    }
+
+    // 6. Sales Order Confirmation Modal & API
+    function openConfirmSoModal(orderId) {
+      currentConfirmOrderId = orderId;
+      const order = allOrdersData.find(o => o.cleanId === orderId);
+      if (!order) return;
+
+      document.getElementById("confirmSoModalTitle").textContent = `Confirm Order #${orderId}`;
+      document.getElementById("confirmSoOrderDisplay").textContent = `#${orderId}`;
+      document.getElementById("confirmSoPartyDisplay").textContent = order.partyName || "Customer";
+      document.getElementById("confirmSoQtyDisplay").textContent = `${order.totalBoxes} Boxes • ${order.totalPieces} Pieces`;
+      
+      const input = document.getElementById("inputSoNumber");
+      input.value = "";
+      document.getElementById("soModalError").style.display = "none";
+
+      document.getElementById("confirmSoModalOverlay").style.display = "flex";
+      setTimeout(() => input.focus(), 50);
+    }
+
+    async function submitOrderConfirmation() {
+      const soNumber = document.getElementById("inputSoNumber").value.trim();
+      const errEl = document.getElementById("soModalError");
+      const btn = document.getElementById("btnSubmitSoConfirm");
+
+      if (!soNumber || soNumber.length < 2) {
+        errEl.textContent = "Please enter a valid Sales Order (SO) Number (min 2 characters).";
+        errEl.style.display = "block";
+        return;
+      }
+
+      errEl.style.display = "none";
+      btn.disabled = true;
+      btn.textContent = "Confirming...";
+
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+
+      try {
+        const res = await fetch("/api/admin/orders/confirm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            orderId: currentConfirmOrderId,
+            soNumber: soNumber
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          // Update in-memory data
+          const ord = allOrdersData.find(o => o.cleanId === currentConfirmOrderId);
+          if (ord) {
+            ord.orderStatus = "CONFIRMED";
+            ord.soNumber = soNumber;
+          }
+          closeGenericModal("confirmSoModalOverlay");
+          applyAllFilters();
+        } else {
+          errEl.textContent = data.detail || data.message || "Failed to confirm order. Please try again.";
+          errEl.style.display = "block";
+        }
+      } catch (errExp) {
+        errEl.textContent = "Network error: Failed to reach backend.";
+        errEl.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>✔</span><span>Confirm Order</span>`;
+      }
+    }
+
+    // 4. Git-Style Multi-Step Deletion Process
+    function openGitDeleteModal(orderId) {
+      if (currentUserRole !== "admin") {
+        alert("Permission Denied: Only Administrator can delete order records.");
+        return;
+      }
+
+      currentDeleteOrderId = orderId;
+      const expectedText = `DELETE #${orderId}`;
+
+      document.getElementById("deleteTargetOrderDisplay").textContent = `#${orderId}`;
+      document.getElementById("deleteVerificationTarget").textContent = expectedText;
+
+      const input = document.getElementById("inputDeleteVerification");
+      input.value = "";
+      document.getElementById("btnConfirmDeleteFinal").disabled = true;
+
+      document.getElementById("deleteOrderModalOverlay").style.display = "flex";
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function checkDeleteVerificationInput() {
+      const inputVal = document.getElementById("inputDeleteVerification").value.trim();
+      const expected = `DELETE #${currentDeleteOrderId}`;
+      const btn = document.getElementById("btnConfirmDeleteFinal");
+
+      if (inputVal === expected) {
+        btn.disabled = false;
+      } else {
+        btn.disabled = true;
+      }
+    }
+
+    async function executeGitStyleDelete() {
+      if (!currentDeleteOrderId) return;
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const btn = document.getElementById("btnConfirmDeleteFinal");
+
+      btn.disabled = true;
+      btn.textContent = "Permanently deleting...";
+
+      try {
+        const res = await fetch("/api/admin/orders/delete", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ orderId: currentDeleteOrderId })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          // Remove from local array
+          allOrdersData = allOrdersData.filter(o => o.cleanId !== currentDeleteOrderId);
+          closeGenericModal("deleteOrderModalOverlay");
+          applyAllFilters();
+        } else {
+          alert("Deletion failed: " + (data.detail || data.message || "Unknown error"));
+        }
+      } catch (e) {
+        alert("Delete request failed: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "I understand the consequences, delete this order";
+      }
+    }
+
+    // Google Sheets Resync Handlers
     async function resyncSingleOrder(orderId) {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
       if (!confirm(`Force sync order #${orderId} to Google Sheet now?`)) return;
@@ -1036,13 +2090,15 @@
         });
         const d = await res.json();
         if (res.ok && d.status === "success") {
+          const ord = allOrdersData.find(o => o.cleanId === orderId);
+          if (ord) ord.synced_to_sheet = true;
+          applyAllFilters();
           alert(`Order #${orderId} synced to Google Sheet successfully!`);
-          fetchOrdersData();
         } else {
           alert("Sync failed: " + (d.message || "Unknown error"));
         }
       } catch (e) {
-        alert("Sync request error: " + e.message);
+        alert("Sync error: " + e.message);
       }
     }
 
@@ -1060,67 +2116,36 @@
           body: JSON.stringify({ syncAllPending: true })
         });
         const d = await res.json();
-        alert(d.message || "Sync triggered successfully!");
+        alert(d.message || "Batch sync triggered!");
         fetchOrdersData();
       } catch (e) {
         alert("Batch sync error: " + e.message);
       }
     }
 
-    // 🗑️ Delete Order Record
-    async function confirmDeleteOrder(orderId) {
-      if (!confirm(`⚠️ ARE YOU SURE you want to permanently delete order #${orderId} from database?\nThis action cannot be undone.`)) return;
-
-      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
-      try {
-        const res = await fetch("/api/admin/orders/delete", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({ orderId })
-        });
-        const d = await res.json();
-        if (res.ok && d.status === "success") {
-          fetchOrdersData();
-        } else {
-          alert("Delete failed: " + (d.message || "Unknown error"));
-        }
-      } catch (e) {
-        alert("Delete request failed: " + e.message);
-      }
-    }
-
-    // 🖼️ Slip Modal Preview
+    // Slip Modal Preview & Sharing
     function previewSlipModal(orderId) {
-      const order = allOrders.find(o => String(o.id).replace("#", "").trim() === orderId);
+      const order = allOrdersData.find(o => o.cleanId === orderId);
       if (!order) return;
 
       const body = document.getElementById("slipModalBody");
       document.getElementById("slipModalTitle").textContent = `Official Order Slip - #${orderId}`;
-      body.innerHTML = `<div style="color: #cbd5e1; padding: 40px;">Rendering digital confirmation slip...</div>`;
+      document.getElementById("slipModalMeta").textContent = `${order.partyName} • ${order.totalBoxes} Boxes (${order.totalPieces} Pieces)`;
+      body.innerHTML = `<div style="color: var(--text-muted); padding: 40px;">Rendering digital confirmation slip...</div>`;
       document.getElementById("slipModalOverlay").style.display = "flex";
 
-      setTimeout(() => {
-        const img = new Image();
-        img.src = `/order_slips/${orderId}.png?t=${Date.now()}`;
-        img.onload = () => {
-          body.innerHTML = "";
-          body.appendChild(img);
-        };
-        img.onerror = () => {
-          body.innerHTML = `<div style="color: #cbd5e1; padding: 40px; text-align: center;">Slip image regenerating...</div>`;
-        };
-      }, 50);
+      const img = new Image();
+      img.src = `/order_slips/${orderId}.png?t=${Date.now()}`;
+      img.onload = () => {
+        body.innerHTML = "";
+        body.appendChild(img);
+      };
+      img.onerror = () => {
+        body.innerHTML = `<div style="color: var(--text-muted); padding: 40px; text-align: center;">Slip preview image is being regenerated...</div>`;
+      };
 
       document.getElementById("btnDownloadSlipModal").onclick = () => downloadSlipFile(orderId);
       document.getElementById("btnWhatsAppSlipModal").onclick = () => shareWhatsAppSingle(orderId);
-    }
-
-    function closeSlipModal(e) {
-      if (e && e.target !== e.currentTarget && e.target.tagName !== "BUTTON") return;
-      document.getElementById("slipModalOverlay").style.display = "none";
     }
 
     function downloadSlipFile(orderId) {
@@ -1133,71 +2158,83 @@
     }
 
     function shareWhatsAppSingle(orderId) {
-      const o = allOrders.find(x => String(x.id).replace("#", "").trim() === orderId);
+      const o = allOrdersData.find(x => x.cleanId === orderId);
       if (!o) return;
 
       let msg = `📦 *KHANDELIA OIL AND GENERAL MILLS PVT. LTD.*\n`;
       msg += `*OFFICIAL ORDER CONFIRMATION SLIP*\n`;
       msg += `------------------------------------\n`;
-      msg += `*Order ID:* #${o.id}\n`;
-      msg += `*Date & Time:* ${o.formattedTimestamp || o.orderDate}\n`;
+      msg += `*Order ID:* #${o.cleanId}\n`;
+      msg += `*Status:* ${o.orderStatus}\n`;
+      if (o.soNumber) msg += `*SO Number:* #${o.soNumber}\n`;
+      msg += `*Date:* ${o.formattedTimestamp || o.formattedDate || o.orderDate}\n`;
       msg += `*Party Name:* ${o.partyName}\n`;
       if (o.partyCode) msg += `*Party Code:* ${o.partyCode}\n`;
-      msg += `*Address:* ${o.partyAddress}\n`;
+      msg += `*Address:* ${o.partyAddress || o.deliveryAddress || "-"}\n`;
       msg += `*Sales Manager:* ${o.salesPerson || "-"}\n`;
       msg += `------------------------------------\n`;
       msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES*  |  *${(o.totalPieces || 0).toLocaleString()} PIECES*\n`;
       msg += `🖼️ *Slip Link:* ${window.location.origin}/order_slips/${orderId}.png\n`;
 
-      const encoded = encodeURIComponent(msg);
-      window.open(`https://api.whatsapp.com/send?text=${encoded}`, "_blank");
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
     }
 
-    // 📊 Export to CSV
+    // Export to CSV
     function exportOrdersToCSV() {
-      if (!currentFiltered || currentFiltered.length === 0) {
-        alert("No orders to export!");
+      if (!filteredOrdersData || filteredOrdersData.length === 0) {
+        alert("No orders to export.");
         return;
       }
 
       const headers = [
-        "Order ID", "Date & Time", "Party Name", "Party Code",
-        "Billing Address", "Delivery Address", "Sales Person",
-        "Total Boxes", "Total Pieces", "Items Breakdown", "Synced to Sheet"
+        "Order ID",
+        "Date & Time",
+        "Party Name",
+        "Party Code",
+        "Address",
+        "Sales Manager",
+        "Total Boxes",
+        "Total Pieces",
+        "Order Status",
+        "SO Number",
+        "Sheet Synced",
+        "Items Summary"
       ];
 
-      let csv = headers.join(",") + "\n";
-      currentFiltered.forEach(o => {
-        const itemsStr = (o.items || []).map(i => `${i.brand || 'Mashal'} ${i.item}: ${i.boxes} Bxs`).join(" | ");
-        const row = [
-          `"${o.id || ''}"`,
-          `"${o.formattedTimestamp || o.orderDate || ''}"`,
-          `"${(o.partyName || '').replace(/"/g, '""')}"`,
-          `"${(o.partyCode || '').replace(/"/g, '""')}"`,
-          `"${(o.partyAddress || '').replace(/"/g, '""')}"`,
-          `"${(o.deliveryAddress || '').replace(/"/g, '""')}"`,
-          `"${(o.salesPerson || '').replace(/"/g, '""')}"`,
-          o.totalBoxes || 0,
-          o.totalPieces || 0,
-          `"${itemsStr.replace(/"/g, '""')}"`,
-          o.synced_to_sheet ? "YES" : "NO"
-        ];
-        csv += row.join(",") + "\n";
-      });
+      const rows = filteredOrdersData.map(o => [
+        `"${o.cleanId}"`,
+        `"${o.formattedTimestamp || o.orderDate || ''}"`,
+        `"${(o.partyName || '').replace(/"/g, '""')}"`,
+        `"${o.partyCode || ''}"`,
+        `"${(o.partyAddress || '').replace(/"/g, '""')}"`,
+        `"${(o.salesPerson || '').replace(/"/g, '""')}"`,
+        o.totalBoxes || 0,
+        o.totalPieces || 0,
+        `"${o.orderStatus}"`,
+        `"${o.soNumber || ''}"`,
+        o.synced_to_sheet ? "YES" : "NO",
+        `"${(o.itemsSummary || '').replace(/"/g, '""')}"`
+      ]);
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `KOGM_Orders_Database_Export_${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Khandelia_Orders_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
-    function escapeHtml(text) {
-      if (!text) return "";
-      return String(text)
+    function closeGenericModal(id, e) {
+      if (e && e.target !== e.currentTarget && e.target.tagName !== "BUTTON") return;
+      document.getElementById(id).style.display = "none";
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
