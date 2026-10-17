@@ -1438,13 +1438,483 @@
         color: #000000 !important;
       }
     }
+  
+    /* 🏛️ Enterprise Layout with Left Navigation Sidebar */
+    .admin-app-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      background: var(--bg-page);
+    }
+
+    /* 🧭 Left Navigation Sidebar */
+    .admin-sidebar {
+      width: 275px;
+      min-width: 275px;
+      background: #001a33;
+      background: linear-gradient(180deg, #001b38 0%, #001226 100%);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 200;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-brand {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      padding: 2px;
+      object-fit: contain;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-brand-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sidebar-brand-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      display: block;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: block;
+    }
+
+    .sidebar-close-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .sidebar-close-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-nav-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-nav-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+
+    .sidebar-section-title {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      padding: 14px 12px 6px 12px;
+    }
+
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .sidebar-nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    .sidebar-nav-item.active {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.3) 0%, rgba(37, 99, 235, 0.15) 100%);
+      border-color: rgba(96, 165, 250, 0.45);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-nav-item .nav-icon {
+      font-size: 16px;
+      width: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-nav-item .nav-label {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-nav-item .nav-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+    }
+    .sidebar-nav-item .nav-badge.amber {
+      background: rgba(245, 158, 11, 0.25);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .sidebar-nav-item .nav-badge.green {
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .sidebar-nav-item .nav-badge.purple {
+      background: rgba(168, 85, 247, 0.25);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+    .sidebar-nav-item .nav-badge.gold {
+      background: rgba(234, 179, 8, 0.25);
+      color: #fde047;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+    }
+    .sidebar-nav-item .nav-badge.blue {
+      background: rgba(14, 165, 233, 0.25);
+      color: #38bdf8;
+      border: 1px solid rgba(14, 165, 233, 0.4);
+    }
+
+    .sidebar-footer {
+      padding: 14px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidebar-user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .sidebar-user-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sidebar-user-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #38bdf8;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-logout-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 14px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sidebar-logout-btn:hover {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+
+    .admin-main-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-page);
+      overflow-x: hidden;
+    }
+
+    .sidebar-toggle-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.15s;
+    }
+    .sidebar-toggle-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 190;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Role Pills in Users Control */
+    .user-role-filter-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .role-filter-pill {
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      background: #ffffff;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .role-filter-pill:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .role-filter-pill.active {
+      background: #003366;
+      color: #ffffff;
+      border-color: #003366;
+      box-shadow: 0 2px 5px rgba(0, 51, 102, 0.2);
+    }
+
+    .user-auth-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .user-auth-banner-icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    @media (max-width: 991px) {
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        z-index: 1000;
+      }
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-backdrop.open {
+        display: block;
+      }
+      .sidebar-close-btn {
+        display: block;
+      }
+      .sidebar-toggle-btn {
+        display: flex;
+      }
+    }
+
   </style>
 </head>
 <body>
 
+<div class="admin-app-layout" id="adminAppLayout">
+  <!-- 🧭 LEFT NAVIGATION SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar" style="display: none;">
+    <!-- Brand / Header -->
+    <div class="sidebar-brand">
+      <img src="/images/mashal_official_logo.png" alt="Mashal" class="sidebar-logo">
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-title">Khandelia Mills</span>
+        <span class="sidebar-brand-sub">Super Admin Suite</span>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" onclick="toggleAdminSidebar(false)">✕</button>
+    </div>
+
+    <!-- Navigation Scroll -->
+    <div class="sidebar-nav-scroll">
+      <div class="sidebar-section-title">ORDERS DASHBOARD</div>
+      <button class="sidebar-nav-item active" id="sideNavAll" onclick="selectSidebarNav('ALL')">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">All Orders</span>
+        <span class="nav-badge" id="sideBadgeAll">0</span>
+      </button>
+      <button class="sidebar-nav-item pending" id="sideNavPending" onclick="selectSidebarNav('PENDING')">
+        <span class="nav-icon">⏳</span>
+        <span class="nav-label">Pending Orders</span>
+        <span class="nav-badge amber" id="sideBadgePending">0</span>
+      </button>
+      <button class="sidebar-nav-item confirmed" id="sideNavConfirmed" onclick="selectSidebarNav('CONFIRMED')">
+        <span class="nav-icon">✔</span>
+        <span class="nav-label">Confirmed Orders</span>
+        <span class="nav-badge green" id="sideBadgeConfirmed">0</span>
+      </button>
+      <button class="sidebar-nav-item" id="sideNavPacking" onclick="selectSidebarNav('PACKING')">
+        <span class="nav-icon">📦</span>
+        <span class="nav-label">Packing & Production</span>
+        <span class="nav-badge blue">LIVE</span>
+      </button>
+
+      <div class="sidebar-section-title">PHONE AUTH & ACCESS</div>
+      <button class="sidebar-nav-item users" id="sideNavUsers" onclick="selectSidebarNav('USERS')">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">User & Phone Control</span>
+        <span class="nav-badge purple" id="sideBadgeUsers">0</span>
+      </button>
+      <button class="sidebar-nav-item units" id="sideNavUnits" onclick="selectSidebarNav('UNITS')">
+        <span class="nav-icon">🏭</span>
+        <span class="nav-label">Warehouse Units</span>
+        <span class="nav-badge gold" id="sideBadgeUnits">6</span>
+      </button>
+
+      <div class="sidebar-section-title">QUICK ACTIONS</div>
+      <button class="sidebar-nav-item" onclick="openCreateUserModal(); if(window.innerWidth < 992) toggleAdminSidebar(false);">
+        <span class="nav-icon">➕</span>
+        <span class="nav-label">Authorize Mobile #</span>
+      </button>
+      <button class="sidebar-nav-item" onclick="exportOrdersToCSV()">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Export CSV</span>
+      </button>
+      <button class="sidebar-nav-item" onclick="fetchOrdersData()">
+        <span class="nav-icon">🔄</span>
+        <span class="nav-label">Refresh Database</span>
+      </button>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user-card" id="sidebarUserCard">
+        <div class="sidebar-user-avatar">👑</div>
+        <div class="sidebar-user-meta">
+          <div class="sidebar-user-name" id="sidebarAdminName">Super Admin</div>
+          <div class="sidebar-user-role" id="sidebarAdminRole">ALL UNITS</div>
+        </div>
+      </div>
+      <button class="sidebar-logout-btn" onclick="adminLogout()" title="Logout">
+        <span>🚪</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Sidebar Backdrop for Mobile -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
+
+  <!-- MAIN DASHBOARD CONTENT AREA -->
+  <div class="admin-main-content" id="adminMainContent">
+
   <!-- 🏢 Executive Clean Top Header -->
   <header>
     <div class="brand-left">
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleAdminSidebar()" title="Toggle Left Navigation Menu">
+        <span>☰</span>
+      </button>
+
       <img src="/images/mashal_official_logo.png" alt="Mashal" class="brand-logo-img">
       <div class="brand-text">
         <h1>Khandelia Oil & General Mills Pvt. Ltd.</h1>
@@ -1759,20 +2229,58 @@
     </div>
   </div>
 
-  <!-- 👥 SUPER ADMIN USER & ACCOUNT MANAGEMENT PANEL -->
+  <!-- 👥 SUPER ADMIN USER & PHONE AUTHORIZATION CONTROL PANEL -->
   <div class="table-card-wrapper" id="usersCardWrapper" style="display: none; padding: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
       <div>
-        <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">👥 User & Role Authorization Control</h2>
-        <p style="font-size: 13px; color: var(--text-secondary);">Manage authorized accounts (Super Admin Only). Only authorized mobile numbers can log in via OTP to APK & Web.</p>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--brand-mashal); margin-bottom: 4px;">👥 Customer & Sales Manager Phone Authorization</h2>
+        <p style="font-size: 13px; color: var(--text-secondary);">Super Admin Access Control: Manage authorized Customer and Area Sales Manager numbers. Strict OTP login verification enforced.</p>
       </div>
       <div style="display: flex; gap: 10px;">
         <button class="btn-tool" onclick="loadAdminUsers()" title="Reload user list">
           <span>🔄</span> <span>Refresh</span>
         </button>
-        <button class="btn-tool primary" onclick="openCreateUserModal()" title="Add new authorized user account">
-          <span>➕</span> <span>Add New Account</span>
+        <button class="btn-tool primary" onclick="openCreateUserModal()" title="Authorize new phone number / user account">
+          <span>➕</span> <span>Authorize New Mobile #</span>
         </button>
+      </div>
+    </div>
+
+    <!-- 🔒 Security Notice Banner -->
+    <div class="user-auth-banner">
+      <span class="user-auth-banner-icon">🔒</span>
+      <div>
+        <div style="font-size: 14px; font-weight: 800; color: #1e40af; margin-bottom: 3px;">Strict Mobile OTP Authorization System Active</div>
+        <div style="font-size: 12.5px; color: #1e3a8a; line-height: 1.5;">
+          Only mobile numbers registered below with <strong>ACTIVE</strong> status are authorized to request OTP and log in to the <strong>Customer Portal</strong> (<code>/</code>) and <strong>Area Sales Manager Portal</strong> (<code>/sale_manager</code>). If a number is <strong>BLOCKED</strong> or not registered, OTP login is immediately rejected.
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar for Users -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--card-border);">
+      <div class="user-role-filter-pills" style="margin-bottom: 0;">
+        <button class="role-filter-pill active" id="userPillAll" onclick="filterUsersByRole('ALL')">
+          <span>All Accounts</span>
+          <span class="brand-stat-pill" id="userCountAllPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+        </button>
+        <button class="role-filter-pill" id="userPillCustomer" onclick="filterUsersByRole('customer')">
+          <span>🛒 Customers</span>
+          <span class="brand-stat-pill" id="userCountCustPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+        </button>
+        <button class="role-filter-pill" id="userPillAsm" onclick="filterUsersByRole('asm')">
+          <span>👔 Area Sales Managers (ASM)</span>
+          <span class="brand-stat-pill" id="userCountAsmPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+        </button>
+        <button class="role-filter-pill" id="userPillStaff" onclick="filterUsersByRole('staff')">
+          <span>🛡️ Admins & Staff</span>
+          <span class="brand-stat-pill" id="userCountStaffPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+        </button>
+      </div>
+
+      <div style="position: relative; min-width: 250px;">
+        <span style="position: absolute; left: 10px; top: 9px; font-size: 13px; color: var(--text-muted);">🔍</span>
+        <input type="text" id="userSearchInput" class="search-box" style="padding-left: 32px; width: 100%;" placeholder="Search phone, name, firm..." oninput="filterUsersBySearch(this.value)">
       </div>
     </div>
 
@@ -1842,6 +2350,9 @@
       </table>
     </div>
   </div>
+
+    </div><!-- /.admin-main-content -->
+</div><!-- /.admin-app-layout -->
 
   <!-- ➕ CREATE / EDIT USER MODAL -->
   <div class="generic-modal-overlay" id="createUserModalOverlay" style="display: none;" onclick="closeCreateUserModal(event)">
@@ -2125,9 +2636,62 @@
       });
     });
 
+    // 🧭 Left Navigation Sidebar Controls
+    function toggleAdminSidebar(forceState) {
+      const sidebar = document.getElementById("adminSidebar");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      if (!sidebar) return;
+
+      const shouldOpen = typeof forceState === "boolean" ? forceState : !sidebar.classList.contains("open");
+      sidebar.classList.toggle("open", shouldOpen);
+      if (backdrop) backdrop.classList.toggle("open", shouldOpen);
+    }
+
+    function selectSidebarNav(navKey) {
+      // Update sidebar active classes
+      const navKeys = ["ALL", "PENDING", "CONFIRMED", "PACKING", "USERS", "UNITS"];
+      navKeys.forEach(k => {
+        const item = document.getElementById(`sideNav${k.charAt(0) + k.slice(1).toLowerCase()}`);
+        if (item) item.classList.remove("active");
+      });
+      const activeItem = document.getElementById(`sideNav${navKey.charAt(0) + navKey.slice(1).toLowerCase()}`);
+      if (activeItem) activeItem.classList.add("active");
+
+      if (window.innerWidth < 992) {
+        toggleAdminSidebar(false);
+      }
+
+      if (navKey === "ALL" || navKey === "PENDING" || navKey === "CONFIRMED") {
+        setStatusTab(navKey);
+        const cp = document.getElementById("controlsPanel");
+        if (cp) cp.style.display = "flex";
+        const kpi = document.getElementById("kpiContainer");
+        if (kpi) kpi.style.display = "grid";
+        const tbl = document.getElementById("tableCardWrapper");
+        if (tbl) tbl.style.display = "flex";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (navKey === "PACKING") {
+        setStatusTab("ALL");
+        toggleWarehouseSection(true);
+        const wh = document.getElementById("warehouseSection");
+        if (wh) {
+          wh.style.display = "block";
+          wh.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (navKey === "USERS") {
+        setStatusTab("USERS");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (navKey === "UNITS") {
+        setStatusTab("UNITS");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
     function showLoginOverlay() {
       document.getElementById("loginOverlay").style.display = "flex";
       document.getElementById("headerRight").style.display = "none";
+      if (document.getElementById("adminSidebar")) document.getElementById("adminSidebar").style.display = "none";
+      if (document.getElementById("sidebarToggleBtn")) document.getElementById("sidebarToggleBtn").style.display = "none";
       if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "none";
       document.getElementById("kpiContainer").style.display = "none";
       document.getElementById("warehouseSection").style.display = "none";
@@ -2141,6 +2705,10 @@
     function showDashboardUI() {
       document.getElementById("loginOverlay").style.display = "none";
       document.getElementById("headerRight").style.display = "flex";
+      if (document.getElementById("adminSidebar")) document.getElementById("adminSidebar").style.display = "flex";
+      if (document.getElementById("sidebarToggleBtn")) {
+        document.getElementById("sidebarToggleBtn").style.display = (window.innerWidth < 992) ? "flex" : "none";
+      }
       if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "flex";
       document.getElementById("kpiContainer").style.display = "grid";
       document.getElementById("warehouseSection").style.display = "block";
@@ -2176,6 +2744,13 @@
           <span>${escapeHtml(currentUsername)} (${roleTitle}) • ${escapeHtml(unitNote)}</span>
         </div>
       `;
+
+      if (document.getElementById("sidebarAdminName")) {
+        document.getElementById("sidebarAdminName").textContent = currentUsername || "Super Administrator";
+      }
+      if (document.getElementById("sidebarAdminRole")) {
+        document.getElementById("sidebarAdminRole").textContent = `${roleTitle} • ${unitNote}`;
+      }
     }
 
     // Login Handler
@@ -2351,7 +2926,7 @@
       applyAllFilters();
     }
 
-    // 2 & 4. Status Tab Filtering Logic
+    // 2 & 4. Status Tab & Sidebar Navigation Filtering Logic
     function setStatusTab(statusType) {
       activeStatusTab = statusType;
       document.getElementById("tabStatusAll").classList.toggle("active", statusType === "ALL");
@@ -2364,30 +2939,48 @@
         document.getElementById("tabStatusUnits").classList.toggle("active", statusType === "UNITS");
       }
 
+      // Synchronize Left Sidebar Nav Active Highlight
+      const navMap = { "ALL": "sideNavAll", "PENDING": "sideNavPending", "CONFIRMED": "sideNavConfirmed", "USERS": "sideNavUsers", "UNITS": "sideNavUnits" };
+      document.querySelectorAll(".sidebar-nav-item").forEach(b => b.classList.remove("active"));
+      const currentNavBtn = document.getElementById(navMap[statusType]);
+      if (currentNavBtn) currentNavBtn.classList.add("active");
+
       const tableWrapper = document.getElementById("tableCardWrapper");
       const usersWrapper = document.getElementById("usersCardWrapper");
       const unitsWrapper = document.getElementById("unitsCardWrapper");
-      const warehouseCard = document.getElementById("warehouseSummaryCard");
+      const controlsPanel = document.getElementById("controlsPanel");
+      const kpiContainer = document.getElementById("kpiContainer");
+      const warehouseSection = document.getElementById("warehouseSection");
+      const scrollNavBar = document.getElementById("scrollNavBar");
 
       if (statusType === "USERS") {
         if (tableWrapper) tableWrapper.style.display = "none";
-        if (warehouseCard) warehouseCard.style.display = "none";
         if (unitsWrapper) unitsWrapper.style.display = "none";
+        if (controlsPanel) controlsPanel.style.display = "none";
+        if (kpiContainer) kpiContainer.style.display = "none";
+        if (warehouseSection) warehouseSection.style.display = "none";
+        if (scrollNavBar) scrollNavBar.style.display = "none";
         if (usersWrapper) usersWrapper.style.display = "block";
         loadAdminUsers();
         return;
       } else if (statusType === "UNITS") {
         if (tableWrapper) tableWrapper.style.display = "none";
-        if (warehouseCard) warehouseCard.style.display = "none";
         if (usersWrapper) usersWrapper.style.display = "none";
+        if (controlsPanel) controlsPanel.style.display = "none";
+        if (kpiContainer) kpiContainer.style.display = "none";
+        if (warehouseSection) warehouseSection.style.display = "none";
+        if (scrollNavBar) scrollNavBar.style.display = "none";
         if (unitsWrapper) unitsWrapper.style.display = "block";
         loadWarehouseUnits();
         return;
       } else {
         if (usersWrapper) usersWrapper.style.display = "none";
         if (unitsWrapper) unitsWrapper.style.display = "none";
-        if (tableWrapper) tableWrapper.style.display = "block";
-        if (warehouseCard) warehouseCard.style.display = "block";
+        if (controlsPanel) controlsPanel.style.display = "flex";
+        if (kpiContainer) kpiContainer.style.display = "grid";
+        if (warehouseSection) warehouseSection.style.display = "block";
+        if (scrollNavBar) scrollNavBar.style.display = "flex";
+        if (tableWrapper) tableWrapper.style.display = "flex";
       }
 
       currentPage = 1;
@@ -2667,6 +3260,46 @@
 
     // 👥 Super Admin User Management Functions
     let adminUsersList = [];
+    let currentRoleUserFilter = "ALL";
+    let currentUserSearchQuery = "";
+
+    function filterUsersByRole(role) {
+      currentRoleUserFilter = role;
+      document.getElementById("userPillAll").classList.toggle("active", role === "ALL");
+      document.getElementById("userPillCustomer").classList.toggle("active", role === "customer");
+      document.getElementById("userPillAsm").classList.toggle("active", role === "asm");
+      document.getElementById("userPillStaff").classList.toggle("active", role === "staff");
+      applyUserFiltersAndRender();
+    }
+
+    function filterUsersBySearch(q) {
+      currentUserSearchQuery = (q || "").trim().toLowerCase();
+      applyUserFiltersAndRender();
+    }
+
+    function applyUserFiltersAndRender() {
+      let filtered = [...adminUsersList];
+
+      if (currentRoleUserFilter === "customer") {
+        filtered = filtered.filter(u => (u.role || "").toLowerCase() === "customer");
+      } else if (currentRoleUserFilter === "asm") {
+        filtered = filtered.filter(u => (u.role || "").toLowerCase() === "asm");
+      } else if (currentRoleUserFilter === "staff") {
+        filtered = filtered.filter(u => ["super_admin", "admin", "manager", "analyst"].includes((u.role || "").toLowerCase()));
+      }
+
+      if (currentUserSearchQuery) {
+        filtered = filtered.filter(u => {
+          const name = (u.name || "").toLowerCase();
+          const phone = (u.phone || "").toLowerCase();
+          const party = (u.party_name || "").toLowerCase();
+          const code = (u.party_code || "").toLowerCase();
+          return name.includes(currentUserSearchQuery) || phone.includes(currentUserSearchQuery) || party.includes(currentUserSearchQuery) || code.includes(currentUserSearchQuery);
+        });
+      }
+
+      renderUsersTable(filtered);
+    }
 
     async function loadAdminUsers() {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
@@ -2680,10 +3313,20 @@
         const data = await res.json();
         if (res.ok && data.status === "success") {
           adminUsersList = data.users || [];
-          if (document.getElementById("badgeUsersCount")) {
-            document.getElementById("badgeUsersCount").textContent = adminUsersList.length;
-          }
-          renderUsersTable(adminUsersList);
+          
+          const totalCount = adminUsersList.length;
+          const custCount = adminUsersList.filter(u => (u.role || "").toLowerCase() === "customer").length;
+          const asmCount = adminUsersList.filter(u => (u.role || "").toLowerCase() === "asm").length;
+          const staffCount = adminUsersList.filter(u => ["super_admin", "admin", "manager", "analyst"].includes((u.role || "").toLowerCase())).length;
+
+          if (document.getElementById("badgeUsersCount")) document.getElementById("badgeUsersCount").textContent = totalCount;
+          if (document.getElementById("sideBadgeUsers")) document.getElementById("sideBadgeUsers").textContent = totalCount;
+          if (document.getElementById("userCountAllPill")) document.getElementById("userCountAllPill").textContent = totalCount;
+          if (document.getElementById("userCountCustPill")) document.getElementById("userCountCustPill").textContent = custCount;
+          if (document.getElementById("userCountAsmPill")) document.getElementById("userCountAsmPill").textContent = asmCount;
+          if (document.getElementById("userCountStaffPill")) document.getElementById("userCountStaffPill").textContent = staffCount;
+
+          applyUserFiltersAndRender();
         } else {
           tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell" style="color: #dc2626;">Failed to load accounts: ${escapeHtml(data.detail || data.message || "Unauthorized")}</td></tr>`;
         }
@@ -2924,6 +3567,10 @@
       document.getElementById("badgeAllCount").textContent = dateFilteredOrders.length;
       document.getElementById("badgePendingCount").textContent = pendingTotal;
       document.getElementById("badgeConfirmedCount").textContent = confirmedTotal;
+
+      if (document.getElementById("sideBadgeAll")) document.getElementById("sideBadgeAll").textContent = dateFilteredOrders.length;
+      if (document.getElementById("sideBadgePending")) document.getElementById("sideBadgePending").textContent = pendingTotal;
+      if (document.getElementById("sideBadgeConfirmed")) document.getElementById("sideBadgeConfirmed").textContent = confirmedTotal;
 
       // 2. Filter dataset for table display (applying status tab and search term)
       filteredOrdersData = dateFilteredOrders.filter(o => {

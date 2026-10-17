@@ -1709,10 +1709,18 @@
     <div class="modal-content" style="max-width: 400px; padding: 28px 22px; text-align: center;">
       <!-- Step 1: Mobile -->
       <div id="custAuthStep1">
-        <div style="font-size: 38px; margin-bottom: 8px;">🏬</div>
-        <div class="modal-title" style="font-size: 19px; margin-bottom: 6px;">Customer Login</div>
-        <div style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.4;">
-          Enter your registered 10-digit mobile number to verify access to Khandelia OMS.
+        <div style="width: 56px; height: 56px; margin: 0 auto 12px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <div class="modal-title" style="font-size: 19px; margin-bottom: 6px; font-weight: 800; color: #0a2540;">Customer Login</div>
+        <div style="font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.4;">
+          Enter your authorized 10-digit mobile number to access your account & place orders.
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-bottom: 16px; font-size: 11.5px; color: #475569;">
+          🛡️ <strong>Authorized Access:</strong> Only mobile numbers registered & approved by Super Admin can sign in.
         </div>
 
         <input type="tel" id="loginCustPhone" class="auth-input" placeholder="Enter 10-digit mobile number" maxlength="10" required>
@@ -1725,8 +1733,13 @@
 
       <!-- Step 2: OTP -->
       <div id="custAuthStep2" style="display: none;">
-        <div style="font-size: 38px; margin-bottom: 8px;">📲</div>
-        <div class="modal-title" style="font-size: 19px; margin-bottom: 6px;">Enter 6-Digit OTP</div>
+        <div style="width: 56px; height: 56px; margin: 0 auto 12px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+        </div>
+        <div class="modal-title" style="font-size: 19px; margin-bottom: 6px; font-weight: 800; color: #0a2540;">Enter 6-Digit OTP</div>
         <div id="custAuthSentMsg" style="font-size: 13px; color: #64748b; margin-bottom: 18px;">
           OTP sent to your registered mobile number.
         </div>
@@ -1845,6 +1858,16 @@
   </div>
 
   <script>
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     const mashalItems = [
       "1 LTR. BOTTLE x 15",
       "500 ML BOTTLE x 30",
@@ -1932,7 +1955,15 @@
       faujiContainer.innerHTML = fHtml;
 
       // Today's date default
-      document.getElementById("orderDate").valueAsDate = new Date();
+      const dateEl = document.getElementById("orderDate");
+      if (dateEl) dateEl.valueAsDate = new Date();
+    }
+
+    // Auto-render product items immediately
+    try {
+      renderItemList();
+    } catch (err) {
+      console.error("renderItemList error:", err);
     }
 
     function adjustQty(targetId, delta) {
@@ -2837,7 +2868,7 @@
 
     async function requestCustomerOtp() {
       const phoneInput = document.getElementById("loginCustPhone");
-      const phone = phoneInput.value.replace(/\\D/g, "");
+      const phone = phoneInput.value.replace(/\D/g, "");
       const errBox = document.getElementById("custLoginError");
       const btn = document.getElementById("btnSendCustOtp");
 
@@ -2897,7 +2928,7 @@
     }
 
     async function submitCustomerOtp() {
-      const phone = window._pendingCustPhone || document.getElementById("loginCustPhone").value.replace(/\\D/g, "");
+      const phone = window._pendingCustPhone || document.getElementById("loginCustPhone").value.replace(/\D/g, "");
       const otp = document.getElementById("loginCustOtp").value.trim();
       const errBox = document.getElementById("custOtpError");
       const btn = document.getElementById("btnVerifyCustOtp");
