@@ -651,7 +651,7 @@ def get_orders_for_customer(party_name: str = "", party_code: str = "", phone: s
             digits = "".join(filter(str.isdigit, str(phone)))
             clean_p = digits[-10:] if len(digits) >= 10 else digits
             conditions.append("(party_address LIKE ? OR delivery_address LIKE ?)")
-            params.append(f"%{clean_p}%")
+            params.extend([f"%{clean_p}%", f"%{clean_p}%"])
 
         if not conditions:
             return []
