@@ -1256,180 +1256,305 @@
       padding: 16px;
     }
 
-    .date-filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      background: #f8fafc;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-    }
-
-    .date-pills-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      flex: 1 1 auto;
-    }
-
-    .btn-date-pill {
-      padding: 6px 12px;
+    /* 🗓️ ULTRA-PREMIUM SEGMENTED FILTER CARD */
+    .filter-dashboard-card {
       background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 20px;
-      font-size: 11.5px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 8px 10px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    }
+
+    .filter-segmented-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 3px;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 4px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+
+    .seg-btn.active {
+      background: #047857;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(4, 120, 87, 0.28);
+    }
+
+    .seg-btn:active {
+      transform: scale(0.97);
+    }
+
+    .filter-date-input-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 6px 12px;
+      transition: all 0.15s ease;
+    }
+
+    .filter-date-input-wrap:focus-within {
+      border-color: #047857;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+    }
+
+    .date-input-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
       font-weight: 700;
       color: #475569;
-      cursor: pointer;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
 
-    .btn-date-pill.active {
-      background: #16a34a;
-      color: #ffffff;
-      border-color: #16a34a;
-      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
-    }
-
-    .custom-date-pill-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 20px;
-      padding: 3px 10px;
-      flex-shrink: 0;
-      max-width: 100%;
-    }
-
-    .date-picker-inline {
+    .filter-native-date-input {
       border: none;
-      font-size: 12px;
-      font-family: inherit;
-      color: #334155;
       background: transparent;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
       outline: none;
       cursor: pointer;
-      max-width: 130px;
+      text-align: right;
     }
 
+    /* 📊 Elevated Metrics KPI Strip */
     .customer-kpi-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .customer-kpi-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 10px 12px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 8px;
       text-align: center;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .customer-kpi-card.kpi-orders {
+      background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+      border-color: #dcfce7;
+    }
+
+    .customer-kpi-card.kpi-boxes {
+      background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+      border-color: #e0f2fe;
+    }
+
+    .customer-kpi-card.kpi-pieces {
+      background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%);
+      border-color: #f3e8ff;
     }
 
     .customer-kpi-num {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 800;
-      color: #0f172a;
+      line-height: 1.2;
       font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 2px;
     }
 
+    .kpi-orders .customer-kpi-num { color: #15803d; }
+    .kpi-boxes .customer-kpi-num { color: #0284c7; }
+    .kpi-pieces .customer-kpi-num { color: #7e22ce; }
+
     .customer-kpi-label {
-      font-size: 10.5px;
+      font-size: 10px;
       color: #64748b;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.05em;
     }
 
-    /* Customer Order Card */
+    /* 📦 Modern Customer Order Cards */
     .cust-order-card {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px 14px 12px;
       margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .cust-order-card:hover {
       border-color: #86efac;
-      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.08);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.08);
     }
 
     .cust-order-card-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 8px;
-      gap: 8px;
+      margin-bottom: 10px;
+      gap: 10px;
     }
 
-    .cust-order-card-id {
+    .cust-order-card-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .cust-order-card-id-badge {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 800;
       font-size: 13.5px;
-      color: #16a34a;
+      color: #047857;
+      white-space: nowrap;
+      letter-spacing: -0.2px;
     }
 
     .cust-order-card-date {
-      font-size: 11.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
       color: #64748b;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .cust-order-card-header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .pill-status-confirmed {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      border-radius: 20px;
+      font-size: 10.5px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(4, 120, 87, 0.08);
+    }
+
+    .pill-status-pending {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+      border-radius: 20px;
+      font-size: 10.5px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(180, 83, 9, 0.08);
+    }
+
+    .so-sub-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .cust-order-card-party {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 3px;
+      line-height: 1.35;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cust-order-card-items-box {
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+      color: #334155;
+      line-height: 1.4;
+    }
+
+    .cust-order-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 1px dashed #e2e8f0;
+      gap: 8px;
     }
 
     .pill-boxes {
       padding: 3px 8px;
       background: #eff6ff;
       color: #1d4ed8;
+      border: 1px solid #dbeafe;
       border-radius: 6px;
       font-size: 11.5px;
-      font-weight: 700;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .pill-pieces {
       padding: 3px 8px;
       background: #f0fdf4;
       color: #15803d;
+      border: 1px solid #dcfce7;
       border-radius: 6px;
       font-size: 11.5px;
-      font-weight: 700;
-    }
-
-    .pill-status-confirmed {
-      padding: 3px 8px;
-      background: #f0fdf4;
-      color: #166534;
-      border-radius: 6px;
-      font-size: 11px;
       font-weight: 800;
-    }
-
-    .pill-status-pending {
-      padding: 3px 8px;
-      background: #fefce8;
-      color: #854d0e;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .btn-view-slip-sm {
-      padding: 5px 10px;
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
+      padding: 5px 11px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
       font-size: 11.5px;
       font-weight: 700;
       color: #1e293b;
@@ -1437,6 +1562,13 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      transition: all 0.15s ease;
+    }
+
+    .btn-view-slip-sm:active {
+      transform: scale(0.96);
+      background: #f8fafc;
     }
 
     .btn-view-slip-sm:hover {
@@ -1683,38 +1815,44 @@
 
     <!-- 📦 SECTION 2: CUSTOMER MY ORDERS & HISTORY -->
     <div id="sectionCustomerOrders" class="customer-orders-wrap" style="display: none;">
-      <!-- Date Filter Bar (Responsive wrap - no mm/dd clipping) -->
-      <div class="date-filter-bar">
-        <div class="date-pills-row">
-          <button type="button" class="btn-date-pill active" id="btnCustDateToday" onclick="setCustomerDateFilter('TODAY')">
-            <span>📅 Today</span>
+      <!-- 🗓️ ULTRA-PREMIUM SEGMENTED DATE FILTER BAR -->
+      <div class="filter-dashboard-card">
+        <div class="filter-segmented-bar">
+          <button type="button" class="seg-btn active" id="btnCustDateToday" onclick="setCustomerDateFilter('TODAY')">
+            <span class="seg-icon">📅</span>
+            <span>Today</span>
           </button>
-          <button type="button" class="btn-date-pill" id="btnCustDateYesterday" onclick="setCustomerDateFilter('YESTERDAY')">
-            <span>⏪ Yesterday</span>
+          <button type="button" class="seg-btn" id="btnCustDateYesterday" onclick="setCustomerDateFilter('YESTERDAY')">
+            <span class="seg-icon">⏪</span>
+            <span>Yesterday</span>
           </button>
-          <button type="button" class="btn-date-pill" id="btnCustDateAll" onclick="setCustomerDateFilter('ALL')">
-            <span>📋 All Orders</span>
+          <button type="button" class="seg-btn" id="btnCustDateAll" onclick="setCustomerDateFilter('ALL')">
+            <span class="seg-icon">📋</span>
+            <span>All Orders</span>
           </button>
         </div>
-        <div class="custom-date-pill-wrap">
-          <span style="font-size: 12px;">🗓️</span>
-          <input type="date" id="custCustomDatePicker" class="date-picker-inline" onchange="setCustomerDateFilter('CUSTOM')" title="Pick specific date">
+        <div class="filter-date-input-wrap">
+          <div class="date-input-label">
+            <span>🗓️</span>
+            <span>Pick Specific Date:</span>
+          </div>
+          <input type="date" id="custCustomDatePicker" class="filter-native-date-input" onchange="setCustomerDateFilter('CUSTOM')" title="Select custom date">
         </div>
       </div>
 
       <!-- Customer KPI Cards -->
       <div class="customer-kpi-row">
-        <div class="customer-kpi-card">
-          <div class="customer-kpi-num" id="custKpiTotalOrders" style="color: #16a34a;">0</div>
-          <div class="customer-kpi-label">Orders</div>
+        <div class="customer-kpi-card kpi-orders">
+          <div class="customer-kpi-num" id="custKpiTotalOrders">0</div>
+          <div class="customer-kpi-label">Total Orders</div>
         </div>
-        <div class="customer-kpi-card">
-          <div class="customer-kpi-num" id="custKpiTotalBoxes" style="color: #0284c7;">0</div>
-          <div class="customer-kpi-label">Boxes</div>
+        <div class="customer-kpi-card kpi-boxes">
+          <div class="customer-kpi-num" id="custKpiTotalBoxes">0</div>
+          <div class="customer-kpi-label">Total Boxes</div>
         </div>
-        <div class="customer-kpi-card">
-          <div class="customer-kpi-num" id="custKpiTotalPieces" style="color: #2563eb;">0</div>
-          <div class="customer-kpi-label">Pieces</div>
+        <div class="customer-kpi-card kpi-pieces">
+          <div class="customer-kpi-num" id="custKpiTotalPieces">0</div>
+          <div class="customer-kpi-label">Total Pieces</div>
         </div>
       </div>
 
@@ -3141,30 +3279,42 @@
       orders.forEach(o => {
         const isConfirmed = o.orderStatus === "CONFIRMED";
         const statusBadge = isConfirmed
-          ? `<span class="pill-status-confirmed">✔ CONFIRMED ${o.soNumber ? '(#' + escapeHtml(o.soNumber) + ')' : ''}</span>`
+          ? `<span class="pill-status-confirmed">✔ CONFIRMED</span>`
           : `<span class="pill-status-pending">⏳ PENDING SO</span>`;
+        const soSubBadge = (isConfirmed && o.soNumber)
+          ? `<span class="so-sub-badge">SO #${escapeHtml(String(o.soNumber).replace('#',''))}</span>`
+          : '';
 
         html += `
           <div class="cust-order-card">
             <div class="cust-order-card-header">
-              <div>
-                <span class="cust-order-card-id">#${escapeHtml(o.cleanId)}</span>
-                <div class="cust-order-card-date">${escapeHtml(o.formattedTimestamp || o.order_date || "-")}</div>
+              <div class="cust-order-card-header-left">
+                <div class="cust-order-card-id-badge">#${escapeHtml(o.cleanId)}</div>
+                <div class="cust-order-card-date">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>${escapeHtml(o.formattedTimestamp || o.order_date || "-")}</span>
+                </div>
               </div>
-              <div>${statusBadge}</div>
+              <div class="cust-order-card-header-right">
+                ${statusBadge}
+                ${soSubBadge}
+              </div>
             </div>
 
-            <div style="font-size: 13px; color: #334155; background: #f8fafc; padding: 8px 10px; border-radius: 8px; margin-bottom: 10px;">
-              <strong>Items:</strong> ${escapeHtml(o.itemsSummary || "Packaging items")}
+            <div class="cust-order-card-items-box">
+              <strong style="color: #0f172a;">📦 Items:</strong> ${escapeHtml(o.itemsSummary || "Packaging items")}
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
-              <div style="display: flex; gap: 6px;">
+            <div class="cust-order-card-footer">
+              <div class="order-card-badge-row">
                 <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
               </div>
               <button type="button" class="btn-view-slip-sm" onclick="viewCustomerOrderSlip('${escapeHtml(o.cleanId)}')">
-                👁️ View Slip
+                <span>👁️</span> <span>View Slip</span>
               </button>
             </div>
           </div>
