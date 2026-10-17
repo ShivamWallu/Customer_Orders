@@ -61,12 +61,20 @@ def init_db():
                 created_at TEXT NOT NULL,
                 expires_at REAL NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS admin_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                token TEXT UNIQUE NOT NULL,
+                username TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                expires_at REAL NOT NULL
+            );
             CREATE INDEX IF NOT EXISTS idx_orders_created ON orders (created_at DESC);
             CREATE INDEX IF NOT EXISTS idx_orders_party ON orders (party_name);
             CREATE INDEX IF NOT EXISTS idx_orders_synced ON orders (synced_to_sheet);
             CREATE INDEX IF NOT EXISTS idx_orders_wa_status ON orders (whatsapp_status);
             CREATE INDEX IF NOT EXISTS idx_mgr_token ON sales_manager_sessions (token);
             CREATE INDEX IF NOT EXISTS idx_mgr_phone ON sales_manager_sessions (phone);
+            CREATE INDEX IF NOT EXISTS idx_admin_token ON admin_sessions (token);
             """)
         # Safe migration for new columns
         try:
@@ -339,6 +347,124 @@ def migrate_existing_json_orders():
             print(f"[DATABASE MIGRATION] Migrated {count} historical orders into orders.db")
     except Exception as e:
         print(f"[DATABASE MIGRATION NOTICE] {e}")
+
+def create_admin_session(username: str = "admin") -> str:
+    """Creates a secure 7-day persistent session token for Admin Dashboard"""
+    import secrets
+    import time
+    token = f"ADM_{secrets.token_hex(24)}"
+    now = time.time()
+    expires_at = now + (7 * 24 * 3600)
+    now_str = datetime.now().isoformat()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            INSERT INTO admin_sessions (token, username, created_at, expires_at)
+            VALUES (?, ?, ?, ?)
+            """, (token, username, now_str, expires_at))
+        return token
+    finally:
+        conn.close()
+
+def validate_admin_session(token: str) -> Optional[Dict[str, Any]]:
+    """Validates if admin token is active and not expired"""
+    import time
+    if not token:
+        return None
+    # Support static master token from .env as fallback
+    master_token = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN_2026_XYZ")
+    if token == master_token:
+        return {"username": "admin", "token": master_token}
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT username, token, expires_at FROM admin_sessions WHERE token = ?", (token,))
+        row = cur.fetchone()
+        if row and row["expires_at"] > time.time():
+            return {"username": row["username"], "token": row["token"]}
+        return None
+    finally:
+        conn.close()
+
+def delete_admin_session(token: str):
+    """Logs out admin by removing session token"""
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("DELETE FROM admin_sessions WHERE token = ?", (token,))
+    finally:
+        conn.close()
+
+def delete_order_from_db(order_id: str) -> bool:
+    """Permanently deletes an order from orders.db and removes from customer_orders.json"""
+    clean_id = (order_id or "").replace("#", "").strip()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("DELETE FROM orders WHERE order_id = ? OR order_id = ?", (clean_id, f"#{clean_id}"))
+        # Also clean up in customer_orders.json
+        orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
+        if os.path.exists(orders_log):
+            try:
+                with open(orders_log, "r", encoding="utf-8") as f:
+                    orders_list = json.load(f)
+                filtered = [o for o in orders_list if str(o.get("id", "")).replace("#", "").strip() != clean_id]
+                with open(orders_log, "w", encoding="utf-8") as f:
+                    json.dump(filtered, f, indent=2, ensure_ascii=False)
+            except Exception as e:
+                print(f"[JSON DELETE WARN] {e}")
+        return True
+    except Exception as e:
+        print(f"[DATABASE DELETE ERROR] {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_orders_stats() -> Dict[str, Any]:
+    """Calculates live KPI metrics directly from SQLite orders database"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*), COALESCE(SUM(total_boxes), 0), COALESCE(SUM(total_pieces), 0) FROM orders")
+        row = cur.fetchone()
+        total_orders = row[0] or 0
+        total_boxes = row[1] or 0
+        total_pieces = row[2] or 0
+
+        cur.execute("SELECT COUNT(*) FROM orders WHERE synced_to_sheet = 1")
+        synced_count = cur.fetchone()[0] or 0
+        pending_sync = total_orders - synced_count
+
+        cur.execute("SELECT COUNT(DISTINCT party_name) FROM orders")
+        unique_parties = cur.fetchone()[0] or 0
+
+        cur.execute("SELECT COUNT(DISTINCT sales_person) FROM orders WHERE sales_person IS NOT NULL AND sales_person != ''")
+        sales_reps = cur.fetchone()[0] or 0
+
+        today_str = datetime.now().strftime("%d/%m/%Y")
+        today_iso = datetime.now().strftime("%Y-%m-%d")
+        cur.execute("""
+        SELECT COUNT(*), COALESCE(SUM(total_boxes), 0) FROM orders 
+        WHERE formatted_timestamp LIKE ? OR order_date LIKE ? OR created_at LIKE ?
+        """, (f"%{today_str}%", f"%{today_str}%", f"{today_iso}%"))
+        t_row = cur.fetchone()
+        today_orders = t_row[0] or 0
+        today_boxes = t_row[1] or 0
+
+        return {
+            "totalOrders": total_orders,
+            "totalBoxes": total_boxes,
+            "totalPieces": total_pieces,
+            "syncedCount": synced_count,
+            "pendingSync": pending_sync,
+            "uniqueParties": unique_parties,
+            "activeSalesManagers": sales_reps,
+            "todayOrders": today_orders,
+            "todayBoxes": today_boxes
+        }
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     init_db()

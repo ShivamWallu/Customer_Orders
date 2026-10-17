@@ -29,7 +29,12 @@ from database import (
     get_all_orders_from_db,
     get_order_by_id,
     migrate_existing_json_orders,
-    validate_manager_session
+    validate_manager_session,
+    create_admin_session,
+    validate_admin_session,
+    delete_admin_session,
+    delete_order_from_db,
+    get_orders_stats
 )
 from crm_service import (
     init_crm_db,
@@ -231,6 +236,13 @@ def serve_sales_table_data():
     """Serves the protected Sales Customer Dashboard at http://127.0.0.1:8000/sale_table_data"""
     return FileResponse("index.html")
 
+@app.get("/admin")
+@app.get("/database")
+@app.get("/orders_db")
+def serve_admin_portal():
+    """Serves the Enterprise Orders Database & Records Management Portal"""
+    return FileResponse(os.path.join(BASE_DIR, "admin.html"))
+
 @app.get("/order_slips/{filename}")
 def serve_order_slip_file(filename: str):
     """Serves high-resolution rendered order slip PNG images"""
@@ -259,20 +271,123 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Admin@123#")
 AUTH_SECRET_TOKEN = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN_2026_XYZ")
 
 @app.post("/api/auth/login")
-async def admin_login(request: Request):
-    """Authenticates executive admin to view sales table data"""
+@app.post("/api/admin/login")
+async def admin_portal_login(request: Request):
+    """
+    🔐 Authenticates Executive Administrator to access Orders Database Portal
+    Default credentials: user - admin | pass - Admin@123#
+    """
     body = await request.json()
     username = body.get("username", "").strip()
     password = body.get("password", "")
     
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        token = create_admin_session(username)
         return {
             "status": "success",
-            "token": AUTH_SECRET_TOKEN,
-            "user": "admin",
-            "message": "Access granted"
+            "token": token,
+            "username": username,
+            "message": "Admin access granted"
         }
-    raise HTTPException(status_code=401, detail="Invalid username or password")
+    raise HTTPException(status_code=401, detail="Invalid administrator username or password")
+
+def require_admin_auth(request: Request) -> Dict[str, Any]:
+    """Helper dependency to protect all admin database operations"""
+    auth_header = request.headers.get("Authorization", "")
+    token = ""
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+    elif "admin_token" in request.cookies:
+        token = request.cookies.get("admin_token")
+    elif request.query_params.get("token"):
+        token = request.query_params.get("token")
+
+    admin = validate_admin_session(token)
+    if not admin:
+        raise HTTPException(status_code=401, detail="Unauthorized: Valid administrator session required")
+    return admin
+
+@app.get("/api/admin/orders")
+async def get_admin_orders(request: Request):
+    """Fetches all permanent orders from SQLite orders.db for the Admin Portal"""
+    require_admin_auth(request)
+    orders = get_all_orders_from_db(limit=1000)
+    return {"status": "success", "count": len(orders), "orders": orders}
+
+@app.get("/api/admin/stats")
+async def get_admin_dashboard_stats(request: Request):
+    """Fetches live KPI analytics metrics directly from SQLite database"""
+    require_admin_auth(request)
+    stats = get_orders_stats()
+    return stats
+
+@app.post("/api/admin/orders/resync")
+async def resync_admin_orders(request: Request):
+    """
+    Forces immediate sync of an order (or all pending orders) to Google Sheet
+    """
+    require_admin_auth(request)
+    data = await request.json()
+    order_id = str(data.get("orderId") or "").replace("#", "").strip()
+    sync_all = bool(data.get("syncAllPending"))
+
+    if not GOOGLE_SHEET_ORDERS_WEBAPP_URL:
+        raise HTTPException(status_code=400, detail="Google Sheets Web App URL not configured in .env")
+
+    import urllib.request
+    all_orders = get_all_orders_from_db(limit=1000)
+    to_sync = []
+
+    if sync_all:
+        to_sync = [o for o in all_orders if not o.get("synced_to_sheet")]
+    elif order_id:
+        to_sync = [o for o in all_orders if str(o.get("id")).replace("#", "").strip() == order_id]
+
+    if not to_sync:
+        return {"status": "success", "message": "No pending orders to sync", "syncedCount": 0}
+
+    synced_ids = []
+    for ord_obj in to_sync:
+        try:
+            req = urllib.request.Request(
+                GOOGLE_SHEET_ORDERS_WEBAPP_URL,
+                data=json.dumps(ord_obj).encode("utf-8"),
+                headers={"Content-Type": "application/json"}
+            )
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                mark_order_synced_in_db(ord_obj.get("id"))
+                synced_ids.append(ord_obj.get("id"))
+        except Exception as e:
+            print(f"[ADMIN RESYNC ERROR] #{ord_obj.get('id')}: {e}")
+
+    return {
+        "status": "success",
+        "message": f"Successfully synced {len(synced_ids)} order(s) to Google Sheet!",
+        "syncedIds": synced_ids
+    }
+
+@app.post("/api/admin/orders/delete")
+async def delete_admin_order(request: Request):
+    """Permanently deletes an order record from orders.db and customer_orders.json"""
+    require_admin_auth(request)
+    data = await request.json()
+    order_id = str(data.get("orderId") or "").replace("#", "").strip()
+    if not order_id:
+        raise HTTPException(status_code=400, detail="orderId is required")
+
+    success = delete_order_from_db(order_id)
+    if success:
+        return {"status": "success", "orderId": order_id, "message": f"Order #{order_id} deleted permanently"}
+    raise HTTPException(status_code=500, detail=f"Failed to delete order #{order_id}")
+
+@app.post("/api/admin/logout")
+async def logout_admin(request: Request):
+    """Logs out admin by removing token from database"""
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.split(" ", 1)[1].strip() if auth_header.startswith("Bearer ") else ""
+    if token:
+        delete_admin_session(token)
+    return {"status": "success", "message": "Logged out successfully"}
 
 import secrets
 import hmac
