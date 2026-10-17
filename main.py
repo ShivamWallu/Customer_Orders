@@ -1570,7 +1570,7 @@ async def receive_sheet_webhook(
 @app.get("/api/sheet/current")
 def get_current_sheet_data(x_admin_token: Optional[str] = Header(None)):
     """Returns the latest 1st sheet data - PROTECTED BY ADMIN AUTH"""
-    if x_admin_token != AUTH_SECRET_TOKEN:
+    if not validate_admin_session(x_admin_token):
         raise HTTPException(status_code=401, detail="Unauthorized: Executive access required")
 
     if not CURRENT_STATE["sheet_name"]:
@@ -1593,7 +1593,7 @@ def get_current_sheet_data(x_admin_token: Optional[str] = Header(None)):
 @app.get("/api/sheet/summary")
 def get_sheet_summary(x_admin_token: Optional[str] = Header(None)):
     """Quick metadata without heavy data payload - PROTECTED BY ADMIN AUTH"""
-    if x_admin_token != AUTH_SECRET_TOKEN:
+    if not validate_admin_session(x_admin_token):
         raise HTTPException(status_code=401, detail="Unauthorized: Executive access required")
     return {
         "sheet_name": CURRENT_STATE.get("sheet_name"),
