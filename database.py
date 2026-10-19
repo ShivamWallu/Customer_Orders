@@ -715,24 +715,33 @@ def search_sales_orders_db(query: str, limit: int = 50) -> List[Dict[str, Any]]:
     """
     Searches Sales Orders by SO Number, Order ID, Party Name, or Sales Person.
     Returns 100% accurate database records for search functionality.
+    Supports queries with or without '#' prefix (e.g. #KOGM-20261019-5501 or KOGM-20261019-5501).
     """
-    clean_q = (query or "").strip().lower()
-    if not clean_q:
+    clean_raw = (query or "").strip()
+    if not clean_raw:
         return []
+    clean_q = clean_raw.lower()
+    clean_q_no_hash = clean_q.lstrip("#").strip()
+    clean_q_no_so = clean_q_no_hash.replace("so #", "").replace("so#", "").replace("so ", "").strip()
     conn = get_connection()
     try:
         cur = conn.cursor()
-        search_pattern = f"%{clean_q}%"
+        p1 = f"%{clean_q}%"
+        p2 = f"%{clean_q_no_hash}%"
+        p3 = f"%{clean_q_no_so}%" if clean_q_no_so else p2
         cur.execute("""
         SELECT * FROM orders
         WHERE LOWER(order_id) LIKE ?
+           OR LOWER(order_id) LIKE ?
+           OR LOWER(so_number) LIKE ?
            OR LOWER(so_number) LIKE ?
            OR LOWER(party_name) LIKE ?
            OR LOWER(party_code) LIKE ?
            OR LOWER(sales_person) LIKE ?
+           OR LOWER(party_address) LIKE ?
         ORDER BY created_at DESC
         LIMIT ?
-        """, (search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, limit))
+        """, (p1, p2, p1, p3, p1, p1, p1, p1, limit))
         rows = cur.fetchall()
 
         result = []
@@ -747,6 +756,90 @@ def search_sales_orders_db(query: str, limit: int = 50) -> List[Dict[str, Any]]:
             d["partyName"] = d.get("party_name")
             d["partyCode"] = d.get("party_code")
             d["partyAddress"] = d.get("party_address")
+            d["deliveryAddress"] = d.get("delivery_address")
+            d["salesPerson"] = d.get("sales_person")
+            d["totalBoxes"] = d.get("total_boxes", 0)
+            d["totalPieces"] = d.get("total_pieces", 0)
+            d["orderStatus"] = d.get("order_status") or "PENDING"
+            d["soNumber"] = d.get("so_number") or ""
+            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
+            result.append(d)
+        return result
+    finally:
+        conn.close()
+
+def search_customer_orders_db(query: str, phone: str = "", party_code: str = "", party_name: str = "", limit: int = 20) -> List[Dict[str, Any]]:
+    """
+    Searches orders strictly scoped to a specific Customer by Order ID, SO Number, or Item name.
+    Strictly isolated: Customers can ONLY see and search their own orders.
+    """
+    clean_raw = (query or "").strip()
+    if not clean_raw:
+        return []
+
+    clean_q = clean_raw.lower()
+    clean_q_no_hash = clean_q.lstrip("#").strip()
+    clean_q_no_so = clean_q_no_hash.replace("so #", "").replace("so#", "").replace("so ", "").strip()
+
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cust_conds = []
+        cust_params = []
+
+        if party_code:
+            cust_conds.append("party_code = ?")
+            cust_params.append(party_code.strip())
+        if phone:
+            digits = "".join(filter(str.isdigit, str(phone)))
+            clean_p = digits[-10:] if len(digits) >= 10 else digits
+            if clean_p:
+                cust_conds.append("(party_address LIKE ? OR delivery_address LIKE ?)")
+                cust_params.extend([f"%{clean_p}%", f"%{clean_p}%"])
+        if not cust_conds and party_name:
+            cust_conds.append("LOWER(TRIM(party_name)) = ?")
+            cust_params.append(party_name.strip().lower())
+
+        if not cust_conds:
+            return []  # No customer credentials provided, return 0 for safety
+
+        scope_clause = "(" + " OR ".join(cust_conds) + ")"
+
+        p1 = f"%{clean_q}%"
+        p2 = f"%{clean_q_no_hash}%"
+        p3 = f"%{clean_q_no_so}%" if clean_q_no_so else p2
+
+        sql = f"""
+        SELECT * FROM orders
+        WHERE {scope_clause}
+          AND (
+               LOWER(order_id) LIKE ?
+            OR LOWER(order_id) LIKE ?
+            OR LOWER(so_number) LIKE ?
+            OR LOWER(so_number) LIKE ?
+            OR LOWER(items_summary) LIKE ?
+            OR LOWER(items_json) LIKE ?
+          )
+        ORDER BY created_at DESC
+        LIMIT ?
+        """
+        params = cust_params + [p1, p2, p1, p3, p2, p2, limit]
+        cur.execute(sql, params)
+        rows = cur.fetchall()
+
+        result = []
+        for r in rows:
+            d = dict(r)
+            try:
+                d["items"] = json.loads(d.get("items_json") or "[]")
+            except Exception:
+                d["items"] = []
+            d["id"] = d.get("order_id")
+            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
+            d["partyName"] = d.get("party_name")
+            d["partyCode"] = d.get("party_code")
+            d["partyAddress"] = d.get("party_address")
+            d["deliveryAddress"] = d.get("delivery_address")
             d["salesPerson"] = d.get("sales_person")
             d["totalBoxes"] = d.get("total_boxes", 0)
             d["totalPieces"] = d.get("total_pieces", 0)

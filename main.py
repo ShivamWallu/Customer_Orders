@@ -47,6 +47,7 @@ from database import (
     get_orders_for_asm,
     get_orders_for_customer,
     search_sales_orders_db,
+    search_customer_orders_db,
     get_all_units,
     create_or_update_unit,
     toggle_unit_status,
@@ -1920,6 +1921,41 @@ async def api_get_customer_orders(request: Request):
         "yesterdayCount": yesterday_count,
         "totalOrders": total_count,
         "orders": orders
+    }
+
+# 🔍 CUSTOMER ORDER TRACKING API (Strictly Scoped to Authenticated Customer)
+@app.get("/api/customer/track-order")
+async def api_customer_track_order(request: Request):
+    """
+    Search and track order strictly scoped to the authenticated Customer.
+    Guarantees privacy: A customer cannot view orders belonging to another party.
+    """
+    q = request.query_params.get("q", "").strip()
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.split(" ", 1)[1].strip() if auth_header.startswith("Bearer ") else request.query_params.get("token", "")
+    session = validate_customer_session(token) if token else None
+
+    party_code = ""
+    party_name = ""
+    phone = ""
+    if session:
+        party_code = session.get("party_code", "")
+        party_name = session.get("party_name", "")
+        phone = session.get("phone", "")
+    else:
+        party_code = request.query_params.get("party_code", "").strip()
+        party_name = request.query_params.get("party_name", "").strip()
+        phone = request.query_params.get("phone", "").strip()
+
+    if not (party_code or party_name or phone):
+        raise HTTPException(status_code=401, detail="Valid customer session or credentials required to track orders")
+
+    results = search_customer_orders_db(query=q, phone=phone, party_code=party_code, party_name=party_name, limit=10)
+    return {
+        "status": "success",
+        "query": q,
+        "count": len(results),
+        "orders": results
     }
 
 # 🔍 DIRECT SALES ORDER SEARCH API
