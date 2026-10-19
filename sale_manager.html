@@ -92,33 +92,47 @@
       position: relative;
     }
 
-    /* 🏷️ TOP HEADER (Matching order_form.html) */
+    /* 🏷️ TOP HEADER (Compact Modern App Bar - Image 3 Optimized) */
     .brand-header {
-      background: #ffffff;
-      padding: 16px 16px 12px;
-      text-align: center;
-      border-bottom: 1px solid var(--border-gray);
+      background: transparent;
+      padding: 0;
+      text-align: left;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
     }
 
     .company-name {
-      font-size: 15px;
+      font-size: 13.5px;
       font-weight: 800;
       color: var(--navy);
-      letter-spacing: 0.02em;
-      line-height: 1.3;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
       text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .order-badge-title {
-      display: inline-block;
-      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       background: var(--navy);
       color: #ffffff;
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 800;
-      letter-spacing: 0.08em;
-      padding: 4px 18px;
-      border-radius: 9999px;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 5px;
+      width: fit-content;
+      margin-top: 0;
+      line-height: 1.3;
+      text-transform: uppercase;
     }
 
     /* 👤 SUBTLE MANAGER STATUS BAR */
@@ -1060,34 +1074,40 @@
 
     /* 🍔 THREE-LINE HAMBURGER MENU & SLIDE-OUT SIDEBAR */
     .brand-header-wrap {
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 100;
       background: #ffffff;
       border-bottom: 1px solid var(--border-gray);
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 14px 58px 12px 16px;
+      justify-content: space-between;
+      padding: 8px 12px 8px 14px;
+      min-height: 52px;
       box-sizing: border-box;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
     .btn-hamburger {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      right: 12px;
-      width: 42px;
-      height: 42px;
+      position: relative;
+      top: auto;
+      transform: none;
+      right: auto;
+      width: 38px;
+      height: 38px;
       background: #f8fafc;
       border: 1px solid #cbd5e1;
-      border-radius: 10px;
+      border-radius: 9px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       cursor: pointer;
+      flex-shrink: 0;
+      margin-left: 10px;
       z-index: 50;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
       transition: all 0.2s ease;
       padding: 0;
     }
@@ -1098,13 +1118,13 @@
     }
 
     .btn-hamburger:active {
-      transform: translateY(-50%) scale(0.94);
+      transform: scale(0.94);
       background: #e2e8f0;
     }
 
     .hamburger-bar {
-      width: 20px;
-      height: 2.2px;
+      width: 18px;
+      height: 2px;
       background: var(--navy);
       border-radius: 2px;
       transition: all 0.25s ease;
@@ -1656,45 +1676,102 @@
       align-items: center;
       padding-top: 8px;
       border-top: 1px dashed #e2e8f0;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: nowrap;
     }
 
     .order-card-badge-row {
-      display: flex;
-      gap: 6px;
+      display: inline-flex;
       align-items: center;
+      gap: 5px;
+      flex-wrap: nowrap;
+      flex-shrink: 0;
     }
 
     .pill-boxes {
-      padding: 3px 8px;
+      padding: 3px 7px;
       background: #eff6ff;
       color: #1d4ed8;
       border: 1px solid #dbeafe;
       border-radius: 6px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 800;
       font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap !important;
+      word-break: keep-all !important;
+      display: inline-flex !important;
+      align-items: center;
+      flex-shrink: 0;
     }
 
     .pill-pieces {
-      padding: 3px 8px;
+      padding: 3px 7px;
       background: #f0fdf4;
       color: #15803d;
       border: 1px solid #dcfce7;
       border-radius: 6px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 800;
       font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap !important;
+      word-break: keep-all !important;
+      display: inline-flex !important;
+      align-items: center;
+      flex-shrink: 0;
     }
 
-    .btn-view-slip-sm {
-      padding: 5px 11px;
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
+    .btn-card-action {
+      padding: 5px 8px;
       border-radius: 8px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
-      color: #1e293b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      white-space: nowrap !important;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .btn-card-details {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      color: #334155;
+    }
+
+    .btn-card-details:hover {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+    }
+
+    .btn-card-slip {
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      color: #047857;
+    }
+
+    .btn-card-slip:hover {
+      background: #047857;
+      color: #ffffff;
+      border-color: #047857;
+    }
+
+    .btn-card-action:active {
+      transform: scale(0.96);
+    }
+
+    /* Backwards compatibility */
+    .btn-view-slip-sm {
+      padding: 5px 8px;
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #047857;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -1703,15 +1780,10 @@
       transition: all 0.15s ease;
     }
 
-    .btn-view-slip-sm:active {
-      transform: scale(0.96);
-      background: #f8fafc;
-    }
-
     .btn-view-slip-sm:hover {
-      background: #2563eb;
+      background: #047857;
       color: #ffffff;
-      border-color: #2563eb;
+      border-color: #047857;
     }
 
     /* 🔍 DIRECT SO SEARCH UI */
@@ -3009,14 +3081,14 @@
       orders.forEach(o => {
         const isConfirmed = o.orderStatus === "CONFIRMED";
         const statusBadge = isConfirmed
-          ? `<span class="pill-status-confirmed">✔ CONFIRMED</span>`
-          : `<span class="pill-status-pending">⏳ PENDING SO</span>`;
+          ? `<span class="pill-status-confirmed"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> CONFIRMED</span>`
+          : `<span class="pill-status-pending"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO</span>`;
         const soSubBadge = (isConfirmed && o.soNumber)
-          ? `<span class="so-sub-badge">SO #${escapeHtml(String(o.soNumber).replace('#',''))}</span>`
+          ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(String(o.soNumber).replace('#',''))}</span>`
           : '';
 
         html += `
-          <div class="asm-order-card">
+          <div class="asm-order-card" onclick="openSoDetailsModal('${escapeHtml(o.cleanId)}')">
             <div class="order-card-header">
               <div class="order-card-header-left">
                 <div class="order-card-id-badge">#${escapeHtml(o.cleanId)}</div>
@@ -3035,29 +3107,57 @@
             </div>
 
             <div class="order-card-party">
-              <span>🏬</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                <path d="M3 21h18"></path>
+                <path d="M9 8h1"></path>
+                <path d="M9 12h1"></path>
+                <path d="M9 16h1"></path>
+                <path d="M14 8h1"></path>
+                <path d="M14 12h1"></path>
+                <path d="M14 16h1"></path>
+                <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+              </svg>
               <span>${escapeHtml(o.partyName || "Customer")}</span>
             </div>
             <div class="order-card-address">
-              <span>📍</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
               <span>${escapeHtml(o.partyAddress || o.deliveryAddress || "-")}</span>
             </div>
 
             <div class="order-card-items-box">
-              <strong style="color: #0f172a;">📦 Items:</strong> ${escapeHtml(o.itemsSummary || "Packaging items")}
+              <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: #047857;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                Items:
+              </span>
+              <span>${escapeHtml(o.itemsSummary || "Packaging items")}</span>
             </div>
 
-            <div class="order-card-footer">
+            <div class="order-card-footer" onclick="event.stopPropagation()">
               <div class="order-card-badge-row">
                 <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
               </div>
               <div style="display: flex; gap: 6px;">
-                <button type="button" class="btn-view-slip-sm" onclick="openSoDetailsModal('${escapeHtml(o.cleanId)}')">
-                  <span>📄</span> <span>Details</span>
+                <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openSoDetailsModal('${escapeHtml(o.cleanId)}')" title="View all order details">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  <span>Details</span>
                 </button>
-                <button type="button" class="btn-view-slip-sm" onclick="viewOrderSlip('${escapeHtml(o.cleanId)}')">
-                  <span>👁️</span> <span>Slip</span>
+                <button type="button" class="btn-card-action btn-card-slip" onclick="event.stopPropagation(); viewOrderSlip('${escapeHtml(o.cleanId)}')" title="View digital order slip">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <span>View Slip</span>
                 </button>
               </div>
             </div>
