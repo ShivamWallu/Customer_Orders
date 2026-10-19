@@ -1346,7 +1346,39 @@
       min-width: 120px;
     }
 
-    /* 📊 Elevated Metrics KPI Strip */
+    .date-picker-custom-display {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .formatted-date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #047857;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 4px 9px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.2px;
+    }
+
+    .date-picker-custom-display input[type="date"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+    }
+
+    /* 📊 Elevated Metrics KPI Strip: Today, Yesterday, All Orders */
     .customer-kpi-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1358,24 +1390,31 @@
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 12px;
-      padding: 10px 8px;
+      padding: 10px 6px;
       text-align: center;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
 
-    .customer-kpi-card.kpi-orders {
+    .customer-kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .customer-kpi-card.kpi-today {
       background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
-      border-color: #dcfce7;
+      border-color: #bbf7d0;
     }
 
-    .customer-kpi-card.kpi-boxes {
-      background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
-      border-color: #e0f2fe;
+    .customer-kpi-card.kpi-yesterday {
+      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+      border-color: #bfdbfe;
     }
 
-    .customer-kpi-card.kpi-pieces {
+    .customer-kpi-card.kpi-total {
       background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%);
-      border-color: #f3e8ff;
+      border-color: #e9d5ff;
     }
 
     .customer-kpi-num {
@@ -1386,16 +1425,19 @@
       margin-bottom: 2px;
     }
 
-    .kpi-orders .customer-kpi-num { color: #15803d; }
-    .kpi-boxes .customer-kpi-num { color: #0284c7; }
-    .kpi-pieces .customer-kpi-num { color: #7e22ce; }
+    .kpi-today .customer-kpi-num { color: #15803d; }
+    .kpi-yesterday .customer-kpi-num { color: #0284c7; }
+    .kpi-total .customer-kpi-num { color: #7e22ce; }
 
     .customer-kpi-label {
       font-size: 10px;
       color: #64748b;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* 📦 Modern Customer Order Cards */
@@ -1712,9 +1754,9 @@
     <div class="sidebar-drawer" id="customerSidebarDrawer">
       <div class="sidebar-header">
         <div class="sidebar-user-avatar">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </div>
         <div class="sidebar-user-info">
@@ -1762,11 +1804,12 @@
         <button type="button" class="sidebar-nav-item" id="btnSidebarInstallApp" onclick="triggerPWAInstall(); closeCustomerSidebar();">
           <span class="nav-icon">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
               <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              <path d="M9 2v1m6-1v1"></path>
             </svg>
           </span>
-          <span>Install Mobile App (2X Fast)</span>
+          <span>Install Android Mobile App</span>
         </button>
         <button type="button" class="sidebar-nav-item logout" onclick="logoutCustomer()">
           <span class="nav-icon">
@@ -1931,41 +1974,47 @@
             </svg>
             <span>Select Date:</span>
           </div>
-          <input type="date" id="custCustomDatePicker" class="filter-native-date-input" onchange="setCustomerDateFilter('CUSTOM')" title="Select custom date">
+          <div class="date-picker-custom-display" onclick="document.getElementById('custCustomDatePicker').showPicker ? document.getElementById('custCustomDatePicker').showPicker() : document.getElementById('custCustomDatePicker').focus()">
+            <span id="custFormattedDateDisplay" class="formatted-date-badge">DD/MM/YYYY</span>
+            <input type="date" id="custCustomDatePicker" class="filter-native-date-input" onchange="onCustomerDateSelected(this.value)" title="Select date (DD/MM/YYYY)">
+          </div>
         </div>
       </div>
 
-      <!-- Customer KPI Cards -->
+      <!-- Customer KPI Cards: Today, Yesterday, All Orders (Total boxes & pieces removed per user request) -->
       <div class="customer-kpi-row">
-        <div class="customer-kpi-card kpi-orders">
+        <div class="customer-kpi-card kpi-today" onclick="setCustomerDateFilter('TODAY')" style="cursor: pointer;" title="Filter Today's Orders">
+          <div class="customer-kpi-num" id="custKpiTodayOrders">0</div>
+          <div class="customer-kpi-label">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -1px; margin-right: 2px;">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Today Orders
+          </div>
+        </div>
+        <div class="customer-kpi-card kpi-yesterday" onclick="setCustomerDateFilter('YESTERDAY')" style="cursor: pointer;" title="Filter Yesterday's Orders">
+          <div class="customer-kpi-num" id="custKpiYesterdayOrders">0</div>
+          <div class="customer-kpi-label">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -1px; margin-right: 2px;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 8 14"></polyline>
+            </svg>
+            Yesterday
+          </div>
+        </div>
+        <div class="customer-kpi-card kpi-total" onclick="setCustomerDateFilter('ALL')" style="cursor: pointer;" title="Show All Orders">
           <div class="customer-kpi-num" id="custKpiTotalOrders">0</div>
           <div class="customer-kpi-label">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -1px; margin-right: 2px;">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
             </svg>
-            Total Orders
-          </div>
-        </div>
-        <div class="customer-kpi-card kpi-boxes">
-          <div class="customer-kpi-num" id="custKpiTotalBoxes">0</div>
-          <div class="customer-kpi-label">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -1px; margin-right: 2px;">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            </svg>
-            Total Boxes
-          </div>
-        </div>
-        <div class="customer-kpi-card kpi-pieces">
-          <div class="customer-kpi-num" id="custKpiTotalPieces">0</div>
-          <div class="customer-kpi-label">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -1px; margin-right: 2px;">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 17 12 22 22 17"></polyline>
-              <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
-            Total Pieces
+            All Orders
           </div>
         </div>
       </div>
@@ -2108,60 +2157,54 @@
         </div>
       </div>
 
-      <!-- Actions -->
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button type="button" class="btn-primary-auth" style="margin-top: 0; flex: 1; min-width: 130px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" id="btnCustModalViewSlip">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
+      <!-- Actions: Image 2 requested buttons removed, keeping clean full-width close button -->
+      <div>
+        <button type="button" class="btn-primary-auth" style="margin-top: 0; width: 100%; padding: 12px; font-size: 13.5px; font-weight: 700; background: #0f172a; color: #ffffff; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(15,23,42,0.12); cursor: pointer;" onclick="closeCustomerOrderDetailsModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
-          <span>View Slip</span>
-        </button>
-        <button type="button" class="btn-share-whatsapp" style="margin-top: 0; padding: 11px 16px; font-size: 13px;" id="btnCustModalWhatsApp">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-          </svg>
-          <span>WhatsApp</span>
-        </button>
-        <button type="button" class="btn-tool" style="padding: 10px 16px; border-radius: 10px; font-weight: 700;" onclick="closeCustomerOrderDetailsModal()">
-          Close
+          <span>Close Details</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 👁️ INTERACTIVE DIGITAL ORDER SLIP VIEWER MODAL -->
+  <!-- 👁️ INTERACTIVE DIGITAL ORDER SLIP VIEWER MODAL (Corporate White Theme - Image 5 Redesign) -->
   <div class="modal-backdrop" id="customerOrderSlipModal" style="display: none; align-items: center; justify-content: center; padding: 12px; z-index: 1050;">
-    <div class="modal-content" style="max-width: 620px; width: 100%; max-height: 94vh; border-radius: 18px; text-align: center; padding: 18px 16px; overflow-y: auto; background: #0f172a; color: #ffffff; border: 1.5px solid rgba(255,255,255,0.15); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+    <div class="modal-content" style="max-width: 620px; width: 100%; max-height: 94vh; border-radius: 18px; text-align: center; padding: 18px 16px; overflow-y: auto; background: #ffffff; color: #0f172a; border: 1.5px solid #e2e8f0; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
         <div style="text-align: left;">
-          <div style="font-size: 11px; text-transform: uppercase; color: #34d399; font-weight: 800; letter-spacing: 0.5px;">Khandelia Official Order Slip</div>
-          <div style="font-size: 15px; font-weight: 800; color: #ffffff;" id="custSlipModalTitle">Order #—</div>
+          <div style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; text-transform: uppercase; color: #059669; font-weight: 800; letter-spacing: 0.5px; background: #ecfdf5; padding: 2px 8px; border-radius: 6px; border: 1px solid #a7f3d0; margin-bottom: 3px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Khandelia Official Order Slip
+          </div>
+          <div style="font-size: 16px; font-weight: 800; color: #0f172a;" id="custSlipModalTitle">Order #—</div>
         </div>
-        <button type="button" class="btn-tool" style="background: rgba(255,255,255,0.1); color: #ffffff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 16px; cursor: pointer;" onclick="closeCustomerOrderSlipModal()">✕</button>
+        <button type="button" class="btn-tool" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 15px; cursor: pointer; transition: all 0.2s;" onclick="closeCustomerOrderSlipModal()">✕</button>
       </div>
 
       <!-- Slip Image Container with loading state -->
-      <div style="position: relative; min-height: 240px; background: #1e293b; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
-        <div id="custSlipLoadingSpinner" style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: #94a3b8; font-size: 13px;">
-          <div style="width: 28px; height: 28px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #10b981; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-          <span>Rendering Official Slip...</span>
+      <div style="position: relative; min-height: 240px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+        <div id="custSlipLoadingSpinner" style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: #64748b; font-size: 13px;">
+          <div style="width: 28px; height: 28px; border: 3px solid #cbd5e1; border-top-color: #059669; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <span style="font-weight: 600;">Rendering Official Slip...</span>
         </div>
-        <img id="custSlipModalImg" src="" alt="Order Slip" style="display: none; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" />
+        <img id="custSlipModalImg" src="" alt="Order Slip" style="display: none; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);" />
       </div>
 
-      <!-- Modal Action Buttons -->
+      <!-- Modal Action Buttons (Professional White Theme Styling) -->
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-        <button type="button" class="btn-download-secondary" style="margin-top: 0; padding: 11px 12px; font-size: 12.5px; background: #1e293b; color: #ffffff; border-color: #334155; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" id="btnCustSlipDownload">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <button type="button" class="btn-download-secondary" style="margin-top: 0; padding: 12px; font-size: 13px; font-weight: 700; background: #0f172a; color: #ffffff; border: 1px solid #0f172a; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 2px 6px rgba(15,23,42,0.15); cursor: pointer;" id="btnCustSlipDownload">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
           <span>Download (PNG)</span>
         </button>
-        <button type="button" class="btn-share-whatsapp" style="margin-top: 0; padding: 11px 12px; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" id="btnCustSlipWhatsApp">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <button type="button" class="btn-share-whatsapp" style="margin-top: 0; padding: 12px; font-size: 13px; font-weight: 700; background: #10b981; color: #ffffff; border: 1px solid #059669; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 2px 6px rgba(16,185,129,0.25); cursor: pointer;" id="btnCustSlipWhatsApp">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
           </svg>
           <span>Share WhatsApp</span>
@@ -2169,13 +2212,13 @@
       </div>
 
       <div style="display: flex; gap: 8px;">
-        <a id="btnCustSlipVerifyLink" href="#" target="_blank" class="btn-tool" style="flex: 1; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; font-size: 12px; font-weight: 700;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <a id="btnCustSlipVerifyLink" href="#" target="_blank" class="btn-tool" style="flex: 1; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 11px; background: #f0fdf4; color: #15803d; border: 1.5px solid #86efac; border-radius: 10px; font-size: 12.5px; font-weight: 700;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
           <span>Verify Slip Authenticity</span>
         </a>
-        <button type="button" class="btn-tool" style="padding: 10px 16px; background: rgba(255,255,255,0.1); color: #ffffff; border: none; border-radius: 10px; font-weight: 700; font-size: 12px;" onclick="closeCustomerOrderSlipModal()">Close</button>
+        <button type="button" class="btn-tool" style="padding: 11px 20px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer;" onclick="closeCustomerOrderSlipModal()">Close</button>
       </div>
     </div>
   </div>
@@ -3443,6 +3486,24 @@
       }
     }
 
+    function formatDisplayDate(dateStr) {
+      if (!dateStr) return "DD/MM/YYYY";
+      const parts = String(dateStr).split("-");
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dateStr;
+    }
+
+    function onCustomerDateSelected(val) {
+      const badge = document.getElementById("custFormattedDateDisplay");
+      if (badge) {
+        badge.textContent = formatDisplayDate(val);
+        badge.classList.add("active");
+      }
+      setCustomerDateFilter("CUSTOM");
+    }
+
     function setCustomerDateFilter(filterType) {
       currentCustDateFilter = filterType;
       document.getElementById("btnCustDateToday").classList.toggle("active", filterType === "TODAY");
@@ -3450,7 +3511,13 @@
       document.getElementById("btnCustDateAll").classList.toggle("active", filterType === "ALL");
 
       if (filterType !== "CUSTOM") {
-        document.getElementById("custCustomDatePicker").value = "";
+        const picker = document.getElementById("custCustomDatePicker");
+        if (picker) picker.value = "";
+        const badge = document.getElementById("custFormattedDateDisplay");
+        if (badge) {
+          badge.textContent = "DD/MM/YYYY";
+          badge.classList.remove("active");
+        }
       }
       loadCustomerOrders();
     }
@@ -3483,16 +3550,17 @@
 
         if (res.ok && data.status === "success") {
           cachedCustomerOrders = data.orders || [];
-          let totalBoxes = 0;
-          let totalPieces = 0;
-          cachedCustomerOrders.forEach(o => {
-            totalBoxes += (o.totalBoxes || 0);
-            totalPieces += (o.totalPieces || 0);
-          });
 
-          document.getElementById("custKpiTotalOrders").textContent = cachedCustomerOrders.length.toLocaleString();
-          document.getElementById("custKpiTotalBoxes").textContent = totalBoxes.toLocaleString();
-          document.getElementById("custKpiTotalPieces").textContent = totalPieces.toLocaleString();
+          // 📊 Update Elevated KPI Cards: Today, Yesterday, All Orders
+          if (document.getElementById("custKpiTodayOrders")) {
+            document.getElementById("custKpiTodayOrders").textContent = (data.todayCount !== undefined ? data.todayCount : 0).toLocaleString();
+          }
+          if (document.getElementById("custKpiYesterdayOrders")) {
+            document.getElementById("custKpiYesterdayOrders").textContent = (data.yesterdayCount !== undefined ? data.yesterdayCount : 0).toLocaleString();
+          }
+          if (document.getElementById("custKpiTotalOrders")) {
+            document.getElementById("custKpiTotalOrders").textContent = (data.totalOrders !== undefined ? data.totalOrders : cachedCustomerOrders.length).toLocaleString();
+          }
 
           renderCustomerOrdersList(cachedCustomerOrders);
         } else {
@@ -3657,15 +3725,21 @@
       document.getElementById("custModalTotalBoxes").textContent = `${(ord.totalBoxes || 0).toLocaleString()} Bxs`;
       document.getElementById("custModalTotalPieces").textContent = `${(ord.totalPieces || 0).toLocaleString()} Pcs`;
 
-      // Buttons in details modal
-      document.getElementById("btnCustModalViewSlip").onclick = () => {
-        openCustomerOrderSlipModal(ord.cleanId);
-      };
-      document.getElementById("btnCustModalWhatsApp").onclick = () => {
-        const text = buildWhatsAppMessage(ord);
-        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-        window.open(waUrl, '_blank');
-      };
+      // Buttons in details modal (safely check if present)
+      const btnViewSlip = document.getElementById("btnCustModalViewSlip");
+      if (btnViewSlip) {
+        btnViewSlip.onclick = () => {
+          openCustomerOrderSlipModal(ord.cleanId);
+        };
+      }
+      const btnWA = document.getElementById("btnCustModalWhatsApp");
+      if (btnWA) {
+        btnWA.onclick = () => {
+          const text = buildWhatsAppMessage(ord);
+          const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+          window.open(waUrl, '_blank');
+        };
+      }
 
       document.getElementById("customerOrderDetailsModal").style.display = "flex";
     }

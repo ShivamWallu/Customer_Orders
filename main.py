@@ -1762,13 +1762,31 @@ async def api_get_manager_orders(request: Request):
 
     date_filter = request.query_params.get("filter", "ALL")
     specific_date = request.query_params.get("date", "")
-    orders = get_orders_for_asm(sales_person_name=mgr_name, phone=session.get("phone", "") if session else "", date_filter=date_filter, specific_date=specific_date)
+    
+    from datetime import date, timedelta
+    today_iso = date.today().isoformat()
+    today_slash = date.today().strftime("%d/%m/%Y")
+    yesterday_iso = (date.today() - timedelta(days=1)).isoformat()
+    yesterday_slash = (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
+
+    all_orders = get_orders_for_asm(sales_person_name=mgr_name, phone=session.get("phone", "") if session else "", date_filter="ALL")
+    today_count = sum(1 for o in all_orders if today_iso in str(o.get("created_at") or "") or today_slash in str(o.get("formattedTimestamp") or ""))
+    yesterday_count = sum(1 for o in all_orders if yesterday_iso in str(o.get("created_at") or "") or yesterday_slash in str(o.get("formattedTimestamp") or ""))
+    total_count = len(all_orders)
+
+    if date_filter == "ALL":
+        orders = all_orders
+    else:
+        orders = get_orders_for_asm(sales_person_name=mgr_name, phone=session.get("phone", "") if session else "", date_filter=date_filter, specific_date=specific_date)
+
     return {
         "status": "success",
         "managerName": mgr_name,
         "filter": date_filter,
         "date": specific_date,
-        "totalOrders": len(orders),
+        "todayCount": today_count,
+        "yesterdayCount": yesterday_count,
+        "totalOrders": total_count,
         "orders": orders
     }
 
@@ -1875,14 +1893,32 @@ async def api_get_customer_orders(request: Request):
 
     date_filter = request.query_params.get("filter", "ALL")
     specific_date = request.query_params.get("date", "")
-    orders = get_orders_for_customer(party_name=party_name, party_code=party_code, phone=phone, date_filter=date_filter, specific_date=specific_date)
+
+    from datetime import date, timedelta
+    today_iso = date.today().isoformat()
+    today_slash = date.today().strftime("%d/%m/%Y")
+    yesterday_iso = (date.today() - timedelta(days=1)).isoformat()
+    yesterday_slash = (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
+
+    all_orders = get_orders_for_customer(party_name=party_name, party_code=party_code, phone=phone, date_filter="ALL")
+    today_count = sum(1 for o in all_orders if today_iso in str(o.get("created_at") or "") or today_slash in str(o.get("formattedTimestamp") or ""))
+    yesterday_count = sum(1 for o in all_orders if yesterday_iso in str(o.get("created_at") or "") or yesterday_slash in str(o.get("formattedTimestamp") or ""))
+    total_count = len(all_orders)
+
+    if date_filter == "ALL":
+        orders = all_orders
+    else:
+        orders = get_orders_for_customer(party_name=party_name, party_code=party_code, phone=phone, date_filter=date_filter, specific_date=specific_date)
+
     return {
         "status": "success",
         "partyName": party_name,
         "partyCode": party_code,
         "filter": date_filter,
         "date": specific_date,
-        "totalOrders": len(orders),
+        "todayCount": today_count,
+        "yesterdayCount": yesterday_count,
+        "totalOrders": total_count,
         "orders": orders
     }
 
