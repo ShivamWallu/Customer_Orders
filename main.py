@@ -159,8 +159,17 @@ def get_base_url_from_request(request: Request) -> str:
 @app.get("/")
 @app.get("/order_form.html")
 @app.get("/order-slip")
-def serve_order_slip_root(request: Request):
-    """Serves the digital Khandelia Order Slip with dynamic WhatsApp Open Graph preview"""
+@app.get("/order-slip/{order_id}")
+def serve_order_slip_root(request: Request, order_id: Optional[str] = None):
+    """Serves the digital Khandelia Order Slip with dynamic WhatsApp Open Graph preview or returns slip image"""
+    req_id = (order_id or request.query_params.get("id") or "").replace("#", "").strip()
+    if req_id:
+        slip_file = os.path.join(ORDER_SLIPS_DIR, f"{req_id}.png")
+        if os.path.exists(slip_file):
+            return FileResponse(slip_file, media_type="image/png")
+        # If png not yet created, redirect to verify portal which has live verified details
+        return RedirectResponse(f"/verify/{req_id}", status_code=302)
+
     base_url = get_base_url_from_request(request)
     
     # ⚡ 2X Ultra-Fast Response for WhatsApp / Social Crawlers (1KB payload instead of 80KB)

@@ -644,14 +644,16 @@ def get_orders_for_customer(party_name: str = "", party_code: str = "", phone: s
         if party_code:
             conditions.append("party_code = ?")
             params.append(party_code.strip())
-        if party_name:
-            conditions.append("(LOWER(party_name) LIKE ?)")
-            params.append(f"%{party_name.strip().lower()}%")
         if phone:
             digits = "".join(filter(str.isdigit, str(phone)))
             clean_p = digits[-10:] if len(digits) >= 10 else digits
-            conditions.append("(party_address LIKE ? OR delivery_address LIKE ?)")
-            params.extend([f"%{clean_p}%", f"%{clean_p}%"])
+            if clean_p:
+                conditions.append("(party_address LIKE ? OR delivery_address LIKE ?)")
+                params.extend([f"%{clean_p}%", f"%{clean_p}%"])
+        # If neither party_code nor phone is provided, fallback to exact party_name
+        if not conditions and party_name:
+            conditions.append("LOWER(TRIM(party_name)) = ?")
+            params.append(party_name.strip().lower())
 
         if not conditions:
             return []
