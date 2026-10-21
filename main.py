@@ -58,7 +58,9 @@ from database import (
     delete_unit_by_id,
     cleanup_orders_retain_pankaj_kumar,
     log_audit_event,
-    get_audit_logs
+    get_audit_logs,
+    get_role_permissions,
+    update_role_permission
 )
 from crm_service import (
     init_crm_db,
@@ -766,6 +768,29 @@ async def api_reassign_user_unit(user_id: int, request: Request):
     body = await request.json()
     new_unit = body.get("unit") or body.get("assigned_units") or "Unit 1"
     res = update_user_assigned_units(user_id, new_unit, updated_by=admin.get("username", "SUPER_ADMIN"))
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
+# 🛡️ ROLE PERMISSIONS & GRANULAR ACCESS CONTROL API
+@app.get("/api/admin/permissions")
+async def api_get_admin_permissions(request: Request):
+    """Returns granular permission matrix across all roles (Admin / Super Admin)"""
+    require_admin_auth(request)
+    perms = get_role_permissions()
+    return {"status": "success", "permissions": perms}
+
+@app.post("/api/admin/permissions")
+async def api_update_admin_permission(request: Request):
+    """Updates specific granular permission toggle for a role (Super Admin / Admin)"""
+    admin = require_admin_auth(request)
+    if admin.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Super Admin permission required to modify access control matrix")
+    body = await request.json()
+    role = body.get("role", "")
+    key = body.get("key", "")
+    enabled = bool(body.get("enabled", False))
+    res = update_role_permission(role, key, enabled, updated_by=admin.get("username", "SUPER_ADMIN"))
     if res.get("status") == "error":
         raise HTTPException(status_code=400, detail=res.get("message"))
     return res

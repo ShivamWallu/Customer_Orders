@@ -253,6 +253,44 @@ def init_db():
         except Exception as e:
             print("[DATABASE] Units active status setup error:", e)
 
+        # 🛡️ Initialize Role Permissions Matrix Table
+        try:
+            with conn:
+                conn.execute("""
+                CREATE TABLE IF NOT EXISTS role_permissions (
+                    role TEXT PRIMARY KEY,
+                    can_add_order INTEGER DEFAULT 1,
+                    can_edit_unit INTEGER DEFAULT 0,
+                    can_confirm_so INTEGER DEFAULT 0,
+                    can_delete_order INTEGER DEFAULT 0,
+                    can_block_user INTEGER DEFAULT 0,
+                    can_manage_units INTEGER DEFAULT 0,
+                    can_view_logs INTEGER DEFAULT 0,
+                    can_export_csv INTEGER DEFAULT 1,
+                    updated_at TEXT,
+                    updated_by TEXT
+                );
+                """)
+                cur = conn.cursor()
+                cur.execute("SELECT COUNT(*) AS cnt FROM role_permissions;")
+                if cur.fetchone()["cnt"] == 0:
+                    now_str = datetime.now().isoformat()
+                    roles_defaults = [
+                        ("super_admin", 1, 1, 1, 1, 1, 1, 1, 1, now_str, "SYSTEM"),
+                        ("admin", 1, 1, 1, 1, 1, 1, 1, 1, now_str, "SYSTEM"),
+                        ("manager", 1, 1, 1, 0, 0, 1, 1, 1, now_str, "SYSTEM"),
+                        ("analyst", 0, 0, 0, 0, 0, 0, 1, 1, now_str, "SYSTEM"),
+                        ("asm", 1, 0, 0, 0, 0, 0, 0, 1, now_str, "SYSTEM"),
+                        ("customer", 1, 0, 0, 0, 0, 0, 0, 0, now_str, "SYSTEM")
+                    ]
+                    cur.executemany("""
+                    INSERT INTO role_permissions 
+                    (role, can_add_order, can_edit_unit, can_confirm_so, can_delete_order, can_block_user, can_manage_units, can_view_logs, can_export_csv, updated_at, updated_by)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, roles_defaults)
+        except Exception as e:
+            print("[DATABASE] Role permissions table init error:", e)
+
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
     finally:
         conn.close()
@@ -692,6 +730,68 @@ def is_user_phone_blocked(phone: str) -> bool:
         cur.execute("SELECT status FROM users WHERE phone = ? LIMIT 1", (clean_p,))
         row = cur.fetchone()
         return bool(row and row["status"] == "BLOCKED")
+    finally:
+        conn.close()
+
+# 🛡️ ROLE-BASED ACCESS CONTROL & PERMISSION MATRIX
+def get_role_permissions() -> List[Dict[str, Any]]:
+    """Returns granular permission matrix across all system roles"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT * FROM role_permissions 
+        ORDER BY CASE role 
+            WHEN 'super_admin' THEN 1 
+            WHEN 'admin' THEN 2 
+            WHEN 'manager' THEN 3 
+            WHEN 'analyst' THEN 4 
+            WHEN 'asm' THEN 5 
+            WHEN 'customer' THEN 6 
+            ELSE 7 
+        END
+        """)
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+def update_role_permission(role: str, permission_key: str, enabled: bool, updated_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
+    """Updates a specific permission toggle for a role and records audit log"""
+    valid_keys = [
+        "can_add_order", "can_edit_unit", "can_confirm_so", 
+        "can_delete_order", "can_block_user", "can_manage_units", 
+        "can_view_logs", "can_export_csv"
+    ]
+    if permission_key not in valid_keys:
+        return {"status": "error", "message": f"Invalid permission key: {permission_key}"}
+    
+    clean_role = (role or "").strip().lower()
+    if clean_role == "super_admin":
+        return {"status": "error", "message": "Super Admin permissions are permanently unlocked and cannot be restricted."}
+
+    val = 1 if enabled else 0
+    now_iso = datetime.now().isoformat()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute(f"UPDATE role_permissions SET {permission_key} = ?, updated_at = ?, updated_by = ? WHERE role = ?", (val, now_iso, updated_by, clean_role))
+        
+        log_audit_event(
+            user_name=updated_by,
+            role="super_admin",
+            action="PERMISSION_UPDATED",
+            status="SUCCESS",
+            details=f"Permission '{permission_key}' set to {val} for role '{clean_role}' by {updated_by}"
+        )
+        return {
+            "status": "success", 
+            "message": f"Permission '{permission_key}' updated to {'Enabled' if val else 'Disabled'} for role '{clean_role}'", 
+            "role": clean_role, 
+            "key": permission_key, 
+            "value": val
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
     finally:
         conn.close()
 
@@ -1286,9 +1386,15 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
         else:
             cursor.execute("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?", (limit,))
         rows = cursor.fetchall()
+        seen_order_ids = set()
         result = []
         for r in rows:
             d = dict(r)
+            oid = str(d.get("order_id") or "").strip()
+            if oid and oid in seen_order_ids:
+                continue
+            if oid:
+                seen_order_ids.add(oid)
             try:
                 d["items"] = json.loads(d.get("items_json") or "[]")
             except Exception:
