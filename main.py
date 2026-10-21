@@ -785,13 +785,15 @@ async def api_get_admin_permissions(request: Request):
 async def api_update_admin_permission(request: Request):
     """Updates specific granular permission toggle for a role (Super Admin / Admin)"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
-        raise HTTPException(status_code=403, detail="Super Admin permission required to modify access control matrix")
+    user_role = str(admin.get("role", "")).strip().lower()
+    user_name = str(admin.get("username", "")).strip().lower()
+    if user_role not in ["super_admin", "admin"] and user_name != "admin":
+        raise HTTPException(status_code=403, detail="Administrator permission required to modify access control matrix")
     body = await request.json()
     role = body.get("role", "")
     key = body.get("key", "")
     enabled = bool(body.get("enabled", False))
-    res = update_role_permission(role, key, enabled, updated_by=admin.get("username", "SUPER_ADMIN"))
+    res = update_role_permission(role, key, enabled, updated_by=admin.get("username", "admin"))
     if res.get("status") == "error":
         raise HTTPException(status_code=400, detail=res.get("message"))
     return res

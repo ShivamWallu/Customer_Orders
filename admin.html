@@ -984,9 +984,14 @@
       transform: translateX(16px);
     }
     .rbac-toggle input:disabled + .rbac-slider {
+      background-color: #e2e8f0;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .rbac-toggle input:checked:disabled + .rbac-slider {
       background-color: #34d399;
       cursor: not-allowed;
-      opacity: 0.85;
+      opacity: 0.7;
     }
     .rbac-badge-locked {
       display: inline-flex;
@@ -4581,7 +4586,7 @@
         "can_export_csv"
       ];
 
-      const isSuperAdmin = (currentUserRole === "super_admin");
+      const canEditPermissions = (currentUserRole === "super_admin" || currentUserRole === "admin" || currentUsername === "admin");
 
       let html = "";
       perms.forEach(p => {
@@ -4603,7 +4608,7 @@
               </td>
             `;
           } else {
-            const disabledAttr = !isSuperAdmin ? 'disabled title="Only Super Admin can modify role permissions"' : '';
+            const disabledAttr = !canEditPermissions ? 'disabled title="Administrator permission required to modify role permissions"' : '';
             togglesHtml += `
               <td class="center">
                 <label class="rbac-toggle">
@@ -4644,8 +4649,8 @@
     }
 
     async function toggleRolePermission(role, key, isChecked, inputEl) {
-      if (currentUserRole !== "super_admin") {
-        showToast("Super Admin permission required to modify access control matrix", "error");
+      if (currentUserRole !== "super_admin" && currentUserRole !== "admin" && currentUsername !== "admin") {
+        showToast("Administrator permission required to modify access control matrix", "error");
         inputEl.checked = !isChecked;
         return;
       }
