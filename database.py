@@ -1149,6 +1149,47 @@ def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admi
     finally:
         conn.close()
 
+def update_order_unit_in_db(order_id: str, new_unit: str, updated_by: str = "super_admin") -> bool:
+    """Updates the warehouse unit assignment of an order in both SQLite and JSON"""
+    clean_id = (order_id or "").replace("#", "").strip()
+    clean_unit = (new_unit or "").strip()
+    if not clean_unit or not clean_id:
+        return False
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            UPDATE orders 
+            SET unit = ?
+            WHERE order_id = ? OR order_id = ?
+            """, (clean_unit, clean_id, f"#{clean_id}"))
+        
+        # Also update in customer_orders.json
+        orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
+        if os.path.exists(orders_log):
+            try:
+                with open(orders_log, "r", encoding="utf-8") as f:
+                    orders_list = json.load(f)
+                for o in orders_list:
+                    if str(o.get("id", "")).replace("#", "").strip() == clean_id:
+                        o["unit"] = clean_unit
+                        break
+                with open(orders_log, "w", encoding="utf-8") as f:
+                    json.dump(orders_list, f, indent=2, ensure_ascii=False)
+            except Exception as j_err:
+                print(f"[UNIT UPDATE JSON WARN] {j_err}")
+        
+        try:
+            log_audit_event("ORDER_UNIT_UPDATE", f"Order #{clean_id} assigned to {clean_unit}", user=updated_by, status="SUCCESS")
+        except Exception:
+            pass
+        return True
+    except Exception as e:
+        print(f"[DATABASE UNIT UPDATE ERROR] {e}")
+        return False
+    finally:
+        conn.close()
+
 def mark_order_synced_in_db(order_id: str):
     """Marks an order as successfully synced to Google Sheets"""
     conn = get_connection()

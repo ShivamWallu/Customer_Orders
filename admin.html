@@ -1448,12 +1448,12 @@
       background: var(--bg-page);
     }
 
-    /* 🧭 Left Navigation Sidebar - Clean & Focused (Only Essential Tabs) */
+    /* 🧭 Left Navigation Sidebar - Sleek Enterprise Dark Theme */
     .admin-sidebar {
-      width: 250px;
-      min-width: 250px;
-      background: #001a33;
-      background: linear-gradient(180deg, #001e3d 0%, #001124 100%);
+      width: 255px;
+      min-width: 255px;
+      background: #080e1a;
+      background: linear-gradient(180deg, #090e1b 0%, #050811 100%);
       color: #f1f5f9;
       display: flex;
       flex-direction: column;
@@ -1462,7 +1462,7 @@
       height: 100vh;
       z-index: 200;
       border-right: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
       transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -1472,7 +1472,7 @@
       align-items: center;
       gap: 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.25);
     }
 
     .sidebar-logo {
@@ -1482,7 +1482,7 @@
       background: #ffffff;
       padding: 2px;
       object-fit: contain;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     }
 
     .sidebar-brand-text {
@@ -1491,7 +1491,7 @@
     }
 
     .sidebar-brand-title {
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 800;
       color: #ffffff;
       display: block;
@@ -1527,10 +1527,10 @@
     .sidebar-nav-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 14px 10px;
+      padding: 16px 10px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
     }
 
     .sidebar-nav-scroll::-webkit-scrollbar {
@@ -1544,8 +1544,8 @@
     .sidebar-section-title {
       font-size: 10px;
       font-weight: 800;
-      color: #64748b;
-      letter-spacing: 0.8px;
+      color: #475569;
+      letter-spacing: 0.9px;
       text-transform: uppercase;
       padding: 12px 10px 4px 10px;
     }
@@ -1553,67 +1553,76 @@
     .sidebar-nav-item {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 11px;
       padding: 10px 12px;
       border-radius: 8px;
       background: transparent;
       border: 1px solid transparent;
-      color: #cbd5e1;
+      border-left: 3px solid transparent;
+      color: #94a3b8;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: left;
       width: 100%;
     }
 
     .sidebar-nav-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
-      transform: translateX(2px);
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+      transform: translateX(3px);
     }
 
     .sidebar-nav-item.active {
-      background: rgba(2, 132, 199, 0.22);
-      border-color: rgba(56, 189, 248, 0.45);
+      background: linear-gradient(90deg, rgba(2, 132, 199, 0.18) 0%, rgba(2, 132, 199, 0.04) 100%);
+      border-color: rgba(56, 189, 248, 0.25);
+      border-left: 3px solid #38bdf8;
       color: #ffffff;
       font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
-    .sidebar-nav-item.pending.active {
-      background: rgba(217, 119, 6, 0.22);
-      border-color: rgba(251, 191, 36, 0.45);
-    }
-
-    .sidebar-nav-item.confirmed.active {
-      background: rgba(5, 150, 105, 0.22);
-      border-color: rgba(52, 211, 153, 0.45);
+    .sidebar-nav-item.warehouse.active {
+      background: linear-gradient(90deg, rgba(14, 165, 233, 0.18) 0%, rgba(14, 165, 233, 0.04) 100%);
+      border-left-color: #0ea5e9;
     }
 
     .sidebar-nav-item.users.active {
-      background: rgba(124, 58, 237, 0.22);
-      border-color: rgba(167, 139, 250, 0.45);
+      background: linear-gradient(90deg, rgba(147, 51, 234, 0.18) 0%, rgba(147, 51, 234, 0.04) 100%);
+      border-left-color: #a855f7;
     }
 
     .sidebar-nav-item.units.active {
-      background: rgba(217, 119, 6, 0.22);
-      border-color: rgba(251, 191, 36, 0.45);
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.18) 0%, rgba(245, 158, 11, 0.04) 100%);
+      border-left-color: #f59e0b;
     }
 
     .sidebar-nav-item.logs.active {
-      background: rgba(109, 40, 217, 0.22);
-      border-color: rgba(196, 181, 253, 0.45);
+      background: linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0.04) 100%);
+      border-left-color: #818cf8;
     }
 
     .sidebar-nav-item .nav-icon {
-      font-size: 15px;
+      font-size: 16px;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 20px;
+      height: 20px;
+      color: #64748b;
+      transition: color 0.18s ease;
     }
+
+    .sidebar-nav-item:hover .nav-icon,
+    .sidebar-nav-item.active .nav-icon {
+      color: #38bdf8;
+    }
+    .sidebar-nav-item.warehouse.active .nav-icon { color: #38bdf8; }
+    .sidebar-nav-item.users.active .nav-icon { color: #c084fc; }
+    .sidebar-nav-item.units.active .nav-icon { color: #fbbf24; }
+    .sidebar-nav-item.logs.active .nav-icon { color: #a5b4fc; }
 
     .sidebar-nav-item .nav-label {
       flex: 1;
@@ -1623,25 +1632,24 @@
     }
 
     .sidebar-nav-item .nav-badge {
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 9999px;
-      font-size: 10.5px;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.12);
-      color: #e2e8f0;
+      font-size: 10px;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
       flex-shrink: 0;
+      letter-spacing: 0.2px;
     }
 
-    .sidebar-nav-item .nav-badge.amber { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
-    .sidebar-nav-item .nav-badge.green { background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35); }
-    .sidebar-nav-item .nav-badge.blue { background: rgba(14, 165, 233, 0.25); color: #7dd3fc; border: 1px solid rgba(14, 165, 233, 0.35); }
-    .sidebar-nav-item .nav-badge.purple { background: rgba(147, 51, 234, 0.25); color: #d8b4fe; border: 1px solid rgba(147, 51, 234, 0.35); }
-    .sidebar-nav-item .nav-badge.gold { background: rgba(217, 119, 6, 0.25); color: #fde68a; border: 1px solid rgba(217, 119, 6, 0.35); }
+    .sidebar-nav-item .nav-badge.blue { background: rgba(14, 165, 233, 0.2); color: #7dd3fc; border: 1px solid rgba(14, 165, 233, 0.35); }
+    .sidebar-nav-item .nav-badge.purple { background: rgba(147, 51, 234, 0.2); color: #d8b4fe; border: 1px solid rgba(147, 51, 234, 0.35); }
+    .sidebar-nav-item .nav-badge.gold { background: rgba(217, 119, 6, 0.2); color: #fde68a; border: 1px solid rgba(217, 119, 6, 0.35); }
 
     .sidebar-footer {
       padding: 12px 14px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.3);
     }
 
     .sidebar-user-card {
@@ -1684,6 +1692,56 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.3px;
+    }
+
+    /* 🔍 Header Global Quick Search */
+    .header-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-full);
+      padding: 6px 14px;
+      width: 280px;
+      transition: all 0.2s ease;
+      cursor: text;
+    }
+    .header-search-wrap:focus-within {
+      background: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+      width: 360px;
+    }
+    .header-search-wrap svg {
+      color: #64748b;
+      flex-shrink: 0;
+    }
+    .header-search-wrap input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 12px;
+      color: var(--text-main);
+      width: 100%;
+      font-weight: 500;
+    }
+    .kbd-hint {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 6px;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #64748b;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+    }
+    @media (max-width: 900px) {
+      .header-search-wrap { display: none; }
     }
 
     .sidebar-backdrop {
@@ -1876,6 +1934,13 @@
       line-height: 1;
     }
 
+    .admin-app-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+    }
+
     @media (max-width: 991px) {
       .admin-sidebar {
         position: fixed;
@@ -1907,55 +1972,65 @@
   <!-- Mobile drawer backdrop -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
 
-  <!-- 🧭 LEFT NAVIGATION SIDEBAR - ONLY ESSENTIAL TABS -->
+  <!-- 🧭 SLEEK ENTERPRISE B2B SAAS LEFT SIDEBAR -->
   <aside class="admin-sidebar" id="adminSidebar" style="display: none;">
     <!-- Brand / Header -->
     <div class="sidebar-brand">
       <img src="/images/mashal_official_logo.png" alt="Mashal" class="sidebar-logo">
       <div class="sidebar-brand-text">
         <span class="sidebar-brand-title">Khandelia Mills</span>
-        <span class="sidebar-brand-sub">Admin Order Suite</span>
+        <span class="sidebar-brand-sub">Enterprise Order Suite</span>
       </div>
       <button class="sidebar-close-btn" id="sidebarCloseBtn" onclick="toggleAdminSidebar(false)" title="Close Sidebar">✕</button>
     </div>
 
-    <!-- Navigation List (ONLY ESSENTIAL TABS) -->
+    <!-- Navigation List (ONLY THE 5 ESSENTIAL TABS - ZERO CLUTTER) -->
     <div class="sidebar-nav-scroll">
-      <div class="sidebar-section-title">ORDER OPERATIONS</div>
-      <button class="sidebar-nav-item active" id="sideNavAll" onclick="selectSidebarNav('ALL')" title="All orders across database">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">All Orders</span>
+      <div class="sidebar-section-title">CORE OPERATIONS</div>
+      
+      <!-- 1. Orders Dashboard -->
+      <button class="sidebar-nav-item active" id="sideNavOrders" onclick="selectSidebarNav('ORDERS')" title="Orders management, pending & confirmed tables">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/><path d="M9 8h6"/></svg>
+        </span>
+        <span class="nav-label">Orders</span>
         <span class="nav-badge" id="sideBadgeAll">0</span>
       </button>
-      <button class="sidebar-nav-item pending" id="sideNavPending" onclick="selectSidebarNav('PENDING')" title="Orders awaiting SO assignment">
-        <span class="nav-icon">⏳</span>
-        <span class="nav-label">Pending Orders</span>
-        <span class="nav-badge amber" id="sideBadgePending">0</span>
-      </button>
-      <button class="sidebar-nav-item confirmed" id="sideNavConfirmed" onclick="selectSidebarNav('CONFIRMED')" title="Verified orders with SO numbers">
-        <span class="nav-icon">✔</span>
-        <span class="nav-label">Confirmed Orders</span>
-        <span class="nav-badge green" id="sideBadgeConfirmed">0</span>
-      </button>
-      <button class="sidebar-nav-item" id="sideNavPacking" onclick="selectSidebarNav('PACKING')" title="Live warehouse packing & production queue">
-        <span class="nav-icon">📦</span>
+
+      <!-- 2. Dedicated Packing & Production Summary (Image 2) -->
+      <button class="sidebar-nav-item warehouse" id="sideNavWarehouse" onclick="selectSidebarNav('WAREHOUSE')" title="Warehouse Production & Packing Queue (Image 2)">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        </span>
         <span class="nav-label">Packing Summary</span>
-        <span class="nav-badge blue">LIVE</span>
+        <span class="nav-badge blue" id="sideBadgeWarehouse">LIVE</span>
       </button>
 
-      <div class="sidebar-section-title">SYSTEM MANAGEMENT</div>
-      <button class="sidebar-nav-item users" id="sideNavUsers" onclick="selectSidebarNav('USERS')" title="Manage users, roles & phone authorizations">
-        <span class="nav-icon">👥</span>
+      <div class="sidebar-section-title">ADMINISTRATION</div>
+
+      <!-- 3. User Management -->
+      <button class="sidebar-nav-item users" id="sideNavUsers" onclick="selectSidebarNav('USERS')" title="Manage user roles, accounts & mobile authorizations">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
         <span class="nav-label">User Management</span>
         <span class="nav-badge purple" id="sideBadgeUsers">0</span>
       </button>
-      <button class="sidebar-nav-item units" id="sideNavUnits" onclick="selectSidebarNav('UNITS')" title="Manage warehouse units (Unit 1 - Unit 6)">
-        <span class="nav-icon">🏭</span>
-        <span class="nav-label">Warehouse Units</span>
+
+      <!-- 4. Unit Management -->
+      <button class="sidebar-nav-item units" id="sideNavUnits" onclick="selectSidebarNav('UNITS')" title="Manage warehouse units (Unit 1 to Unit 6 & Custom)">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </span>
+        <span class="nav-label">Unit Management</span>
         <span class="nav-badge gold" id="sideBadgeUnits">6</span>
       </button>
-      <button class="sidebar-nav-item logs" id="sideNavLogs" onclick="selectSidebarNav('LOGS')" title="Security & audit trail activity logs">
-        <span class="nav-icon">📜</span>
+
+      <!-- 5. System Logs -->
+      <button class="sidebar-nav-item logs" id="sideNavLogs" onclick="selectSidebarNav('LOGS')" title="Audit trail & security activity logs">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        </span>
         <span class="nav-label">System Logs</span>
         <span class="nav-badge purple" id="sideBadgeLogs" style="background: rgba(109, 40, 217, 0.25); color: #c4b5fd;">0</span>
       </button>
@@ -1969,7 +2044,9 @@
           <div class="sidebar-user-name" id="sidebarAdminName">Super Admin</div>
           <div class="sidebar-user-role" id="sidebarAdminRole">ALL UNITS</div>
         </div>
-        <button onclick="adminLogout()" title="Logout" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 15px; padding: 4px; border-radius: 4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">🚪</button>
+        <button onclick="adminLogout()" title="Logout" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 15px; padding: 4px; border-radius: 4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </button>
       </div>
     </div>
   </aside>
@@ -1990,6 +2067,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Global Header Search -->
+    <div class="header-search-wrap" onclick="document.getElementById('searchInput').focus()" title="Press Ctrl + K to search orders">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="headerQuickSearch" placeholder="Search orders, parties, codes..." oninput="syncHeaderSearch(this.value)">
+      <kbd class="kbd-hint">Ctrl K</kbd>
+    </div>
+
     <div class="header-right" id="headerRight" style="display: none;">
       <div class="db-source-pill" title="100% Sourced from permanent SQLite orders.db (Zero delay)">
         <span class="db-dot"></span>
@@ -2711,6 +2796,48 @@
     </div>
   </div>
 
+  <!-- 🏢 Reassign Warehouse Unit Modal (Super Admin Feature) -->
+  <div class="generic-modal-overlay" id="changeUnitModalOverlay" style="display: none;" onclick="closeChangeUnitModal(event)">
+    <div class="generic-modal-box" onclick="event.stopPropagation()" style="max-width: 460px;">
+      <div class="generic-modal-header" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-bottom: 1px solid #bbf7d0;">
+        <h3 style="color: #065f46; display: flex; align-items: center; gap: 8px;">
+          <span>🏭</span>
+          <span>Reassign Warehouse Unit</span>
+        </h3>
+        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeChangeUnitModal()">✕</button>
+      </div>
+      <div class="generic-modal-body">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+          As Super Admin, you can reassign this order to any active factory warehouse unit (Unit 1 to Unit 6 & Custom). Production queues and packing lists will update immediately.
+        </p>
+
+        <div style="background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">ORDER ID:</span>
+            <span style="font-weight: 800; color: var(--brand-mashal); font-size: 14px;" id="changeUnitOrderDisplay">#KOGM-XXXX</span>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;" id="changeUnitPartyDisplay">Party Name</div>
+          <div style="font-size: 12px; color: var(--text-secondary);" id="changeUnitCurrentDisplay">Current Unit: Unit 1</div>
+        </div>
+
+        <label style="font-size: 12.5px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 6px;">
+          SELECT TARGET WAREHOUSE UNIT: <span style="color: #dc2626;">*</span>
+        </label>
+        <select id="changeUnitSelectInput" class="login-input" style="font-weight: 700; color: var(--brand-mashal); cursor: pointer;">
+          <!-- Dynamically populated from allWarehouseUnits -->
+        </select>
+        <div id="changeUnitModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none; margin-top: 6px;"></div>
+      </div>
+      <div class="generic-modal-footer">
+        <button class="btn-tool" onclick="closeChangeUnitModal()">Cancel</button>
+        <button class="btn-tool primary" id="btnSubmitChangeUnit" onclick="submitChangeUnit()">
+          <span>✔</span>
+          <span>Save & Reassign Unit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 4. Secure Multi-Step Order Deletion Modal (Git-Style) -->
   <div class="generic-modal-overlay" id="deleteOrderModalOverlay" onclick="closeGenericModal('deleteOrderModalOverlay', event)">
     <div class="generic-modal-box" onclick="event.stopPropagation()">
@@ -3077,37 +3204,38 @@
       applyAllFilters();
     }
 
-    // 2 & 4. Status Tab Filtering Logic
+    // 2 & 4. Status Tab & View Filtering Logic
     function setStatusTab(statusType) {
       activeStatusTab = statusType;
-      document.getElementById("tabStatusAll").classList.toggle("active", statusType === "ALL");
-      document.getElementById("tabStatusPending").classList.toggle("active", statusType === "PENDING");
-      document.getElementById("tabStatusConfirmed").classList.toggle("active", statusType === "CONFIRMED");
-      if (document.getElementById("tabStatusUsers")) {
-        document.getElementById("tabStatusUsers").classList.toggle("active", statusType === "USERS");
-      }
-      if (document.getElementById("tabStatusUnits")) {
-        document.getElementById("tabStatusUnits").classList.toggle("active", statusType === "UNITS");
-      }
-      if (document.getElementById("tabStatusLogs")) {
-        document.getElementById("tabStatusLogs").classList.toggle("active", statusType === "LOGS");
-      }
 
-      // Synchronize Left Sidebar Nav buttons
-      const sideNavMapping = {
-        "ALL": "sideNavAll",
-        "PENDING": "sideNavPending",
-        "CONFIRMED": "sideNavConfirmed",
-        "USERS": "sideNavUsers",
-        "UNITS": "sideNavUnits",
-        "LOGS": "sideNavLogs"
-      };
-      Object.entries(sideNavMapping).forEach(([key, id]) => {
-        const item = document.getElementById(id);
-        if (item) item.classList.toggle("active", statusType === key);
-      });
-      const sidePacking = document.getElementById("sideNavPacking");
-      if (sidePacking) sidePacking.classList.remove("active");
+      // Table Header Sub-tabs
+      const tabAll = document.getElementById("tabStatusAll");
+      const tabPending = document.getElementById("tabStatusPending");
+      const tabConfirmed = document.getElementById("tabStatusConfirmed");
+      const tabUsers = document.getElementById("tabStatusUsers");
+      const tabUnits = document.getElementById("tabStatusUnits");
+      const tabLogs = document.getElementById("tabStatusLogs");
+
+      if (tabAll) tabAll.classList.toggle("active", statusType === "ALL" || statusType === "ORDERS");
+      if (tabPending) tabPending.classList.toggle("active", statusType === "PENDING");
+      if (tabConfirmed) tabConfirmed.classList.toggle("active", statusType === "CONFIRMED");
+      if (tabUsers) tabUsers.classList.toggle("active", statusType === "USERS");
+      if (tabUnits) tabUnits.classList.toggle("active", statusType === "UNITS");
+      if (tabLogs) tabLogs.classList.toggle("active", statusType === "LOGS");
+
+      // Synchronize 5 Left Sidebar Nav Buttons
+      const sideOrders = document.getElementById("sideNavOrders");
+      const sideWarehouse = document.getElementById("sideNavWarehouse");
+      const sideUsers = document.getElementById("sideNavUsers");
+      const sideUnits = document.getElementById("sideNavUnits");
+      const sideLogs = document.getElementById("sideNavLogs");
+
+      const isOrdersView = (statusType === "ALL" || statusType === "PENDING" || statusType === "CONFIRMED" || statusType === "ORDERS");
+      if (sideOrders) sideOrders.classList.toggle("active", isOrdersView);
+      if (sideWarehouse) sideWarehouse.classList.toggle("active", statusType === "WAREHOUSE");
+      if (sideUsers) sideUsers.classList.toggle("active", statusType === "USERS");
+      if (sideUnits) sideUnits.classList.toggle("active", statusType === "UNITS");
+      if (sideLogs) sideLogs.classList.toggle("active", statusType === "LOGS");
 
       const tableWrapper = document.getElementById("tableCardWrapper");
       const usersWrapper = document.getElementById("usersCardWrapper");
@@ -3118,7 +3246,29 @@
       const warehouseSection = document.getElementById("warehouseSection");
       const scrollNavBar = document.getElementById("scrollNavBar");
 
-      if (statusType === "USERS") {
+      if (statusType === "WAREHOUSE") {
+        if (tableWrapper) tableWrapper.style.display = "none";
+        if (usersWrapper) usersWrapper.style.display = "none";
+        if (unitsWrapper) unitsWrapper.style.display = "none";
+        if (logsWrapper) logsWrapper.style.display = "none";
+        if (controlsPanel) controlsPanel.style.display = "none";
+        if (kpiContainer) kpiContainer.style.display = "none";
+        if (scrollNavBar) scrollNavBar.style.display = "none";
+        if (warehouseSection) {
+          warehouseSection.style.display = "block";
+          const whBody = document.getElementById("warehouseBodyContent");
+          if (whBody) whBody.style.display = "block";
+          const toggleText = document.getElementById("warehouseToggleText");
+          if (toggleText) toggleText.textContent = "Collapse";
+          const toggleIcon = document.getElementById("warehouseToggleIcon");
+          if (toggleIcon) toggleIcon.textContent = "▲";
+        }
+        // Refresh warehouse production counts
+        const pendingOrdersForWarehouse = (allOrdersData || []).filter(o => o.orderStatus !== "CONFIRMED");
+        updateWarehouseProductionSummary(pendingOrdersForWarehouse);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      } else if (statusType === "USERS") {
         if (tableWrapper) tableWrapper.style.display = "none";
         if (unitsWrapper) unitsWrapper.style.display = "none";
         if (logsWrapper) logsWrapper.style.display = "none";
@@ -3152,12 +3302,13 @@
         loadAuditLogs(1);
         return;
       } else {
+        // Orders view (ALL, PENDING, CONFIRMED)
         if (usersWrapper) usersWrapper.style.display = "none";
         if (unitsWrapper) unitsWrapper.style.display = "none";
         if (logsWrapper) logsWrapper.style.display = "none";
+        if (warehouseSection) warehouseSection.style.display = "none";
         if (controlsPanel) controlsPanel.style.display = "flex";
         if (kpiContainer) kpiContainer.style.display = "grid";
-        if (warehouseSection) warehouseSection.style.display = "block";
         if (scrollNavBar) scrollNavBar.style.display = "flex";
         if (tableWrapper) tableWrapper.style.display = "flex";
       }
@@ -3166,31 +3317,17 @@
       applyAllFilters();
     }
 
-    // 🧭 Left Sidebar Navigation Handler
+    // 🧭 Left Sidebar Navigation Handler (Clean 5 Essential Tabs)
     function selectSidebarNav(navKey) {
       if (window.innerWidth < 992) {
         toggleAdminSidebar(false);
       }
 
-      if (navKey === "ALL" || navKey === "PENDING" || navKey === "CONFIRMED") {
-        setStatusTab(navKey);
-        const cp = document.getElementById("controlsPanel");
-        if (cp) cp.style.display = "flex";
-        const kpi = document.getElementById("kpiContainer");
-        if (kpi) kpi.style.display = "grid";
-        const tbl = document.getElementById("tableCardWrapper");
-        if (tbl) tbl.style.display = "flex";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (navKey === "PACKING") {
+      if (navKey === "ORDERS" || navKey === "ALL") {
         setStatusTab("ALL");
-        const sidePacking = document.getElementById("sideNavPacking");
-        if (sidePacking) sidePacking.classList.add("active");
-        toggleWarehouseSection(true);
-        const whSec = document.getElementById("warehouseSection");
-        if (whSec) {
-          whSec.style.display = "block";
-          whSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (navKey === "WAREHOUSE" || navKey === "PACKING") {
+        setStatusTab("WAREHOUSE");
       } else if (navKey === "USERS") {
         setStatusTab("USERS");
       } else if (navKey === "UNITS") {
@@ -3208,6 +3345,139 @@
       const newState = (typeof force === "boolean") ? force : !isOpen;
       sidebar.classList.toggle("open", newState);
       if (backdrop) backdrop.classList.toggle("open", newState);
+    }
+
+    // 🔍 Header Quick Search Synchronizer & Keyboard Shortcut
+    function syncHeaderSearch(val) {
+      const mainSearch = document.getElementById("searchInput");
+      if (mainSearch) {
+        mainSearch.value = val;
+        currentSearchTerm = (val || "").trim().toLowerCase();
+        currentPage = 1;
+        applyAllFilters();
+      }
+    }
+
+    // Press Ctrl + K to focus global search
+    window.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        const headerSearch = document.getElementById("headerQuickSearch");
+        if (headerSearch && headerSearch.offsetParent !== null) {
+          headerSearch.focus();
+          headerSearch.select();
+        } else {
+          const mainSearch = document.getElementById("searchInput");
+          if (mainSearch) {
+            mainSearch.focus();
+            mainSearch.select();
+          }
+        }
+      }
+    });
+
+    // 🏭 Reassign Warehouse Unit (Super Admin Feature)
+    let currentChangeUnitOrderId = null;
+
+    function openChangeUnitModal(orderId, currentUnit) {
+      if (currentUserRole !== "super_admin" && currentUserRole !== "admin") {
+        showToast("Only Super Admin can change order warehouse units", "error");
+        return;
+      }
+      currentChangeUnitOrderId = orderId;
+      const order = allOrdersData.find(o => o.cleanId === orderId);
+      
+      const modal = document.getElementById("changeUnitModalOverlay");
+      if (!modal) return;
+
+      document.getElementById("changeUnitOrderDisplay").textContent = "#" + orderId;
+      document.getElementById("changeUnitPartyDisplay").textContent = order ? (order.partyName || "Customer") : "Order";
+      document.getElementById("changeUnitCurrentDisplay").textContent = "Current Unit: " + (currentUnit || (order ? order.unit : "Unit 1") || "Unit 1");
+
+      const select = document.getElementById("changeUnitSelectInput");
+      select.innerHTML = "";
+
+      let unitList = (typeof allWarehouseUnits !== "undefined" && allWarehouseUnits.length > 0)
+        ? allWarehouseUnits.map(u => u.unit_name || u.unit_code)
+        : ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5", "Unit 6"];
+
+      ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5", "Unit 6"].forEach(u => {
+        if (!unitList.includes(u)) unitList.push(u);
+      });
+
+      unitList.forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u;
+        opt.textContent = `🏭 ${u}`;
+        if (u === (currentUnit || (order ? order.unit : "Unit 1"))) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      });
+
+      const errEl = document.getElementById("changeUnitModalError");
+      if (errEl) errEl.style.display = "none";
+
+      modal.style.display = "flex";
+    }
+
+    function closeChangeUnitModal(e) {
+      if (e && e.target && e.target.id !== "changeUnitModalOverlay" && !e.target.classList.contains("btn-tool")) return;
+      const modal = document.getElementById("changeUnitModalOverlay");
+      if (modal) modal.style.display = "none";
+      currentChangeUnitOrderId = null;
+    }
+
+    async function submitChangeUnit() {
+      if (!currentChangeUnitOrderId) return;
+      const select = document.getElementById("changeUnitSelectInput");
+      const newUnit = select.value;
+      const submitBtn = document.getElementById("btnSubmitChangeUnit");
+      const errEl = document.getElementById("changeUnitModalError");
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "<span>⏳ Reassigning...</span>";
+        if (errEl) errEl.style.display = "none";
+
+        const resp = await fetch("/api/admin/orders/change-unit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + (adminAuthToken || "")
+          },
+          body: JSON.stringify({
+            order_id: currentChangeUnitOrderId,
+            new_unit: newUnit,
+            updated_by: currentAdminUser ? (currentAdminUser.name || currentAdminUser.username || "Super Admin") : "Super Admin"
+          })
+        });
+
+        const resData = await resp.json();
+        if (!resp.ok || !resData.success) {
+          throw new Error(resData.detail || resData.error || "Failed to update unit");
+        }
+
+        // Update in-memory dataset
+        const order = allOrdersData.find(o => o.cleanId === currentChangeUnitOrderId);
+        if (order) {
+          order.unit = newUnit;
+        }
+
+        showToast(`Order #${currentChangeUnitOrderId} reassigned to ${newUnit} successfully!`, "success");
+        closeChangeUnitModal();
+        applyAllFilters();
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = "Error: " + err.message;
+          errEl.style.display = "block";
+        } else {
+          showToast(err.message, "error");
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "<span>✔</span><span>Save & Reassign Unit</span>";
+      }
     }
 
     // 🏭 Warehouse Unit Management Functions
@@ -4047,6 +4317,9 @@
       document.getElementById("badgeConfirmedCount").textContent = confirmedTotal;
 
       if (document.getElementById("sideBadgeAll")) document.getElementById("sideBadgeAll").textContent = dateFilteredOrders.length;
+      if (document.getElementById("sideBadgeWarehouse")) {
+        document.getElementById("sideBadgeWarehouse").textContent = pendingTotal > 0 ? `${pendingTotal} PENDING` : 'LIVE';
+      }
       if (document.getElementById("sideBadgePending")) document.getElementById("sideBadgePending").textContent = pendingTotal;
       if (document.getElementById("sideBadgeConfirmed")) document.getElementById("sideBadgeConfirmed").textContent = confirmedTotal;
 
@@ -4374,6 +4647,15 @@
           `;
         }
 
+        // Reassign Unit button: STRICTLY ADMIN / SUPER ADMIN
+        if (currentUserRole === "admin" || currentUserRole === "super_admin") {
+          actionButtons += `
+            <button class="btn-row-action" title="Reassign Warehouse Unit" onclick="openChangeUnitModal('${cleanId}', '${escapeHtml(o.unit || 'Unit 1')}')">
+              <span>🏭 Unit</span>
+            </button>
+          `;
+        }
+
         // Delete button: STRICTLY ADMIN / SUPER ADMIN ONLY (Hidden for Manager and Analyst)
         if (canDeleteOrders && (currentUserRole === "admin" || currentUserRole === "super_admin")) {
           actionButtons += `
@@ -4413,7 +4695,7 @@
               <span class="asm-badge" style="cursor: pointer;" onclick="filterBySalesManager('${escapeHtml(o.salesPerson || '')}')" title="Click to filter by ${escapeHtml(o.salesPerson || '')}">👔 ${escapeHtml(o.salesPerson || "-")}</span>
             </td>
             <td class="center">
-              <span class="unit-tag">🏭 ${escapeHtml(o.unit || "Unit 1")}</span>
+              <span class="unit-tag" style="cursor: pointer;" onclick="openChangeUnitModal('${cleanId}', '${escapeHtml(o.unit || 'Unit 1')}')" title="Click to reassign warehouse unit">🏭 ${escapeHtml(o.unit || "Unit 1")} <span style="font-size: 10px; opacity: 0.7;">✎</span></span>
             </td>
             <td>${itemsHtml}</td>
             <td class="center">

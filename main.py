@@ -35,6 +35,7 @@ from database import (
     delete_admin_session,
     delete_order_from_db,
     confirm_order_in_db,
+    update_order_unit_in_db,
     get_orders_stats,
     get_warehouse_production_summary,
     get_user_by_phone,
@@ -544,6 +545,37 @@ async def confirm_admin_order(request: Request):
         }
     raise HTTPException(status_code=500, detail=f"Failed to confirm order #{order_id} in database")
 
+@app.post("/api/admin/orders/change-unit")
+async def api_change_order_unit(request: Request):
+    """
+    Super Admin & Admin feature:
+    Reassigns any customer or ASM order to a different warehouse unit (Unit 1 to Unit 6 & Custom).
+    """
+    admin_session = require_admin_auth(request)
+    role = admin_session.get("role", "admin")
+    if role not in ["super_admin", "admin"]:
+        raise HTTPException(status_code=403, detail="Forbidden: Super Admin permission required to move order units.")
+    
+    data = await request.json()
+    order_id = str(data.get("orderId") or data.get("order_id") or "").replace("#", "").strip()
+    new_unit = str(data.get("unit") or data.get("newUnit") or "").strip()
+    
+    if not order_id:
+        raise HTTPException(status_code=400, detail="Order ID is required")
+    if not new_unit:
+        raise HTTPException(status_code=400, detail="Target warehouse unit is required")
+    
+    username = admin_session.get("username", "admin")
+    success = update_order_unit_in_db(order_id, new_unit, updated_by=f"{username} ({role})")
+    if success:
+        return {
+            "status": "success",
+            "orderId": order_id,
+            "unit": new_unit,
+            "message": f"Order #{order_id} successfully moved to {new_unit}"
+        }
+    raise HTTPException(status_code=500, detail=f"Failed to update unit for order #{order_id}")
+
 @app.post("/api/admin/orders/resync")
 async def resync_admin_orders(request: Request):
     """
@@ -846,21 +878,42 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     order["partyCode"] = party_code
     order["dataConsent"] = order.get("dataConsent") or "YES (Verified)"
     
-    # 🏢 Automatic Unit Assignment (Unit 1 to Unit 6)
+    # 🏢 Strict Role-Based Unit Assignment:
+    # 1. Area Sales Manager (ASM): order saves to ASM's assigned unit (configured by Super Admin)
+    # 2. Customer: order defaults to Unit 1 (unless Super Admin assigned a specific unit to customer)
+    # 3. Super Admin can reassign any order's unit at any time
     assigned_unit = (order.get("unit") or "").strip()
-    if not assigned_unit:
-        sp = str(order.get("salesPerson") or "").strip()
-        if "pankaj" in sp.lower():
-            assigned_unit = "Unit 1"
+    sp = str(order.get("salesPerson") or "").strip()
+    contact_val = str(order.get("contactInput") or "").strip()
+    clean_p = "".join(filter(str.isdigit, contact_val))[-10:] if contact_val else ""
+
+    asm_user = None
+    if sp:
+        all_us = get_all_users()
+        for u in all_us:
+            if u.get("role") == "asm" and (u.get("name", "").strip().lower() == sp.lower() or sp.lower() in u.get("name", "").strip().lower()):
+                asm_user = u
+                break
+    if not asm_user and clean_p:
+        u = get_user_by_phone(clean_p)
+        if u and u.get("role") == "asm":
+            asm_user = u
+
+    if asm_user:
+        asm_units = (asm_user.get("assigned_units") or "Unit 1").strip()
+        if assigned_unit and (assigned_unit in asm_units or asm_units.upper() == "ALL"):
+            pass
         else:
-            contact_val = str(order.get("contactInput") or "").strip()
-            clean_p = "".join(filter(str.isdigit, contact_val))[-10:] if contact_val else ""
-            user_rec = get_user_by_phone(clean_p) if clean_p else None
-            if user_rec and user_rec.get("assigned_units"):
-                assigned_unit = user_rec.get("assigned_units")
-            else:
-                assigned_unit = "Unit 1"
-    order["unit"] = assigned_unit
+            primary_u = [x.strip() for x in asm_units.split(",") if x.strip()][0] if asm_units.upper() != "ALL" else "Unit 1"
+            assigned_unit = primary_u
+    else:
+        cust_user = get_user_by_phone(clean_p) if clean_p else None
+        if cust_user and cust_user.get("assigned_units") and cust_user.get("assigned_units").strip():
+            assigned_unit = cust_user.get("assigned_units").split(",")[0].strip()
+        elif not assigned_unit:
+            assigned_unit = "Unit 1"
+
+    order["unit"] = assigned_unit or "Unit 1"
     
     # Format items summary with brand icons, calculate total pieces & clean multi-line layout
     items = order.get("items", [])
