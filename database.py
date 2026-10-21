@@ -316,6 +316,9 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
             cur.execute("SELECT status, role FROM users WHERE phone = ? LIMIT 1", (m_phone,))
             u_check = cur.fetchone()
             if not u_check or u_check["status"] == "BLOCKED" or u_check["role"] not in ["asm", "super_admin", "admin", "manager"]:
+                if u_check and u_check["status"] == "BLOCKED":
+                    with conn:
+                        conn.execute("DELETE FROM sales_manager_sessions WHERE token = ?", (token,))
                 return None
 
             m_name = row["manager_name"] or ""
@@ -636,10 +639,59 @@ def toggle_user_status(user_id: int, new_status: str) -> Dict[str, Any]:
                 cur.execute("DELETE FROM customer_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
                 cur.execute("DELETE FROM sales_manager_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
         
-        log_audit_event(user_name=row["name"], phone=u_phone, role=row["role"], action="USER_STATUS_TOGGLED", status="SUCCESS", details=f"User status updated to {new_status} by Super Admin")
-        return {"status": "success", "message": f"User '{row['name']}' status updated to {new_status}"}
+        audit_action = "USER_BLOCKED" if new_status == "BLOCKED" else "USER_UNBLOCKED"
+        log_audit_event(user_name=row["name"], phone=u_phone, role=row["role"], action=audit_action, status="SUCCESS", details=f"User account status updated to {new_status} by Super Admin. Active sessions revoked immediately.")
+        return {"status": "success", "message": f"User '{row['name']}' status updated to {new_status}", "new_status": new_status}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def update_user_assigned_units(user_id: int, new_units: str, updated_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
+    """Super Admin or Admin reassigns the warehouse unit for any Customer, ASM, or User"""
+    conn = get_connection()
+    try:
+        now_iso = datetime.now().isoformat()
+        with conn:
+            cur = conn.cursor()
+            cur.execute("SELECT id, name, phone, role, assigned_units FROM users WHERE id = ?", (user_id,))
+            user = cur.fetchone()
+            if not user:
+                return {"status": "error", "message": "User not found"}
+            
+            clean_units = (new_units or "Unit 1").strip()
+            cur.execute("UPDATE users SET assigned_units = ?, updated_at = ? WHERE id = ?", (clean_units, now_iso, user_id))
+            
+        log_audit_event(
+            user_name=user["name"],
+            phone=user["phone"],
+            role=user["role"],
+            action="USER_UNIT_REASSIGNED",
+            status="SUCCESS",
+            details=f"Assigned warehouse unit changed from '{user['assigned_units']}' to '{clean_units}' by {updated_by}"
+        )
+        return {
+            "status": "success",
+            "message": f"Successfully reassigned '{user['name']}' to '{clean_units}'",
+            "assigned_units": clean_units
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def is_user_phone_blocked(phone: str) -> bool:
+    """Checks if a user's phone number is currently marked as BLOCKED"""
+    digits = "".join(filter(str.isdigit, str(phone)))
+    clean_p = digits[-10:] if len(digits) >= 10 else digits
+    if not clean_p:
+        return False
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT status FROM users WHERE phone = ? LIMIT 1", (clean_p,))
+        row = cur.fetchone()
+        return bool(row and row["status"] == "BLOCKED")
     finally:
         conn.close()
 
@@ -712,6 +764,8 @@ def validate_customer_session(token: str) -> Optional[Dict[str, Any]]:
             cur.execute("SELECT status FROM users WHERE phone = ? LIMIT 1", (c_phone,))
             u_check = cur.fetchone()
             if u_check and u_check["status"] == "BLOCKED":
+                with conn:
+                    conn.execute("DELETE FROM customer_sessions WHERE token = ?", (token,))
                 return None
             return dict(row)
         return None

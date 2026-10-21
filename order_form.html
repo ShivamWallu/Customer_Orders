@@ -2815,6 +2815,12 @@
           body: JSON.stringify(payload)
         });
         const data = await res.json();
+        if (res.status === 403 || data.force_logout) {
+          localStorage.removeItem(CUSTOMER_SESSION_KEY);
+          alert((data.detail && data.detail.message) || data.message || "Your Customer account has been BLOCKED by Super Admin.");
+          showCustomerAuthModal();
+          return;
+        }
         const finalOrder = data.order || payload;
         finalOrder.id = data.orderId || payload.id;
         finalOrder.formattedTimestamp = finalOrder.formattedTimestamp || formattedTimestamp;
@@ -3575,11 +3581,23 @@
       }
     }
 
-    function checkCustomerSession() {
+    async function checkCustomerSession() {
       try {
         const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "null");
         if (sess && sess.token && sess.phone) {
           applyCustomerSession(sess);
+          const res = await fetch("/api/customer/check-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: sess.token })
+          });
+          const d = await res.json();
+          if (res.status === 403 || d.force_logout || d.status !== "valid") {
+            localStorage.removeItem(CUSTOMER_SESSION_KEY);
+            showCustomerAuthModal();
+            showCustomerAuthError({ error_type: "BLOCKED_CUSTOMER", message: d.message || "Your Customer account has been BLOCKED by Super Admin." });
+            return;
+          }
           return;
         }
       } catch (e) {}

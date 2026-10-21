@@ -2849,6 +2849,14 @@
           body: JSON.stringify({ token: sess.token })
         });
         const data = await res.json();
+        if (res.status === 403 || data.force_logout || data.status !== "valid") {
+          localStorage.removeItem(SESSION_KEY);
+          showManagerAuthModal();
+          if (data.error_type === "ACCOUNT_BLOCKED" || res.status === 403) {
+            showManagerAuthError({ message: data.message || "Your Area Sales Manager account has been BLOCKED by Super Admin. Please contact Customer Care: 1800 103 3211" });
+          }
+          return;
+        }
         if (data.status === "valid") {
           const freshSess = data.session || sess;
           if (freshSess.manager_name) {
@@ -2860,12 +2868,7 @@
           showManagerAuthModal();
         }
       } catch (e) {
-        const sess = JSON.parse(stored);
-        if (sess.expires_at && sess.expires_at * 1000 > Date.now()) {
-          applyManagerSession(sess);
-        } else {
-          showManagerAuthModal();
-        }
+        showManagerAuthModal();
       }
     }
 
@@ -3729,6 +3732,12 @@ async function requestManagerLoginOtp() {
           body: JSON.stringify(payload)
         });
         const data = await res.json();
+        if (res.status === 403 || data.force_logout) {
+          localStorage.removeItem(SESSION_KEY);
+          alert((data.detail && data.detail.message) || data.message || "Your Area Sales Manager account has been BLOCKED by Super Admin.");
+          showManagerAuthModal();
+          return;
+        }
         const finalOrder = data.order || payload;
         finalOrder.id = data.orderId || payload.id;
         finalOrder.formattedTimestamp = finalOrder.formattedTimestamp || formattedTimestamp;

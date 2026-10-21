@@ -2017,40 +2017,48 @@
       border-color: var(--brand-mashal);
     }
 
-    /* Role Pills in Users Control - Enterprise Segmented Control */
+    /* Role Pills in Users Control - Enterprise Segmented Control (Linear / Stripe style) */
     .user-role-filter-pills {
-      display: flex;
-      gap: 6px;
+      display: inline-flex;
+      align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 16px;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .role-filter-pill {
-      padding: 6px 14px;
-      font-size: 12.5px;
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 600;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      background: #ffffff;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      background: transparent;
       color: #475569;
       cursor: pointer;
       transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
+      white-space: nowrap;
     }
 
     .role-filter-pill:hover {
-      background: #f8fafc;
-      border-color: #cbd5e1;
+      background: #ffffff;
       color: #0f172a;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .role-filter-pill.active {
-      background: #0f172a;
-      color: #ffffff;
-      border-color: #0f172a;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #cbd5e1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      font-weight: 700;
     }
 
     .role-filter-pill svg {
@@ -2063,16 +2071,39 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       font-weight: 700;
-      padding: 1px 7px;
+      padding: 1px 6px;
       border-radius: 9999px;
-      background: #f1f5f9;
+      background: #e2e8f0;
       color: #475569;
       transition: all 0.15s ease;
     }
 
     .role-filter-pill.active .role-pill-count {
-      background: rgba(255, 255, 255, 0.2);
+      background: #0f172a;
       color: #ffffff;
+    }
+
+    .unit-tag-interactive {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3.5px 8px;
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .unit-tag-interactive:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transform: translateY(-0.5px);
     }
 
     .user-auth-banner {
@@ -2549,73 +2580,83 @@
   </div>
 
   <!-- 👥 SUPER ADMIN USER & PHONE AUTHORIZATION CONTROL PANEL -->
-  <div class="table-card-wrapper" id="usersCardWrapper" style="display: none; padding: 24px;">
+  <div class="table-card-wrapper" id="usersCardWrapper" style="display: none; padding: 24px; max-width: 100%; box-sizing: border-box;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
       <div>
-        <h2 style="font-size: 20px; font-weight: 800; color: var(--brand-mashal); margin-bottom: 4px;">👥 User & Access Control Management</h2>
-        <p style="font-size: 13px; color: var(--text-secondary);">Manage authorized users across Customer Portal, Area Sales Manager Portal, and Admin Desktop Portal. Strict role-based security & OTP authorization enforced.</p>
+        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>User & Access Control Management</span>
+        </h2>
+        <p style="font-size: 13px; color: #64748b;">Manage authorized users across Customer Portal, Area Sales Manager Portal, and Admin Desktop Portal. Strict role-based security & OTP authorization enforced.</p>
       </div>
-      <div style="display: flex; gap: 10px;">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <button class="btn-tool" onclick="loadAdminUsers()" title="Reload user list">
-          <span>🔄</span> <span>Refresh</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          <span>Refresh</span>
         </button>
         <button class="btn-tool primary" onclick="openCreateUserModal()" title="Authorize new phone number / user account">
-          <span>➕</span> <span>Create User / Authorize Phone</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+          <span>Create User / Authorize Phone</span>
         </button>
       </div>
     </div>
 
     <!-- 🔒 Security Notice Banner -->
     <div class="user-auth-banner">
-      <span class="user-auth-banner-icon">🔒</span>
+      <div style="flex-shrink: 0; color: #2563eb; margin-top: 2px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
       <div>
         <div style="font-size: 14px; font-weight: 800; color: #1e40af; margin-bottom: 3px;">Centralized Access & Role Authorization System Active</div>
         <div style="font-size: 12.5px; color: #1e3a8a; line-height: 1.5;">
           • <strong>Customer Portal:</strong> Self-registered customers are automatically added below with exact timestamps.<br>
-          • <strong>Area Sales Manager (ASM):</strong> Only pre-approved mobile numbers registered below can log in via mobile or APK.<br>
+          • <strong>Area Sales Manager (ASM):</strong> Mobile numbers registered below or on self-login can access the APK or Web portal.<br>
           • <strong>Admin / Manager / Analyser:</strong> Desktop-only portal accounts with designated role permissions.<br>
-          • <strong>Status Control:</strong> Blocking or deleting an account immediately revokes all active device sessions.
+          • <strong>Status Control:</strong> Blocking an account immediately revokes all device sessions and rejects subsequent API requests (403 Forbidden).
         </div>
       </div>
     </div>
 
     <!-- Filter & Search Toolbar for Users -->
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--card-border);">
-      <div class="user-role-filter-pills" style="margin-bottom: 0; flex-wrap: wrap;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; background: #ffffff; padding: 12px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); max-width: 100%; box-sizing: border-box;">
+      <div class="user-role-filter-pills" style="margin-bottom: 0;">
         <button class="role-filter-pill active" id="userPillAll" onclick="filterUsersByRole('ALL')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>
           <span>All Users</span>
           <span class="role-pill-count" id="userCountAllPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillCustomer" onclick="filterUsersByRole('customer')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <span>Customers</span>
           <span class="role-pill-count" id="userCountCustPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillAsm" onclick="filterUsersByRole('asm')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
           <span>Area Sales Managers</span>
           <span class="role-pill-count" id="userCountAsmPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillAdmin" onclick="filterUsersByRole('admin')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           <span>Admin</span>
           <span class="role-pill-count" id="userCountAdminPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillManager" onclick="filterUsersByRole('manager')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
           <span>Manager</span>
           <span class="role-pill-count" id="userCountManagerPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillAnalyser" onclick="filterUsersByRole('analyser')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
           <span>Analyser</span>
           <span class="role-pill-count" id="userCountAnalyserPill">0</span>
         </button>
       </div>
 
-      <div style="position: relative; min-width: 250px;">
-        <span style="position: absolute; left: 10px; top: 9px; font-size: 13px; color: var(--text-muted);">🔍</span>
-        <input type="text" id="userSearchInput" class="search-box" style="padding-left: 32px; width: 100%;" placeholder="Search name, mobile, role..." oninput="filterUsersBySearch(this.value)">
+      <div style="position: relative; min-width: 260px; flex-shrink: 0;">
+        <span style="position: absolute; left: 11px; top: 10px; color: #94a3b8; display: flex; align-items: center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <input type="text" id="userSearchInput" class="search-box" style="padding-left: 34px; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12.5px; height: 36px;" placeholder="Search name, mobile, role..." oninput="filterUsersBySearch(this.value)">
       </div>
     </div>
 
@@ -2987,6 +3028,48 @@
         <button class="btn-tool primary" id="btnSubmitChangeUnit" onclick="submitChangeUnit()">
           <span>✔</span>
           <span>Save & Reassign Unit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 👥 Reassign User/ASM/Customer Warehouse Unit Modal -->
+  <div class="generic-modal-overlay" id="reassignUserUnitModalOverlay" style="display: none;" onclick="closeReassignUserUnitModal(event)">
+    <div class="generic-modal-box" onclick="event.stopPropagation()" style="max-width: 480px;">
+      <div class="generic-modal-header" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom: 1px solid #e2e8f0;">
+        <h3 style="color: #0f172a; display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Reassign Warehouse Unit for User</span>
+        </h3>
+        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeReassignUserUnitModal()">✕</button>
+      </div>
+      <div class="generic-modal-body">
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 14px; line-height: 1.45;">
+          Reassign the primary warehouse factory unit for this Customer or Area Sales Manager. Orders submitted by this user will automatically route to this assigned unit.
+        </p>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">ACCOUNT / USER:</span>
+            <span id="reassignUserRoleBadge"></span>
+          </div>
+          <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px;" id="reassignUserNameDisplay">User Name</div>
+          <div style="font-size: 12.5px; font-family: 'JetBrains Mono', monospace; color: #475569; margin-bottom: 4px;" id="reassignUserPhoneDisplay">+91 9876543210</div>
+          <div style="font-size: 12px; color: #64748b;" id="reassignUserCurrentUnitDisplay">Current Unit: Unit 1</div>
+        </div>
+
+        <label style="font-size: 12px; font-weight: 700; color: #334155; display: block; margin-bottom: 6px; letter-spacing: 0.04em;">
+          SELECT ASSIGNED WAREHOUSE UNIT: <span style="color: #dc2626;">*</span>
+        </label>
+        <select id="reassignUserUnitSelect" class="login-input" style="font-weight: 700; color: #0f172a; cursor: pointer; padding: 10px 12px; border-radius: 8px; width: 100%;">
+          <!-- Dynamically populated from allWarehouseUnits -->
+        </select>
+        <div id="reassignUserUnitModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none; margin-top: 6px;"></div>
+      </div>
+      <div class="generic-modal-footer">
+        <button class="btn-tool" onclick="closeReassignUserUnitModal()">Cancel</button>
+        <button class="btn-tool primary" id="btnSubmitReassignUserUnit" onclick="submitReassignUserUnit()">
+          <span>Save Unit Reassignment</span>
         </button>
       </div>
     </div>
@@ -3634,6 +3717,115 @@
       }
     }
 
+    // 👥 Reassign User/ASM/Customer Warehouse Unit Functions
+    let currentReassignUserId = null;
+
+    function openReassignUserUnitModal(userId, userName, currentUnit, role) {
+      if (currentUserRole !== "super_admin" && currentUserRole !== "admin") {
+        showToast("Only Super Admin can reassign user warehouse units", "error");
+        return;
+      }
+      currentReassignUserId = userId;
+      const modal = document.getElementById("reassignUserUnitModalOverlay");
+      if (!modal) return;
+
+      document.getElementById("reassignUserNameDisplay").textContent = userName;
+      document.getElementById("reassignUserCurrentUnitDisplay").textContent = `Current Assigned Unit: ${currentUnit || "Unit 1"}`;
+
+      const user = (typeof adminUsersList !== "undefined") ? adminUsersList.find(u => u.id === userId) : null;
+      if (user && document.getElementById("reassignUserPhoneDisplay")) {
+        document.getElementById("reassignUserPhoneDisplay").textContent = `+91 ${user.phone}`;
+      }
+      if (document.getElementById("reassignUserRoleBadge")) {
+        document.getElementById("reassignUserRoleBadge").innerHTML = getRoleBadgeHtml(role);
+      }
+
+      const sel = document.getElementById("reassignUserUnitSelect");
+      sel.innerHTML = "";
+
+      const optAll = document.createElement("option");
+      optAll.value = "ALL";
+      optAll.textContent = "ALL (All Units Scope)";
+      sel.appendChild(optAll);
+
+      let unitList = (typeof allWarehouseUnits !== "undefined" && allWarehouseUnits.length > 0)
+        ? allWarehouseUnits.map(u => u.unit_name || u.unit_code)
+        : ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5", "Unit 6"];
+
+      ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5", "Unit 6"].forEach(u => {
+        if (!unitList.includes(u)) unitList.push(u);
+      });
+
+      unitList.forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u;
+        opt.textContent = `🏭 ${u}`;
+        if (u === currentUnit || u.toLowerCase() === (currentUnit || "").toLowerCase()) {
+          opt.selected = true;
+        }
+        sel.appendChild(opt);
+      });
+
+      if ((currentUnit || "").toUpperCase() === "ALL") {
+        optAll.selected = true;
+      }
+
+      const errEl = document.getElementById("reassignUserUnitModalError");
+      if (errEl) errEl.style.display = "none";
+
+      modal.style.display = "flex";
+    }
+
+    function closeReassignUserUnitModal(e) {
+      if (e && e.target && e.target.id !== "reassignUserUnitModalOverlay" && !e.target.classList.contains("btn-tool")) return;
+      const modal = document.getElementById("reassignUserUnitModalOverlay");
+      if (modal) modal.style.display = "none";
+      currentReassignUserId = null;
+    }
+
+    async function submitReassignUserUnit() {
+      if (!currentReassignUserId) return;
+      const sel = document.getElementById("reassignUserUnitSelect");
+      const newUnit = sel.value;
+      const submitBtn = document.getElementById("btnSubmitReassignUserUnit");
+      const errEl = document.getElementById("reassignUserUnitModalError");
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "<span>⏳ Saving...</span>";
+        if (errEl) errEl.style.display = "none";
+
+        const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+        const resp = await fetch(`/api/admin/users/${currentReassignUserId}/unit`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + (token || "")
+          },
+          body: JSON.stringify({ unit: newUnit, assigned_units: newUnit })
+        });
+
+        const resData = await resp.json();
+        if (!resp.ok || resData.status !== "success") {
+          throw new Error(resData.detail || resData.message || "Failed to update user assigned unit");
+        }
+
+        showToast(`User unit reassigned to ${newUnit} successfully!`, "success");
+        closeReassignUserUnitModal();
+        loadAdminUsers();
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = "Error: " + err.message;
+          errEl.style.display = "block";
+        } else {
+          showToast(err.message, "error");
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "<span>Save Unit Reassignment</span>";
+      }
+    }
+
     // 🏭 Warehouse Unit Management Functions
     async function loadWarehouseUnits() {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
@@ -4029,7 +4221,7 @@
           : `<span style="color: #64748b; font-size: 12px; font-weight: 500;">Staff / System Account</span>`;
 
         const createdDate = u.formatted_created_at || (u.created_at ? u.created_at.replace("T", " ").split(".")[0] : "-");
-        const unitDisplay = `<span class="unit-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>${escapeHtml(u.assigned_units || "Unit 1")}</span>`;
+        const unitDisplay = `<button type="button" class="unit-tag-interactive" title="Click to reassign warehouse unit for ${escapeHtml(u.name)}" onclick="openReassignUserUnitModal(${u.id}, '${escapeHtml(u.name)}', '${escapeHtml(u.assigned_units || 'Unit 1')}', '${escapeHtml(u.role)}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg><span>${escapeHtml(u.assigned_units || "Unit 1")}</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:1px; opacity:0.6;"><path d="m6 9 6 6 6-6"/></svg></button>`;
 
         html += `
           <tr>
@@ -4042,7 +4234,11 @@
             <td class="center">${statusBadge}</td>
             <td style="font-size: 12px; font-weight: 500; color: #475569; white-space: nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:4px; color:#94a3b8;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${escapeHtml(createdDate)}</td>
             <td class="center">
-              <div style="display: flex; gap: 6px; justify-content: center;">
+              <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                <button class="btn-action-icon" title="Reassign Warehouse Unit" onclick="openReassignUserUnitModal(${u.id}, '${escapeHtml(u.name)}', '${escapeHtml(u.assigned_units || 'Unit 1')}', '${escapeHtml(u.role)}')">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                  <span>Unit</span>
+                </button>
                 <button class="btn-action-icon ${isBlocked ? 'success' : ''}" title="${blockBtnTitle}" onclick="toggleUserStatusAction(${u.id}, '${newStatus}')">
                   ${isBlocked 
                     ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg><span>Unblock</span>' 
@@ -4304,7 +4500,12 @@
     }
 
     async function toggleUserStatusAction(userId, newStatus) {
-      if (!confirm(`Are you sure you want to change this account status to ${newStatus}?`)) return;
+      const isBlocking = newStatus === "BLOCKED";
+      const confirmMsg = isBlocking
+        ? "⚠️ Are you sure you want to BLOCK this account?\n\n• The user will be IMMEDIATELY logged out from Mobile APK and Web.\n• Any subsequent API requests or orders will be instantly rejected (403 Forbidden)."
+        : "Are you sure you want to UNBLOCK and restore full login & ordering access for this account?";
+      if (!confirm(confirmMsg)) return;
+
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
       try {
         const res = await fetch(`/api/admin/users/${userId}/status`, {
@@ -4317,6 +4518,7 @@
         });
         const d = await res.json();
         if (res.ok && d.status === "success") {
+          showToast(`Account status updated to ${newStatus} successfully!`, "success");
           loadAdminUsers();
         } else {
           alert("Error: " + (d.detail || d.message));

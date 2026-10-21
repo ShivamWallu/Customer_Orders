@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Header, HTTPException, Request, BackgroundTasks
-from fastapi.responses import FileResponse, HTMLResponse, Response, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -43,6 +43,9 @@ from database import (
     create_or_update_user,
     toggle_user_status,
     delete_user_by_id,
+    update_user_assigned_units,
+    is_user_phone_blocked,
+    get_connection,
     create_customer_session,
     validate_customer_session,
     get_orders_for_asm,
@@ -756,6 +759,17 @@ async def api_delete_admin_user(user_id: int, request: Request):
         raise HTTPException(status_code=400, detail=res.get("message"))
     return res
 
+@app.post("/api/admin/users/{user_id}/unit")
+async def api_reassign_user_unit(user_id: int, request: Request):
+    """Reassigns the assigned warehouse unit for any Customer, ASM, or User account"""
+    admin = require_admin_auth(request)
+    body = await request.json()
+    new_unit = body.get("unit") or body.get("assigned_units") or "Unit 1"
+    res = update_user_assigned_units(user_id, new_unit, updated_by=admin.get("username", "SUPER_ADMIN"))
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
 # 📜 SYSTEM AUDIT LOGS & ACTIVITY TRACKER API (SUPER ADMIN)
 @app.get("/api/admin/audit-logs")
 async def api_get_admin_audit_logs(request: Request):
@@ -887,6 +901,13 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     contact_val = str(order.get("contactInput") or "").strip()
     clean_p = "".join(filter(str.isdigit, contact_val))[-10:] if contact_val else ""
 
+    # 🚫 Instant Blocked Account Enforcement (Customer & ASM)
+    if clean_p and is_user_phone_blocked(clean_p):
+        raise HTTPException(
+            status_code=403,
+            detail={"status": "error", "error_type": "ACCOUNT_BLOCKED", "message": "Your account has been BLOCKED by Super Admin. Order submission rejected.", "force_logout": True}
+        )
+
     asm_user = None
     if sp:
         all_us = get_all_users()
@@ -898,6 +919,12 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
         u = get_user_by_phone(clean_p)
         if u and u.get("role") == "asm":
             asm_user = u
+
+    if asm_user and asm_user.get("status") == "BLOCKED":
+        raise HTTPException(
+            status_code=403,
+            detail={"status": "error", "error_type": "ACCOUNT_BLOCKED", "message": f"Area Sales Manager account '{asm_user.get('name')}' is BLOCKED by Super Admin.", "force_logout": True}
+        )
 
     if asm_user:
         asm_units = (asm_user.get("assigned_units") or "Unit 1").strip()
@@ -912,6 +939,20 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
             assigned_unit = cust_user.get("assigned_units").split(",")[0].strip()
         elif not assigned_unit:
             assigned_unit = "Unit 1"
+
+        # 👥 Automatic Customer Registration & Tracking on Order
+        if not cust_user and clean_p and len(clean_p) == 10:
+            c_name = (order.get("customerName") or order.get("partyName") or "Customer").strip()
+            create_or_update_user(
+                name=c_name,
+                phone=clean_p,
+                role="customer",
+                party_code=party_code,
+                party_name=(order.get("partyName") or c_name).strip(),
+                assigned_units=assigned_unit or "Unit 1",
+                status="ACTIVE",
+                created_by="ORDER_SELF_REGISTERED"
+            )
 
     order["unit"] = assigned_unit or "Unit 1"
     
@@ -1827,22 +1868,31 @@ async def api_manager_send_otp(request: Request):
 
     user = get_user_by_phone(clean_p)
     if not user:
-        log_audit_event(
-            user_name="Unauthorized User",
+        # 👥 Dynamic Automatic ASM Self-Registration & Centralized Tracking
+        mgr_name = (body.get("manager_name") or body.get("name") or "").strip()
+        if not mgr_name:
+            mgr_name = f"Area Sales Manager ({clean_p[-4:]})"
+        create_or_update_user(
+            name=mgr_name,
             phone=clean_p,
             role="asm",
-            action="UNAUTHORIZED_ACCESS_ATTEMPT",
-            status="FAILED",
-            details=f"Unauthorized mobile number '{clean_p}' attempted Area Sales Manager login",
+            party_code="",
+            party_name="Staff / System Account",
+            assigned_units="Unit 1",
+            status="ACTIVE",
+            created_by="ASM_PORTAL_REGISTRATION"
+        )
+        user = get_user_by_phone(clean_p)
+        log_audit_event(
+            user_name=mgr_name,
+            phone=clean_p,
+            role="asm",
+            action="ASM_REGISTRATION",
+            status="SUCCESS",
+            details=f"New Area Sales Manager dynamically registered: '{mgr_name}' (+91 {clean_p})",
             ip_address=client_ip
         )
-        return {
-            "status": "error",
-            "error_type": "UNAUTHORIZED_ASM",
-            "message": "Mobile number is not registered as Area Sales Manager. Please contact Super Admin or Support to authorize your account.\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
-            "toll_free": "1800 103 3211",
-            "email": "customercare@khandelia.com"
-        }
+
     if user.get("status") == "BLOCKED":
         log_audit_event(
             user_name=user.get("name", "ASM"),
@@ -1858,7 +1908,8 @@ async def api_manager_send_otp(request: Request):
             "error_type": "BLOCKED_ASM",
             "message": "Your Area Sales Manager account has been temporarily blocked by Super Admin. Please contact Customer Care:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
             "toll_free": "1800 103 3211",
-            "email": "customercare@khandelia.com"
+            "email": "customercare@khandelia.com",
+            "force_logout": True
         }
     if user.get("role") not in ["asm", "admin", "manager", "super_admin"]:
         log_audit_event(
@@ -1911,10 +1962,47 @@ async def api_manager_verify_otp(request: Request):
     clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
     client_ip = request.client.host if request.client else "127.0.0.1"
     user = get_user_by_phone(clean_p)
-    name = body.get("manager_name", "") or (user.get("name") if user else "")
+    name = (body.get("manager_name") or body.get("name") or "").strip()
     
-    res = verify_manager_login_otp(clean_p, otp, name)
+    if user and user.get("status") == "BLOCKED":
+        return JSONResponse(
+            status_code=403,
+            content={
+                "status": "error",
+                "error_type": "BLOCKED_ASM",
+                "message": "Your account has been BLOCKED by Super Admin.",
+                "force_logout": True
+            }
+        )
+
+    res = verify_manager_login_otp(clean_p, otp, name or (user.get("name") if user else ""))
     if res.get("status") == "success":
+        if not user:
+            user_name = name or f"Area Sales Manager ({clean_p[-4:]})"
+            create_or_update_user(
+                name=user_name,
+                phone=clean_p,
+                role="asm",
+                party_code="",
+                party_name="Staff / System Account",
+                assigned_units="Unit 1",
+                status="ACTIVE",
+                created_by="ASM_PORTAL_REGISTRATION"
+            )
+            user = get_user_by_phone(clean_p)
+        elif name and (user.get("name") in ["", "ASM", "Area Sales Manager", None] or str(user.get("name")).startswith("Area Sales Manager (")):
+            create_or_update_user(
+                name=name,
+                phone=clean_p,
+                role=user.get("role", "asm"),
+                party_code=user.get("party_code", ""),
+                party_name=user.get("party_name", "") or "Staff / System Account",
+                assigned_units=user.get("assigned_units", "Unit 1"),
+                status=user.get("status", "ACTIVE"),
+                created_by=user.get("created_by", "ASM_PORTAL_REGISTRATION")
+            )
+            user = get_user_by_phone(clean_p)
+
         role = user.get("role", "asm") if user else "asm"
         user_name = user.get("name", name) if user else name
         res["role"] = role
@@ -1948,7 +2036,10 @@ async def api_manager_check_session(request: Request):
     session = validate_manager_session(token)
     if session:
         return {"status": "valid", "session": session}
-    return {"status": "invalid"}
+    return JSONResponse(
+        status_code=403,
+        content={"status": "invalid", "error_type": "ACCOUNT_BLOCKED_OR_EXPIRED", "message": "Session expired or account blocked by Super Admin", "force_logout": True}
+    )
 
 @app.get("/api/sales-manager/my-orders")
 async def api_get_manager_orders(request: Request):
@@ -2101,6 +2192,26 @@ async def api_customer_verify_otp(request: Request):
         return verify_res
 
     user = get_user_by_phone(clean_p)
+    if user and user.get("status") == "BLOCKED":
+        log_audit_event(
+            user_name=user.get("name", "Customer"),
+            phone=clean_p,
+            role="customer",
+            action="CUSTOMER_LOGIN_BLOCKED",
+            status="FAILED",
+            details="Blocked customer attempted OTP verification",
+            ip_address=client_ip
+        )
+        return JSONResponse(
+            status_code=403,
+            content={
+                "status": "error",
+                "error_type": "ACCOUNT_BLOCKED",
+                "message": "Your Customer account has been BLOCKED by Super Admin.",
+                "force_logout": True
+            }
+        )
+
     if not user:
         # 🌟 AUTOMATIC NEW CUSTOMER SELF-REGISTRATION
         resolved_name = customer_input_name or "New Customer"
@@ -2170,13 +2281,16 @@ async def api_customer_verify_otp(request: Request):
 
 @app.post("/api/customer/check-session")
 async def api_customer_check_session(request: Request):
-    """Validates Customer session"""
+    """Validates Customer session and checks blocked status"""
     body = await request.json()
     token = body.get("token", "")
     session = validate_customer_session(token)
     if session:
         return {"status": "valid", "session": session}
-    return {"status": "invalid"}
+    return JSONResponse(
+        status_code=403,
+        content={"status": "invalid", "error_type": "ACCOUNT_BLOCKED_OR_EXPIRED", "message": "Session expired or account blocked by Super Admin", "force_logout": True}
+    )
 
 @app.get("/api/customer/my-orders")
 async def api_get_customer_orders(request: Request):
@@ -2345,6 +2459,57 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 🚫 ENTERPRISE SECURITY MIDDLEWARE: INSTANT BLOCKED ACCOUNT REVOCATION
+@app.middleware("http")
+async def security_blocked_accounts_middleware(request: Request, call_next):
+    """
+    Enterprise Security Middleware:
+    Instantly blocks any request from a user account marked as BLOCKED in SQLite users table.
+    Enforces immediate 403 Forbidden and force-logout response for Customer & ASM Web/APK endpoints.
+    """
+    path = request.url.path
+    if path.startswith(("/api/customer", "/api/sales-manager", "/api/customers")):
+        auth_header = request.headers.get("Authorization", "")
+        token = ""
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ", 1)[1].strip()
+        if not token:
+            token = request.query_params.get("token", "")
+        
+        phone = request.query_params.get("phone", "")
+        
+        if token and not phone:
+            conn = get_connection()
+            try:
+                cur = conn.cursor()
+                cur.execute("SELECT phone FROM sales_manager_sessions WHERE token = ? LIMIT 1", (token,))
+                r = cur.fetchone()
+                if r:
+                    phone = r["phone"]
+                else:
+                    cur.execute("SELECT phone FROM customer_sessions WHERE token = ? LIMIT 1", (token,))
+                    rc = cur.fetchone()
+                    if rc:
+                        phone = rc["phone"]
+            finally:
+                conn.close()
+
+        if phone:
+            clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
+            if clean_p and is_user_phone_blocked(clean_p):
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "status": "error",
+                        "error_type": "ACCOUNT_BLOCKED",
+                        "message": "Your account has been BLOCKED by Super Admin. All sessions have been revoked.",
+                        "force_logout": True
+                    }
+                )
+
+    response = await call_next(request)
+    return response
 
 SECRET_TOKEN = "MASHAL_SECURE_TOKEN_2026"
 
