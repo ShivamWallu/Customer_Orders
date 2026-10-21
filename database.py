@@ -115,6 +115,23 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_cust_phone ON customer_sessions (phone);
             CREATE INDEX IF NOT EXISTS idx_units_code ON units (unit_code);
             CREATE INDEX IF NOT EXISTS idx_units_status ON units (status);
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_name TEXT DEFAULT '',
+                phone TEXT DEFAULT '',
+                role TEXT DEFAULT '',
+                action TEXT NOT NULL,
+                status TEXT DEFAULT 'SUCCESS',
+                details TEXT DEFAULT '',
+                ip_address TEXT DEFAULT '',
+                created_at TEXT NOT NULL,
+                timestamp REAL NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_logs (created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs (action);
+            CREATE INDEX IF NOT EXISTS idx_audit_phone ON audit_logs (phone);
+            CREATE INDEX IF NOT EXISTS idx_audit_role ON audit_logs (role);
+            CREATE INDEX IF NOT EXISTS idx_audit_status ON audit_logs (status);
             """)
         # Safe migration for new columns
         try:
@@ -228,6 +245,14 @@ def init_db():
         except Exception as e:
             print("[DATABASE] User seeding/upgrade error:", e)
 
+        # Requirement 6: Keep only Unit 1 and Unit 4 active by default; others inactive
+        try:
+            with conn:
+                conn.execute("UPDATE units SET status = 'ACTIVE' WHERE unit_name IN ('Unit 1', 'Unit 4');")
+                conn.execute("UPDATE units SET status = 'INACTIVE' WHERE unit_name NOT IN ('Unit 1', 'Unit 4');")
+        except Exception as e:
+            print("[DATABASE] Units active status setup error:", e)
+
         print("[DATABASE] SQLite permanent orders database initialized at:", DB_FILE)
     finally:
         conn.close()
@@ -273,7 +298,7 @@ def create_manager_session(phone: str, manager_name: str = "") -> Dict[str, Any]
         conn.close()
 
 def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
-    """Validates if token exists and is within 1-year window"""
+    """Validates if token exists, is within 1-year window, and manager account is ACTIVE"""
     import time
     if not token:
         return None
@@ -287,6 +312,12 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
         """, (token,))
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
+            m_phone = "".join(filter(str.isdigit, str(row["phone"])))[-10:]
+            cur.execute("SELECT status, role FROM users WHERE phone = ? LIMIT 1", (m_phone,))
+            u_check = cur.fetchone()
+            if not u_check or u_check["status"] == "BLOCKED" or u_check["role"] not in ["asm", "super_admin", "admin", "manager"]:
+                return None
+
             m_name = row["manager_name"] or ""
             # If current session token has empty name, auto-heal from previous records of this phone
             if not m_name:
@@ -305,6 +336,7 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
                 "token": row["token"],
                 "phone": row["phone"],
                 "manager_name": m_name,
+                "role": u_check["role"],
                 "created_at": row["created_at"],
                 "expires_at": row["expires_at"]
             }
@@ -313,17 +345,19 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
         conn.close()
 
 # ----------------- 🏭 WAREHOUSE UNIT MANAGEMENT SYSTEM -----------------
-def get_all_units() -> List[Dict[str, Any]]:
-    """Fetches all warehouse units with order counts"""
+def get_all_units(active_only: bool = False) -> List[Dict[str, Any]]:
+    """Fetches warehouse units with order counts"""
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("""
+        where_sql = "WHERE u.status = 'ACTIVE'" if active_only else ""
+        cur.execute(f"""
         SELECT u.id, u.unit_code, u.unit_name, u.description, u.status, u.created_at, u.updated_at,
                (SELECT COUNT(*) FROM orders o WHERE o.unit = u.unit_name OR o.unit = u.unit_code) AS total_orders,
                (SELECT COALESCE(SUM(total_boxes), 0) FROM orders o WHERE o.unit = u.unit_name OR o.unit = u.unit_code) AS total_boxes,
                (SELECT COALESCE(SUM(total_pieces), 0) FROM orders o WHERE o.unit = u.unit_name OR o.unit = u.unit_code) AS total_pieces
         FROM units u
+        {where_sql}
         ORDER BY u.id ASC
         """)
         return [dict(r) for r in cur.fetchall()]
@@ -354,6 +388,7 @@ def create_or_update_unit(unit_code: str, unit_name: str, description: str = "",
         cur = conn.cursor()
         cur.execute("SELECT * FROM units WHERE unit_code = ?", (code_clean,))
         row = cur.fetchone()
+        log_audit_event(user_name="Super Admin", role="super_admin", action="UNIT_CREATED", status="SUCCESS", details=f"Unit '{name_clean}' ({code_clean}) created/updated with status {status.upper()}")
         return {"status": "success", "message": f"Unit '{name_clean}' saved successfully.", "unit": dict(row) if row else None}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -373,6 +408,7 @@ def toggle_unit_status(unit_id: int, new_status: str) -> Dict[str, Any]:
             cur.execute("UPDATE units SET status = ?, updated_at = ? WHERE id = ?", (new_status, now_iso, unit_id))
             if cur.rowcount == 0:
                 return {"status": "error", "message": "Unit not found"}
+        log_audit_event(user_name="Super Admin", role="super_admin", action="UNIT_STATUS_TOGGLED", status="SUCCESS", details=f"Unit ID {unit_id} status changed to {new_status}")
         return {"status": "success", "message": f"Unit status updated to {new_status}"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -385,7 +421,6 @@ def delete_unit_by_id(unit_id: int) -> Dict[str, Any]:
     try:
         with conn:
             cur = conn.cursor()
-            # Do not allow deleting core units 1 to 6 if they have orders
             cur.execute("SELECT unit_name FROM units WHERE id = ?", (unit_id,))
             row = cur.fetchone()
             if not row:
@@ -398,9 +433,99 @@ def delete_unit_by_id(unit_id: int) -> Dict[str, Any]:
                 return {"status": "error", "message": f"Cannot delete unit '{unit_name}' because it has {ord_count} associated orders. Please reassign orders first or mark unit INACTIVE."}
 
             cur.execute("DELETE FROM units WHERE id = ?", (unit_id,))
+        log_audit_event(user_name="Super Admin", role="super_admin", action="UNIT_DELETED", status="SUCCESS", details=f"Unit '{unit_name}' (ID: {unit_id}) deleted by Super Admin")
         return {"status": "success", "message": f"Unit '{unit_name}' deleted successfully"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+# ----------------- 📜 AUDIT LOGS & SYSTEM ACTIVITY TRACKER -----------------
+def log_audit_event(user_name: str = "", phone: str = "", role: str = "", 
+                    action: str = "", status: str = "SUCCESS", details: str = "", ip_address: str = ""):
+    """Inserts an immutable audit log record into audit_logs table"""
+    import time
+    conn = get_connection()
+    try:
+        now_dt = datetime.now()
+        now_iso = now_dt.isoformat()
+        now_ts = time.time()
+        with conn:
+            conn.execute("""
+            INSERT INTO audit_logs (user_name, phone, role, action, status, details, ip_address, created_at, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (user_name.strip(), phone.strip(), role.strip(), action.strip(), status.upper().strip(), details.strip(), ip_address.strip(), now_iso, now_ts))
+    except Exception as e:
+        print(f"[AUDIT_LOG_ERROR] Could not write audit log: {e}")
+    finally:
+        conn.close()
+
+def get_audit_logs(page: int = 1, page_size: int = 25, q: str = "", 
+                   action: str = "", status: str = "", date_filter: str = "") -> Dict[str, Any]:
+    """Retrieves paginated audit logs with search and filter capabilities"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        conditions = []
+        params = []
+        
+        if q:
+            clean_q = f"%{q.strip().lower()}%"
+            conditions.append("(LOWER(user_name) LIKE ? OR LOWER(phone) LIKE ? OR LOWER(action) LIKE ? OR LOWER(details) LIKE ? OR LOWER(role) LIKE ?)")
+            params.extend([clean_q, clean_q, clean_q, clean_q, clean_q])
+            
+        if action and action != "ALL":
+            conditions.append("action = ?")
+            params.append(action.strip())
+            
+        if status and status != "ALL":
+            conditions.append("status = ?")
+            params.append(status.strip())
+            
+        if date_filter:
+            clean_d = date_filter.strip()
+            # If DD/MM/YYYY, convert to YYYY-MM-DD
+            if "/" in clean_d:
+                parts = clean_d.split("/")
+                if len(parts) == 3:
+                    clean_d = f"{parts[2]}-{parts[1]}-{parts[0]}"
+            conditions.append("created_at LIKE ?")
+            params.append(f"{clean_d}%")
+            
+        where_clause = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+        
+        cur.execute(f"SELECT COUNT(*) FROM audit_logs {where_clause}", params)
+        total_records = cur.fetchone()[0]
+        
+        offset = max(0, (page - 1) * page_size)
+        total_pages = max(1, (total_records + page_size - 1) // page_size) if page_size > 0 else 1
+        
+        query = f"""
+        SELECT * FROM audit_logs 
+        {where_clause}
+        ORDER BY id DESC
+        LIMIT ? OFFSET ?
+        """
+        cur.execute(query, params + [page_size, offset])
+        rows = cur.fetchall()
+        
+        result_logs = []
+        for r in rows:
+            d = dict(r)
+            try:
+                dt = datetime.fromisoformat(d["created_at"])
+                d["formatted_date"] = dt.strftime("%d/%m/%Y, %I:%M:%S %p")
+            except Exception:
+                d["formatted_date"] = d["created_at"]
+            result_logs.append(d)
+            
+        return {
+            "total": total_records,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "logs": result_logs
+        }
     finally:
         conn.close()
 
@@ -422,11 +547,11 @@ def get_user_by_phone(phone: str) -> Optional[Dict[str, Any]]:
         conn.close()
 
 def get_all_users(role: Optional[str] = None) -> List[Dict[str, Any]]:
-    """Returns list of users, optionally filtered by role"""
+    """Returns list of users with formatted registration timestamps"""
     conn = get_connection()
     try:
         cur = conn.cursor()
-        if role:
+        if role and role != "ALL":
             cur.execute("""
             SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by
             FROM users WHERE LOWER(role) = LOWER(?) ORDER BY id DESC
@@ -436,7 +561,14 @@ def get_all_users(role: Optional[str] = None) -> List[Dict[str, Any]]:
             SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by
             FROM users ORDER BY id DESC
             """)
-        return [dict(r) for r in cur.fetchall()]
+        users = [dict(r) for r in cur.fetchall()]
+        for u in users:
+            try:
+                dt = datetime.fromisoformat(u["created_at"])
+                u["formatted_created_at"] = dt.strftime("%d/%m/%Y, %I:%M %p")
+            except Exception:
+                u["formatted_created_at"] = u.get("created_at", "-")
+        return users
     finally:
         conn.close()
 
@@ -448,12 +580,14 @@ def create_or_update_user(name: str, phone: str, role: str, party_code: str = ""
         return {"status": "error", "message": "Phone number must be exactly 10 digits"}
     
     role = role.lower().strip()
-    valid_roles = ["super_admin", "admin", "manager", "analyst", "asm", "customer"]
+    if role == "analyser":
+        role = "analyst"
+    valid_roles = ["super_admin", "admin", "manager", "analyst", "analyser", "asm", "customer"]
     if role not in valid_roles:
         return {"status": "error", "message": f"Invalid role '{role}'. Allowed roles: {', '.join(valid_roles)}"}
 
     assigned_units_clean = (assigned_units or "Unit 1").strip()
-    if role == "super_admin":
+    if role in ["super_admin", "admin"]:
         assigned_units_clean = "ALL"
 
     now_iso = datetime.now().isoformat()
@@ -475,6 +609,7 @@ def create_or_update_user(name: str, phone: str, role: str, party_code: str = ""
             """, (name.strip(), clean_p, role, party_code.strip(), party_name.strip(), assigned_units_clean, status.upper(), now_iso, now_iso, created_by))
         
         user = get_user_by_phone(clean_p)
+        log_audit_event(user_name=name.strip(), phone=clean_p, role=role, action="USER_CREATED", status="SUCCESS", details=f"User '{name.strip()}' saved with role '{role}' ({assigned_units_clean}) by {created_by}")
         return {"status": "success", "message": f"User '{name}' saved successfully with role '{role}' in '{assigned_units_clean}'", "user": user}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -482,7 +617,7 @@ def create_or_update_user(name: str, phone: str, role: str, party_code: str = ""
         conn.close()
 
 def toggle_user_status(user_id: int, new_status: str) -> Dict[str, Any]:
-    """Super Admin blocks or unblocks a user"""
+    """Super Admin blocks or unblocks a user and revokes active sessions if blocked"""
     new_status = new_status.upper().strip()
     if new_status not in ["ACTIVE", "BLOCKED"]:
         return {"status": "error", "message": "Status must be ACTIVE or BLOCKED"}
@@ -491,25 +626,40 @@ def toggle_user_status(user_id: int, new_status: str) -> Dict[str, Any]:
         now_iso = datetime.now().isoformat()
         with conn:
             cur = conn.cursor()
-            cur.execute("UPDATE users SET status = ?, updated_at = ? WHERE id = ?", (new_status, now_iso, user_id))
-            if cur.rowcount == 0:
+            cur.execute("SELECT phone, name, role FROM users WHERE id = ?", (user_id,))
+            row = cur.fetchone()
+            if not row:
                 return {"status": "error", "message": "User not found"}
-        return {"status": "success", "message": f"User status updated to {new_status}"}
+            u_phone = row["phone"]
+            cur.execute("UPDATE users SET status = ?, updated_at = ? WHERE id = ?", (new_status, now_iso, user_id))
+            if new_status == "BLOCKED":
+                cur.execute("DELETE FROM customer_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
+                cur.execute("DELETE FROM sales_manager_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
+        
+        log_audit_event(user_name=row["name"], phone=u_phone, role=row["role"], action="USER_STATUS_TOGGLED", status="SUCCESS", details=f"User status updated to {new_status} by Super Admin")
+        return {"status": "success", "message": f"User '{row['name']}' status updated to {new_status}"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
         conn.close()
 
 def delete_user_by_id(user_id: int) -> Dict[str, Any]:
-    """Super Admin permanently removes a user account"""
+    """Super Admin permanently removes a user account and purges sessions"""
     conn = get_connection()
     try:
         with conn:
             cur = conn.cursor()
-            cur.execute("DELETE FROM users WHERE id = ?", (user_id,))
-            if cur.rowcount == 0:
+            cur.execute("SELECT phone, name, role FROM users WHERE id = ?", (user_id,))
+            row = cur.fetchone()
+            if not row:
                 return {"status": "error", "message": "User not found"}
-        return {"status": "success", "message": "User deleted successfully"}
+            u_phone = row["phone"]
+            cur.execute("DELETE FROM users WHERE id = ?", (user_id,))
+            cur.execute("DELETE FROM customer_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
+            cur.execute("DELETE FROM sales_manager_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
+            
+        log_audit_event(user_name=row["name"], phone=u_phone, role=row["role"], action="USER_DELETED", status="SUCCESS", details=f"User '{row['name']}' ({u_phone}, {row['role']}) deleted by Super Admin")
+        return {"status": "success", "message": f"User '{row['name']}' deleted successfully"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
@@ -545,7 +695,7 @@ def create_customer_session(phone: str, customer_name: str = "", party_code: str
         conn.close()
 
 def validate_customer_session(token: str) -> Optional[Dict[str, Any]]:
-    """Validates Customer session token"""
+    """Validates Customer session token and checks account is not BLOCKED"""
     import time
     if not token:
         return None
@@ -558,6 +708,11 @@ def validate_customer_session(token: str) -> Optional[Dict[str, Any]]:
         """, (token,))
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
+            c_phone = "".join(filter(str.isdigit, str(row["phone"])))[-10:]
+            cur.execute("SELECT status FROM users WHERE phone = ? LIMIT 1", (c_phone,))
+            u_check = cur.fetchone()
+            if u_check and u_check["status"] == "BLOCKED":
+                return None
             return dict(row)
         return None
     finally:

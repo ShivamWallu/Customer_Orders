@@ -1439,275 +1439,17 @@
       }
     }
   
-    /* 🏛️ Enterprise Layout with Left Navigation Sidebar */
+    /* 🏛️ Enterprise Full-Width Dashboard Layout (No Left Sidebar) */
     .admin-app-layout {
       display: flex;
+      flex-direction: column;
       min-height: 100vh;
       width: 100%;
       background: var(--bg-page);
     }
 
-    /* 🧭 Left Navigation Sidebar */
-    .admin-sidebar {
-      width: 275px;
-      min-width: 275px;
-      background: #001a33;
-      background: linear-gradient(180deg, #001b38 0%, #001226 100%);
-      color: #f1f5f9;
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      z-index: 200;
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .sidebar-brand {
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .sidebar-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: var(--radius-sm);
-      background: #ffffff;
-      padding: 2px;
-      object-fit: contain;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .sidebar-brand-text {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .sidebar-brand-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: #ffffff;
-      display: block;
-      letter-spacing: -0.2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sidebar-brand-sub {
-      font-size: 11px;
-      font-weight: 700;
-      color: #38bdf8;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      display: block;
-    }
-
-    .sidebar-close-btn {
-      display: none;
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      font-size: 20px;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-    .sidebar-close-btn:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar-nav-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .sidebar-nav-scroll::-webkit-scrollbar {
-      width: 5px;
-    }
-    .sidebar-nav-scroll::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-    }
-
-    .sidebar-section-title {
-      font-size: 10.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #94a3b8;
-      padding: 14px 12px 6px 12px;
-    }
-
-    .sidebar-nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      background: transparent;
-      border: 1px solid transparent;
-      color: #cbd5e1;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      width: 100%;
-      text-decoration: none;
-    }
-
-    .sidebar-nav-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
-      transform: translateX(2px);
-    }
-
-    .sidebar-nav-item.active {
-      background: linear-gradient(90deg, rgba(37, 99, 235, 0.3) 0%, rgba(37, 99, 235, 0.15) 100%);
-      border-color: rgba(96, 165, 250, 0.45);
-      color: #ffffff;
-      font-weight: 700;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    .sidebar-nav-item .nav-icon {
-      font-size: 16px;
-      width: 22px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .sidebar-nav-item .nav-label {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sidebar-nav-item .nav-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.12);
-      color: #cbd5e1;
-    }
-    .sidebar-nav-item .nav-badge.amber {
-      background: rgba(245, 158, 11, 0.25);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.4);
-    }
-    .sidebar-nav-item .nav-badge.green {
-      background: rgba(16, 185, 129, 0.25);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-    .sidebar-nav-item .nav-badge.purple {
-      background: rgba(168, 85, 247, 0.25);
-      color: #c084fc;
-      border: 1px solid rgba(168, 85, 247, 0.4);
-    }
-    .sidebar-nav-item .nav-badge.gold {
-      background: rgba(234, 179, 8, 0.25);
-      color: #fde047;
-      border: 1px solid rgba(234, 179, 8, 0.4);
-    }
-    .sidebar-nav-item .nav-badge.blue {
-      background: rgba(14, 165, 233, 0.25);
-      color: #38bdf8;
-      border: 1px solid rgba(14, 165, 233, 0.4);
-    }
-
-    .sidebar-footer {
-      padding: 14px 16px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.25);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .sidebar-user-card {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .sidebar-user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #0284c7;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .sidebar-user-meta {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .sidebar-user-name {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sidebar-user-role {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: #38bdf8;
-      letter-spacing: 0.3px;
-    }
-
-    .sidebar-logout-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 8px 14px;
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      color: #fca5a5;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .sidebar-logout-btn:hover {
-      background: #dc2626;
-      color: #ffffff;
-      border-color: #dc2626;
-    }
-
     .admin-main-content {
+      width: 100%;
       flex: 1;
       min-width: 0;
       display: flex;
@@ -1716,32 +1458,87 @@
       overflow-x: hidden;
     }
 
-    .sidebar-toggle-btn {
-      display: none;
+    /* Logs & Users Control Styling */
+    .status-tab.logs-tab.active {
+      background: #7c3aed;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.35);
+    }
+    .status-tab.users-tab.active {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+    }
+
+    .audit-log-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      width: 38px;
-      height: 38px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--card-border);
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.2px;
+    }
+    .audit-log-badge.reg { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .audit-log-badge.login { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .audit-log-badge.otp { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .audit-log-badge.user { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+    .audit-log-badge.unit { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+    .audit-log-badge.security { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+    .audit-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .audit-status-pill.success { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .audit-status-pill.failed { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
       background: #ffffff;
+      border-top: 1px solid var(--border);
+      border-radius: 0 0 10px 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pagination-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
       color: var(--text-main);
       cursor: pointer;
-      font-size: 18px;
       transition: all 0.15s;
     }
-    .sidebar-toggle-btn:hover {
+    .pagination-btn:hover:not(:disabled) {
       background: #f1f5f9;
       border-color: #cbd5e1;
     }
-
-    .sidebar-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      z-index: 190;
-      backdrop-filter: blur(2px);
+    .pagination-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .pagination-btn.active {
+      background: var(--brand-mashal);
+      color: #ffffff;
+      border-color: var(--brand-mashal);
     }
 
     /* Role Pills in Users Control */
@@ -1823,98 +1620,12 @@
 <body>
 
 <div class="admin-app-layout" id="adminAppLayout">
-  <!-- 🧭 LEFT NAVIGATION SIDEBAR -->
-  <aside class="admin-sidebar" id="adminSidebar" style="display: none;">
-    <!-- Brand / Header -->
-    <div class="sidebar-brand">
-      <img src="/images/mashal_official_logo.png" alt="Mashal" class="sidebar-logo">
-      <div class="sidebar-brand-text">
-        <span class="sidebar-brand-title">Khandelia Mills</span>
-        <span class="sidebar-brand-sub">Super Admin Suite</span>
-      </div>
-      <button class="sidebar-close-btn" id="sidebarCloseBtn" onclick="toggleAdminSidebar(false)">✕</button>
-    </div>
-
-    <!-- Navigation Scroll -->
-    <div class="sidebar-nav-scroll">
-      <div class="sidebar-section-title">ORDERS DASHBOARD</div>
-      <button class="sidebar-nav-item active" id="sideNavAll" onclick="selectSidebarNav('ALL')">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">All Orders</span>
-        <span class="nav-badge" id="sideBadgeAll">0</span>
-      </button>
-      <button class="sidebar-nav-item pending" id="sideNavPending" onclick="selectSidebarNav('PENDING')">
-        <span class="nav-icon">⏳</span>
-        <span class="nav-label">Pending Orders</span>
-        <span class="nav-badge amber" id="sideBadgePending">0</span>
-      </button>
-      <button class="sidebar-nav-item confirmed" id="sideNavConfirmed" onclick="selectSidebarNav('CONFIRMED')">
-        <span class="nav-icon">✔</span>
-        <span class="nav-label">Confirmed Orders</span>
-        <span class="nav-badge green" id="sideBadgeConfirmed">0</span>
-      </button>
-      <button class="sidebar-nav-item" id="sideNavPacking" onclick="selectSidebarNav('PACKING')">
-        <span class="nav-icon">📦</span>
-        <span class="nav-label">Packing & Production</span>
-        <span class="nav-badge blue">LIVE</span>
-      </button>
-
-      <div class="sidebar-section-title">PHONE AUTH & ACCESS</div>
-      <button class="sidebar-nav-item users" id="sideNavUsers" onclick="selectSidebarNav('USERS')">
-        <span class="nav-icon">👥</span>
-        <span class="nav-label">User & Phone Control</span>
-        <span class="nav-badge purple" id="sideBadgeUsers">0</span>
-      </button>
-      <button class="sidebar-nav-item units" id="sideNavUnits" onclick="selectSidebarNav('UNITS')">
-        <span class="nav-icon">🏭</span>
-        <span class="nav-label">Warehouse Units</span>
-        <span class="nav-badge gold" id="sideBadgeUnits">6</span>
-      </button>
-
-      <div class="sidebar-section-title">QUICK ACTIONS</div>
-      <button class="sidebar-nav-item" onclick="openCreateUserModal(); if(window.innerWidth < 992) toggleAdminSidebar(false);">
-        <span class="nav-icon">➕</span>
-        <span class="nav-label">Authorize Mobile #</span>
-      </button>
-      <button class="sidebar-nav-item" onclick="exportOrdersToCSV()">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Export CSV</span>
-      </button>
-      <button class="sidebar-nav-item" onclick="fetchOrdersData()">
-        <span class="nav-icon">🔄</span>
-        <span class="nav-label">Refresh Database</span>
-      </button>
-    </div>
-
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer">
-      <div class="sidebar-user-card" id="sidebarUserCard">
-        <div class="sidebar-user-avatar">👑</div>
-        <div class="sidebar-user-meta">
-          <div class="sidebar-user-name" id="sidebarAdminName">Super Admin</div>
-          <div class="sidebar-user-role" id="sidebarAdminRole">ALL UNITS</div>
-        </div>
-      </div>
-      <button class="sidebar-logout-btn" onclick="adminLogout()" title="Logout">
-        <span>🚪</span>
-        <span>Sign Out</span>
-      </button>
-    </div>
-  </aside>
-
-  <!-- Sidebar Backdrop for Mobile -->
-  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
-
   <!-- MAIN DASHBOARD CONTENT AREA -->
   <div class="admin-main-content" id="adminMainContent">
 
   <!-- 🏢 Executive Clean Top Header -->
   <header>
     <div class="brand-left">
-      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleAdminSidebar()" title="Toggle Left Navigation Menu">
-        <span>☰</span>
-      </button>
-
       <img src="/images/mashal_official_logo.png" alt="Mashal" class="brand-logo-img">
       <div class="brand-text">
         <h1>Khandelia Oil & General Mills Pvt. Ltd.</h1>
@@ -2149,6 +1860,11 @@
           <span>👥 User Management</span>
           <span class="badge" id="badgeUsersCount" style="background: #e0f2fe; color: #0369a1;">0</span>
         </button>
+        <!-- System Logs Tab (Super Admin Only) -->
+        <button class="status-tab logs-tab" id="tabStatusLogs" onclick="setStatusTab('LOGS')" title="Audit trail & security activity logs">
+          <span>📜 System Logs</span>
+          <span class="badge" id="badgeLogsCount" style="background: #ede9fe; color: #6d28d9;">0</span>
+        </button>
       </div>
 
       <div class="table-actions-group">
@@ -2233,15 +1949,15 @@
   <div class="table-card-wrapper" id="usersCardWrapper" style="display: none; padding: 24px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
       <div>
-        <h2 style="font-size: 20px; font-weight: 800; color: var(--brand-mashal); margin-bottom: 4px;">👥 Customer & Sales Manager Phone Authorization</h2>
-        <p style="font-size: 13px; color: var(--text-secondary);">Super Admin Access Control: Manage authorized Customer and Area Sales Manager numbers. Strict OTP login verification enforced.</p>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--brand-mashal); margin-bottom: 4px;">👥 User & Access Control Management</h2>
+        <p style="font-size: 13px; color: var(--text-secondary);">Manage authorized users across Customer Portal, Area Sales Manager Portal, and Admin Desktop Portal. Strict role-based security & OTP authorization enforced.</p>
       </div>
       <div style="display: flex; gap: 10px;">
         <button class="btn-tool" onclick="loadAdminUsers()" title="Reload user list">
           <span>🔄</span> <span>Refresh</span>
         </button>
         <button class="btn-tool primary" onclick="openCreateUserModal()" title="Authorize new phone number / user account">
-          <span>➕</span> <span>Authorize New Mobile #</span>
+          <span>➕</span> <span>Create User / Authorize Phone</span>
         </button>
       </div>
     </div>
@@ -2250,18 +1966,21 @@
     <div class="user-auth-banner">
       <span class="user-auth-banner-icon">🔒</span>
       <div>
-        <div style="font-size: 14px; font-weight: 800; color: #1e40af; margin-bottom: 3px;">Strict Mobile OTP Authorization System Active</div>
+        <div style="font-size: 14px; font-weight: 800; color: #1e40af; margin-bottom: 3px;">Centralized Access & Role Authorization System Active</div>
         <div style="font-size: 12.5px; color: #1e3a8a; line-height: 1.5;">
-          Only mobile numbers registered below with <strong>ACTIVE</strong> status are authorized to request OTP and log in to the <strong>Customer Portal</strong> (<code>/</code>) and <strong>Area Sales Manager Portal</strong> (<code>/sale_manager</code>). If a number is <strong>BLOCKED</strong> or not registered, OTP login is immediately rejected.
+          • <strong>Customer Portal:</strong> Self-registered customers are automatically added below with exact timestamps.<br>
+          • <strong>Area Sales Manager (ASM):</strong> Only pre-approved mobile numbers registered below can log in via mobile or APK.<br>
+          • <strong>Admin / Manager / Analyser:</strong> Desktop-only portal accounts with designated role permissions.<br>
+          • <strong>Status Control:</strong> Blocking or deleting an account immediately revokes all active device sessions.
         </div>
       </div>
     </div>
 
     <!-- Filter & Search Toolbar for Users -->
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--card-border);">
-      <div class="user-role-filter-pills" style="margin-bottom: 0;">
+      <div class="user-role-filter-pills" style="margin-bottom: 0; flex-wrap: wrap;">
         <button class="role-filter-pill active" id="userPillAll" onclick="filterUsersByRole('ALL')">
-          <span>All Accounts</span>
+          <span>All Users</span>
           <span class="brand-stat-pill" id="userCountAllPill" style="padding: 1px 6px; font-size: 11px;">0</span>
         </button>
         <button class="role-filter-pill" id="userPillCustomer" onclick="filterUsersByRole('customer')">
@@ -2269,18 +1988,26 @@
           <span class="brand-stat-pill" id="userCountCustPill" style="padding: 1px 6px; font-size: 11px;">0</span>
         </button>
         <button class="role-filter-pill" id="userPillAsm" onclick="filterUsersByRole('asm')">
-          <span>👔 Area Sales Managers (ASM)</span>
+          <span>💼 Area Sales Managers</span>
           <span class="brand-stat-pill" id="userCountAsmPill" style="padding: 1px 6px; font-size: 11px;">0</span>
         </button>
-        <button class="role-filter-pill" id="userPillStaff" onclick="filterUsersByRole('staff')">
-          <span>🛡️ Admins & Staff</span>
-          <span class="brand-stat-pill" id="userCountStaffPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+        <button class="role-filter-pill" id="userPillAdmin" onclick="filterUsersByRole('admin')">
+          <span>🛡️ Admin</span>
+          <span class="brand-stat-pill" id="userCountAdminPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+        </button>
+        <button class="role-filter-pill" id="userPillManager" onclick="filterUsersByRole('manager')">
+          <span>👔 Manager</span>
+          <span class="brand-stat-pill" id="userCountManagerPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+        </button>
+        <button class="role-filter-pill" id="userPillAnalyser" onclick="filterUsersByRole('analyser')">
+          <span>📊 Analyser</span>
+          <span class="brand-stat-pill" id="userCountAnalyserPill" style="padding: 1px 6px; font-size: 11px;">0</span>
         </button>
       </div>
 
       <div style="position: relative; min-width: 250px;">
         <span style="position: absolute; left: 10px; top: 9px; font-size: 13px; color: var(--text-muted);">🔍</span>
-        <input type="text" id="userSearchInput" class="search-box" style="padding-left: 32px; width: 100%;" placeholder="Search phone, name, firm..." oninput="filterUsersBySearch(this.value)">
+        <input type="text" id="userSearchInput" class="search-box" style="padding-left: 32px; width: 100%;" placeholder="Search name, mobile, role..." oninput="filterUsersBySearch(this.value)">
       </div>
     </div>
 
@@ -2291,12 +2018,12 @@
           <tr>
             <th class="center" style="width: 50px;">#</th>
             <th style="min-width: 180px;">User Name</th>
-            <th style="min-width: 140px;">Registered Mobile</th>
-            <th class="center" style="min-width: 160px;">Assigned Role</th>
-            <th style="min-width: 140px;">Assigned Unit</th>
-            <th style="min-width: 180px;">Party / Company Name</th>
+            <th style="min-width: 140px;">Mobile Number</th>
+            <th class="center" style="min-width: 160px;">Role</th>
+            <th style="min-width: 130px;">Assigned Unit</th>
+            <th style="min-width: 180px;">Party Name / Scope</th>
             <th class="center" style="min-width: 110px;">Status</th>
-            <th style="min-width: 140px;">Created Date</th>
+            <th style="min-width: 170px;">Registration Date & Time</th>
             <th class="center" style="min-width: 160px;">Actions</th>
           </tr>
         </thead>
@@ -2351,6 +2078,109 @@
     </div>
   </div>
 
+  <!-- 📜 SYSTEM AUDIT LOGS & ACTIVITY TRACKER -->
+  <div class="table-card-wrapper" id="logsCardWrapper" style="display: none; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h2 style="font-size: 20px; font-weight: 800; color: #6d28d9; margin-bottom: 4px;">📜 System Logs & Security Audit Trail</h2>
+        <p style="font-size: 13px; color: var(--text-secondary);">Permanent database audit trail stored in orders.db. Tracks customer registration, OTP events, login attempts, user management, and security alerts.</p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="background: #ede9fe; color: #6d28d9; font-weight: 800; font-size: 13px; padding: 6px 14px; border-radius: 20px; border: 1px solid #ddd6fe;">
+          Total Logs: <span id="auditTotalCountBadge">0</span>
+        </div>
+        <button class="btn-tool primary" onclick="loadAuditLogs(1)" title="Reload audit logs from database">
+          <span>🔄</span> <span>Refresh Logs</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar for System Logs -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--card-border);">
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+        <!-- Search Box -->
+        <div style="position: relative; min-width: 240px; flex: 1;">
+          <span style="position: absolute; left: 10px; top: 9px; font-size: 13px; color: var(--text-muted);">🔍</span>
+          <input type="text" id="auditSearchInput" class="search-box" style="padding-left: 32px; width: 100%;" placeholder="Search user, mobile, action, details..." oninput="handleAuditSearch()">
+        </div>
+
+        <!-- Activity Action Filter -->
+        <select id="auditActionFilter" class="page-size-select" style="min-width: 170px;" onchange="loadAuditLogs(1)">
+          <option value="ALL">All Activities</option>
+          <option value="CUSTOMER_REGISTRATION">📝 Customer Registrations</option>
+          <option value="CUSTOMER_LOGIN">🔑 Customer Logins</option>
+          <option value="ASM_LOGIN">💼 Area Sales Manager Logins</option>
+          <option value="ADMIN_LOGIN_SUCCESS">🛡️ Admin Portal Logins</option>
+          <option value="OTP_SENT">📲 OTP Dispatches</option>
+          <option value="OTP_VERIFICATION">🔐 OTP Verifications</option>
+          <option value="USER_CREATED">👤 User Account Created</option>
+          <option value="USER_STATUS_TOGGLED">⚡ Status Toggled</option>
+          <option value="USER_DELETED">🗑️ User Account Deleted</option>
+          <option value="UNIT_CREATED">🏭 Warehouse Units</option>
+          <option value="UNAUTHORIZED_ACCESS_ATTEMPT">🚨 Unauthorized Attempts</option>
+        </select>
+
+        <!-- Status Filter -->
+        <select id="auditStatusFilter" class="page-size-select" style="min-width: 130px;" onchange="loadAuditLogs(1)">
+          <option value="ALL">All Statuses</option>
+          <option value="SUCCESS">✔ SUCCESS</option>
+          <option value="FAILED">✖ FAILED</option>
+        </select>
+
+        <!-- Date Filter -->
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 12px; font-weight: 700; color: #475569;">Date:</span>
+          <input type="date" id="auditDateFilter" class="search-box" style="width: 140px; padding: 6px 10px;" onchange="loadAuditLogs(1)">
+          <button class="btn-tool" style="padding: 6px 10px; font-size: 11px;" onclick="document.getElementById('auditDateFilter').value=''; loadAuditLogs(1);" title="Clear date filter">Clear</button>
+        </div>
+      </div>
+
+      <!-- Records Per Page -->
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Per page:</span>
+        <select id="auditPageSize" class="page-size-select" onchange="loadAuditLogs(1)">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div style="overflow-x: auto; background: #ffffff; border-radius: 10px; border: 1px solid var(--border);">
+      <table class="orders-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th class="center" style="width: 50px;">#</th>
+            <th style="min-width: 165px;">Date & Time</th>
+            <th style="min-width: 160px;">User Name</th>
+            <th style="min-width: 130px;">Mobile Number</th>
+            <th class="center" style="min-width: 130px;">Role</th>
+            <th class="center" style="min-width: 170px;">Activity / Action</th>
+            <th class="center" style="min-width: 100px;">Status</th>
+            <th style="min-width: 240px;">Activity Details</th>
+          </tr>
+        </thead>
+        <tbody id="auditLogsTableBody">
+          <tr>
+            <td colspan="8" class="empty-state-cell">Loading audit logs from database...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Server-Side Pagination Bar -->
+    <div class="pagination-bar" id="auditPaginationBar">
+      <div class="pagination-left">
+        <span id="auditPaginationInfoText">Showing 0-0 of 0 logs</span>
+      </div>
+      <div class="pagination-right" id="auditPaginationControls">
+        <!-- Next / Prev and Page Number buttons dynamically rendered -->
+      </div>
+    </div>
+  </div>
+
     </div><!-- /.admin-main-content -->
 </div><!-- /.admin-app-layout -->
 
@@ -2373,12 +2203,12 @@
         <div style="margin-bottom: 14px;">
           <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Role <span style="color: #dc2626;">*</span></label>
           <select id="newUserRole" class="login-input" style="margin-bottom: 0;" onchange="handleUserRoleChange(this.value)">
-            <option value="asm">Area Sales Manager (ASM)</option>
-            <option value="customer">Customer (Direct Buyer)</option>
-            <option value="manager">Manager (Production & Packing)</option>
-            <option value="analyst">Analyst (Read-Only)</option>
-            <option value="admin">Admin (Unit Specific)</option>
-            <option value="super_admin">Super Admin (Full Access All Units)</option>
+            <option value="customer">🛒 Customer (Customer Portal - OTP Login)</option>
+            <option value="asm">💼 Area Sales Manager (ASM Mobile/APK Portal)</option>
+            <option value="admin">🛡️ Admin (Desktop Admin Portal Only)</option>
+            <option value="manager">👔 Manager (Desktop Admin Portal Only)</option>
+            <option value="analyser">📊 Analyser (Desktop Admin Portal Only)</option>
+            <option value="super_admin">👑 Super Admin (Full Access All Units - Desktop Only)</option>
           </select>
         </div>
         <div style="margin-bottom: 14px;">
@@ -2636,62 +2466,9 @@
       });
     });
 
-    // 🧭 Left Navigation Sidebar Controls
-    function toggleAdminSidebar(forceState) {
-      const sidebar = document.getElementById("adminSidebar");
-      const backdrop = document.getElementById("sidebarBackdrop");
-      if (!sidebar) return;
-
-      const shouldOpen = typeof forceState === "boolean" ? forceState : !sidebar.classList.contains("open");
-      sidebar.classList.toggle("open", shouldOpen);
-      if (backdrop) backdrop.classList.toggle("open", shouldOpen);
-    }
-
-    function selectSidebarNav(navKey) {
-      // Update sidebar active classes
-      const navKeys = ["ALL", "PENDING", "CONFIRMED", "PACKING", "USERS", "UNITS"];
-      navKeys.forEach(k => {
-        const item = document.getElementById(`sideNav${k.charAt(0) + k.slice(1).toLowerCase()}`);
-        if (item) item.classList.remove("active");
-      });
-      const activeItem = document.getElementById(`sideNav${navKey.charAt(0) + navKey.slice(1).toLowerCase()}`);
-      if (activeItem) activeItem.classList.add("active");
-
-      if (window.innerWidth < 992) {
-        toggleAdminSidebar(false);
-      }
-
-      if (navKey === "ALL" || navKey === "PENDING" || navKey === "CONFIRMED") {
-        setStatusTab(navKey);
-        const cp = document.getElementById("controlsPanel");
-        if (cp) cp.style.display = "flex";
-        const kpi = document.getElementById("kpiContainer");
-        if (kpi) kpi.style.display = "grid";
-        const tbl = document.getElementById("tableCardWrapper");
-        if (tbl) tbl.style.display = "flex";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (navKey === "PACKING") {
-        setStatusTab("ALL");
-        toggleWarehouseSection(true);
-        const wh = document.getElementById("warehouseSection");
-        if (wh) {
-          wh.style.display = "block";
-          wh.scrollIntoView({ behavior: 'smooth' });
-        }
-      } else if (navKey === "USERS") {
-        setStatusTab("USERS");
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (navKey === "UNITS") {
-        setStatusTab("UNITS");
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-
     function showLoginOverlay() {
       document.getElementById("loginOverlay").style.display = "flex";
       document.getElementById("headerRight").style.display = "none";
-      if (document.getElementById("adminSidebar")) document.getElementById("adminSidebar").style.display = "none";
-      if (document.getElementById("sidebarToggleBtn")) document.getElementById("sidebarToggleBtn").style.display = "none";
       if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "none";
       document.getElementById("kpiContainer").style.display = "none";
       document.getElementById("warehouseSection").style.display = "none";
@@ -2700,15 +2477,12 @@
       document.getElementById("tableCardWrapper").style.display = "none";
       if (document.getElementById("usersCardWrapper")) document.getElementById("usersCardWrapper").style.display = "none";
       if (document.getElementById("unitsCardWrapper")) document.getElementById("unitsCardWrapper").style.display = "none";
+      if (document.getElementById("logsCardWrapper")) document.getElementById("logsCardWrapper").style.display = "none";
     }
 
     function showDashboardUI() {
       document.getElementById("loginOverlay").style.display = "none";
       document.getElementById("headerRight").style.display = "flex";
-      if (document.getElementById("adminSidebar")) document.getElementById("adminSidebar").style.display = "flex";
-      if (document.getElementById("sidebarToggleBtn")) {
-        document.getElementById("sidebarToggleBtn").style.display = (window.innerWidth < 992) ? "flex" : "none";
-      }
       if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "flex";
       document.getElementById("kpiContainer").style.display = "grid";
       document.getElementById("warehouseSection").style.display = "block";
@@ -2717,6 +2491,7 @@
       document.getElementById("tableCardWrapper").style.display = "flex";
       if (document.getElementById("usersCardWrapper")) document.getElementById("usersCardWrapper").style.display = "none";
       if (document.getElementById("unitsCardWrapper")) document.getElementById("unitsCardWrapper").style.display = "none";
+      if (document.getElementById("logsCardWrapper")) document.getElementById("logsCardWrapper").style.display = "none";
     }
 
     function updateRoleUI() {
@@ -2725,15 +2500,18 @@
       let roleIcon = "🛡️";
       let roleTitle = currentUserRole.toUpperCase();
 
-      if (roleCls === "super_admin" || roleCls === "admin") {
+      if (roleCls === "super_admin") {
         roleIcon = "👑";
         roleTitle = "SUPER ADMIN";
+      } else if (roleCls === "admin") {
+        roleIcon = "🛡️";
+        roleTitle = "ADMIN";
       } else if (roleCls === "manager") {
         roleIcon = "👔";
         roleTitle = "MANAGER";
-      } else if (roleCls === "analyst") {
-        roleIcon = "📈";
-        roleTitle = "ANALYST";
+      } else if (roleCls === "analyst" || roleCls === "analyser") {
+        roleIcon = "📊";
+        roleTitle = "ANALYSER";
       }
 
       const unitNote = (userAssignedUnits === "ALL" || !userAssignedUnits) ? "ALL UNITS" : userAssignedUnits;
@@ -2744,13 +2522,6 @@
           <span>${escapeHtml(currentUsername)} (${roleTitle}) • ${escapeHtml(unitNote)}</span>
         </div>
       `;
-
-      if (document.getElementById("sidebarAdminName")) {
-        document.getElementById("sidebarAdminName").textContent = currentUsername || "Super Administrator";
-      }
-      if (document.getElementById("sidebarAdminRole")) {
-        document.getElementById("sidebarAdminRole").textContent = `${roleTitle} • ${unitNote}`;
-      }
     }
 
     // Login Handler
@@ -2926,7 +2697,7 @@
       applyAllFilters();
     }
 
-    // 2 & 4. Status Tab & Sidebar Navigation Filtering Logic
+    // 2 & 4. Status Tab Filtering Logic
     function setStatusTab(statusType) {
       activeStatusTab = statusType;
       document.getElementById("tabStatusAll").classList.toggle("active", statusType === "ALL");
@@ -2938,16 +2709,14 @@
       if (document.getElementById("tabStatusUnits")) {
         document.getElementById("tabStatusUnits").classList.toggle("active", statusType === "UNITS");
       }
-
-      // Synchronize Left Sidebar Nav Active Highlight
-      const navMap = { "ALL": "sideNavAll", "PENDING": "sideNavPending", "CONFIRMED": "sideNavConfirmed", "USERS": "sideNavUsers", "UNITS": "sideNavUnits" };
-      document.querySelectorAll(".sidebar-nav-item").forEach(b => b.classList.remove("active"));
-      const currentNavBtn = document.getElementById(navMap[statusType]);
-      if (currentNavBtn) currentNavBtn.classList.add("active");
+      if (document.getElementById("tabStatusLogs")) {
+        document.getElementById("tabStatusLogs").classList.toggle("active", statusType === "LOGS");
+      }
 
       const tableWrapper = document.getElementById("tableCardWrapper");
       const usersWrapper = document.getElementById("usersCardWrapper");
       const unitsWrapper = document.getElementById("unitsCardWrapper");
+      const logsWrapper = document.getElementById("logsCardWrapper");
       const controlsPanel = document.getElementById("controlsPanel");
       const kpiContainer = document.getElementById("kpiContainer");
       const warehouseSection = document.getElementById("warehouseSection");
@@ -2956,6 +2725,7 @@
       if (statusType === "USERS") {
         if (tableWrapper) tableWrapper.style.display = "none";
         if (unitsWrapper) unitsWrapper.style.display = "none";
+        if (logsWrapper) logsWrapper.style.display = "none";
         if (controlsPanel) controlsPanel.style.display = "none";
         if (kpiContainer) kpiContainer.style.display = "none";
         if (warehouseSection) warehouseSection.style.display = "none";
@@ -2966,6 +2736,7 @@
       } else if (statusType === "UNITS") {
         if (tableWrapper) tableWrapper.style.display = "none";
         if (usersWrapper) usersWrapper.style.display = "none";
+        if (logsWrapper) logsWrapper.style.display = "none";
         if (controlsPanel) controlsPanel.style.display = "none";
         if (kpiContainer) kpiContainer.style.display = "none";
         if (warehouseSection) warehouseSection.style.display = "none";
@@ -2973,9 +2744,21 @@
         if (unitsWrapper) unitsWrapper.style.display = "block";
         loadWarehouseUnits();
         return;
+      } else if (statusType === "LOGS") {
+        if (tableWrapper) tableWrapper.style.display = "none";
+        if (usersWrapper) usersWrapper.style.display = "none";
+        if (unitsWrapper) unitsWrapper.style.display = "none";
+        if (controlsPanel) controlsPanel.style.display = "none";
+        if (kpiContainer) kpiContainer.style.display = "none";
+        if (warehouseSection) warehouseSection.style.display = "none";
+        if (scrollNavBar) scrollNavBar.style.display = "none";
+        if (logsWrapper) logsWrapper.style.display = "block";
+        loadAuditLogs(1);
+        return;
       } else {
         if (usersWrapper) usersWrapper.style.display = "none";
         if (unitsWrapper) unitsWrapper.style.display = "none";
+        if (logsWrapper) logsWrapper.style.display = "none";
         if (controlsPanel) controlsPanel.style.display = "flex";
         if (kpiContainer) kpiContainer.style.display = "grid";
         if (warehouseSection) warehouseSection.style.display = "block";
@@ -3034,6 +2817,7 @@
       }
 
       allWarehouseUnits.forEach(u => {
+        if ((u.status || "ACTIVE") !== "ACTIVE") return;
         const uName = u.unit_name || u.unit_code;
         const isAllowed = isSuper || allowedUnits.includes(uName.toLowerCase()) || allowedUnits.includes(u.unit_code.toLowerCase());
         if (!isAllowed) return;
@@ -3265,15 +3049,23 @@
 
     function filterUsersByRole(role) {
       currentRoleUserFilter = role;
-      document.getElementById("userPillAll").classList.toggle("active", role === "ALL");
-      document.getElementById("userPillCustomer").classList.toggle("active", role === "customer");
-      document.getElementById("userPillAsm").classList.toggle("active", role === "asm");
-      document.getElementById("userPillStaff").classList.toggle("active", role === "staff");
+      const pills = [
+        { id: "userPillAll", key: "ALL" },
+        { id: "userPillCustomer", key: "customer" },
+        { id: "userPillAsm", key: "asm" },
+        { id: "userPillAdmin", key: "admin" },
+        { id: "userPillManager", key: "manager" },
+        { id: "userPillAnalyser", key: "analyser" }
+      ];
+      pills.forEach(p => {
+        const btn = document.getElementById(p.id);
+        if (btn) btn.classList.toggle("active", p.key === role);
+      });
       applyUserFiltersAndRender();
     }
 
-    function filterUsersBySearch(q) {
-      currentUserSearchQuery = (q || "").trim().toLowerCase();
+    function filterUsersBySearch(query) {
+      currentUserSearchQuery = (query || "").trim().toLowerCase();
       applyUserFiltersAndRender();
     }
 
@@ -3284,8 +3076,12 @@
         filtered = filtered.filter(u => (u.role || "").toLowerCase() === "customer");
       } else if (currentRoleUserFilter === "asm") {
         filtered = filtered.filter(u => (u.role || "").toLowerCase() === "asm");
-      } else if (currentRoleUserFilter === "staff") {
-        filtered = filtered.filter(u => ["super_admin", "admin", "manager", "analyst"].includes((u.role || "").toLowerCase()));
+      } else if (currentRoleUserFilter === "admin") {
+        filtered = filtered.filter(u => ["admin", "super_admin"].includes((u.role || "").toLowerCase()));
+      } else if (currentRoleUserFilter === "manager") {
+        filtered = filtered.filter(u => (u.role || "").toLowerCase() === "manager");
+      } else if (currentRoleUserFilter === "analyser") {
+        filtered = filtered.filter(u => ["analyst", "analyser"].includes((u.role || "").toLowerCase()));
       }
 
       if (currentUserSearchQuery) {
@@ -3294,7 +3090,8 @@
           const phone = (u.phone || "").toLowerCase();
           const party = (u.party_name || "").toLowerCase();
           const code = (u.party_code || "").toLowerCase();
-          return name.includes(currentUserSearchQuery) || phone.includes(currentUserSearchQuery) || party.includes(currentUserSearchQuery) || code.includes(currentUserSearchQuery);
+          const role = (u.role || "").toLowerCase();
+          return name.includes(currentUserSearchQuery) || phone.includes(currentUserSearchQuery) || party.includes(currentUserSearchQuery) || code.includes(currentUserSearchQuery) || role.includes(currentUserSearchQuery);
         });
       }
 
@@ -3317,14 +3114,17 @@
           const totalCount = adminUsersList.length;
           const custCount = adminUsersList.filter(u => (u.role || "").toLowerCase() === "customer").length;
           const asmCount = adminUsersList.filter(u => (u.role || "").toLowerCase() === "asm").length;
-          const staffCount = adminUsersList.filter(u => ["super_admin", "admin", "manager", "analyst"].includes((u.role || "").toLowerCase())).length;
+          const adminCount = adminUsersList.filter(u => ["admin", "super_admin"].includes((u.role || "").toLowerCase())).length;
+          const managerCount = adminUsersList.filter(u => (u.role || "").toLowerCase() === "manager").length;
+          const analyserCount = adminUsersList.filter(u => ["analyst", "analyser"].includes((u.role || "").toLowerCase())).length;
 
           if (document.getElementById("badgeUsersCount")) document.getElementById("badgeUsersCount").textContent = totalCount;
-          if (document.getElementById("sideBadgeUsers")) document.getElementById("sideBadgeUsers").textContent = totalCount;
           if (document.getElementById("userCountAllPill")) document.getElementById("userCountAllPill").textContent = totalCount;
           if (document.getElementById("userCountCustPill")) document.getElementById("userCountCustPill").textContent = custCount;
           if (document.getElementById("userCountAsmPill")) document.getElementById("userCountAsmPill").textContent = asmCount;
-          if (document.getElementById("userCountStaffPill")) document.getElementById("userCountStaffPill").textContent = staffCount;
+          if (document.getElementById("userCountAdminPill")) document.getElementById("userCountAdminPill").textContent = adminCount;
+          if (document.getElementById("userCountManagerPill")) document.getElementById("userCountManagerPill").textContent = managerCount;
+          if (document.getElementById("userCountAnalyserPill")) document.getElementById("userCountAnalyserPill").textContent = analyserCount;
 
           applyUserFiltersAndRender();
         } else {
@@ -3338,7 +3138,7 @@
     function renderUsersTable(users) {
       const tbody = document.getElementById("usersTableBody");
       if (!users || users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">No user accounts found. Click "Add New Account" above to authorize.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="empty-state-cell">No user accounts found matching current filter.</td></tr>`;
         return;
       }
 
@@ -3356,9 +3156,9 @@
 
         const partyInfo = u.role === "customer"
           ? `<strong>${escapeHtml(u.party_name || "-")}</strong> <div style="font-size: 11px; color: var(--text-dim);">${escapeHtml(u.party_code || "")}</div>`
-          : `<span style="color: var(--text-dim); font-size: 12px;">—</span>`;
+          : `<span style="color: var(--text-dim); font-size: 12px;">Staff / System Account</span>`;
 
-        const createdDate = u.created_at ? u.created_at.split("T")[0] : "-";
+        const createdDate = u.formatted_created_at || (u.created_at ? u.created_at.replace("T", " ").split(".")[0] : "-");
         const unitDisplay = `<span class="unit-tag">🏭 ${escapeHtml(u.assigned_units || "Unit 1")}</span>`;
 
         html += `
@@ -3370,7 +3170,7 @@
             <td class="center">${unitDisplay}</td>
             <td>${partyInfo}</td>
             <td class="center">${statusBadge}</td>
-            <td style="font-size: 12px; color: var(--text-secondary);">${createdDate}</td>
+            <td style="font-size: 12.5px; font-weight: 600; color: #334155; white-space: nowrap;">🕒 ${escapeHtml(createdDate)}</td>
             <td class="center">
               <div style="display: flex; gap: 6px; justify-content: center;">
                 <button class="btn-row-action" title="${blockBtnTitle}" onclick="toggleUserStatusAction(${u.id}, '${newStatus}')">
@@ -3389,18 +3189,164 @@
 
     function getRoleBadgeHtml(role) {
       const r = (role || "").toLowerCase();
-      if (r === "admin" || r === "super_admin") {
+      if (r === "super_admin") {
         return `<span class="status-badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">👑 Super Admin</span>`;
+      } else if (r === "admin") {
+        return `<span class="status-badge" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">🛡️ Admin</span>`;
       } else if (r === "manager") {
         return `<span class="status-badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">👔 Manager</span>`;
-      } else if (r === "analyst") {
-        return `<span class="status-badge" style="background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb;">📊 Analyst</span>`;
+      } else if (r === "analyst" || r === "analyser") {
+        return `<span class="status-badge" style="background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb;">📊 Analyser</span>`;
       } else if (r === "asm") {
         return `<span class="status-badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">💼 Area Sales Mgr</span>`;
       } else if (r === "customer") {
-        return `<span class="status-badge" style="background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff;">🏬 Customer</span>`;
+        return `<span class="status-badge" style="background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff;">🛒 Customer</span>`;
       }
       return `<span class="status-badge">${escapeHtml(role)}</span>`;
+    }
+
+    // 📜 SYSTEM AUDIT LOGS & ACTIVITY TRACKER LOGIC
+    let auditLogsCurrentPage = 1;
+    let auditLogsTotalPages = 1;
+    let auditSearchDebounceTimer = null;
+
+    async function loadAuditLogs(page) {
+      if (page) auditLogsCurrentPage = page;
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const tbody = document.getElementById("auditLogsTableBody");
+      tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell">Loading audit logs from database...</td></tr>`;
+
+      const q = (document.getElementById("auditSearchInput") ? document.getElementById("auditSearchInput").value.trim() : "");
+      const action = (document.getElementById("auditActionFilter") ? document.getElementById("auditActionFilter").value : "ALL");
+      const status = (document.getElementById("auditStatusFilter") ? document.getElementById("auditStatusFilter").value : "ALL");
+      const dateVal = (document.getElementById("auditDateFilter") ? document.getElementById("auditDateFilter").value : "");
+      const pageSize = (document.getElementById("auditPageSize") ? document.getElementById("auditPageSize").value : "25");
+
+      const params = new URLSearchParams({
+        page: auditLogsCurrentPage,
+        page_size: pageSize,
+        q: q,
+        action: action,
+        status: status,
+        date: dateVal
+      });
+
+      try {
+        const res = await fetch(`/api/admin/audit-logs?${params.toString()}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          const total = data.total || 0;
+          auditLogsTotalPages = data.total_pages || 1;
+          auditLogsCurrentPage = data.page || 1;
+
+          if (document.getElementById("badgeLogsCount")) {
+            document.getElementById("badgeLogsCount").textContent = total;
+          }
+          if (document.getElementById("auditTotalCountBadge")) {
+            document.getElementById("auditTotalCountBadge").textContent = total;
+          }
+
+          renderAuditLogsTable(data.logs || [], total, data.page, data.page_size);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell" style="color:#dc2626;">Error: ${escapeHtml(data.detail || data.message || "Failed to load audit logs")}</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell" style="color:#dc2626;">Network error: ${escapeHtml(e.message)}</td></tr>`;
+      }
+    }
+
+    function handleAuditSearch() {
+      clearTimeout(auditSearchDebounceTimer);
+      auditSearchDebounceTimer = setTimeout(() => {
+        loadAuditLogs(1);
+      }, 350);
+    }
+
+    function renderAuditLogsTable(logs, total, page, pageSize) {
+      const tbody = document.getElementById("auditLogsTableBody");
+      if (!logs || logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-cell">No audit log records found for the selected filters.</td></tr>`;
+        renderAuditPagination(0, 1, 1);
+        return;
+      }
+
+      let html = "";
+      const startIdx = (page - 1) * pageSize;
+
+      logs.forEach((log, idx) => {
+        const rowNum = startIdx + idx + 1;
+        const isSuccess = log.status === "SUCCESS";
+        const statusBadge = isSuccess
+          ? `<span class="audit-status-pill success">✔ SUCCESS</span>`
+          : `<span class="audit-status-pill failed">✖ FAILED</span>`;
+
+        let badgeCls = "user";
+        let actionIcon = "⚙️";
+        const act = (log.action || "").toUpperCase();
+        if (act.includes("REGISTRATION")) { badgeCls = "reg"; actionIcon = "📝"; }
+        else if (act.includes("LOGIN")) { badgeCls = "login"; actionIcon = "🔑"; }
+        else if (act.includes("OTP")) { badgeCls = "otp"; actionIcon = "📲"; }
+        else if (act.includes("UNIT")) { badgeCls = "unit"; actionIcon = "🏭"; }
+        else if (act.includes("UNAUTHORIZED") || act.includes("BLOCKED") || act.includes("FAILED")) { badgeCls = "security"; actionIcon = "🚨"; }
+
+        const actionBadge = `<span class="audit-log-badge ${badgeCls}">${actionIcon} ${escapeHtml(log.action)}</span>`;
+        const roleBadge = getRoleBadgeHtml(log.role);
+        const dateStr = log.formatted_date || log.created_at || "-";
+        const phoneStr = log.phone ? `<code style="font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:600;">+91 ${escapeHtml(log.phone)}</code>` : `<span style="color:var(--text-dim); font-size:12px;">—</span>`;
+        const ipStr = log.ip_address ? `<span style="font-size:11px; color:#94a3b8; margin-left:6px;">(IP: ${escapeHtml(log.ip_address)})</span>` : "";
+
+        html += `
+          <tr>
+            <td class="center" style="font-weight:700; color:var(--text-dim);">${rowNum}</td>
+            <td style="font-size:12px; font-weight:600; color:#334155; white-space:nowrap;">🕒 ${escapeHtml(dateStr)}</td>
+            <td><strong>${escapeHtml(log.user_name || "—")}</strong></td>
+            <td>${phoneStr}</td>
+            <td class="center">${roleBadge}</td>
+            <td class="center">${actionBadge}</td>
+            <td class="center">${statusBadge}</td>
+            <td style="font-size:12.5px; color:#1e293b;">${escapeHtml(log.details || "")} ${ipStr}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+      renderAuditPagination(total, page, auditLogsTotalPages);
+    }
+
+    function renderAuditPagination(total, page, totalPages) {
+      const infoText = document.getElementById("auditPaginationInfoText");
+      const controls = document.getElementById("auditPaginationControls");
+      if (!infoText || !controls) return;
+
+      if (total === 0) {
+        infoText.textContent = "Showing 0 records";
+        controls.innerHTML = "";
+        return;
+      }
+
+      const pageSize = parseInt(document.getElementById("auditPageSize") ? document.getElementById("auditPageSize").value : "25");
+      const start = (page - 1) * pageSize + 1;
+      const end = Math.min(page * pageSize, total);
+      infoText.textContent = `Showing ${start}-${end} of ${total} logs • Page ${page} of ${totalPages}`;
+
+      let buttons = "";
+      buttons += `<button class="pagination-btn" ${page <= 1 ? "disabled" : ""} onclick="loadAuditLogs(${page - 1})">◀ Prev</button>`;
+
+      const maxPills = 5;
+      let startP = Math.max(1, page - 2);
+      let endP = Math.min(totalPages, startP + maxPills - 1);
+      if (endP - startP < maxPills - 1) {
+        startP = Math.max(1, endP - maxPills + 1);
+      }
+
+      for (let p = startP; p <= endP; p++) {
+        buttons += `<button class="pagination-btn ${p === page ? 'active' : ''}" onclick="loadAuditLogs(${p})">${p}</button>`;
+      }
+
+      buttons += `<button class="pagination-btn" ${page >= totalPages ? "disabled" : ""} onclick="loadAuditLogs(${page + 1})">Next ▶</button>`;
+      controls.innerHTML = buttons;
     }
 
     function openCreateUserModal() {

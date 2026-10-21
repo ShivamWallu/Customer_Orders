@@ -2348,12 +2348,12 @@
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
         </div>
-        <div class="modal-title" style="font-size: 19px; margin-bottom: 6px; font-weight: 800; color: #0a2540;">Customer Login</div>
+        <div class="modal-title" style="font-size: 19px; margin-bottom: 6px; font-weight: 800; color: #0a2540;">Customer Registration & Login</div>
         <div style="font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.4;">
-          Enter your authorized 10-digit mobile number to access your account & place orders.
+          Enter your name and 10-digit mobile number to register or sign in with OTP verification.
         </div>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-bottom: 16px; font-size: 11.5px; color: #475569;">
-          🛡️ <strong>Authorized Access:</strong> Only mobile numbers registered & approved by Super Admin can sign in.
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 10px; margin-bottom: 16px; font-size: 11.5px; color: #166534;">
+          🛡️ <strong>Instant OTP Access:</strong> New customers are automatically registered with accurate timestamp upon OTP confirmation.
         </div>
 
         <div style="text-align: left; margin-bottom: 12px;">
@@ -3699,7 +3699,7 @@
         const res = await fetch("/api/customer/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone })
+          body: JSON.stringify({ phone, customer_name: name })
         });
         const data = await res.json();
 
