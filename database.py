@@ -1220,7 +1220,11 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
         party_name = order.get("partyName") or order.get("party_name", "")
         party_address = order.get("partyAddress") or order.get("party_address", "")
         delivery_address = order.get("deliveryAddress") or order.get("delivery_address", "")
-        sales_person = order.get("salesPerson") or order.get("sales_person", "")
+        raw_sp = str(order.get("salesPerson") or order.get("sales_person") or "").strip()
+        if raw_sp and raw_sp not in ["-", "—"]:
+            sales_person = " ".join(word.capitalize() for word in raw_sp.split())
+        else:
+            sales_person = raw_sp
         order_date = order.get("orderDate") or order.get("order_date", "")
         formatted_timestamp = order.get("formattedTimestamp") or order.get("formatted_timestamp", "")
         created_at = order.get("timestamp") or datetime.now().isoformat()

@@ -5,7 +5,7 @@
     "partyAddress": "Plot no 23 Ind area phase 2",
     "deliveryAddress": "Same",
     "orderDate": "2026-10-14",
-    "salesPerson": "Pankaj kumar",
+    "salesPerson": "Pankaj Kumar",
     "totalBoxes": 90,
     "formattedTimestamp": "14/10/2026 04:58:31 PM",
     "items": [
@@ -483,5 +483,42 @@
     "soNumber": "SO-9325",
     "unit": "Unit 1",
     "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261021-7469",
+    "partyName": "Seth Traders - Udhampur",
+    "partyCode": "SDMOJK0046",
+    "partyAddress": "Mand Tibri, Jammu, Udhampur, Jammu and Kashmir - 182121",
+    "deliveryAddress": "Mand Tibri, Jammu, Udhampur, Jammu and Kashmir - 182121",
+    "orderDate": "2026-10-21",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 5,
+    "formattedTimestamp": "21/10/2026 03:20:43 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 3,
+        "pieces": 12
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 2,
+        "pieces": 18
+      }
+    ],
+    "contactInput": "7006430781",
+    "timestamp": "2026-10-21T15:20:43.829035",
+    "formattedDate": "21/10/2026",
+    "synced_to_sheet": true,
+    "verifyUrl": "https://order.khandelia.online/verify/KOGM-20261021-7469",
+    "dataConsent": "YES (Verified)",
+    "unit": "Unit 1",
+    "totalPieces": 30,
+    "itemsSummary": "🔵 Mashal 5 LTR CAN x 4   ➔   12 Pcs   |   [ 3 Boxes ]\n🔵 Mashal 2 LTR BOTTLE x 9   ➔   18 Pcs   |   [ 2 Boxes ]",
+    "securityHash": "SEC-368E-1A36",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261021-7469.png",
+    "slipImageUrl": "/order_slips/KOGM-20261021-7469.png"
   }
 ]

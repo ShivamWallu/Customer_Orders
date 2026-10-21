@@ -2574,8 +2574,7 @@
       <div class="asm-filter-group" style="display: flex; align-items: center; gap: 8px;">
         <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">ASM:</span>
         <select id="asmSelectFilter" class="asm-select" onchange="handleAsmFilterChange()" style="padding: 7px 12px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); background: #ffffff; font-size: 12.5px; font-weight: 600; color: var(--text-main); cursor: pointer;">
-          <option value="ALL">All Sales Managers</option>
-          <option value="Pankaj Kumar">👔 Pankaj Kumar</option>
+          <option value="ALL" selected>All Sales Managers</option>
         </select>
         <button class="asm-quick-btn" id="btnPankajFilter" onclick="togglePankajKumarFilter()" title="Click to show only orders booked by Area Sales Manager Pankaj Kumar" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-full); font-size: 12px; font-weight: 700; border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; cursor: pointer; transition: all 0.15s ease;">
           <span>👔</span>
@@ -3610,8 +3609,12 @@
             const totalBxs = (parseInt(o.totalBoxes, 10) || 0) || calcBoxes;
             const totalPcs = (parseInt(o.totalPieces, 10) || 0) || calcPieces;
 
+            const rawSp = (o.salesPerson || o.sales_person || "").trim();
+            const cleanSp = rawSp && rawSp !== "-" && rawSp !== "—" ? rawSp.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ") : (rawSp || "-");
+
             return {
               ...o,
+              salesPerson: cleanSp,
               unit: o.unit || "Unit 1",
               totalBoxes: totalBxs,
               totalPieces: totalPcs,
@@ -5086,28 +5089,49 @@
     function populateAsmDropdown(orders) {
       const sel = document.getElementById("asmSelectFilter");
       if (!sel) return;
-      const asms = new Set();
-      orders.forEach(o => {
-        if (o.salesPerson && o.salesPerson.trim() && o.salesPerson !== "-") {
-          asms.add(o.salesPerson.trim());
+
+      // Case-insensitive deduplication and normalization to Title Case
+      const asmMap = new Map(); // lowercase_key -> canonical display name
+      (orders || []).forEach(o => {
+        const raw = (o.salesPerson || "").trim();
+        if (raw && raw !== "-" && raw !== "—") {
+          const key = raw.toLowerCase();
+          if (!asmMap.has(key)) {
+            const titleCased = raw.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+            asmMap.set(key, titleCased);
+          }
         }
       });
-      const currentVal = activeAsmFilter || "ALL";
-      sel.innerHTML = '<option value="ALL">All Sales Managers</option>';
-      Array.from(asms).sort().forEach(asm => {
+
+      const currentVal = (activeAsmFilter || "ALL").trim();
+      const isAll = (currentVal === "ALL" || !currentVal);
+
+      sel.innerHTML = `<option value="ALL"${isAll ? ' selected' : ''}>All Sales Managers</option>`;
+
+      const sortedNames = Array.from(asmMap.values()).sort((a, b) => a.localeCompare(b));
+      sortedNames.forEach(asm => {
         const opt = document.createElement("option");
         opt.value = asm;
         opt.textContent = `👔 ${asm}`;
-        if (asm.toLowerCase() === currentVal.toLowerCase()) opt.selected = true;
+        if (!isAll && asm.toLowerCase() === currentVal.toLowerCase()) {
+          opt.selected = true;
+        }
         sel.appendChild(opt);
       });
-      if (currentVal !== "ALL" && !asms.has(currentVal)) {
+
+      // If active filter is set to a name not in orders, still preserve it without duplicating
+      if (!isAll && !asmMap.has(currentVal.toLowerCase())) {
         const opt = document.createElement("option");
         opt.value = currentVal;
         opt.textContent = `👔 ${currentVal}`;
         opt.selected = true;
         sel.appendChild(opt);
       }
+
+      if (isAll) {
+        sel.value = "ALL";
+      }
+
       updatePankajBtnState();
     }
 
