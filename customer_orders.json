@@ -120,5 +120,368 @@
     "securityHash": "SEC-BD5F-B381",
     "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261017-4178.png",
     "slipImageUrl": "/order_slips/KOGM-20261017-4178.png"
+  },
+  {
+    "id": "KOGM-20261017-9139",
+    "partyName": "Gaurav Trading Co - Mohali",
+    "partyAddress": "Bardyabati Hooghly, West Bengal - 712222\nGROUND FLOOR, SHOP NO-7, NEAR BANK OF BRODA, TEHSIL KHARAR, NAYAGOAN, Mohali, Punjab - 160103",
+    "deliveryAddress": "GROUND FLOOR, SHOP NO-7, NEAR BANK OF BRODA, TEHSIL KHARAR, NAYAGOAN, Mohali, Punjab - 160103",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 10:12:49",
+    "created_at": "2026-10-17T10:12:49",
+    "totalBoxes": 100,
+    "totalPieces": 1500,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 100,
+        "multiplier": 15,
+        "pieces": 1500
+      }
+    ],
+    "itemsSummary": "Mashal 1 LTR. BOTTLE x 15 -> 1,500 Pcs | [100 Boxes]",
+    "partyCode": "SDMOLS0067",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-9139",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261017-4984",
+    "partyName": "Goyal Traders - CHD",
+    "partyAddress": "Plot no 182/80, Industrial area, Phase - 1, Chandigarh - 160001",
+    "deliveryAddress": "Plot no 182/80, Industrial area, Phase - 1, Chandigarh - 160001",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 11:22:52",
+    "created_at": "2026-10-17T11:22:52",
+    "totalBoxes": 1475,
+    "totalPieces": 24325,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 1050,
+        "multiplier": 15,
+        "pieces": 15750
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 175,
+        "multiplier": 30,
+        "pieces": 5250
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 50,
+        "multiplier": 40,
+        "pieces": 2000
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 125,
+        "multiplier": 4,
+        "pieces": 500
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 50,
+        "multiplier": 16,
+        "pieces": 800
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 25,
+        "multiplier": 1,
+        "pieces": 25
+      }
+    ],
+    "itemsSummary": "Mashal 1 LTR. BOTTLE x 15 -> 15,750 Pcs | [1,050 Boxes]\nMashal 500 ML BOTTLE x 30 -> 5,250 Pcs | [175 Boxes]\nMashal 200 ML BOTTLE x 40 -> 2,000 Pcs | [50 Boxes]\nMashal 5 LTR CAN x 4 -> 500 Pcs | [125 Boxes]\nMashal 1 LTR. POUCH x 16 -> 800 Pcs | [50 Boxes]\nMashal 15 LTR TIN x 1 -> 25 Pcs | [25 Boxes]",
+    "partyCode": "SDMCH0017",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-4984",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261017-5440",
+    "partyName": "Tara Chand Sushil Kumar - Chandigarh",
+    "partyAddress": "Scf - 01, Grain Market, Sector 26, Chandigarh - 160026",
+    "deliveryAddress": "Scf - 01, Grain Market, Sector 26, Chandigarh - 160026",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 11:24:21",
+    "created_at": "2026-10-17T11:24:21",
+    "totalBoxes": 55,
+    "totalPieces": 1650,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 55,
+        "multiplier": 30,
+        "pieces": 1650
+      }
+    ],
+    "itemsSummary": "Mashal 500 ML BOTTLE x 30 -> 1,650 Pcs | [55 Boxes]",
+    "partyCode": "SDMCH0009",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-5440",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261017-5830",
+    "partyName": "Aggarwal Agencies",
+    "partyAddress": "520/1 Village Driya, Chandigarh - 160101",
+    "deliveryAddress": "520/1 Village Driya, Chandigarh - 160101",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 11:36:45",
+    "created_at": "2026-10-17T11:36:45",
+    "totalBoxes": 1451,
+    "totalPieces": 23311,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 965,
+        "multiplier": 15,
+        "pieces": 14475
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 200,
+        "multiplier": 30,
+        "pieces": 6000
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 25,
+        "multiplier": 40,
+        "pieces": 1000
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 150,
+        "multiplier": 4,
+        "pieces": 600
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 75,
+        "multiplier": 16,
+        "pieces": 1200
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 36,
+        "multiplier": 1,
+        "pieces": 36
+      }
+    ],
+    "itemsSummary": "Mashal 1 LTR. BOTTLE x 15 -> 14,475 Pcs | [965 Boxes]\nMashal 500 ML BOTTLE x 30 -> 6,000 Pcs | [200 Boxes]\nMashal 200 ML BOTTLE x 40 -> 1,000 Pcs | [25 Boxes]\nMashal 5 LTR CAN x 4 -> 600 Pcs | [150 Boxes]\nMashal 1 LTR. POUCH x 16 -> 1,200 Pcs | [75 Boxes]\nMashal 15 LTR TIN x 1 -> 36 Pcs | [36 Boxes]",
+    "partyCode": "SDMOLS0072",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-5830",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261017-7268",
+    "partyName": "Mohit Enterprises - Ludhiana",
+    "partyAddress": "Property No. 1012, Street No. 8, Iqbal Ganj, Opposite Nursery School, Ludhiana, Punjab - 141008",
+    "deliveryAddress": "Property No. 1012, Street No. 8, Iqbal Ganj, Opposite Nursery School, Ludhiana, Punjab - 141008",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 12:12:38",
+    "created_at": "2026-10-17T12:12:38",
+    "totalBoxes": 240,
+    "totalPieces": 3160,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 200,
+        "multiplier": 15,
+        "pieces": 3000
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 40,
+        "multiplier": 4,
+        "pieces": 160
+      }
+    ],
+    "itemsSummary": "Mashal 1 LTR. BOTTLE x 15 -> 3,000 Pcs | [200 Boxes]\nMashal 5 LTR CAN x 4 -> 160 Pcs | [40 Boxes]",
+    "partyCode": "SDMCPB0084",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-7268",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261017-6258",
+    "partyName": "Shiv Shakti Traders - Sector 26",
+    "partyAddress": "S.C.F. 79, Grain Market, Sector-26, Chandigarh - 160026",
+    "deliveryAddress": "S.C.F. 79, Grain Market, Sector-26, Chandigarh - 160026",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 12:21:29",
+    "created_at": "2026-10-17T12:21:29",
+    "totalBoxes": 295,
+    "totalPieces": 5200,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 200,
+        "multiplier": 15,
+        "pieces": 3000
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 70,
+        "multiplier": 30,
+        "pieces": 2100
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 25,
+        "multiplier": 4,
+        "pieces": 100
+      }
+    ],
+    "itemsSummary": "Mashal 1 LTR. BOTTLE x 15 -> 3,000 Pcs | [200 Boxes]\nMashal 500 ML BOTTLE x 30 -> 2,100 Pcs | [70 Boxes]\nMashal 5 LTR CAN x 4 -> 100 Pcs | [25 Boxes]",
+    "partyCode": "SDMCH0006",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-6258",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261017-7441",
+    "partyName": "Shiv Shankar & Company - Sector 26",
+    "partyAddress": "S.C.F - 102, Grain Market, Sector 26, Chandigarh - 160026",
+    "deliveryAddress": "S.C.F - 102, Grain Market, Sector 26, Chandigarh - 160026",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 12:29:17",
+    "created_at": "2026-10-17T12:29:17",
+    "totalBoxes": 210,
+    "totalPieces": 3150,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 180,
+        "multiplier": 15,
+        "pieces": 2700
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 10,
+        "multiplier": 40,
+        "pieces": 400
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 10,
+        "multiplier": 4,
+        "pieces": 40
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR CAN x 1",
+        "boxes": 10,
+        "multiplier": 1,
+        "pieces": 10
+      }
+    ],
+    "itemsSummary": "Mashal 1 LTR. BOTTLE x 15 -> 2,700 Pcs | [180 Boxes]\nMashal 200 ML BOTTLE x 40 -> 400 Pcs | [10 Boxes]\nMashal 5 LTR CAN x 4 -> 40 Pcs | [10 Boxes]\nMashal 15 LTR CAN x 1 -> 10 Pcs | [10 Boxes]",
+    "partyCode": "SDMCH0007",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-7441",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
+  },
+  {
+    "id": "KOGM-20261017-9325",
+    "partyName": "Tara Chand Sushil Kumar - Chandigarh",
+    "partyAddress": "Scf - 81, Grain Market, Sector 26, Chandigarh - 160026",
+    "deliveryAddress": "Scf - 81, Grain Market, Sector 26, Chandigarh - 160026",
+    "salesPerson": "Pankaj Kumar",
+    "orderDate": "2026-10-17",
+    "formattedTimestamp": "17/10/2026 13:40:17",
+    "created_at": "2026-10-17T13:40:17",
+    "totalBoxes": 1420,
+    "totalPieces": 23830,
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. BOTTLE x 15",
+        "boxes": 800,
+        "multiplier": 15,
+        "pieces": 12000
+      },
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 200,
+        "multiplier": 30,
+        "pieces": 6000
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 50,
+        "multiplier": 40,
+        "pieces": 2000
+      },
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 100,
+        "multiplier": 4,
+        "pieces": 400
+      },
+      {
+        "brand": "Mashal",
+        "item": "1 LTR. POUCH x 16",
+        "boxes": 200,
+        "multiplier": 16,
+        "pieces": 3200
+      },
+      {
+        "brand": "Mashal",
+        "item": "15 LTR TIN x 1",
+        "boxes": 70,
+        "multiplier": 1,
+        "pieces": 230
+      }
+    ],
+    "itemsSummary": "Mashal 1 LTR. BOTTLE x 15 -> 12,000 Pcs | [800 Boxes]\nMashal 500 ML BOTTLE x 30 -> 6,000 Pcs | [200 Boxes]\nMashal 200 ML BOTTLE x 40 -> 2,000 Pcs | [50 Boxes]\nMashal 5 LTR CAN x 4 -> 400 Pcs | [100 Boxes]\nMashal 1 LTR. POUCH x 16 -> 3,200 Pcs | [200 Boxes]\nMashal 15 LTR TIN x 1 -> 230 Pcs | [70 Boxes]",
+    "partyCode": "SDMCH0009",
+    "orderStatus": "CONFIRMED",
+    "soNumber": "SO-9325",
+    "unit": "Unit 1",
+    "synced_to_sheet": true
   }
 ]

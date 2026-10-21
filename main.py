@@ -266,6 +266,7 @@ def serve_sales_table_data():
     return FileResponse("index.html")
 
 @app.get("/admin")
+@app.get("/admin.html")
 @app.get("/database")
 @app.get("/orders_db")
 def serve_admin_portal():

@@ -1439,17 +1439,301 @@
       }
     }
   
-    /* 🏛️ Enterprise Full-Width Dashboard Layout (No Left Sidebar) */
+    /* 🏛️ Modern Executive Layout with Clean Left Sidebar */
     .admin-app-layout {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       min-height: 100vh;
       width: 100%;
       background: var(--bg-page);
     }
 
-    .admin-main-content {
+    /* 🧭 Left Navigation Sidebar - Clean & Focused (Only Essential Tabs) */
+    .admin-sidebar {
+      width: 250px;
+      min-width: 250px;
+      background: #001a33;
+      background: linear-gradient(180deg, #001e3d 0%, #001124 100%);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 200;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-brand {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      padding: 2px;
+      object-fit: contain;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-brand-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sidebar-brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      display: block;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-brand-sub {
+      font-size: 10.5px;
+      color: #94a3b8;
+      font-weight: 600;
+      display: block;
+      margin-top: 1px;
+    }
+
+    .sidebar-close-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .sidebar-close-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-nav-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-nav-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sidebar-nav-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+
+    .sidebar-section-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 12px 10px 4px 10px;
+    }
+
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: left;
       width: 100%;
+    }
+
+    .sidebar-nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    .sidebar-nav-item.active {
+      background: rgba(2, 132, 199, 0.22);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-nav-item.pending.active {
+      background: rgba(217, 119, 6, 0.22);
+      border-color: rgba(251, 191, 36, 0.45);
+    }
+
+    .sidebar-nav-item.confirmed.active {
+      background: rgba(5, 150, 105, 0.22);
+      border-color: rgba(52, 211, 153, 0.45);
+    }
+
+    .sidebar-nav-item.users.active {
+      background: rgba(124, 58, 237, 0.22);
+      border-color: rgba(167, 139, 250, 0.45);
+    }
+
+    .sidebar-nav-item.units.active {
+      background: rgba(217, 119, 6, 0.22);
+      border-color: rgba(251, 191, 36, 0.45);
+    }
+
+    .sidebar-nav-item.logs.active {
+      background: rgba(109, 40, 217, 0.22);
+      border-color: rgba(196, 181, 253, 0.45);
+    }
+
+    .sidebar-nav-item .nav-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+    }
+
+    .sidebar-nav-item .nav-label {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-nav-item .nav-badge {
+      padding: 2px 7px;
+      border-radius: 9999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-nav-item .nav-badge.amber { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .sidebar-nav-item .nav-badge.green { background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .sidebar-nav-item .nav-badge.blue { background: rgba(14, 165, 233, 0.25); color: #7dd3fc; border: 1px solid rgba(14, 165, 233, 0.35); }
+    .sidebar-nav-item .nav-badge.purple { background: rgba(147, 51, 234, 0.25); color: #d8b4fe; border: 1px solid rgba(147, 51, 234, 0.35); }
+    .sidebar-nav-item .nav-badge.gold { background: rgba(217, 119, 6, 0.25); color: #fde68a; border: 1px solid rgba(217, 119, 6, 0.35); }
+
+    .sidebar-footer {
+      padding: 12px 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .sidebar-user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: #ffffff;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-user-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sidebar-user-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(2px);
+      z-index: 190;
+    }
+
+    .sidebar-toggle-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: #ffffff;
+      color: var(--text-main);
+      font-size: 18px;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    @media (max-width: 991px) {
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        z-index: 1000;
+      }
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-backdrop.open {
+        display: block;
+      }
+      .sidebar-close-btn {
+        display: block;
+      }
+      .sidebar-toggle-btn {
+        display: flex;
+      }
+    }
+
+    .admin-main-content {
       flex: 1;
       min-width: 0;
       display: flex;
@@ -1620,12 +1904,83 @@
 <body>
 
 <div class="admin-app-layout" id="adminAppLayout">
+  <!-- Mobile drawer backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
+
+  <!-- 🧭 LEFT NAVIGATION SIDEBAR - ONLY ESSENTIAL TABS -->
+  <aside class="admin-sidebar" id="adminSidebar" style="display: none;">
+    <!-- Brand / Header -->
+    <div class="sidebar-brand">
+      <img src="/images/mashal_official_logo.png" alt="Mashal" class="sidebar-logo">
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-title">Khandelia Mills</span>
+        <span class="sidebar-brand-sub">Admin Order Suite</span>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" onclick="toggleAdminSidebar(false)" title="Close Sidebar">✕</button>
+    </div>
+
+    <!-- Navigation List (ONLY ESSENTIAL TABS) -->
+    <div class="sidebar-nav-scroll">
+      <div class="sidebar-section-title">ORDER OPERATIONS</div>
+      <button class="sidebar-nav-item active" id="sideNavAll" onclick="selectSidebarNav('ALL')" title="All orders across database">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">All Orders</span>
+        <span class="nav-badge" id="sideBadgeAll">0</span>
+      </button>
+      <button class="sidebar-nav-item pending" id="sideNavPending" onclick="selectSidebarNav('PENDING')" title="Orders awaiting SO assignment">
+        <span class="nav-icon">⏳</span>
+        <span class="nav-label">Pending Orders</span>
+        <span class="nav-badge amber" id="sideBadgePending">0</span>
+      </button>
+      <button class="sidebar-nav-item confirmed" id="sideNavConfirmed" onclick="selectSidebarNav('CONFIRMED')" title="Verified orders with SO numbers">
+        <span class="nav-icon">✔</span>
+        <span class="nav-label">Confirmed Orders</span>
+        <span class="nav-badge green" id="sideBadgeConfirmed">0</span>
+      </button>
+      <button class="sidebar-nav-item" id="sideNavPacking" onclick="selectSidebarNav('PACKING')" title="Live warehouse packing & production queue">
+        <span class="nav-icon">📦</span>
+        <span class="nav-label">Packing Summary</span>
+        <span class="nav-badge blue">LIVE</span>
+      </button>
+
+      <div class="sidebar-section-title">SYSTEM MANAGEMENT</div>
+      <button class="sidebar-nav-item users" id="sideNavUsers" onclick="selectSidebarNav('USERS')" title="Manage users, roles & phone authorizations">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">User Management</span>
+        <span class="nav-badge purple" id="sideBadgeUsers">0</span>
+      </button>
+      <button class="sidebar-nav-item units" id="sideNavUnits" onclick="selectSidebarNav('UNITS')" title="Manage warehouse units (Unit 1 - Unit 6)">
+        <span class="nav-icon">🏭</span>
+        <span class="nav-label">Warehouse Units</span>
+        <span class="nav-badge gold" id="sideBadgeUnits">6</span>
+      </button>
+      <button class="sidebar-nav-item logs" id="sideNavLogs" onclick="selectSidebarNav('LOGS')" title="Security & audit trail activity logs">
+        <span class="nav-icon">📜</span>
+        <span class="nav-label">System Logs</span>
+        <span class="nav-badge purple" id="sideBadgeLogs" style="background: rgba(109, 40, 217, 0.25); color: #c4b5fd;">0</span>
+      </button>
+    </div>
+
+    <!-- Sidebar Footer with User Profile -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user-card" id="sidebarUserCard">
+        <div class="sidebar-user-avatar" id="sidebarUserAvatar">👑</div>
+        <div class="sidebar-user-meta">
+          <div class="sidebar-user-name" id="sidebarAdminName">Super Admin</div>
+          <div class="sidebar-user-role" id="sidebarAdminRole">ALL UNITS</div>
+        </div>
+        <button onclick="adminLogout()" title="Logout" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 15px; padding: 4px; border-radius: 4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">🚪</button>
+      </div>
+    </div>
+  </aside>
+
   <!-- MAIN DASHBOARD CONTENT AREA -->
   <div class="admin-main-content" id="adminMainContent">
 
   <!-- 🏢 Executive Clean Top Header -->
   <header>
     <div class="brand-left">
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleAdminSidebar()" title="Toggle Left Navigation">☰</button>
       <img src="/images/mashal_official_logo.png" alt="Mashal" class="brand-logo-img">
       <div class="brand-text">
         <h1>Khandelia Oil & General Mills Pvt. Ltd.</h1>
@@ -1817,6 +2172,20 @@
       <div class="search-box-wrap">
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" class="search-box" placeholder="Search Order ID, Party Name, Code, SO #, City, Sales Manager..." oninput="handleSearchInput()">
+      </div>
+
+      <!-- Area Sales Manager Filter & Dedicated Pankaj Kumar Filter -->
+      <div class="asm-filter-group" style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">ASM:</span>
+        <select id="asmSelectFilter" class="asm-select" onchange="handleAsmFilterChange()" style="padding: 7px 12px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); background: #ffffff; font-size: 12.5px; font-weight: 600; color: var(--text-main); cursor: pointer;">
+          <option value="ALL">All Sales Managers</option>
+          <option value="Pankaj Kumar">👔 Pankaj Kumar</option>
+        </select>
+        <button class="asm-quick-btn" id="btnPankajFilter" onclick="togglePankajKumarFilter()" title="Click to show only orders booked by Area Sales Manager Pankaj Kumar" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-full); font-size: 12px; font-weight: 700; border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; cursor: pointer; transition: all 0.15s ease;">
+          <span>👔</span>
+          <span>Pankaj Kumar</span>
+          <span class="badge" id="badgePankajCount" style="padding: 1px 7px; border-radius: 9999px; background: #2563eb; color: #ffffff; font-size: 10.5px; font-weight: 800;">0</span>
+        </button>
       </div>
 
       <!-- 5. Order Date Filters: Today, Yesterday, All, Custom Date Picker -->
@@ -2435,7 +2804,8 @@
     // Filter states
     let activeDateFilter = "ALL"; // 'ALL', 'TODAY', 'YESTERDAY', 'CUSTOM'
     let customSelectedDate = "";
-    let activeStatusTab = "ALL"; // 'ALL', 'PENDING', 'CONFIRMED', 'USERS', 'UNITS'
+    let activeStatusTab = "ALL"; // 'ALL', 'PENDING', 'CONFIRMED', 'USERS', 'UNITS', 'LOGS'
+    let activeAsmFilter = "ALL";
     let currentSearchTerm = "";
 
     // Pagination states
@@ -2469,6 +2839,7 @@
     function showLoginOverlay() {
       document.getElementById("loginOverlay").style.display = "flex";
       document.getElementById("headerRight").style.display = "none";
+      if (document.getElementById("adminSidebar")) document.getElementById("adminSidebar").style.display = "none";
       if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "none";
       document.getElementById("kpiContainer").style.display = "none";
       document.getElementById("warehouseSection").style.display = "none";
@@ -2483,6 +2854,7 @@
     function showDashboardUI() {
       document.getElementById("loginOverlay").style.display = "none";
       document.getElementById("headerRight").style.display = "flex";
+      if (document.getElementById("adminSidebar")) document.getElementById("adminSidebar").style.display = "flex";
       if (document.getElementById("unitSelectorBar")) document.getElementById("unitSelectorBar").style.display = "flex";
       document.getElementById("kpiContainer").style.display = "grid";
       document.getElementById("warehouseSection").style.display = "block";
@@ -2522,6 +2894,14 @@
           <span>${escapeHtml(currentUsername)} (${roleTitle}) • ${escapeHtml(unitNote)}</span>
         </div>
       `;
+
+      // Synchronize Sidebar Profile Card
+      const sbName = document.getElementById("sidebarAdminName");
+      const sbRole = document.getElementById("sidebarAdminRole");
+      const sbAvatar = document.getElementById("sidebarUserAvatar");
+      if (sbName) sbName.textContent = currentUsername || "Admin";
+      if (sbRole) sbRole.textContent = `${roleTitle} • ${unitNote}`;
+      if (sbAvatar) sbAvatar.textContent = roleIcon;
     }
 
     // Login Handler
@@ -2713,6 +3093,22 @@
         document.getElementById("tabStatusLogs").classList.toggle("active", statusType === "LOGS");
       }
 
+      // Synchronize Left Sidebar Nav buttons
+      const sideNavMapping = {
+        "ALL": "sideNavAll",
+        "PENDING": "sideNavPending",
+        "CONFIRMED": "sideNavConfirmed",
+        "USERS": "sideNavUsers",
+        "UNITS": "sideNavUnits",
+        "LOGS": "sideNavLogs"
+      };
+      Object.entries(sideNavMapping).forEach(([key, id]) => {
+        const item = document.getElementById(id);
+        if (item) item.classList.toggle("active", statusType === key);
+      });
+      const sidePacking = document.getElementById("sideNavPacking");
+      if (sidePacking) sidePacking.classList.remove("active");
+
       const tableWrapper = document.getElementById("tableCardWrapper");
       const usersWrapper = document.getElementById("usersCardWrapper");
       const unitsWrapper = document.getElementById("unitsCardWrapper");
@@ -2770,6 +3166,50 @@
       applyAllFilters();
     }
 
+    // 🧭 Left Sidebar Navigation Handler
+    function selectSidebarNav(navKey) {
+      if (window.innerWidth < 992) {
+        toggleAdminSidebar(false);
+      }
+
+      if (navKey === "ALL" || navKey === "PENDING" || navKey === "CONFIRMED") {
+        setStatusTab(navKey);
+        const cp = document.getElementById("controlsPanel");
+        if (cp) cp.style.display = "flex";
+        const kpi = document.getElementById("kpiContainer");
+        if (kpi) kpi.style.display = "grid";
+        const tbl = document.getElementById("tableCardWrapper");
+        if (tbl) tbl.style.display = "flex";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (navKey === "PACKING") {
+        setStatusTab("ALL");
+        const sidePacking = document.getElementById("sideNavPacking");
+        if (sidePacking) sidePacking.classList.add("active");
+        toggleWarehouseSection(true);
+        const whSec = document.getElementById("warehouseSection");
+        if (whSec) {
+          whSec.style.display = "block";
+          whSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else if (navKey === "USERS") {
+        setStatusTab("USERS");
+      } else if (navKey === "UNITS") {
+        setStatusTab("UNITS");
+      } else if (navKey === "LOGS") {
+        setStatusTab("LOGS");
+      }
+    }
+
+    function toggleAdminSidebar(force) {
+      const sidebar = document.getElementById("adminSidebar");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains("open");
+      const newState = (typeof force === "boolean") ? force : !isOpen;
+      sidebar.classList.toggle("open", newState);
+      if (backdrop) backdrop.classList.toggle("open", newState);
+    }
+
     // 🏭 Warehouse Unit Management Functions
     async function loadWarehouseUnits() {
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
@@ -2785,6 +3225,9 @@
 
           if (document.getElementById("badgeUnitsCount")) {
             document.getElementById("badgeUnitsCount").textContent = allWarehouseUnits.length;
+          }
+          if (document.getElementById("sideBadgeUnits")) {
+            document.getElementById("sideBadgeUnits").textContent = allWarehouseUnits.length;
           }
 
           renderUnitSelectorPills();
@@ -3119,6 +3562,7 @@
           const analyserCount = adminUsersList.filter(u => ["analyst", "analyser"].includes((u.role || "").toLowerCase())).length;
 
           if (document.getElementById("badgeUsersCount")) document.getElementById("badgeUsersCount").textContent = totalCount;
+          if (document.getElementById("sideBadgeUsers")) document.getElementById("sideBadgeUsers").textContent = totalCount;
           if (document.getElementById("userCountAllPill")) document.getElementById("userCountAllPill").textContent = totalCount;
           if (document.getElementById("userCountCustPill")) document.getElementById("userCountCustPill").textContent = custCount;
           if (document.getElementById("userCountAsmPill")) document.getElementById("userCountAsmPill").textContent = asmCount;
@@ -3243,6 +3687,9 @@
 
           if (document.getElementById("badgeLogsCount")) {
             document.getElementById("badgeLogsCount").textContent = total;
+          }
+          if (document.getElementById("sideBadgeLogs")) {
+            document.getElementById("sideBadgeLogs").textContent = total;
           }
           if (document.getElementById("auditTotalCountBadge")) {
             document.getElementById("auditTotalCountBadge").textContent = total;
@@ -3476,6 +3923,91 @@
       applyAllFilters();
     }
 
+    // 👔 Area Sales Manager Filter Functions
+    function handleAsmFilterChange() {
+      const sel = document.getElementById("asmSelectFilter");
+      activeAsmFilter = sel ? sel.value : "ALL";
+      updatePankajBtnState();
+      currentPage = 1;
+      applyAllFilters();
+    }
+
+    function togglePankajKumarFilter() {
+      if (activeAsmFilter === "Pankaj Kumar") {
+        activeAsmFilter = "ALL";
+      } else {
+        activeAsmFilter = "Pankaj Kumar";
+      }
+      const sel = document.getElementById("asmSelectFilter");
+      if (sel) sel.value = activeAsmFilter;
+      updatePankajBtnState();
+      currentPage = 1;
+      applyAllFilters();
+    }
+
+    function updatePankajBtnState() {
+      const btn = document.getElementById("btnPankajFilter");
+      if (!btn) return;
+      const isPankaj = activeAsmFilter === "Pankaj Kumar";
+      btn.style.background = isPankaj ? "#1d4ed8" : "#eff6ff";
+      btn.style.color = isPankaj ? "#ffffff" : "#1d4ed8";
+      btn.style.borderColor = isPankaj ? "#1d4ed8" : "#bfdbfe";
+    }
+
+    function filterBySalesManager(asmName) {
+      if (!asmName || asmName === "-" || asmName === "—") return;
+      activeAsmFilter = asmName;
+      const sel = document.getElementById("asmSelectFilter");
+      if (sel) {
+        let found = false;
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value.toLowerCase() === asmName.toLowerCase()) {
+            sel.selectedIndex = i;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          const opt = document.createElement("option");
+          opt.value = asmName;
+          opt.textContent = `👔 ${asmName}`;
+          sel.appendChild(opt);
+          sel.value = asmName;
+        }
+      }
+      updatePankajBtnState();
+      currentPage = 1;
+      applyAllFilters();
+    }
+
+    function populateAsmDropdown(orders) {
+      const sel = document.getElementById("asmSelectFilter");
+      if (!sel) return;
+      const asms = new Set();
+      orders.forEach(o => {
+        if (o.salesPerson && o.salesPerson.trim() && o.salesPerson !== "-") {
+          asms.add(o.salesPerson.trim());
+        }
+      });
+      const currentVal = activeAsmFilter || "ALL";
+      sel.innerHTML = '<option value="ALL">All Sales Managers</option>';
+      Array.from(asms).sort().forEach(asm => {
+        const opt = document.createElement("option");
+        opt.value = asm;
+        opt.textContent = `👔 ${asm}`;
+        if (asm.toLowerCase() === currentVal.toLowerCase()) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      if (currentVal !== "ALL" && !asms.has(currentVal)) {
+        const opt = document.createElement("option");
+        opt.value = currentVal;
+        opt.textContent = `👔 ${currentVal}`;
+        opt.selected = true;
+        sel.appendChild(opt);
+      }
+      updatePankajBtnState();
+    }
+
     // Core Filtering Engine
     function applyAllFilters() {
       const now = new Date();
@@ -3518,11 +4050,24 @@
       if (document.getElementById("sideBadgePending")) document.getElementById("sideBadgePending").textContent = pendingTotal;
       if (document.getElementById("sideBadgeConfirmed")) document.getElementById("sideBadgeConfirmed").textContent = confirmedTotal;
 
-      // 2. Filter dataset for table display (applying status tab and search term)
+      // Update Pankaj Kumar badge counter
+      const pankajOrders = dateFilteredOrders.filter(o => (o.salesPerson || "").toLowerCase().includes("pankaj"));
+      if (document.getElementById("badgePankajCount")) {
+        document.getElementById("badgePankajCount").textContent = pankajOrders.length;
+      }
+      populateAsmDropdown(allOrdersData);
+
+      // 2. Filter dataset for table display (applying status tab, ASM filter, and search term)
       filteredOrdersData = dateFilteredOrders.filter(o => {
         const isConf = o.orderStatus === "CONFIRMED";
         if (activeStatusTab === "PENDING" && isConf) return false;
         if (activeStatusTab === "CONFIRMED" && !isConf) return false;
+
+        // Apply ASM filter
+        if (activeAsmFilter && activeAsmFilter !== "ALL") {
+          const sp = (o.salesPerson || "").toLowerCase();
+          if (!sp.includes(activeAsmFilter.toLowerCase())) return false;
+        }
 
         if (currentSearchTerm) {
           const haystack = [
@@ -3865,7 +4410,7 @@
               <div class="address-cell-wrap">${escapeHtml(o.partyAddress || o.deliveryAddress || "-")}</div>
             </td>
             <td>
-              <span class="asm-badge">👔 ${escapeHtml(o.salesPerson || "-")}</span>
+              <span class="asm-badge" style="cursor: pointer;" onclick="filterBySalesManager('${escapeHtml(o.salesPerson || '')}')" title="Click to filter by ${escapeHtml(o.salesPerson || '')}">👔 ${escapeHtml(o.salesPerson || "-")}</span>
             </td>
             <td class="center">
               <span class="unit-tag">🏭 ${escapeHtml(o.unit || "Unit 1")}</span>
