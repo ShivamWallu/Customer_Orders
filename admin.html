@@ -850,14 +850,14 @@
     }
 
     .orders-table th {
-      background: var(--table-header-bg);
-      color: var(--text-secondary);
-      font-size: 11.5px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-      padding: 12px 14px;
-      border-bottom: 2px solid var(--card-border);
+      letter-spacing: 0.06em;
+      padding: 13px 16px;
+      border-bottom: 1px solid #cbd5e1;
       text-align: left;
       white-space: nowrap;
       position: sticky;
@@ -866,17 +866,18 @@
     }
 
     .orders-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--card-border-subtle);
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
       vertical-align: middle;
-      transition: background 0.1s;
+      transition: background 0.15s ease;
+      color: var(--text-main);
     }
 
-    .orders-table tr:nth-child(even) td { background: var(--table-row-even); }
-    .orders-table tr:nth-child(odd) td { background: var(--table-row-odd); }
+    .orders-table tr:nth-child(even) td { background: #ffffff; }
+    .orders-table tr:nth-child(odd) td { background: #fafbfc; }
 
     .orders-table tr:hover td {
-      background: var(--table-row-hover) !important;
+      background: #f1f5f9 !important;
     }
 
     .orders-table th.center, .orders-table td.center {
@@ -1046,7 +1047,84 @@
       margin-top: 2px;
     }
 
-    /* Status Badges */
+    /* Modern Enterprise SaaS Badge Pills with Micro-Dots */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+    .badge-dot.pulse {
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+    .badge-dot.emerald { background: #10b981; }
+    .badge-dot.amber { background: #f59e0b; }
+    .badge-dot.red { background: #ef4444; }
+    .badge-dot.blue { background: #3b82f6; }
+    .badge-dot.purple { background: #8b5cf6; }
+    .badge-dot.slate { background: #64748b; }
+
+    .status-confirmed, .status-active {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    .status-pending {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+    .status-blocked, .status-inactive {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .role-super-admin {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+    .role-admin {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+    .role-manager {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+    .role-asm {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+    .role-customer {
+      background: #faf5ff;
+      color: #6b21a8;
+      border: 1px solid #e9d5ff;
+    }
+    .role-analyst, .role-default {
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Legacy status-badge compatibility */
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -1081,12 +1159,68 @@
       white-space: nowrap;
     }
 
-    /* Action Buttons in Row */
+    /* Action Buttons in Row - Modern Enterprise Icon Buttons */
     .action-btn-group {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
+    .btn-action-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    .btn-action-icon:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #0f172a;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+    .btn-action-icon svg {
+      flex-shrink: 0;
+    }
+    .btn-action-icon.primary {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+    }
+    .btn-action-icon.primary:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+    .btn-action-icon.success {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #047857;
+    }
+    .btn-action-icon.success:hover {
+      background: #059669;
+      border-color: #059669;
+      color: #ffffff;
+    }
+    .btn-action-icon.danger {
+      background: #fff5f5;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+    .btn-action-icon.danger:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #ffffff;
+    }
+
     .btn-row-action {
       background: #ffffff;
       border: 1px solid var(--card-border);
@@ -1883,39 +2017,62 @@
       border-color: var(--brand-mashal);
     }
 
-    /* Role Pills in Users Control */
+    /* Role Pills in Users Control - Enterprise Segmented Control */
     .user-role-filter-pills {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       margin-bottom: 16px;
     }
 
     .role-filter-pill {
-      padding: 7px 14px;
+      padding: 6px 14px;
       font-size: 12.5px;
-      font-weight: 700;
-      border-radius: 20px;
-      border: 1px solid var(--card-border);
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
       background: #ffffff;
-      color: var(--text-secondary);
+      color: #475569;
       cursor: pointer;
       transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
     }
 
     .role-filter-pill:hover {
-      background: #f1f5f9;
+      background: #f8fafc;
       border-color: #cbd5e1;
+      color: #0f172a;
     }
 
     .role-filter-pill.active {
-      background: #003366;
+      background: #0f172a;
       color: #ffffff;
-      border-color: #003366;
-      box-shadow: 0 2px 5px rgba(0, 51, 102, 0.2);
+      border-color: #0f172a;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+    }
+
+    .role-filter-pill svg {
+      color: inherit;
+      opacity: 0.8;
+      flex-shrink: 0;
+    }
+
+    .role-pill-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 9999px;
+      background: #f1f5f9;
+      color: #475569;
+      transition: all 0.15s ease;
+    }
+
+    .role-filter-pill.active .role-pill-count {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
     }
 
     .user-auth-banner {
@@ -2154,19 +2311,20 @@
     <div class="warehouse-header-bar" onclick="toggleWarehouseSection()">
       <div class="warehouse-title-wrap">
         <h2>
-          <span>🏭</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; color: #2563eb;"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
           <span>Warehouse Production & Packing Summary</span>
         </h2>
-        <span class="warehouse-badge-live">
-          <span style="font-weight: 800;">PENDING ORDERS ONLY</span>
+        <span class="badge-pill status-pending" style="font-size: 11px;">
+          <span class="badge-dot amber"></span>
+          <span>PENDING ORDERS ONLY</span>
         </span>
       </div>
       <div class="warehouse-header-actions" onclick="event.stopPropagation()">
-        <button class="btn-warehouse-toggle" onclick="printWarehouseSummary()" title="Print packing sheet for factory clipboard">
-          <span>🖨️</span>
+        <button class="btn-action-icon" onclick="printWarehouseSummary()" title="Print packing sheet for factory clipboard">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
           <span>Print Packing Sheet</span>
         </button>
-        <button class="btn-warehouse-toggle" id="btnToggleWarehouse" onclick="toggleWarehouseSection()">
+        <button class="btn-action-icon" id="btnToggleWarehouse" onclick="toggleWarehouseSection()">
           <span id="warehouseToggleIcon">▲</span>
           <span id="warehouseToggleText">Collapse</span>
         </button>
@@ -2183,13 +2341,19 @@
         <div class="banner-stat-item">
           <span class="stat-label">Active Factory Brands</span>
           <div style="display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap;">
-            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">🔵 MASHAL: 14 Packaging SKUs</span>
-            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">🟢 FAUJI: 5 Packaging SKUs</span>
+            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; display: inline-block;"></span>
+              <span>MASHAL: 14 Packaging SKUs</span>
+            </span>
+            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80; display: inline-block;"></span>
+              <span>FAUJI: 5 Packaging SKUs</span>
+            </span>
           </div>
         </div>
         <div class="banner-stat-item" style="text-align: right;">
           <span class="stat-label">Factory Packing Status</span>
-          <span class="stat-val" style="font-size: 16px; color: #a7f3d0;">Active Production Queue</span>
+          <span class="stat-val" style="font-size: 15px; color: #a7f3d0; font-weight: 700;">Active Production Queue</span>
         </div>
       </div>
 
@@ -2199,20 +2363,20 @@
         <div class="brand-production-card">
           <div class="brand-card-header mashal">
             <h3>
-              <span>🔵</span>
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #2563eb; display: inline-block;"></span>
               <span>Brand: MASHAL</span>
             </h3>
             <div class="brand-summary-pills">
-              <span class="brand-stat-pill" id="whMashalTotalBoxes" style="color: #1e40af;">0 Bxs</span>
-              <span class="brand-stat-pill" id="whMashalTotalPieces" style="color: #0284c7;">0 Pcs</span>
+              <span class="brand-stat-pill" id="whMashalTotalBoxes" style="color: #1e40af; font-weight: 800;">0 Bxs</span>
+              <span class="brand-stat-pill" id="whMashalTotalPieces" style="color: #0284c7; font-weight: 800;">0 Pcs</span>
             </div>
           </div>
           <table class="production-table">
             <thead>
               <tr>
-                <th style="width: 50%;">Product Type & Packaging</th>
-                <th style="width: 25%; text-align: right;">Boxes To Prepare</th>
-                <th style="width: 25%; text-align: right;">Total Pieces</th>
+                <th style="width: 50%;">PRODUCT TYPE & PACKAGING</th>
+                <th style="width: 25%; text-align: right;">BOXES TO PREPARE</th>
+                <th style="width: 25%; text-align: right;">TOTAL PIECES</th>
               </tr>
             </thead>
             <tbody id="whMashalTableBody">
@@ -2225,20 +2389,20 @@
         <div class="brand-production-card">
           <div class="brand-card-header fauji">
             <h3>
-              <span>🟢</span>
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #059669; display: inline-block;"></span>
               <span>Brand: FAUJI</span>
             </h3>
             <div class="brand-summary-pills">
-              <span class="brand-stat-pill" id="whFaujiTotalBoxes" style="color: #065f46;">0 Bxs</span>
-              <span class="brand-stat-pill" id="whFaujiTotalPieces" style="color: #059669;">0 Pcs</span>
+              <span class="brand-stat-pill" id="whFaujiTotalBoxes" style="color: #065f46; font-weight: 800;">0 Bxs</span>
+              <span class="brand-stat-pill" id="whFaujiTotalPieces" style="color: #059669; font-weight: 800;">0 Pcs</span>
             </div>
           </div>
           <table class="production-table">
             <thead>
               <tr>
-                <th style="width: 50%;">Product Type & Packaging</th>
-                <th style="width: 25%; text-align: right;">Boxes To Prepare</th>
-                <th style="width: 25%; text-align: right;">Total Pieces</th>
+                <th style="width: 50%;">PRODUCT TYPE & PACKAGING</th>
+                <th style="width: 25%; text-align: right;">BOXES TO PREPARE</th>
+                <th style="width: 25%; text-align: right;">TOTAL PIECES</th>
               </tr>
             </thead>
             <tbody id="whFaujiTableBody">
@@ -2420,27 +2584,32 @@
       <div class="user-role-filter-pills" style="margin-bottom: 0; flex-wrap: wrap;">
         <button class="role-filter-pill active" id="userPillAll" onclick="filterUsersByRole('ALL')">
           <span>All Users</span>
-          <span class="brand-stat-pill" id="userCountAllPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+          <span class="role-pill-count" id="userCountAllPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillCustomer" onclick="filterUsersByRole('customer')">
-          <span>🛒 Customers</span>
-          <span class="brand-stat-pill" id="userCountCustPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Customers</span>
+          <span class="role-pill-count" id="userCountCustPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillAsm" onclick="filterUsersByRole('asm')">
-          <span>💼 Area Sales Managers</span>
-          <span class="brand-stat-pill" id="userCountAsmPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>Area Sales Managers</span>
+          <span class="role-pill-count" id="userCountAsmPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillAdmin" onclick="filterUsersByRole('admin')">
-          <span>🛡️ Admin</span>
-          <span class="brand-stat-pill" id="userCountAdminPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Admin</span>
+          <span class="role-pill-count" id="userCountAdminPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillManager" onclick="filterUsersByRole('manager')">
-          <span>👔 Manager</span>
-          <span class="brand-stat-pill" id="userCountManagerPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+          <span>Manager</span>
+          <span class="role-pill-count" id="userCountManagerPill">0</span>
         </button>
         <button class="role-filter-pill" id="userPillAnalyser" onclick="filterUsersByRole('analyser')">
-          <span>📊 Analyser</span>
-          <span class="brand-stat-pill" id="userCountAnalyserPill" style="padding: 1px 6px; font-size: 11px;">0</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+          <span>Analyser</span>
+          <span class="role-pill-count" id="userCountAnalyserPill">0</span>
         </button>
       </div>
 
@@ -3509,7 +3678,8 @@
         const isAllActive = activeUnitFilter === "ALL";
         html += `
           <div class="unit-pill ${isAllActive ? 'active' : ''}" onclick="selectUnitFilter('ALL')">
-            <span>🌐 All Units</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            <span>All Units</span>
           </div>
         `;
       }
@@ -3521,12 +3691,11 @@
         if (!isAllowed) return;
 
         const isActive = activeUnitFilter === uName;
-        const badgeText = (u.total_orders || 0) > 0 ? `<span class="unit-pill-count">${u.total_orders}</span>` : "";
 
         html += `
           <div class="unit-pill ${isActive ? 'active' : ''}" onclick="selectUnitFilter('${escapeHtml(uName)}')">
-            <span>🏭 ${escapeHtml(uName)}</span>
-            ${badgeText}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span>${escapeHtml(uName)}</span>
           </div>
         `;
       });
@@ -3554,18 +3723,18 @@
       allWarehouseUnits.forEach((u, idx) => {
         const isAct = (u.status || "ACTIVE") === "ACTIVE";
         const statusBadge = isAct
-          ? `<span class="status-badge confirmed">✔ ACTIVE</span>`
-          : `<span class="status-badge pending" style="background:#fee2e2;color:#b91c1c;border-color:#fca5a5;">⛔ INACTIVE</span>`;
+          ? `<span class="badge-pill status-active"><span class="badge-dot emerald pulse"></span>ACTIVE</span>`
+          : `<span class="badge-pill status-blocked"><span class="badge-dot red"></span>INACTIVE</span>`;
 
-        const toggleText = isAct ? "⏸️ Deactivate" : "▶️ Activate";
+        const toggleTitle = isAct ? "Deactivate unit" : "Activate unit";
         const toggleTarget = isAct ? "INACTIVE" : "ACTIVE";
         const isSystemUnit = ["UNIT-1", "UNIT-2", "UNIT-3", "UNIT-4", "UNIT-5", "UNIT-6"].includes(u.unit_code);
 
         let deleteBtn = "";
         if (!isSystemUnit) {
           deleteBtn = `
-            <button class="btn-row-action delete-danger" title="Permanently delete custom unit" onclick="deleteUnitAction(${u.id}, '${escapeHtml(u.unit_name)}')">
-              🗑️
+            <button class="btn-action-icon danger" title="Permanently delete custom unit" onclick="deleteUnitAction(${u.id}, '${escapeHtml(u.unit_name)}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             </button>
           `;
         }
@@ -3574,21 +3743,24 @@
 
         html += `
           <tr>
-            <td class="center" style="font-weight: 700; color: var(--text-dim);">${idx + 1}</td>
-            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--brand-mashal);">${escapeHtml(u.unit_code)}</code></td>
-            <td><strong>${escapeHtml(u.unit_name)}</strong></td>
-            <td><div style="font-size: 12.5px; color: var(--text-secondary);">${escapeHtml(u.description || "—")}</div></td>
+            <td class="center" style="font-weight: 700; color: #94a3b8; font-size: 12px;">${idx + 1}</td>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #1e40af; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 4px;">${escapeHtml(u.unit_code)}</code></td>
+            <td><strong style="color: #0f172a; font-size: 13.5px;">${escapeHtml(u.unit_name)}</strong></td>
+            <td><div style="font-size: 12.5px; color: #475569;">${escapeHtml(u.description || "—")}</div></td>
             <td class="center"><span class="so-badge">${(u.total_orders || 0).toLocaleString()}</span></td>
             <td class="center"><span class="boxes-badge">${(u.total_boxes || 0).toLocaleString()} Bxs</span></td>
             <td class="center"><span class="pieces-badge">${(u.total_pieces || 0).toLocaleString()} Pcs</span></td>
             <td class="center">${statusBadge}</td>
             <td class="center">
               <div style="display: flex; gap: 6px; justify-content: center;">
-                <button class="btn-row-action" title="Edit unit" onclick="openCreateUnitModal(true, ${safeUnitObj})">
-                  ✏️ Edit
+                <button class="btn-action-icon" title="Edit unit" onclick="openCreateUnitModal(true, ${safeUnitObj})">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                  <span>Edit</span>
                 </button>
-                <button class="btn-row-action" title="Toggle active status" onclick="toggleUnitStatusAction(${u.id}, '${toggleTarget}')">
-                  ${toggleText}
+                <button class="btn-action-icon ${isAct ? '' : 'success'}" title="${toggleTitle}" onclick="toggleUnitStatusAction(${u.id}, '${toggleTarget}')">
+                  ${isAct 
+                    ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg><span>Deactivate</span>' 
+                    : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Activate</span>'}
                 </button>
                 ${deleteBtn}
               </div>
@@ -3846,37 +4018,38 @@
         const roleBadge = getRoleBadgeHtml(u.role);
         const isBlocked = u.status === "BLOCKED";
         const statusBadge = isBlocked
-          ? `<span class="status-badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">⛔ BLOCKED</span>`
-          : `<span class="status-badge confirmed">✔ ACTIVE</span>`;
+          ? `<span class="badge-pill status-blocked"><span class="badge-dot red"></span>BLOCKED</span>`
+          : `<span class="badge-pill status-active"><span class="badge-dot emerald pulse"></span>ACTIVE</span>`;
 
-        const blockBtnText = isBlocked ? "🔓 Unblock" : "⛔ Block";
         const blockBtnTitle = isBlocked ? "Allow this account to log in" : "Temporarily block this account";
         const newStatus = isBlocked ? "ACTIVE" : "BLOCKED";
 
         const partyInfo = u.role === "customer"
-          ? `<strong>${escapeHtml(u.party_name || "-")}</strong> <div style="font-size: 11px; color: var(--text-dim);">${escapeHtml(u.party_code || "")}</div>`
-          : `<span style="color: var(--text-dim); font-size: 12px;">Staff / System Account</span>`;
+          ? `<div style="font-weight: 700; color: #0f172a; font-size: 13px;">${escapeHtml(u.party_name || "-")}</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #64748b; margin-top: 2px;">${escapeHtml(u.party_code || "")}</div>`
+          : `<span style="color: #64748b; font-size: 12px; font-weight: 500;">Staff / System Account</span>`;
 
         const createdDate = u.formatted_created_at || (u.created_at ? u.created_at.replace("T", " ").split(".")[0] : "-");
-        const unitDisplay = `<span class="unit-tag">🏭 ${escapeHtml(u.assigned_units || "Unit 1")}</span>`;
+        const unitDisplay = `<span class="unit-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>${escapeHtml(u.assigned_units || "Unit 1")}</span>`;
 
         html += `
           <tr>
-            <td class="center" style="font-weight: 700; color: var(--text-dim);">${idx + 1}</td>
-            <td><strong>${escapeHtml(u.name)}</strong></td>
-            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600;">+91 ${escapeHtml(u.phone)}</code></td>
+            <td class="center" style="font-weight: 700; color: #94a3b8; font-size: 12px;">${idx + 1}</td>
+            <td><strong style="color: #0f172a; font-size: 13.5px;">${escapeHtml(u.name)}</strong></td>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: #334155; background: #f8fafc; border: 1px solid #e2e8f0; padding: 2px 7px; border-radius: 4px;">+91 ${escapeHtml(u.phone)}</code></td>
             <td class="center">${roleBadge}</td>
             <td class="center">${unitDisplay}</td>
             <td>${partyInfo}</td>
             <td class="center">${statusBadge}</td>
-            <td style="font-size: 12.5px; font-weight: 600; color: #334155; white-space: nowrap;">🕒 ${escapeHtml(createdDate)}</td>
+            <td style="font-size: 12px; font-weight: 500; color: #475569; white-space: nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:4px; color:#94a3b8;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${escapeHtml(createdDate)}</td>
             <td class="center">
               <div style="display: flex; gap: 6px; justify-content: center;">
-                <button class="btn-row-action" title="${blockBtnTitle}" onclick="toggleUserStatusAction(${u.id}, '${newStatus}')">
-                  ${blockBtnText}
+                <button class="btn-action-icon ${isBlocked ? 'success' : ''}" title="${blockBtnTitle}" onclick="toggleUserStatusAction(${u.id}, '${newStatus}')">
+                  ${isBlocked 
+                    ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg><span>Unblock</span>' 
+                    : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Block</span>'}
                 </button>
-                <button class="btn-row-action delete-danger" title="Permanently delete user" onclick="deleteUserAction(${u.id}, '${escapeHtml(u.name)}')">
-                  🗑️
+                <button class="btn-action-icon danger" title="Permanently delete user" onclick="deleteUserAction(${u.id}, '${escapeHtml(u.name)}')">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                 </button>
               </div>
             </td>
@@ -3889,19 +4062,19 @@
     function getRoleBadgeHtml(role) {
       const r = (role || "").toLowerCase();
       if (r === "super_admin") {
-        return `<span class="status-badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">👑 Super Admin</span>`;
+        return `<span class="badge-pill role-super-admin"><span class="badge-dot amber"></span>Super Admin</span>`;
       } else if (r === "admin") {
-        return `<span class="status-badge" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">🛡️ Admin</span>`;
+        return `<span class="badge-pill role-admin"><span class="badge-dot red"></span>Admin</span>`;
       } else if (r === "manager") {
-        return `<span class="status-badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">👔 Manager</span>`;
+        return `<span class="badge-pill role-manager"><span class="badge-dot blue"></span>Manager</span>`;
       } else if (r === "analyst" || r === "analyser") {
-        return `<span class="status-badge" style="background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb;">📊 Analyser</span>`;
+        return `<span class="badge-pill role-analyst"><span class="badge-dot slate"></span>Analyser</span>`;
       } else if (r === "asm") {
-        return `<span class="status-badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">💼 Area Sales Mgr</span>`;
+        return `<span class="badge-pill role-asm"><span class="badge-dot emerald"></span>Area Sales Mgr</span>`;
       } else if (r === "customer") {
-        return `<span class="status-badge" style="background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff;">🛒 Customer</span>`;
+        return `<span class="badge-pill role-customer"><span class="badge-dot purple"></span>Customer</span>`;
       }
-      return `<span class="status-badge">${escapeHtml(role)}</span>`;
+      return `<span class="badge-pill role-default"><span class="badge-dot slate"></span>${escapeHtml(role)}</span>`;
     }
 
     // 📜 SYSTEM AUDIT LOGS & ACTIVITY TRACKER LOGIC
@@ -4605,29 +4778,31 @@
         }
         itemsHtml += `</div>`;
 
-        // Status Badge
+        // Status Badge with micro-dot
         const statusBadge = isConfirmed
-          ? `<span class="status-badge confirmed">✔ CONFIRMED</span>`
-          : `<span class="status-badge pending">⏳ PENDING</span>`;
+          ? `<span class="badge-pill status-confirmed"><span class="badge-dot emerald pulse"></span>CONFIRMED</span>`
+          : `<span class="badge-pill status-pending"><span class="badge-dot amber"></span>PENDING</span>`;
 
         // SO Badge
         const soDisplay = o.soNumber
           ? `<span class="so-badge">#${escapeHtml(o.soNumber)}</span>`
           : `<span style="color: var(--text-dim); font-size: 12px;">—</span>`;
 
-        // Action Buttons according to Role Permissions
+        // Action Buttons according to Role Permissions - Modern Enterprise Icon Buttons
         let actionButtons = `
           <div class="action-btn-group">
-            <button class="btn-row-action" title="View Digital Order Slip" onclick="previewSlipModal('${cleanId}')">
-              <span>👁️ Slip</span>
+            <button class="btn-action-icon" title="View Digital Order Slip" onclick="previewSlipModal('${cleanId}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>Slip</span>
             </button>
         `;
 
         // Confirm button: Only Admin & Manager
         if (canConfirmOrders && !isConfirmed) {
           actionButtons += `
-            <button class="btn-row-action confirm-so" title="Assign SO Number & Confirm Order" onclick="openConfirmSoModal('${cleanId}')">
-              <span>✔ Confirm SO</span>
+            <button class="btn-action-icon primary" title="Assign SO Number & Confirm Order" onclick="openConfirmSoModal('${cleanId}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Confirm SO</span>
             </button>
           `;
         }
@@ -4635,8 +4810,9 @@
         // Reassign Unit button: STRICTLY ADMIN / SUPER ADMIN
         if (currentUserRole === "admin" || currentUserRole === "super_admin") {
           actionButtons += `
-            <button class="btn-row-action" title="Reassign Warehouse Unit" onclick="openChangeUnitModal('${cleanId}', '${escapeHtml(o.unit || 'Unit 1')}')">
-              <span>🏭 Unit</span>
+            <button class="btn-action-icon" title="Reassign Warehouse Unit" onclick="openChangeUnitModal('${cleanId}', '${escapeHtml(o.unit || 'Unit 1')}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              <span>Unit</span>
             </button>
           `;
         }
@@ -4644,8 +4820,8 @@
         // Delete button: STRICTLY ADMIN / SUPER ADMIN ONLY (Hidden for Manager and Analyst)
         if (canDeleteOrders && (currentUserRole === "admin" || currentUserRole === "super_admin")) {
           actionButtons += `
-            <button class="btn-row-action delete-danger" title="Permanently delete this order" onclick="openGitDeleteModal('${cleanId}')">
-              <span>🗑️</span>
+            <button class="btn-action-icon danger" title="Permanently delete this order" onclick="openGitDeleteModal('${cleanId}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             </button>
           `;
         }
@@ -4655,7 +4831,7 @@
         html += `
           <tr>
             <!-- Fixed Col 1 -->
-            <td class="sticky-col-1 center" style="color: var(--text-dim); font-weight: 700;">${rowNumber}</td>
+            <td class="sticky-col-1 center" style="color: var(--text-dim); font-weight: 700; font-size: 12px;">${rowNumber}</td>
             <!-- Fixed Col 2 -->
             <td class="sticky-col-2">
               <span class="order-id-link" onclick="previewSlipModal('${cleanId}')" title="View Order Slip">#${cleanId}</span>
@@ -4677,10 +4853,14 @@
               <div class="address-cell-wrap">${escapeHtml(o.partyAddress || o.deliveryAddress || "-")}</div>
             </td>
             <td>
-              <span class="asm-badge" style="cursor: pointer;" onclick="filterBySalesManager('${escapeHtml(o.salesPerson || '')}')" title="Click to filter by ${escapeHtml(o.salesPerson || '')}">👔 ${escapeHtml(o.salesPerson || "-")}</span>
+              <span class="asm-badge" style="cursor: pointer;" onclick="filterBySalesManager('${escapeHtml(o.salesPerson || '')}')" title="Click to filter by ${escapeHtml(o.salesPerson || '')}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:3px;"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>${escapeHtml(o.salesPerson || "-")}
+              </span>
             </td>
             <td class="center">
-              <span class="unit-tag" style="cursor: pointer;" onclick="openChangeUnitModal('${cleanId}', '${escapeHtml(o.unit || 'Unit 1')}')" title="Click to reassign warehouse unit">🏭 ${escapeHtml(o.unit || "Unit 1")} <span style="font-size: 10px; opacity: 0.7;">✎</span></span>
+              <span class="unit-tag" style="cursor: pointer;" onclick="openChangeUnitModal('${cleanId}', '${escapeHtml(o.unit || 'Unit 1')}')" title="Click to reassign warehouse unit">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>${escapeHtml(o.unit || "Unit 1")} <span style="font-size: 10px; opacity: 0.6; margin-left: 2px;">✎</span>
+              </span>
             </td>
             <td>${itemsHtml}</td>
             <td class="center">
