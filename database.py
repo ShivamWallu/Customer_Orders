@@ -13,7 +13,7 @@ import os
 import json
 import sqlite3
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 import re
 from dotenv import load_dotenv
 
@@ -658,7 +658,7 @@ def create_or_update_user(name: str, phone: str, role: str, party_code: str = ""
         conn.close()
 
 def toggle_user_status(user_id: int, new_status: str) -> Dict[str, Any]:
-    """Super Admin blocks or unblocks a user and revokes active sessions if blocked"""
+    """Super Admin blocks or unblocks a user and revokes active sessions immediately if blocked"""
     new_status = new_status.upper().strip()
     if new_status not in ["ACTIVE", "BLOCKED"]:
         return {"status": "error", "message": "Status must be ACTIVE or BLOCKED"}
@@ -674,12 +674,30 @@ def toggle_user_status(user_id: int, new_status: str) -> Dict[str, Any]:
             u_phone = row["phone"]
             cur.execute("UPDATE users SET status = ?, updated_at = ? WHERE id = ?", (new_status, now_iso, user_id))
             if new_status == "BLOCKED":
+                # 🚫 Instant session revocation across Customer, Sales Manager, and Admin session stores
                 cur.execute("DELETE FROM customer_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
                 cur.execute("DELETE FROM sales_manager_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
+                cur.execute("DELETE FROM admin_sessions WHERE username = ? OR username = ?", (row["name"], u_phone))
         
         audit_action = "USER_BLOCKED" if new_status == "BLOCKED" else "USER_UNBLOCKED"
-        log_audit_event(user_name=row["name"], phone=u_phone, role=row["role"], action=audit_action, status="SUCCESS", details=f"User account status updated to {new_status} by Super Admin. Active sessions revoked immediately.")
-        return {"status": "success", "message": f"User '{row['name']}' status updated to {new_status}", "new_status": new_status}
+        log_audit_event(
+            user_name=row["name"],
+            phone=u_phone,
+            role=row["role"],
+            action=audit_action,
+            status="SUCCESS",
+            details=f"User account status updated to {new_status} by Super Admin. Active sessions revoked immediately."
+        )
+        return {
+            "status": "success",
+            "message": f"User '{row['name']}' status updated to {new_status}",
+            "user_id": user_id,
+            "name": row["name"],
+            "phone": u_phone,
+            "role": row["role"],
+            "new_status": new_status,
+            "sessions_revoked": (new_status == "BLOCKED")
+        }
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
@@ -719,7 +737,9 @@ def update_user_assigned_units(user_id: int, new_units: str, updated_by: str = "
         conn.close()
 
 def is_user_phone_blocked(phone: str) -> bool:
-    """Checks if a user's phone number is currently marked as BLOCKED"""
+    """Checks if a user's phone number is currently marked as BLOCKED in SQLite users table"""
+    if not phone:
+        return False
     digits = "".join(filter(str.isdigit, str(phone)))
     clean_p = digits[-10:] if len(digits) >= 10 else digits
     if not clean_p:
@@ -727,9 +747,38 @@ def is_user_phone_blocked(phone: str) -> bool:
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT status FROM users WHERE phone = ? LIMIT 1", (clean_p,))
+        cur.execute("SELECT status FROM users WHERE phone = ? OR phone LIKE ? LIMIT 1", (clean_p, f"%{clean_p}"))
         row = cur.fetchone()
-        return bool(row and row["status"] == "BLOCKED")
+        return bool(row and str(row["status"]).upper() == "BLOCKED")
+    finally:
+        conn.close()
+
+def get_user_status_by_token(token: str) -> Tuple[bool, Optional[str], Optional[str]]:
+    """
+    Given an authentication token (Customer, ASM, or Admin), checks if associated user is BLOCKED.
+    Returns: (is_blocked: bool, phone: Optional[str], name: Optional[str])
+    """
+    if not token:
+        return False, None, None
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        # 1. Customer session check
+        cur.execute("SELECT phone, customer_name FROM customer_sessions WHERE token = ? LIMIT 1", (token,))
+        row = cur.fetchone()
+        if not row:
+            # 2. Sales Manager session check
+            cur.execute("SELECT phone, manager_name FROM sales_manager_sessions WHERE token = ? LIMIT 1", (token,))
+            row = cur.fetchone()
+        if row:
+            phone_raw = row["phone"]
+            digits = "".join(filter(str.isdigit, str(phone_raw)))
+            clean_p = digits[-10:] if len(digits) >= 10 else digits
+            cur.execute("SELECT status, name FROM users WHERE phone = ? OR phone LIKE ? LIMIT 1", (clean_p, f"%{clean_p}"))
+            u = cur.fetchone()
+            if u:
+                return (str(u["status"]).upper() == "BLOCKED", clean_p, u["name"])
+        return False, None, None
     finally:
         conn.close()
 

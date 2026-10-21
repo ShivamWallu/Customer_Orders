@@ -45,6 +45,7 @@ from database import (
     delete_user_by_id,
     update_user_assigned_units,
     is_user_phone_blocked,
+    get_user_status_by_token,
     get_connection,
     create_customer_session,
     validate_customer_session,
@@ -2491,35 +2492,45 @@ async def security_blocked_accounts_middleware(request: Request, call_next):
     """
     Enterprise Security Middleware:
     Instantly blocks any request from a user account marked as BLOCKED in SQLite users table.
-    Enforces immediate 403 Forbidden and force-logout response for Customer & ASM Web/APK endpoints.
+    Enforces immediate 403 Forbidden and force-logout response for Mobile APK, Customer, and ASM endpoints.
     """
     path = request.url.path
-    if path.startswith(("/api/customer", "/api/sales-manager", "/api/customers")):
+    mobile_protected_prefixes = (
+        "/api/customer", "/api/sales-manager", "/api/customers",
+        "/api/sales-orders", "/api/orders/submit", "/api/orders/upload-slip",
+        "/api/orders/my-orders", "/api/products", "/api/parties"
+    )
+    if path.startswith(mobile_protected_prefixes):
+        # 1. Extract Token from Authorization header, x-access-token, or query param
         auth_header = request.headers.get("Authorization", "")
         token = ""
         if auth_header.startswith("Bearer "):
             token = auth_header.split(" ", 1)[1].strip()
         if not token:
-            token = request.query_params.get("token", "")
-        
-        phone = request.query_params.get("phone", "")
-        
-        if token and not phone:
-            conn = get_connection()
-            try:
-                cur = conn.cursor()
-                cur.execute("SELECT phone FROM sales_manager_sessions WHERE token = ? LIMIT 1", (token,))
-                r = cur.fetchone()
-                if r:
-                    phone = r["phone"]
-                else:
-                    cur.execute("SELECT phone FROM customer_sessions WHERE token = ? LIMIT 1", (token,))
-                    rc = cur.fetchone()
-                    if rc:
-                        phone = rc["phone"]
-            finally:
-                conn.close()
+            token = request.headers.get("x-access-token") or request.headers.get("x-token") or request.query_params.get("token", "")
 
+        # 2. Extract Phone if provided in headers or query
+        phone = request.headers.get("x-user-phone") or request.query_params.get("phone", "")
+
+        # 3. Check token status in database
+        if token:
+            is_blocked, t_phone, u_name = get_user_status_by_token(token)
+            if is_blocked:
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "status": "error",
+                        "error_type": "ACCOUNT_BLOCKED",
+                        "code": 403,
+                        "detail": "Your account has been suspended by Admin. Access denied.",
+                        "message": "Your account has been suspended by Admin. Access denied.",
+                        "force_logout": True
+                    }
+                )
+            if t_phone and not phone:
+                phone = t_phone
+
+        # 4. Check phone status in database
         if phone:
             clean_p = "".join(filter(str.isdigit, str(phone)))[-10:]
             if clean_p and is_user_phone_blocked(clean_p):
@@ -2528,7 +2539,9 @@ async def security_blocked_accounts_middleware(request: Request, call_next):
                     content={
                         "status": "error",
                         "error_type": "ACCOUNT_BLOCKED",
-                        "message": "Your account has been BLOCKED by Super Admin. All sessions have been revoked.",
+                        "code": 403,
+                        "detail": "Your account has been suspended by Admin. Access denied.",
+                        "message": "Your account has been suspended by Admin. Access denied.",
                         "force_logout": True
                     }
                 )
