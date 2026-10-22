@@ -2731,17 +2731,15 @@
         <input type="text" id="searchInput" class="search-box" placeholder="Search Order ID, Party Name, Code, SO #, City, Sales Manager..." oninput="handleSearchInput()">
       </div>
 
-      <!-- Area Sales Manager Filter & Dedicated Pankaj Kumar Filter -->
-      <div class="asm-filter-group" style="display: flex; align-items: center; gap: 8px;">
+      <!-- Scalable Area Sales Manager Filter -->
+      <div class="asm-filter-group" style="display: flex; align-items: center; gap: 6px;">
         <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">ASM:</span>
-        <select id="asmSelectFilter" class="asm-select" onchange="handleAsmFilterChange()" style="padding: 7px 12px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); background: #ffffff; font-size: 12.5px; font-weight: 600; color: var(--text-main); cursor: pointer;">
-          <option value="ALL" selected>All Sales Managers</option>
-        </select>
-        <button class="asm-quick-btn" id="btnPankajFilter" onclick="togglePankajKumarFilter()" title="Click to show only orders booked by Area Sales Manager Pankaj Kumar" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-full); font-size: 12px; font-weight: 700; border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; cursor: pointer; transition: all 0.15s ease;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Pankaj Kumar</span>
-          <span class="badge" id="badgePankajCount" style="padding: 1px 7px; border-radius: 9999px; background: #2563eb; color: #ffffff; font-size: 10.5px; font-weight: 800;">0</span>
-        </button>
+        <div style="position: relative; display: inline-flex; align-items: center;">
+          <select id="asmSelectFilter" class="asm-select" onchange="handleAsmFilterChange()" style="padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); background: #ffffff; font-size: 12.5px; font-weight: 600; color: var(--text-main); cursor: pointer; max-width: 220px; outline: none; transition: border-color 0.15s ease;">
+            <option value="ALL" selected>All Sales Managers</option>
+          </select>
+          <button id="btnClearAsmFilter" onclick="clearAsmFilter()" title="Clear ASM filter (Show all sales managers)" style="display: none; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid #cbd5e1; background: #f1f5f9; color: #475569; font-size: 11px; cursor: pointer; font-weight: 700; margin-left: 6px; transition: all 0.15s ease;" onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a'" onmouseout="this.style.background='#f1f5f9'; this.style.color='#475569'">✕</button>
+        </div>
       </div>
 
       <!-- 5. Order Date Filters: Today, Yesterday, All, Custom Date Picker -->
@@ -5490,35 +5488,26 @@
       applyAllFilters();
     }
 
-    // 👔 Area Sales Manager Filter Functions
+    // 👔 Scalable Area Sales Manager (ASM) Filter Functions
     function handleAsmFilterChange() {
       const sel = document.getElementById("asmSelectFilter");
       activeAsmFilter = sel ? sel.value : "ALL";
-      updatePankajBtnState();
-      currentPage = 1;
-      applyAllFilters();
-    }
-
-    function togglePankajKumarFilter() {
-      if (activeAsmFilter === "Pankaj Kumar") {
-        activeAsmFilter = "ALL";
-      } else {
-        activeAsmFilter = "Pankaj Kumar";
+      const clearBtn = document.getElementById("btnClearAsmFilter");
+      if (clearBtn) {
+        clearBtn.style.display = activeAsmFilter === "ALL" ? "none" : "inline-flex";
       }
-      const sel = document.getElementById("asmSelectFilter");
-      if (sel) sel.value = activeAsmFilter;
-      updatePankajBtnState();
       currentPage = 1;
       applyAllFilters();
     }
 
-    function updatePankajBtnState() {
-      const btn = document.getElementById("btnPankajFilter");
-      if (!btn) return;
-      const isPankaj = activeAsmFilter === "Pankaj Kumar";
-      btn.style.background = isPankaj ? "#1d4ed8" : "#eff6ff";
-      btn.style.color = isPankaj ? "#ffffff" : "#1d4ed8";
-      btn.style.borderColor = isPankaj ? "#1d4ed8" : "#bfdbfe";
+    function clearAsmFilter() {
+      activeAsmFilter = "ALL";
+      const sel = document.getElementById("asmSelectFilter");
+      if (sel) sel.value = "ALL";
+      const clearBtn = document.getElementById("btnClearAsmFilter");
+      if (clearBtn) clearBtn.style.display = "none";
+      currentPage = 1;
+      applyAllFilters();
     }
 
     function filterBySalesManager(asmName) {
@@ -5542,7 +5531,8 @@
           sel.value = asmName;
         }
       }
-      updatePankajBtnState();
+      const clearBtn = document.getElementById("btnClearAsmFilter");
+      if (clearBtn) clearBtn.style.display = "inline-flex";
       currentPage = 1;
       applyAllFilters();
     }
@@ -5551,49 +5541,54 @@
       const sel = document.getElementById("asmSelectFilter");
       if (!sel) return;
 
-      // Case-insensitive deduplication and normalization to Title Case
-      const asmMap = new Map(); // lowercase_key -> canonical display name
+      // Calculate order counts per ASM
+      const asmCounts = new Map(); // Canonical TitleCase Name -> Count
       (orders || []).forEach(o => {
         const raw = (o.salesPerson || "").trim();
         if (raw && raw !== "-" && raw !== "—") {
-          const key = raw.toLowerCase();
-          if (!asmMap.has(key)) {
-            const titleCased = raw.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
-            asmMap.set(key, titleCased);
-          }
+          const titleCased = raw.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+          asmCounts.set(titleCased, (asmCounts.get(titleCased) || 0) + 1);
         }
       });
 
       const currentVal = (activeAsmFilter || "ALL").trim();
       const isAll = (currentVal === "ALL" || !currentVal);
 
-      sel.innerHTML = `<option value="ALL"${isAll ? ' selected' : ''}>All Sales Managers</option>`;
+      const totalOrdersCount = (orders || []).length;
+      sel.innerHTML = `<option value="ALL"${isAll ? ' selected' : ''}>All Sales Managers (${totalOrdersCount})</option>`;
 
-      const sortedNames = Array.from(asmMap.values()).sort((a, b) => a.localeCompare(b));
+      // Sort alphabetically A-Z for fast, scalable lookup even with 100+ ASMs
+      const sortedNames = Array.from(asmCounts.keys()).sort((a, b) => a.localeCompare(b));
       sortedNames.forEach(asm => {
         const opt = document.createElement("option");
         opt.value = asm;
-        opt.textContent = `👔 ${asm}`;
+        opt.textContent = `👔 ${asm} (${asmCounts.get(asm)})`;
         if (!isAll && asm.toLowerCase() === currentVal.toLowerCase()) {
           opt.selected = true;
         }
         sel.appendChild(opt);
       });
 
-      // If active filter is set to a name not in orders, still preserve it without duplicating
-      if (!isAll && !asmMap.has(currentVal.toLowerCase())) {
-        const opt = document.createElement("option");
-        opt.value = currentVal;
-        opt.textContent = `👔 ${currentVal}`;
-        opt.selected = true;
-        sel.appendChild(opt);
+      // Preserve active filter if not currently in dataset
+      if (!isAll) {
+        const matchingKey = Array.from(asmCounts.keys()).find(k => k.toLowerCase() === currentVal.toLowerCase());
+        if (!matchingKey) {
+          const opt = document.createElement("option");
+          opt.value = currentVal;
+          opt.textContent = `👔 ${currentVal} (Selected)`;
+          opt.selected = true;
+          sel.appendChild(opt);
+        }
       }
 
       if (isAll) {
         sel.value = "ALL";
       }
 
-      updatePankajBtnState();
+      const clearBtn = document.getElementById("btnClearAsmFilter");
+      if (clearBtn) {
+        clearBtn.style.display = isAll ? "none" : "inline-flex";
+      }
     }
 
     // Core Filtering Engine
@@ -5645,11 +5640,6 @@
       if (document.getElementById("sideBadgePending")) document.getElementById("sideBadgePending").textContent = pendingTotal;
       if (document.getElementById("sideBadgeConfirmed")) document.getElementById("sideBadgeConfirmed").textContent = confirmedTotal;
 
-      // Update Pankaj Kumar badge counter
-      const pankajOrders = dateFilteredOrders.filter(o => (o.salesPerson || "").toLowerCase().includes("pankaj"));
-      if (document.getElementById("badgePankajCount")) {
-        document.getElementById("badgePankajCount").textContent = pankajOrders.length;
-      }
       populateAsmDropdown(allOrdersData);
 
       // 2. Filter dataset for table display (applying status tab, ASM filter, and search term)
