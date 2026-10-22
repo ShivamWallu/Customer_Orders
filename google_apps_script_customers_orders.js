@@ -25,6 +25,7 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("🚀 Mashal Orders")
     .addItem("⚡ Fix & Align All Columns + Past Orders", "menuFixColumns")
+    .addItem("🕒 Fix All Timestamps to 12-Hour AM/PM", "fixAllSheetTimestampsTo12HourIST")
     .addToUi();
 }
 
@@ -180,15 +181,18 @@ function migrateAndFormatSheet(sheet) {
     sheet.getRange(2, 5, sheet.getLastRow() - 1, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
     sheet.getRange(2, 9, sheet.getLastRow() - 1, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
 
-    for (let r = 2; r <= sheet.getLastRow(); r++) {
-      const cell = sheet.getRange(r, 9);
-      const val = cell.getValue();
+    const numRows = sheet.getLastRow() - 1;
+    // Fast batch read of Column 9 (Items Breakdown) in 1 single network call
+    const col9Range = sheet.getRange(2, 9, numRows, 1);
+    const col9Vals = col9Range.getValues();
+    // Limit rich text DOM building to latest 100 rows during full migration to stay sub-second fast
+    const startIdx = Math.max(0, numRows - 100);
+    for (let i = startIdx; i < numRows; i++) {
+      const val = col9Vals[i][0];
       if (val && typeof val === "string" && val.indexOf("➔") !== -1) {
         try {
-          cell.setRichTextValue(buildRichBreakdownFromString(val));
-        } catch (e) {
-          console.warn("Could not set rich breakdown on row " + r, e);
-        }
+          sheet.getRange(i + 2, 9).setRichTextValue(buildRichBreakdownFromString(val));
+        } catch (e) {}
       }
     }
   }
