@@ -1040,6 +1040,27 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
     except Exception:
         d["items"] = []
 
+    # ⚡ Standardize & normalize item names, packaging multipliers, and pieces
+    calc_bxs_total = 0
+    calc_pcs_total = 0
+    if isinstance(d.get("items"), list):
+        for it in d["items"]:
+            if not isinstance(it, dict):
+                continue
+            b = int(it.get("boxes", 0) or 0)
+            calc_bxs_total += b
+            raw_name = str(it.get("item") or it.get("name") or it.get("itemName") or "").strip()
+            item_name = normalize_warehouse_sku(raw_name) or raw_name
+            it["item"] = item_name
+            it["name"] = item_name
+            m = re.search(r'x\s*(\d+)', item_name, re.I)
+            stored_pcs = int(it.get("pieces") or 0)
+            fallback_mult = round(stored_pcs / b) if b > 0 and stored_pcs > 0 else 1
+            mult = int(m.group(1)) if m else (int(it.get("multiplier", 0)) or fallback_mult)
+            it["multiplier"] = mult
+            it["pieces"] = (b * mult) if mult > 1 else (stored_pcs if stored_pcs > 0 else b)
+            calc_pcs_total += it["pieces"]
+
     clean_id = str(d.get("order_id") or "").replace("#", "")
     d["id"] = d.get("order_id")
     d["cleanId"] = clean_id
@@ -1048,8 +1069,11 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
     d["partyAddress"] = d.get("party_address") or ""
     d["deliveryAddress"] = d.get("delivery_address") or ""
     d["salesPerson"] = d.get("sales_person") or ""
-    d["totalBoxes"] = d.get("total_boxes", 0)
-    d["totalPieces"] = d.get("total_pieces", 0)
+
+    stored_bxs = int(d.get("total_boxes") or 0)
+    stored_pcs = int(d.get("total_pieces") or 0)
+    d["totalBoxes"] = stored_bxs if stored_bxs > 0 else calc_bxs_total
+    d["totalPieces"] = stored_pcs if stored_pcs > 0 else calc_pcs_total
 
     raw_status = (d.get("order_status") or "PENDING").upper().strip()
     so_num = str(d.get("so_number") or "").strip()
@@ -1336,27 +1360,7 @@ def search_sales_orders_db(query: str, limit: int = 50) -> List[Dict[str, Any]]:
         """, (p1, p2, p1, p3, p1, p1, p1, p1, limit))
         rows = cur.fetchall()
 
-        result = []
-        for r in rows:
-            d = dict(r)
-            try:
-                d["items"] = json.loads(d.get("items_json") or "[]")
-            except Exception:
-                d["items"] = []
-            d["id"] = d.get("order_id")
-            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
-            d["partyName"] = d.get("party_name")
-            d["partyCode"] = d.get("party_code")
-            d["partyAddress"] = d.get("party_address")
-            d["deliveryAddress"] = d.get("delivery_address")
-            d["salesPerson"] = d.get("sales_person")
-            d["totalBoxes"] = d.get("total_boxes", 0)
-            d["totalPieces"] = d.get("total_pieces", 0)
-            d["orderStatus"] = d.get("order_status") or "PENDING"
-            d["soNumber"] = d.get("so_number") or ""
-            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
-            result.append(d)
-        return result
+        return [format_order_dict(r) for r in rows]
     finally:
         conn.close()
 

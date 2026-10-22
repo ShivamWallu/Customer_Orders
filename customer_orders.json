@@ -3198,7 +3198,7 @@
     "formatted_timestamp": "19/10/2026 11:33:00 AM",
     "created_at": "2026-10-19T11:33:57.899403",
     "total_boxes": 80,
-    "items_json": "[{\"brand\": \"MASHAL\", \"name\": \"1 LTR. BOTTLE x 15\", \"boxes\": 50, \"pieces\": 50, \"multiplier\": 1}, {\"brand\": \"MASHAL\", \"name\": \"500 ML BOTTLE x 30\", \"boxes\": 30, \"pieces\": 30, \"multiplier\": 1}]",
+    "items_json": "[{\"brand\": \"MASHAL\", \"item\": \"1 LTR. BOTTLE x 15\", \"name\": \"1 LTR. BOTTLE x 15\", \"boxes\": 50, \"multiplier\": 15, \"pieces\": 750}, {\"brand\": \"MASHAL\", \"item\": \"500 ML BOTTLE x 30\", \"name\": \"500 ML BOTTLE x 30\", \"boxes\": 30, \"multiplier\": 30, \"pieces\": 900}]",
     "items_summary": "1 LTR. BOTTLE x 15 (50 boxes), 500 ML BOTTLE x 30 (30 boxes)",
     "slip_image_path": null,
     "slip_image_url": null,
@@ -3217,17 +3217,19 @@
     "items": [
       {
         "brand": "MASHAL",
+        "item": "1 LTR. BOTTLE x 15",
         "name": "1 LTR. BOTTLE x 15",
         "boxes": 50,
-        "pieces": 50,
-        "multiplier": 1
+        "multiplier": 15,
+        "pieces": 750
       },
       {
         "brand": "MASHAL",
+        "item": "500 ML BOTTLE x 30",
         "name": "500 ML BOTTLE x 30",
         "boxes": 30,
-        "pieces": 30,
-        "multiplier": 1
+        "multiplier": 30,
+        "pieces": 900
       }
     ],
     "id": "KOGM-20261019-5501",
