@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import json
 import os
 import re
@@ -122,12 +122,38 @@ app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 # High-Performance Request Tracing & Structured Logging Middleware
 app.add_middleware(RequestTracingMiddleware)
 
+IST_TZ = timezone(timedelta(hours=5, minutes=30))
+
+def get_ist_now() -> datetime:
+    """Returns current datetime strictly in Indian Standard Time (IST)"""
+    return datetime.now(timezone.utc).astimezone(IST_TZ)
+
+def convert_utc_to_ist_str(utc_dt_str: str) -> str:
+    """Converts UTC date string to IST formatted string (%d/%m/%Y %I:%M:%S %p)"""
+    if not utc_dt_str:
+        return ""
+    try:
+        if "/" in utc_dt_str and ("AM" in utc_dt_str or "PM" in utc_dt_str):
+            clean = utc_dt_str.replace(",", "").strip()
+            parts = clean.split()
+            if len(parts) >= 3:
+                dt = datetime.strptime(f"{parts[0]} {parts[1]} {parts[2]}", "%d/%m/%Y %I:%M:%S %p")
+                return (dt + timedelta(hours=5, minutes=30)).strftime("%d/%m/%Y %I:%M:%S %p")
+        elif "T" in utc_dt_str:
+            clean = utc_dt_str.split(".")[0].replace("Z", "")
+            dt = datetime.fromisoformat(clean)
+            return (dt + timedelta(hours=5, minutes=30)).strftime("%d/%m/%Y %I:%M:%S %p")
+    except Exception:
+        pass
+    return utc_dt_str
+
 _REMOTE_SYNC_LOCK = asyncio.Lock()
 
 async def sync_remote_production_orders() -> int:
     """
     ⚡ Synchronizes ONLY brand-new orders from LIVE AWS production server (https://order.khandelia.online/api/orders/all)
     into local SQLite database and customer_orders.json without locking or freezing the event loop.
+    Converts any remote UTC timestamps into Indian Standard Time (IST).
     """
     remote_url = os.environ.get("REMOTE_SERVER_URL", "https://order.khandelia.online").rstrip("/")
     base_url = os.environ.get("APP_BASE_URL", "").lower()
@@ -179,6 +205,12 @@ async def sync_remote_production_orders() -> int:
 
                 count = 0
                 for o in new_orders:
+                    # Convert AWS UTC timestamp to IST
+                    raw_ts = o.get("formattedTimestamp") or o.get("formatted_timestamp") or o.get("created_at") or ""
+                    if raw_ts:
+                        ist_ts = convert_utc_to_ist_str(raw_ts)
+                        o["formattedTimestamp"] = ist_ts
+                        o["formatted_timestamp"] = ist_ts
                     if save_order_to_db(o):
                         count += 1
                 return count
@@ -206,10 +238,10 @@ async def on_app_startup():
     except Exception as e:
         logger.debug(f"Initial live sync note: {e}")
 
-    # 🔄 Auto-Sync background loop every 25 seconds
+    # 🔄 Auto-Sync background loop every 5 seconds for instant order visibility
     async def _auto_sync_loop():
         while True:
-            await asyncio.sleep(25)
+            await asyncio.sleep(5)
             try:
                 await sync_remote_production_orders()
             except Exception:
@@ -616,6 +648,13 @@ async def get_admin_orders(request: Request, background_tasks: BackgroundTasks):
     orders = get_all_orders_from_db(limit=1000, unit=target_unit)
     return {"status": "success", "count": len(orders), "unit": target_unit or "ALL", "orders": orders}
 
+@app.post("/api/admin/sync-live")
+async def api_admin_sync_live(request: Request):
+    """Forces an immediate pull from live AWS production server into local database"""
+    require_admin_auth(request)
+    new_count = await sync_remote_production_orders()
+    return {"status": "success", "newOrdersCount": new_count, "message": f"Synced {new_count} new orders from live server!"}
+
 @app.get("/api/admin/stats")
 async def get_admin_dashboard_stats(request: Request):
     """Fetches live KPI analytics metrics directly from SQLite database with unit filtering"""
@@ -1010,7 +1049,7 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     
     # Generate unique ID if not already provided
     order_id = order.get("id") or generate_unique_order_id()
-    now_dt = datetime.now()
+    now_dt = get_ist_now()
     order["id"] = order_id
     order["timestamp"] = now_dt.isoformat()
     order["formattedTimestamp"] = now_dt.strftime("%d/%m/%Y %I:%M:%S %p")

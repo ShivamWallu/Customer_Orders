@@ -1493,7 +1493,8 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
             d["soNumber"] = d.get("so_number") or ""
             d["confirmedAt"] = d.get("confirmed_at") or ""
             d["confirmedBy"] = d.get("confirmed_by") or ""
-            d["formattedTimestamp"] = d["formatted_timestamp"]
+            d["orderDate"] = d.get("order_date") or ""
+            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date") or ""
             d["synced_to_sheet"] = bool(d["synced_to_sheet"])
             d["slipImageUrl"] = d.get("slip_image_url") or f"/order_slips/{d['order_id']}.png"
             result.append(d)

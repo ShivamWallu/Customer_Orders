@@ -782,6 +782,13 @@
     .btn-tool.primary:hover {
       background: #002244;
     }
+    @keyframes spinAnim {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .btn-tool.spinning .refresh-icon {
+      animation: spinAnim 0.75s linear infinite;
+    }
 
     /* Table Horizontal Scroll Navigation Controls */
     .scroll-nav-bar {
@@ -2861,9 +2868,9 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
           <span>Export CSV</span>
         </button>
-        <button class="btn-tool primary" onclick="fetchOrdersData()" title="Reload fresh data from database">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-          <span>Refresh</span>
+        <button class="btn-tool primary" id="btnAdminLiveRefresh" onclick="manualRefreshOrders(this)" title="Instantly pull latest orders from cloud & refresh dashboard">
+          <svg class="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          <span id="refreshBtnText">Live Sync</span>
         </button>
       </div>
     </div>
@@ -3724,9 +3731,11 @@
     }
 
     /**
-     * Standardize date & time into 2 clean readable lines:
-     * Line 1: "21 Oct 2026,"
-     * Line 2: "03:20 PM"
+     * Accurately parses and formats order dates strictly into Indian Standard Time (IST - Asia/Kolkata).
+     * Handles:
+     * 1. DD/MM/YYYY or DD-MM-YYYY format from Google Sheets (e.g., 22/10/2026 12:07:46 PM)
+     * 2. ISO UTC timestamps from AWS EC2 server (e.g., 2026-10-22T08:45:51Z -> 22 Oct 2026, 02:15 PM)
+     * 3. YYYY-MM-DD format
      */
     function formatTableDateParts(rawStr) {
       if (!rawStr || (typeof rawStr !== "string" && typeof rawStr !== "number")) return { date: "-", time: "" };
@@ -3735,7 +3744,7 @@
 
       const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-      // 1. Check DD/MM/YYYY or DD-MM-YYYY (e.g. 21/10/2026 03:20:43 PM, 19/10/2026, 11:33 AM)
+      // 1. Check DD/MM/YYYY or DD-MM-YYYY (e.g. 22/10/2026 12:01:49 PM, 22/10/2026 02:15:51 PM)
       const dmyMatch = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:[,\s]+(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?)?/i);
       if (dmyMatch) {
         const day = parseInt(dmyMatch[1], 10);
@@ -3763,7 +3772,24 @@
         }
       }
 
-      // 2. Check ISO format (e.g. 2026-10-21T15:20:43 or 2026-10-21 15:20)
+      // 2. ISO timestamp (e.g. 2026-10-22T08:45:51.089243 or 2026-10-22T06:37:46Z)
+      // Since live AWS EC2 logs in UTC, convert to IST (+05:30)
+      if (str.includes("T") || str.includes("Z") || str.includes("+00:00")) {
+        try {
+          const parseable = (str.includes("Z") || str.includes("+") || str.includes("-", 10)) ? str : (str + "Z");
+          const d = new Date(parseable);
+          if (!isNaN(d.getTime())) {
+            const istDateStr = d.toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric" });
+            const istTimeStr = d.toLocaleTimeString("en-US", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
+            return {
+              date: `${istDateStr},`,
+              time: istTimeStr
+            };
+          }
+        } catch (e) {}
+      }
+
+      // 3. Check YYYY-MM-DD or YYYY/MM/DD
       const isoMatch = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:[T\s](\d{1,2}):(\d{2})(?::\d{2})?)?/i);
       if (isoMatch) {
         const year = isoMatch[1];
@@ -3788,23 +3814,15 @@
         }
       }
 
-      // 3. Fallback to standard Date parsing if recognizable
+      // 4. Fallback standard Date parsing
       try {
         const d = new Date(str);
         if (!isNaN(d.getTime())) {
-          const day = d.getDate();
-          const dayStr = day < 10 ? `0${day}` : `${day}`;
-          const mon = MONTH_NAMES[d.getMonth()];
-          const year = d.getFullYear();
-          let hour = d.getHours();
-          const minute = d.getMinutes();
-          const minuteStr = minute < 10 ? `0${minute}` : `${minute}`;
-          const meridiem = hour >= 12 ? "PM" : "AM";
-          hour = hour % 12 || 12;
-          const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
+          const istDateStr = d.toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric" });
+          const istTimeStr = d.toLocaleTimeString("en-US", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
           return {
-            date: `${dayStr} ${mon} ${year},`,
-            time: `${hourStr}:${minuteStr} ${meridiem}`
+            date: `${istDateStr},`,
+            time: istTimeStr
           };
         }
       } catch (e) {}
@@ -4032,6 +4050,7 @@
           showDashboardUI();
           await loadWarehouseUnits();
           await fetchOrdersData();
+          startAutoRefreshLoop();
         } else {
           err.textContent = data.detail || data.message || "Invalid role credentials. Please check your username and password.";
           err.style.display = "block";
@@ -4072,6 +4091,7 @@
           await loadWarehouseUnits();
           await fetchOrdersData();
           fetchSidebarCounts();
+          startAutoRefreshLoop();
         } else {
           localStorage.removeItem(ADMIN_TOKEN_KEY);
           showLoginOverlay();
@@ -4083,6 +4103,10 @@
     }
 
     async function adminLogout() {
+      if (_autoRefreshInterval) {
+        clearInterval(_autoRefreshInterval);
+        _autoRefreshInterval = null;
+      }
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
       if (token) {
         try {
@@ -4094,6 +4118,58 @@
       }
       localStorage.removeItem(ADMIN_TOKEN_KEY);
       showLoginOverlay();
+    }
+
+    // 🔁 Real-time Live Cloud Sync & Auto-Refresh
+    let _autoRefreshInterval = null;
+
+    async function manualRefreshOrders(btn) {
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add("spinning");
+        const txt = btn.querySelector("#refreshBtnText") || btn.querySelector("span");
+        if (txt) txt.textContent = "Syncing...";
+      }
+      try {
+        const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+        if (token) {
+          try {
+            await fetch("/api/admin/sync-live", {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${token}` }
+            });
+          } catch (e) {
+            console.warn("Live sync trigger warning:", e);
+          }
+        }
+        await fetchOrdersData();
+        if (typeof fetchSidebarCounts === "function") fetchSidebarCounts();
+      } catch (err) {
+        console.error("Refresh error:", err);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove("spinning");
+          const txt = btn.querySelector("#refreshBtnText") || btn.querySelector("span");
+          if (txt) txt.textContent = "Live Sync";
+        }
+      }
+    }
+
+    function startAutoRefreshLoop() {
+      if (_autoRefreshInterval) clearInterval(_autoRefreshInterval);
+      _autoRefreshInterval = setInterval(async () => {
+        const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+        if (!token) return;
+        const loginOverlay = document.getElementById("loginOverlay");
+        if (loginOverlay && loginOverlay.style.display !== "none") return;
+        const anyModal = document.querySelector(".modal-backdrop[style*='display: flex'], .modal-backdrop[style*='display: block']");
+        if (anyModal) return;
+
+        try {
+          await fetchOrdersData(true);
+        } catch (e) {}
+      }, 5000);
     }
 
     // 🔄 Fetch Orders & Recalculate
@@ -5747,10 +5823,19 @@
       }
 
       // 1. Tally date-filtered counts for tabs
+      const isoToday = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const isoYesterday = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+
       let dateFilteredOrders = allOrdersData.filter(o => {
         const orderDateStr = extractDateString(o);
-        if (activeDateFilter === "TODAY" && !orderDateStr.includes(todayStr)) return false;
-        if (activeDateFilter === "YESTERDAY" && !orderDateStr.includes(yesterdayStr)) return false;
+        if (activeDateFilter === "TODAY") {
+          const match = orderDateStr.includes(todayStr) || orderDateStr.includes(isoToday);
+          if (!match) return false;
+        }
+        if (activeDateFilter === "YESTERDAY") {
+          const match = orderDateStr.includes(yesterdayStr) || orderDateStr.includes(isoYesterday);
+          if (!match) return false;
+        }
         if (activeDateFilter === "CUSTOM" && customFormatted && !orderDateStr.includes(customFormatted) && !orderDateStr.includes(customSelectedDate)) return false;
         return true;
       });
@@ -5832,8 +5917,10 @@
 
     function extractDateString(o) {
       if (o.formattedTimestamp) return o.formattedTimestamp;
+      if (o.formatted_timestamp) return o.formatted_timestamp;
       if (o.formattedDate) return o.formattedDate;
       if (o.orderDate) return o.orderDate;
+      if (o.order_date) return o.order_date;
       if (o.created_at) return o.created_at;
       return "";
     }
@@ -5855,6 +5942,7 @@
 
       const now = new Date();
       const todayStr = getFormattedDateStr(now);
+      const isoToday = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
       const partiesSet = new Set();
 
@@ -5866,7 +5954,7 @@
         }
 
         const dStr = extractDateString(o);
-        if (dStr.includes(todayStr)) {
+        if (dStr.includes(todayStr) || dStr.includes(isoToday)) {
           todayOrders++;
         }
         if (o.partyName && o.partyName.trim()) {
