@@ -292,9 +292,17 @@ async def check_db_health() -> bool:
 # ----------------- ASYNC BUSINESS LOGIC & CONCURRENCY OPTIMIZATIONS -----------------
 
 async def async_save_order(order_data: Dict[str, Any]) -> str:
-    """Saves a new order asynchronously with zero-data-loss commit guarantee"""
-    order_id = order_data.get("order_id") or order_data.get("orderId")
+    """Saves or updates an order asynchronously with zero-data-loss commit guarantee"""
+    order_id = str(order_data.get("order_id") or order_data.get("orderId") or order_data.get("id") or "").strip()
+    if not order_id:
+        raise ValueError("Cannot save order without order_id / id")
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    items_raw = order_data.get("items") or order_data.get("items_json") or []
+    if isinstance(items_raw, str):
+        items_str = items_raw
+    else:
+        items_str = json.dumps(items_raw, ensure_ascii=False)
 
     order_obj = OrderModel(
         order_id=order_id,
@@ -304,17 +312,17 @@ async def async_save_order(order_data: Dict[str, Any]) -> str:
         sales_person=order_data.get("sales_person") or order_data.get("salesPerson", "Self / Online"),
         order_date=order_data.get("order_date") or order_data.get("orderDate", now_str),
         formatted_timestamp=order_data.get("formatted_timestamp") or order_data.get("formattedTimestamp", now_str),
-        created_at=order_data.get("created_at") or now_str,
+        created_at=order_data.get("created_at") or order_data.get("timestamp") or now_str,
         total_boxes=int(order_data.get("total_boxes") or order_data.get("totalBoxes", 0)),
         total_pieces=int(order_data.get("total_pieces") or order_data.get("totalPieces", 0)),
-        items_json=json.dumps(order_data.get("items") or order_data.get("items_json") or []),
+        items_json=items_str,
         items_summary=order_data.get("items_summary") or order_data.get("itemsSummary", ""),
         slip_image_path=order_data.get("slip_image_path") or order_data.get("slipImagePath", ""),
         slip_image_url=order_data.get("slip_image_url") or order_data.get("slipImageUrl", ""),
-        synced_to_sheet=0,
-        whatsapp_status="PENDING",
+        synced_to_sheet=int(bool(order_data.get("synced_to_sheet", 0))),
+        whatsapp_status=order_data.get("whatsapp_status", "PENDING"),
         party_code=order_data.get("party_code") or order_data.get("partyCode", ""),
-        data_consent=int(order_data.get("data_consent", 1)),
+        data_consent=1 if (str(order_data.get("data_consent") or order_data.get("dataConsent") or "1").upper().startswith("Y") or str(order_data.get("data_consent") or order_data.get("dataConsent") or "1") in ["1", "TRUE"]) else 0,
         order_status=order_data.get("order_status") or order_data.get("orderStatus", "PENDING"),
         so_number=order_data.get("so_number") or order_data.get("soNumber", ""),
         unit=order_data.get("unit", "Unit 1")
@@ -322,7 +330,7 @@ async def async_save_order(order_data: Dict[str, Any]) -> str:
 
     async with AsyncSessionWrite() as session:
         async with session.begin():
-            session.add(order_obj)
+            await session.merge(order_obj)
     
     return order_id
 

@@ -9,6 +9,8 @@ import json
 import os
 import re
 import urllib.parse
+import urllib.request
+import asyncio
 import base64
 import io
 try:
@@ -120,12 +122,80 @@ app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 # High-Performance Request Tracing & Structured Logging Middleware
 app.add_middleware(RequestTracingMiddleware)
 
+async def sync_remote_production_orders() -> int:
+    """
+    ⚡ Synchronizes orders from LIVE AWS production server (https://order.khandelia.online/api/orders/all)
+    into local SQLite/PostgreSQL database and customer_orders.json.
+    Ensures zero-lag visibility of new mobile/Google Sheet orders in /admin dashboard.
+    """
+    remote_url = os.environ.get("REMOTE_SERVER_URL", "https://order.khandelia.online").rstrip("/")
+    base_url = os.environ.get("APP_BASE_URL", "").lower()
+    
+    # Avoid loopback if running directly on the production domain itself
+    if "order.khandelia.online" in base_url:
+        return 0
+        
+    try:
+        loop = asyncio.get_event_loop()
+        def _fetch():
+            req = urllib.request.Request(
+                f"{remote_url}/api/orders/all",
+                headers={"User-Agent": "MashalAdminSync/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                if resp.status == 200:
+                    return json.loads(resp.read().decode("utf-8"))
+            return None
+
+        data = await loop.run_in_executor(None, _fetch)
+        if not data:
+            return 0
+            
+        remote_orders = data.get("orders", data) if isinstance(data, dict) else data
+        if not isinstance(remote_orders, list):
+            return 0
+            
+        synced_count = 0
+        for o in remote_orders:
+            oid = o.get("id") or o.get("order_id")
+            if not oid:
+                continue
+            save_order_to_db(o)
+            try:
+                await async_save_order(o)
+            except Exception:
+                pass
+            synced_count += 1
+            
+        return synced_count
+    except Exception as e:
+        logger.debug(f"Remote production sync skipped: {e}")
+        return 0
+
 @app.on_event("startup")
 async def on_app_startup():
     logger.info("Initializing Enterprise High-Concurrency Architecture...")
     await init_async_db()
     await cache.init_cache()
     logger.info("Startup complete: Async SQLAlchemy 2.0 Pool & Tiered Cache Active")
+    
+    # 🚀 Instant Remote Sync on boot
+    try:
+        synced = await sync_remote_production_orders()
+        if synced:
+            logger.info(f"Initial sync complete: {synced} orders imported from live server")
+    except Exception as e:
+        logger.debug(f"Initial live sync note: {e}")
+
+    # 🔄 Auto-Sync background loop every 25 seconds
+    async def _auto_sync_loop():
+        while True:
+            await asyncio.sleep(25)
+            try:
+                await sync_remote_production_orders()
+            except Exception:
+                pass
+    asyncio.create_task(_auto_sync_loop())
 
 @app.get("/health")
 async def health_check():
@@ -509,6 +579,13 @@ async def get_admin_profile(request: Request):
 async def get_admin_orders(request: Request):
     """Fetches permanent orders with strict unit-based permission enforcement"""
     admin = require_admin_auth(request)
+
+    # ⚡ Real-time sync from live production server so /admin matches Google Sheet with 0 lag
+    try:
+        await sync_remote_production_orders()
+    except Exception as sync_err:
+        logger.debug(f"Admin order live sync note: {sync_err}")
+
     user_role = admin.get("role", "admin")
     user_units = admin.get("assigned_units", "ALL")
     requested_unit = request.query_params.get("unit")
@@ -527,6 +604,10 @@ async def get_admin_orders(request: Request):
 async def get_admin_dashboard_stats(request: Request):
     """Fetches live KPI analytics metrics directly from SQLite database with unit filtering"""
     admin = require_admin_auth(request)
+    try:
+        await sync_remote_production_orders()
+    except Exception:
+        pass
     user_role = admin.get("role", "admin")
     user_units = admin.get("assigned_units", "ALL")
     requested_unit = request.query_params.get("unit")
