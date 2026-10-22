@@ -192,6 +192,9 @@ function migrateAndFormatSheet(sheet) {
       }
     }
   }
+
+  // Convert and standardize all timestamps in Column A to clean 12-hour AM/PM IST
+  fixAllSheetTimestampsTo12HourIST(sheet);
 }
 
 /**
@@ -513,9 +516,10 @@ function buildRichBreakdownFromString(rawText) {
  * to convert all existing rows in Google Sheet from 24h format (e.g. 14:15:56)
  * into clean 12-hour AM/PM format (e.g. 02:15:56 PM).
  */
-function fixAllSheetTimestampsTo12HourIST() {
+function fixAllSheetTimestampsTo12HourIST(targetSheet) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheets()[0];
+  const sheet = targetSheet || (ss ? ss.getSheets()[0] : null);
+  if (!sheet) return;
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) return;
 
