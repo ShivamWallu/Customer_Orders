@@ -25,7 +25,7 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("🚀 Mashal Orders")
     .addItem("⚡ Fix & Align All Columns + Past Orders", "menuFixColumns")
-    .addItem("🕒 Fix All Timestamps to 12-Hour AM/PM", "fixAllSheetTimestampsTo12HourIST")
+    .addItem("🕒 Format Timestamps: Date on Top, Time Below", "fixAllSheetTimestampsTo12HourIST")
     .addToUi();
 }
 
@@ -164,7 +164,7 @@ function migrateAndFormatSheet(sheet) {
   sheet.setFrozenRows(1);
 
   // Set Column Widths
-  sheet.setColumnWidth(1, 195); // Timestamp (IST) - 195px width ensures Date & Time fit on 1 Single Line without wrapping
+  sheet.setColumnWidth(1, 140); // Timestamp (IST) - 2-Line Clean Format (Date on top, Time below)
   sheet.setColumnWidth(2, 175); // Order ID
   sheet.setColumnWidth(3, 140); // Party Code (SDMOWB0307)
   sheet.setColumnWidth(4, 210); // Party Name (Customer)
@@ -275,16 +275,32 @@ function appendOrderToSheet(order) {
     migrateAndFormatSheet(sheet);
   }
 
-  // Format timestamp (Strict 12-Hour Indian Standard Time with AM/PM e.g. 22/10/2026 02:15:56 PM)
+  // Format timestamp (Clean 2-Line IST: Line 1 = Date, Line 2 = Time)
   const now = new Date();
   let istFormattedTimestamp = "";
-  if (order.formattedTimestamp && (order.formattedTimestamp.includes("M") || order.formattedTimestamp.includes("m"))) {
-    istFormattedTimestamp = order.formattedTimestamp;
-  } else if (order.formatted_timestamp && (order.formatted_timestamp.includes("M") || order.formatted_timestamp.includes("m"))) {
-    istFormattedTimestamp = order.formatted_timestamp;
+  const rawTs = order.formattedTimestamp || order.formatted_timestamp || "";
+  const m = rawTs.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[,\s\n]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM|am|pm)?/i);
+  if (m) {
+    const dStr = String(m[1]).padStart(2, "0");
+    const mStr = String(m[2]).padStart(2, "0");
+    const yStr = m[3];
+    let hr = parseInt(m[4], 10);
+    const mn = m[5];
+    const sc = m[6] || "00";
+    let ampm = (m[7] || "").toUpperCase();
+    if (!ampm) {
+      ampm = hr >= 12 ? "PM" : "AM";
+      hr = hr % 12 || 12;
+    } else {
+      hr = hr % 12 || 12;
+    }
+    const hrStr = String(hr).padStart(2, "0");
+    istFormattedTimestamp = `${dStr}/${mStr}/${yStr}\n${hrStr}:${mn}:${sc} ${ampm}`;
   } else {
-    // Generate clean 12-hour AM/PM format (hh:mm:ss a -> 02:15:56 PM, NOT 14:15:56)
-    istFormattedTimestamp = Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy hh:mm:ss a");
+    // Generate clean 2-line format
+    const dStr = Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy");
+    const tStr = Utilities.formatDate(now, "Asia/Kolkata", "hh:mm:ss a");
+    istFormattedTimestamp = `${dStr}\n${tStr}`;
   }
   const orderId = order.id || order.orderId || ("KOGM-" + Utilities.formatDate(now, "Asia/Kolkata", "yyyyMMdd") + "-" + Math.floor(1000 + Math.random() * 9000));
 
@@ -352,7 +368,7 @@ function appendOrderToSheet(order) {
   // ⚡ BATCH ROW FORMATTING (1 network call for whole row vertical alignment!)
   sheet.getRange(lastRow, 1, 1, 11).setVerticalAlignment("middle");
 
-  sheet.getRange(lastRow, 1).setNumberFormat("@").setHorizontalAlignment("center").setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP); // Timestamp (Plain text, 1 Single Line)
+  sheet.getRange(lastRow, 1).setNumberFormat("@").setHorizontalAlignment("center").setVerticalAlignment("middle").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP); // Timestamp (2-Line Format: Date on top, Time below)
   sheet.getRange(lastRow, 2).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#004b99").setHorizontalAlignment("center"); // Order ID
   sheet.getRange(lastRow, 3).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#003366").setBackground("#eff6ff").setHorizontalAlignment("center"); // Party Code
   sheet.getRange(lastRow, 4).setFontWeight("bold"); // Party Name
@@ -534,11 +550,11 @@ function fixAllSheetTimestampsTo12HourIST(targetSheet) {
   for (let i = 0; i < values.length; i++) {
     const val = values[i][0];
     if (val instanceof Date) {
-      values[i][0] = Utilities.formatDate(val, "Asia/Kolkata", "dd/MM/yyyy hh:mm:ss a");
+      values[i][0] = Utilities.formatDate(val, "Asia/Kolkata", "dd/MM/yyyy") + "\n" + Utilities.formatDate(val, "Asia/Kolkata", "hh:mm:ss a");
       updatedCount++;
     } else if (typeof val === "string" && val.trim().length > 0) {
       const s = val.trim();
-      const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(AM|PM))?/i);
+      const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[,\s\n]+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(AM|PM))?/i);
       if (m) {
         const dayStr = String(m[1]).padStart(2, "0");
         const monStr = String(m[2]).padStart(2, "0");
@@ -556,18 +572,19 @@ function fixAllSheetTimestampsTo12HourIST(targetSheet) {
         }
 
         const hrStr = String(hr).padStart(2, "0");
-        values[i][0] = `${dayStr}/${monStr}/${yrStr} ${hrStr}:${mn}:${sc} ${ampm}`;
+        values[i][0] = `${dayStr}/${monStr}/${yrStr}\n${hrStr}:${mn}:${sc} ${ampm}`;
         updatedCount++;
       }
     }
   }
 
-  // Set number format to plain text and CLIP to ensure 1 Single Clean Line
+  // Set number format to plain text and WRAP with middle alignment to ensure 2 Clean Lines: Date on top, Time below
   range.setNumberFormat("@");
   range.setValues(values);
   range.setHorizontalAlignment("center");
-  range.setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
-  sheet.setColumnWidth(1, 195);
-  Logger.log("Successfully converted " + updatedCount + " rows to clean 12-hour AM/PM IST format!");
+  range.setVerticalAlignment("middle");
+  range.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
+  sheet.setColumnWidth(1, 140);
+  Logger.log("Successfully converted " + updatedCount + " rows to clean 2-Line (Date on top, Time below) IST format!");
 }
 
