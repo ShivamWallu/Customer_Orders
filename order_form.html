@@ -2052,6 +2052,59 @@
       border-radius: 6px;
       color: #475569;
     }
+
+    /* 🏷️ Customer Sales Order Status Tabs in Tracking Page */
+    .track-status-segmented-bar {
+      display: flex;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 3px;
+      gap: 4px;
+      margin-top: 12px;
+      margin-bottom: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .track-status-segmented-bar::-webkit-scrollbar {
+      display: none;
+    }
+    .track-status-tab-btn {
+      flex: 1;
+      min-width: fit-content;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 7px 10px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+    .track-status-tab-btn.active {
+      background: #047857;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(4, 120, 87, 0.25);
+    }
+    .track-status-tab-btn .tab-badge-pill {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.25);
+      color: inherit;
+      font-weight: 800;
+    }
+    .track-status-tab-btn:not(.active) .tab-badge-pill {
+      background: #e2e8f0;
+      color: #475569;
+    }
     .track-step-time {
       font-size: 9px;
       color: #047857;
@@ -2594,9 +2647,29 @@
           </button>
         </div>
 
+        <!-- 🏷️ CUSTOMER SALES ORDER STATUS TABS: All, SO Confirmed, Dispatch & Delivery, Pending -->
+        <div class="track-status-segmented-bar" id="trackStatusSegmentedBar" style="display: none;">
+          <button type="button" class="track-status-tab-btn active" id="btnTrackTabAll" onclick="setTrackStatusTab('ALL')">
+            <span>All</span>
+            <span class="tab-badge-pill" id="trackTabCountAll">0</span>
+          </button>
+          <button type="button" class="track-status-tab-btn" id="btnTrackTabConfirmed" onclick="setTrackStatusTab('CONFIRMED')">
+            <span>SO Confirmed</span>
+            <span class="tab-badge-pill" id="trackTabCountConfirmed">0</span>
+          </button>
+          <button type="button" class="track-status-tab-btn" id="btnTrackTabDispatched" onclick="setTrackStatusTab('DISPATCHED')">
+            <span>Dispatch & Delivery</span>
+            <span class="tab-badge-pill" id="trackTabCountDispatched">0</span>
+          </button>
+          <button type="button" class="track-status-tab-btn" id="btnTrackTabPending" onclick="setTrackStatusTab('PENDING')">
+            <span>Pending SO</span>
+            <span class="tab-badge-pill" id="trackTabCountPending">0</span>
+          </button>
+        </div>
+
         <!-- Quick Track Recent Orders Pills -->
         <div id="quickTrackChipsContainer" class="quick-chips-row" style="display: none;">
-          <span class="quick-chip-label">⚡ Recent Orders:</span>
+          <span class="quick-chip-label" id="quickTrackChipsLabel">⚡ Recent Orders:</span>
           <div id="quickTrackChipsList" style="display: inline-flex; flex-wrap: wrap; gap: 6px;"></div>
         </div>
       </div>
@@ -4327,12 +4400,24 @@
 
       let html = "";
       orders.forEach(o => {
-        const isConfirmed = o.orderStatus === "CONFIRMED";
-        const statusBadge = isConfirmed
-          ? `<span class="pill-status-confirmed"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> CONFIRMED</span>`
-          : `<span class="pill-status-pending"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO</span>`;
-        const soSubBadge = (isConfirmed && o.soNumber)
-          ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(String(o.soNumber).replace('#',''))}</span>`
+        const isDelivered = (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED");
+        const isDispatched = (o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
+        const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
+        const isConfirmed = (o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || Boolean(cleanSo));
+
+        let statusBadge = "";
+        if (isDelivered) {
+          statusBadge = `<span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> DELIVERED</span>`;
+        } else if (isDispatched) {
+          statusBadge = `<span class="pill-status-confirmed" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> DISPATCHED</span>`;
+        } else if (isConfirmed || cleanSo) {
+          statusBadge = `<span class="pill-status-confirmed"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> SO CONFIRMED</span>`;
+        } else {
+          statusBadge = `<span class="pill-status-pending"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO</span>`;
+        }
+
+        const soSubBadge = cleanSo
+          ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(cleanSo)}</span>`
           : '';
 
         html += `
@@ -4576,6 +4661,120 @@
       document.getElementById("customerOrderSlipModal").style.display = "none";
     }
 
+    let activeTrackStatusTab = "ALL"; // 'ALL', 'CONFIRMED', 'DISPATCHED', 'PENDING'
+
+    function getCustomerOrderCategory(o) {
+      if (!o) return "PENDING";
+      const isDelivered = (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED");
+      const isDispatched = (o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
+      if (isDelivered || isDispatched) return "DISPATCHED";
+      const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
+      const isConfirmed = (o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || cleanSo.length > 0);
+      if (isConfirmed) return "CONFIRMED";
+      return "PENDING";
+    }
+
+    function setTrackStatusTab(tab) {
+      activeTrackStatusTab = tab;
+      const tabMap = { ALL: "All", CONFIRMED: "Confirmed", DISPATCHED: "Dispatched", PENDING: "Pending" };
+      document.querySelectorAll(".track-status-tab-btn").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById(`btnTrackTab${tabMap[tab] || tab}`);
+      if (btn) btn.classList.add("active");
+      renderFilteredQuickTrackChips(true);
+    }
+
+    function renderFilteredQuickTrackChips(autoTrackFirst = false) {
+      const container = document.getElementById("quickTrackChipsContainer");
+      const list = document.getElementById("quickTrackChipsList");
+      if (!container || !list) return;
+
+      const all = cachedCustomerOrders || [];
+      if (all.length === 0) {
+        container.style.display = "none";
+        return;
+      }
+
+      // 1. Tally counts for status tabs
+      let countAll = all.length;
+      let countConfirmed = 0;
+      let countDispatched = 0;
+      let countPending = 0;
+
+      all.forEach(o => {
+        const cat = getCustomerOrderCategory(o);
+        if (cat === "DISPATCHED") countDispatched++;
+        else if (cat === "CONFIRMED") countConfirmed++;
+        else countPending++;
+      });
+
+      const elAll = document.getElementById("trackTabCountAll");
+      const elConf = document.getElementById("trackTabCountConfirmed");
+      const elDisp = document.getElementById("trackTabCountDispatched");
+      const elPend = document.getElementById("trackTabCountPending");
+
+      if (elAll) elAll.textContent = countAll;
+      if (elConf) elConf.textContent = countConfirmed;
+      if (elDisp) elDisp.textContent = countDispatched;
+      if (elPend) elPend.textContent = countPending;
+
+      const segBar = document.getElementById("trackStatusSegmentedBar");
+      if (segBar) segBar.style.display = "flex";
+
+      // 2. Filter for currently active tab
+      let filtered = all;
+      if (activeTrackStatusTab === "CONFIRMED") {
+        filtered = all.filter(o => getCustomerOrderCategory(o) === "CONFIRMED");
+      } else if (activeTrackStatusTab === "DISPATCHED") {
+        filtered = all.filter(o => getCustomerOrderCategory(o) === "DISPATCHED");
+      } else if (activeTrackStatusTab === "PENDING") {
+        filtered = all.filter(o => getCustomerOrderCategory(o) === "PENDING");
+      }
+
+      const topOrders = filtered.slice(0, 6);
+      if (topOrders.length === 0) {
+        list.innerHTML = `<span style="font-size: 11.5px; color: #64748b; font-style: italic; padding: 4px 6px;">No ${activeTrackStatusTab.toLowerCase()} orders found</span>`;
+        container.style.display = "flex";
+        return;
+      }
+
+      let chipsHtml = topOrders.map(o => {
+        const cat = getCustomerOrderCategory(o);
+        let iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+        let bgStyle = "";
+        if (cat === "DISPATCHED") {
+          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
+          bgStyle = "border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff;";
+        } else if (cat === "CONFIRMED") {
+          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          bgStyle = "border-color: #a7f3d0; color: #047857; background: #ecfdf5;";
+        } else {
+          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+          bgStyle = "border-color: #fde68a; color: #b45309; background: #fffbeb;";
+        }
+        return `
+          <button type="button" class="quick-chip-btn" style="${bgStyle}" onclick="trackCustomerOrder('#${escapeHtml(o.cleanId)}')">
+            ${iconHtml}
+            <span>#${escapeHtml(o.cleanId)}</span>
+          </button>
+        `;
+      }).join("");
+
+      chipsHtml += `
+        <button type="button" class="quick-chip-btn" style="background: #f1f5f9; border-color: #cbd5e1; color: #334155; font-weight: 700;" onclick="switchCustomerSection('orders')">
+          📜 All Orders ${totalCustOrders > 0 ? `(${totalCustOrders.toLocaleString()})` : ''}
+        </button>
+      `;
+
+      list.innerHTML = chipsHtml;
+      container.style.display = "flex";
+
+      if (autoTrackFirst && topOrders.length > 0) {
+        const input = document.getElementById("trackOrderInput");
+        if (input) input.value = `#${topOrders[0].cleanId}`;
+        trackCustomerOrder(`#${topOrders[0].cleanId}`);
+      }
+    }
+
     async function populateQuickTrackChips() {
       const container = document.getElementById("quickTrackChipsContainer");
       const list = document.getElementById("quickTrackChipsList");
@@ -4583,50 +4782,33 @@
 
       let orders = (cachedCustomerOrders && cachedCustomerOrders.length > 0) ? cachedCustomerOrders : [];
 
-      // If empty, attempt silent fetch with limit 5
-      if (orders.length === 0) {
-        try {
-          const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
-          const token = sess.token || "";
-          if (token) {
-            const res = await fetch(`/api/customer/my-orders?token=${encodeURIComponent(token)}&filter=ALL&page=1&limit=5`);
-            const d = await res.json();
-            if (res.ok && d.orders && d.orders.length > 0) {
-              cachedCustomerOrders = d.orders;
-              orders = d.orders;
-              totalCustOrders = d.filteredTotal || d.totalOrders || orders.length;
-            }
+      // Always fetch latest orders to ensure status is up-to-date
+      try {
+        const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
+        const token = sess.token || "";
+        if (token) {
+          const res = await fetch(`/api/customer/my-orders?token=${encodeURIComponent(token)}&filter=ALL&page=1&limit=50`);
+          const d = await res.json();
+          if (res.ok && d.orders && d.orders.length > 0) {
+            cachedCustomerOrders = d.orders;
+            orders = d.orders;
+            totalCustOrders = d.filteredTotal || d.totalOrders || orders.length;
           }
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
 
       if (orders.length > 0) {
-        const topOrders = orders.slice(0, 5);
-        let chipsHtml = topOrders.map(o => `
-          <button type="button" class="quick-chip-btn" onclick="trackCustomerOrder('#${escapeHtml(o.cleanId)}')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <span>#${escapeHtml(o.cleanId)}</span>
-          </button>
-        `).join("");
+        renderFilteredQuickTrackChips(false);
 
-        chipsHtml += `
-          <button type="button" class="quick-chip-btn" style="background: #f1f5f9; border-color: #cbd5e1; color: #334155; font-weight: 700;" onclick="switchCustomerSection('orders')">
-            📜 All Orders ${totalCustOrders > 0 ? `(${totalCustOrders.toLocaleString()})` : ''}
-          </button>
-        `;
-
-        list.innerHTML = chipsHtml;
-        container.style.display = "flex";
-
-        // 🚀 Auto populate input in Track Orders tab without requiring manual typing
+        // Auto populate input in Track Orders tab if empty
         const input = document.getElementById("trackOrderInput");
-        if (topOrders.length > 0) {
+        if (orders.length > 0) {
           if (input && !input.value.trim()) {
-            input.value = `#${topOrders[0].cleanId}`;
+            input.value = `#${orders[0].cleanId}`;
           }
           const resContainer = document.getElementById("customerTrackResultContainer");
           if (resContainer && !resContainer.querySelector(".track-result-card")) {
-            trackCustomerOrder(`#${topOrders[0].cleanId}`);
+            trackCustomerOrder(`#${orders[0].cleanId}`);
           }
         }
       } else {
@@ -4815,8 +4997,21 @@
 
     function renderCustomerTrackResult(ord) {
       const container = document.getElementById("customerTrackResultContainer");
-      const isConfirmed = ord.orderStatus === "CONFIRMED";
-      const cleanSo = String(ord.soNumber || "").replace("#", "");
+      const isDelivered = (ord.orderStatus === "DELIVERED" || ord.dispatchStatus === "DELIVERED" || ord.dispatch_status === "DELIVERED");
+      const isDispatched = (ord.orderStatus === "DISPATCHED" || ord.dispatchStatus === "DISPATCHED" || ord.dispatchStatus === "IN_TRANSIT" || ord.dispatch_status === "DISPATCHED" || ord.dispatch_status === "IN_TRANSIT");
+      const cleanSo = String(ord.soNumber || ord.so_number || "").replace("#", "").trim();
+      const isConfirmed = (ord.orderStatus === "CONFIRMED" || ord.order_status === "CONFIRMED" || Boolean(cleanSo));
+
+      let trackBadgeHtml = "";
+      if (isDelivered) {
+        trackBadgeHtml = `<span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> DELIVERED</span>`;
+      } else if (isDispatched) {
+        trackBadgeHtml = `<span class="pill-status-confirmed" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> DISPATCHED</span>`;
+      } else if (isConfirmed || cleanSo) {
+        trackBadgeHtml = `<span class="pill-status-confirmed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> SO CONFIRMED</span>`;
+      } else {
+        trackBadgeHtml = `<span class="pill-status-pending"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO</span>`;
+      }
 
       let itemsHtml = "";
       const items = ord.items || [];
@@ -4903,12 +5098,7 @@
               </div>
             </div>
             <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-              <span class="${isConfirmed ? 'pill-status-confirmed' : 'pill-status-pending'}">
-                ${isConfirmed 
-                  ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> CONFIRMED`
-                  : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO`
-                }
-              </span>
+              ${trackBadgeHtml}
               ${cleanSo ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(cleanSo)}</span>` : ''}
             </div>
           </div>
