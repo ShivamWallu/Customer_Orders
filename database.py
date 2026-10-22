@@ -1518,22 +1518,41 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
     finally:
         conn.close()
 
-def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admin") -> bool:
-    """Confirms an order and assigns official SO (Sales Order) Number"""
+def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admin", force_override: bool = False) -> Dict[str, Any]:
+    """Confirms an order and assigns official SO Number with duplicate-collision prevention"""
     clean_id = (order_id or "").replace("#", "").strip()
     clean_so = (so_number or "").strip()
     if not clean_so:
-        return False
-    now_str = datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")
+        return {"status": "error", "message": "Valid SO Number is required"}
+
     conn = get_connection()
     try:
+        cur = conn.cursor()
+        cur.execute("SELECT order_status, so_number, confirmed_by FROM orders WHERE order_id = ? OR order_id = ?", (clean_id, f"#{clean_id}"))
+        row = cur.fetchone()
+        if not row:
+            return {"status": "error", "message": f"Order #{clean_id} not found in database"}
+
+        existing_so = str(row["so_number"] or "").strip()
+        existing_by = str(row["confirmed_by"] or "Admin").strip()
+
+        # 🛡️ Conflict Collision Guard: If order already confirmed with a DIFFERENT SO number
+        if existing_so and existing_so != clean_so and not force_override:
+            return {
+                "status": "conflict",
+                "existing_so": existing_so,
+                "confirmed_by": existing_by,
+                "message": f"Collision prevented: Order #{clean_id} is ALREADY confirmed with SO #{existing_so} by {existing_by}."
+            }
+
+        now_str = datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")
         with conn:
             conn.execute("""
             UPDATE orders 
             SET order_status = 'CONFIRMED', so_number = ?, confirmed_at = ?, confirmed_by = ?
             WHERE order_id = ? OR order_id = ?
             """, (clean_so, now_str, confirmed_by, clean_id, f"#{clean_id}"))
-        
+
         # Also update in customer_orders.json with thread-safe lock
         orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
         if os.path.exists(orders_log):
@@ -1552,10 +1571,11 @@ def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admi
                         json.dump(orders_list, f, indent=2, ensure_ascii=False)
             except Exception as j_err:
                 print(f"[CONFIRM JSON WARN] {j_err}")
-        return True
+
+        return {"status": "success", "order_id": clean_id, "so_number": clean_so, "confirmed_at": now_str}
     except Exception as e:
         print(f"[DATABASE CONFIRM ERROR] {e}")
-        return False
+        return {"status": "error", "message": str(e)}
     finally:
         conn.close()
 

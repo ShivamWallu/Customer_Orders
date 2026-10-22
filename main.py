@@ -759,9 +759,28 @@ async def confirm_admin_order(request: Request):
 
     username = admin_session.get("username", "admin")
     confirmed_by = f"{username} ({role})"
+    force_override = bool(data.get("forceOverride")) or (role == "super_admin")
 
-    success = confirm_order_in_db(order_id, so_number, confirmed_by)
-    if success:
+    res = confirm_order_in_db(order_id, so_number, confirmed_by, force_override=force_override)
+    if isinstance(res, dict) and res.get("status") == "conflict":
+        raise HTTPException(
+            status_code=409,
+            detail=res.get("message", f"Collision prevented: Order #{order_id} has already been confirmed.")
+        )
+    if isinstance(res, dict) and res.get("status") == "success":
+        client_ip = request.client.host if request.client else "unknown"
+        try:
+            log_audit_event(
+                user_name=username,
+                phone=username,
+                role=role,
+                action="ORDER_CONFIRM_SO",
+                status="SUCCESS",
+                details=f"Order #{order_id} confirmed with SO #{so_number} by {confirmed_by}",
+                ip_address=client_ip
+            )
+        except Exception:
+            pass
         return {
             "status": "success",
             "orderId": order_id,
@@ -769,7 +788,8 @@ async def confirm_admin_order(request: Request):
             "confirmedBy": confirmed_by,
             "message": f"Order #{order_id} confirmed successfully with SO #{so_number}"
         }
-    raise HTTPException(status_code=500, detail=f"Failed to confirm order #{order_id} in database")
+    err_msg = res.get("message") if isinstance(res, dict) else f"Failed to confirm order #{order_id} in database"
+    raise HTTPException(status_code=500, detail=err_msg)
 
 @app.post("/api/admin/orders/dispatch")
 async def api_dispatch_order(request: Request):
@@ -786,6 +806,19 @@ async def api_dispatch_order(request: Request):
 
     success = update_order_dispatch_in_db(order_id, status=status, vehicle_number=vehicle, updated_by=username)
     if success:
+        client_ip = request.client.host if request.client else "unknown"
+        try:
+            log_audit_event(
+                user_name=username,
+                phone=username,
+                role=role,
+                action="ORDER_DISPATCH_UPDATE",
+                status="SUCCESS",
+                details=f"Order #{order_id} dispatch updated to {status} (Vehicle: {vehicle}) by {username} ({role})",
+                ip_address=client_ip
+            )
+        except Exception:
+            pass
         return {"status": "success", "orderId": order_id, "dispatchStatus": status, "vehicleNumber": vehicle}
     raise HTTPException(status_code=500, detail="Failed to update dispatch status")
 
