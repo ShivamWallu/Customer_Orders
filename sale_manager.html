@@ -135,15 +135,15 @@
       text-transform: uppercase;
     }
 
-    /* 👤 EXECUTIVE MANAGER STATUS BAR */
+    /* 👤 EXECUTIVE MANAGER STATUS BAR (100% Mobile Optimized, Zero Name Truncation) */
     .manager-status-strip {
       display: none;
       background: #ffffff;
       border-bottom: 1px solid #e2e8f0;
-      padding: 10px 16px;
+      padding: 9px 16px;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
     }
 
@@ -151,13 +151,14 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex: 1;
       min-width: 0;
     }
 
     .manager-status-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
       background: linear-gradient(135deg, #0284c7, #0369a1);
       color: #ffffff;
       display: flex;
@@ -168,26 +169,37 @@
     }
 
     .manager-status-info {
+      flex: 1;
       min-width: 0;
       line-height: 1.25;
     }
 
-    .manager-status-label {
-      font-size: 10.5px;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
     .manager-status-name {
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 800;
       color: #0f172a;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       display: block;
+    }
+
+    .manager-status-sub {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #0284c7;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .asm-role-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
     }
 
     .manager-status-right {
@@ -197,40 +209,18 @@
       flex-shrink: 0;
     }
 
-    .asm-role-chip {
-      font-size: 11px;
-      font-weight: 700;
-      color: #0284c7;
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      padding: 4px 10px;
-      border-radius: 20px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      letter-spacing: 0.3px;
-    }
-
-    .asm-role-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #0284c7;
-      animation: pulse 2s infinite;
-    }
-
     .btn-asm-switch {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       color: #475569;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
-      padding: 4px 9px;
-      border-radius: 6px;
+      padding: 5px 10px;
+      border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       transition: all 0.2s;
     }
 
@@ -2518,21 +2508,20 @@
     <div class="manager-status-strip" id="managerStatusStrip">
       <div class="manager-status-left">
         <div class="manager-status-avatar">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </div>
         <div class="manager-status-info">
-          <div class="manager-status-label">Executive</div>
           <strong id="loggedManagerName" class="manager-status-name">Sales Manager</strong>
+          <div class="manager-status-sub">
+            <span class="asm-role-dot"></span>
+            <span>Area Sales Manager</span>
+          </div>
         </div>
       </div>
       <div class="manager-status-right">
-        <span class="asm-role-chip">
-          <span class="asm-role-dot"></span>
-          Area Sales Manager
-        </span>
         <button type="button" class="btn-asm-switch" onclick="logoutManager()" title="Switch Account">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          Switch
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Switch</span>
         </button>
       </div>
     </div>
@@ -2749,16 +2738,17 @@
 
     <!-- 🔍 SECTION 3: SALES ORDER SEARCH & DETAILS -->
     <div id="sectionSoSearch" class="so-search-wrap" style="display: none;">
-      <!-- Territory Scope Segmented Switcher -->
-      <div class="search-scope-tabs">
-        <button type="button" id="btnScopeMine" class="search-scope-btn active" onclick="setSearchScope('mine')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <span>My Territory Orders</span>
-        </button>
-        <button type="button" id="btnScopeAll" class="search-scope-btn" onclick="setSearchScope('all')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          <span>All Team Orders</span>
-        </button>
+      <!-- Clean Title Bar (Strictly ASM's Own Orders) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 2px;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #0284c7; display: flex; align-items: center; justify-content: center;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          </div>
+          <span style="font-size: 13.5px; font-weight: 800; color: #0f172a;">My Orders Search</span>
+        </div>
+        <span style="font-size: 11px; font-weight: 700; color: #0369a1; background: #f0f9ff; padding: 3px 9px; border-radius: 12px; border: 1px solid #bae6fd;">
+          Territory Scoped
+        </span>
       </div>
 
       <!-- Modern Search Input with Clear Button -->
@@ -2767,7 +2757,7 @@
           <span class="so-search-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </span>
-          <input type="text" id="soSearchInput" class="so-search-input" placeholder="Search SO#, Order ID, or Party..." oninput="onSoSearchInputChanged()" onkeyup="if(event.key==='Enter') performSoSearch()">
+          <input type="text" id="soSearchInput" class="so-search-input" placeholder="Search SO#, ID, or Party..." oninput="onSoSearchInputChanged()" onkeyup="if(event.key==='Enter') performSoSearch()">
           <button type="button" id="soSearchClearBtn" class="so-search-clear-btn" onclick="clearSoSearchInput()" title="Clear">✕</button>
         </div>
         <button type="button" class="btn-so-search-submit" onclick="performSoSearch()">
@@ -2788,16 +2778,19 @@
           <span>✔ Confirmed</span>
         </button>
         <button type="button" id="chipFilterPending" class="chip-filter-btn chip-pending" onclick="setSearchFilter('pending_so')" title="Orders awaiting Factory SO Number">
-          <span>⏳ Pending SO</span>
+          <span>⏳ Pending</span>
         </button>
       </div>
 
-      <!-- Helpful Banner explaining SO# -->
-      <div class="so-info-banner">
-        <div class="so-info-icon">💡</div>
-        <div class="so-info-text">
-          <strong>Sales Order (SO#) Guide:</strong> Factory confirmation aur ERP booking ke baad official <strong>SO Number</strong> banta hai. Filter <strong>⚡ SO Generated</strong> se factory-approved orders dekhein.
+      <!-- Helpful Dismissible Banner explaining SO# -->
+      <div class="so-info-banner" id="soInfoBanner" style="position: relative; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="display: flex; gap: 8px; align-items: flex-start;">
+          <div class="so-info-icon">💡</div>
+          <div class="so-info-text">
+            <strong>SO# Guide:</strong> Factory confirmation aur ERP booking ke baad official <strong>SO Number</strong> banta hai. Filter <strong>⚡ SO Generated</strong> se factory-approved orders dekhein.
+          </div>
         </div>
+        <button type="button" style="background: none; border: none; color: #166534; font-size: 15px; cursor: pointer; padding: 0 4px; line-height: 1;" onclick="document.getElementById('soInfoBanner').style.display='none'" title="Dismiss">✕</button>
       </div>
 
       <!-- Results Container -->
@@ -3570,8 +3563,7 @@
       container.innerHTML = html;
     }
 
-    // 🔍 STATEFUL SCOPE & FILTERED SALES ORDER SEARCH
-    let currentSearchScope = "mine"; // "mine" (current ASM territory) or "all" (all team)
+    // 🔍 STATEFUL SALES ORDER SEARCH (STRICTLY LOGGED-IN ASM SCOPED)
     let currentSearchFilter = "all";  // "all", "has_so", "confirmed", "pending_so"
 
     function getLoggedManagerName() {
@@ -3582,15 +3574,6 @@
       const el = document.getElementById("loggedManagerName");
       if (el && el.textContent) return el.textContent.trim();
       return "";
-    }
-
-    function setSearchScope(scope) {
-      currentSearchScope = scope;
-      const btnMine = document.getElementById("btnScopeMine");
-      const btnAll = document.getElementById("btnScopeAll");
-      if (btnMine) btnMine.classList.toggle("active", scope === "mine");
-      if (btnAll) btnAll.classList.toggle("active", scope === "all");
-      performSoSearch();
     }
 
     function setSearchFilter(filterType) {
@@ -3635,15 +3618,22 @@
       container.innerHTML = `
         <div style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 13px;">
           <div style="width: 26px; height: 26px; border: 3px solid #cbd5e1; border-top-color: #0284c7; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px;"></div>
-          <span>Loading matching sales orders...</span>
+          <span>Loading your sales orders...</span>
         </div>
       `;
 
-      const mgrName = getLoggedManagerName();
-      const sp = (currentSearchScope === "mine" && mgrName) ? mgrName : "ALL";
+      // STRICT SCOPING: Always use the authenticated Area Sales Manager's session
+      let token = "";
+      let mgrName = "";
+      try {
+        const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
+        token = sess.token || "";
+        mgrName = sess.manager_name || "";
+      } catch (e) {}
+      if (!mgrName) mgrName = getLoggedManagerName();
 
       try {
-        const url = `/api/sales-orders/search?q=${encodeURIComponent(q)}&sales_person=${encodeURIComponent(sp)}&filter_type=${encodeURIComponent(currentSearchFilter)}`;
+        const url = `/api/sales-orders/search?q=${encodeURIComponent(q)}&token=${encodeURIComponent(token)}&sales_person=${encodeURIComponent(mgrName)}&filter_type=${encodeURIComponent(currentSearchFilter)}`;
         const res = await fetch(url);
         const data = await res.json();
         if (res.ok && data.status === "success") {
@@ -3659,7 +3649,7 @@
     function renderSoSearchResults(orders) {
       const container = document.getElementById("soSearchResultsContainer");
       if (!container) return;
-      const myName = getLoggedManagerName().toLowerCase();
+      const mgrName = getLoggedManagerName();
 
       if (!orders || orders.length === 0) {
         container.innerHTML = `
@@ -3667,7 +3657,7 @@
             <div style="font-size: 38px; margin-bottom: 8px;">🔍</div>
             <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">No Matching Orders Found</div>
             <div style="font-size: 12.5px; color: #64748b; max-width: 320px; margin: 0 auto; line-height: 1.45;">
-              ${currentSearchScope === 'mine' ? 'Aapke territory me is query se koi order nahi mila. Switch to <strong>All Team Orders</strong> ya filter change karein.' : 'Koi matching order nahi mila.'}
+              Aapke territory me is search ya filter se koi order nahi mila.
             </div>
           </div>
         `;
@@ -3680,7 +3670,7 @@
             Found <strong style="color: #0f172a;">${orders.length}</strong> matching order(s)
           </div>
           <div style="font-size: 11px; font-weight: 700; color: #0284c7; background: #f0f9ff; padding: 3px 8px; border-radius: 6px; border: 1px solid #bae6fd;">
-            ${currentSearchScope === 'mine' ? '👤 My Territory' : '🌐 All Team'}
+            ${escapeHtml(mgrName || 'My Orders')}
           </div>
         </div>
       `;
@@ -3688,7 +3678,6 @@
       orders.forEach(o => {
         const isConfirmed = o.orderStatus === "CONFIRMED";
         const hasSoNum = o.soNumber && String(o.soNumber).trim() !== "" && String(o.soNumber).trim() !== "-";
-        const isMyOrder = myName && o.salesPerson && o.salesPerson.toLowerCase().includes(myName);
 
         let statusPillHtml = '';
         if (hasSoNum) {
@@ -3713,10 +3702,6 @@
             </span>
           `;
         }
-
-        const asmBadge = isMyOrder
-          ? `<span style="font-size: 11px; font-weight: 700; color: #0369a1; background: #e0f2fe; padding: 3px 8px; border-radius: 6px; border: 1px solid #bae6fd; display: inline-flex; align-items: center; gap: 4px;">👔 ${escapeHtml(o.salesPerson || "-")} (You)</span>`
-          : `<span style="font-size: 11px; color: #64748b; background: #f1f5f9; padding: 3px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">👔 ${escapeHtml(o.salesPerson || "-")}</span>`;
 
         html += `
           <div class="asm-order-card" onclick="openSoDetailsModal('${escapeHtml(o.cleanId)}')">
@@ -3764,9 +3749,8 @@
               <div class="order-card-badge-row">
                 <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
-                ${asmBadge}
               </div>
-              <div style="display: flex; gap: 6px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
                 <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openSoDetailsModal('${escapeHtml(o.cleanId)}')" title="View all order details">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>

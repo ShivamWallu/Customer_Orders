@@ -2497,7 +2497,14 @@ async def api_search_sales_orders(
         status = "CONFIRMED"
 
     sp = None
-    if sales_person and sales_person.strip() and sales_person.strip().upper() != "ALL":
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.split(" ", 1)[1].strip() if auth_header.startswith("Bearer ") else request.query_params.get("token", "")
+    if token:
+        mgr_sess = validate_manager_session(token)
+        if mgr_sess and mgr_sess.get("manager_name"):
+            sp = mgr_sess.get("manager_name").strip()
+
+    if not sp and sales_person and sales_person.strip() and sales_person.strip().upper() != "ALL":
         sp = sales_person.strip()
 
     # Avoid matching every string containing 'so' if raw keyword passed
