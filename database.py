@@ -15,18 +15,24 @@ import sqlite3
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 import re
+import threading
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DB_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "orders.db")
+_json_file_lock = threading.Lock()
 
 def get_connection():
-    """Returns SQLite connection with row_factory and WAL mode for high concurrency"""
-    conn = sqlite3.connect(DB_FILE, timeout=30.0)
+    """Returns SQLite connection with row_factory, WAL mode, and high-concurrency PRAGMAs"""
+    conn = sqlite3.connect(DB_FILE, timeout=60.0)
     conn.row_factory = sqlite3.Row
-    # Enable WAL mode for high performance concurrent reads and writes
-    conn.execute("PRAGMA journal_mode=WAL;")
+    # Ultra-high performance concurrent PRAGMAs (Zero lock collisions)
+    conn.execute("PRAGMA journal_mode = WAL;")
+    conn.execute("PRAGMA synchronous = NORMAL;")
+    conn.execute("PRAGMA busy_timeout = 60000;")
+    conn.execute("PRAGMA cache_size = -64000;")
+    conn.execute("PRAGMA temp_store = MEMORY;")
     return conn
 
 def init_db():
@@ -103,6 +109,11 @@ def init_db():
             );
             CREATE INDEX IF NOT EXISTS idx_orders_created ON orders (created_at DESC);
             CREATE INDEX IF NOT EXISTS idx_orders_party ON orders (party_name);
+            CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (order_status);
+            CREATE INDEX IF NOT EXISTS idx_orders_so ON orders (so_number);
+            CREATE INDEX IF NOT EXISTS idx_orders_dispatch ON orders (dispatch_status);
+            CREATE INDEX IF NOT EXISTS idx_orders_unit ON orders (unit);
+            CREATE INDEX IF NOT EXISTS idx_orders_party_code ON orders (party_code);
             CREATE INDEX IF NOT EXISTS idx_orders_synced ON orders (synced_to_sheet);
             CREATE INDEX IF NOT EXISTS idx_orders_wa_status ON orders (whatsapp_status);
             CREATE INDEX IF NOT EXISTS idx_mgr_token ON sales_manager_sessions (token);
@@ -1523,21 +1534,22 @@ def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admi
             WHERE order_id = ? OR order_id = ?
             """, (clean_so, now_str, confirmed_by, clean_id, f"#{clean_id}"))
         
-        # Also update in customer_orders.json
+        # Also update in customer_orders.json with thread-safe lock
         orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
         if os.path.exists(orders_log):
             try:
-                with open(orders_log, "r", encoding="utf-8") as f:
-                    orders_list = json.load(f)
-                for o in orders_list:
-                    if str(o.get("id", "")).replace("#", "").strip() == clean_id:
-                        o["order_status"] = "CONFIRMED"
-                        o["so_number"] = clean_so
-                        o["confirmed_at"] = now_str
-                        o["confirmed_by"] = confirmed_by
-                        break
-                with open(orders_log, "w", encoding="utf-8") as f:
-                    json.dump(orders_list, f, indent=2, ensure_ascii=False)
+                with _json_file_lock:
+                    with open(orders_log, "r", encoding="utf-8") as f:
+                        orders_list = json.load(f)
+                    for o in orders_list:
+                        if str(o.get("id", "")).replace("#", "").strip() == clean_id:
+                            o["order_status"] = "CONFIRMED"
+                            o["so_number"] = clean_so
+                            o["confirmed_at"] = now_str
+                            o["confirmed_by"] = confirmed_by
+                            break
+                    with open(orders_log, "w", encoding="utf-8") as f:
+                        json.dump(orders_list, f, indent=2, ensure_ascii=False)
             except Exception as j_err:
                 print(f"[CONFIRM JSON WARN] {j_err}")
         return True
@@ -1581,18 +1593,19 @@ def update_order_unit_in_db(order_id: str, new_unit: str, updated_by: str = "sup
             WHERE order_id = ? OR order_id = ?
             """, (clean_unit, clean_id, f"#{clean_id}"))
         
-        # Also update in customer_orders.json
+        # Also update in customer_orders.json with thread-safe lock
         orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
         if os.path.exists(orders_log):
             try:
-                with open(orders_log, "r", encoding="utf-8") as f:
-                    orders_list = json.load(f)
-                for o in orders_list:
-                    if str(o.get("id", "")).replace("#", "").strip() == clean_id:
-                        o["unit"] = clean_unit
-                        break
-                with open(orders_log, "w", encoding="utf-8") as f:
-                    json.dump(orders_list, f, indent=2, ensure_ascii=False)
+                with _json_file_lock:
+                    with open(orders_log, "r", encoding="utf-8") as f:
+                        orders_list = json.load(f)
+                    for o in orders_list:
+                        if str(o.get("id", "")).replace("#", "").strip() == clean_id:
+                            o["unit"] = clean_unit
+                            break
+                    with open(orders_log, "w", encoding="utf-8") as f:
+                        json.dump(orders_list, f, indent=2, ensure_ascii=False)
             except Exception as j_err:
                 print(f"[UNIT UPDATE JSON WARN] {j_err}")
         
