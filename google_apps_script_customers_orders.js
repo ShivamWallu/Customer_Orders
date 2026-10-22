@@ -26,6 +26,7 @@ function onOpen() {
     .createMenu("🚀 Mashal Orders")
     .addItem("⚡ Fix & Align All Columns + Past Orders", "menuFixColumns")
     .addItem("🕒 Format Timestamps: Date on Top, Time Below", "fixAllSheetTimestampsTo12HourIST")
+    .addItem("🟡 Auto-Highlight Today's Orders (Yellow)", "applyTodayYellowHighlightRule")
     .addToUi();
 }
 
@@ -199,6 +200,9 @@ function migrateAndFormatSheet(sheet) {
 
   // Convert and standardize all timestamps in Column A to clean 12-hour AM/PM IST
   fixAllSheetTimestampsTo12HourIST(sheet);
+
+  // 🟡 Automatically apply Conditional Formatting to highlight ONLY Today's orders in soft yellow
+  applyTodayYellowHighlightRule(sheet);
 }
 
 /**
@@ -587,4 +591,40 @@ function fixAllSheetTimestampsTo12HourIST(targetSheet) {
   sheet.setColumnWidth(1, 140);
   Logger.log("Successfully converted " + updatedCount + " rows to clean 2-Line (Date on top, Time below) IST format!");
 }
+
+/**
+ * 🟡 AUTOMATIC TODAY YELLOW HIGHLIGHT
+ * Creates a smart Conditional Formatting Rule on range A2:K10000.
+ * Formula: =ISNUMBER(SEARCH(TEXT(TODAY(),"dd/MM/yyyy"), $A2))
+ * - Highlights ONLY today's orders in soft warm yellow (#fff9c4).
+ * - Automatic: As new orders arrive, they immediately turn yellow.
+ * - Auto-Rollover: Tomorrow morning, today's orders automatically return to normal white,
+ *   and tomorrow's new orders become yellow without any manual work!
+ */
+function applyTodayYellowHighlightRule(targetSheet) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = targetSheet || (ss ? ss.getSheets()[0] : null);
+  if (!sheet) return;
+
+  const rules = sheet.getConditionalFormatRules() || [];
+  // Filter out any existing TODAY highlight rules to prevent duplicates
+  const filteredRules = rules.filter(function(r) {
+    const cond = r.getBooleanCondition();
+    if (!cond) return true;
+    const args = cond.getArguments() || [];
+    return !args.some(function(arg) { return arg && String(arg).indexOf("TODAY") !== -1; });
+  });
+
+  const range = sheet.getRange("A2:K10000");
+  const todayHighlightRule = SpreadsheetApp.newConditionalFormatRule()
+    .whenFormulaSatisfied('=ISNUMBER(SEARCH(TEXT(TODAY(),"dd/MM/yyyy"), $A2))')
+    .setBackground("#fff9c4") // Clean soft professional yellow
+    .setRanges([range])
+    .build();
+
+  filteredRules.push(todayHighlightRule);
+  sheet.setConditionalFormatRules(filteredRules);
+  Logger.log("Today Yellow Highlight rule successfully applied to A2:K10000!");
+}
+
 
