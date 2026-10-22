@@ -507,6 +507,26 @@ ROLE_CREDENTIALS = {
         "can_manage_users": True,
         "assigned_units": "ALL"
     },
+    "super_admin": {
+        "password": os.environ.get("SUPER_ADMIN_PASSWORD", "Admin@123#"),
+        "role": "super_admin",
+        "name": "Super Administrator",
+        "can_confirm": True,
+        "can_delete": True,
+        "can_manage_units": True,
+        "can_manage_users": True,
+        "assigned_units": "ALL"
+    },
+    "superadmin": {
+        "password": os.environ.get("SUPER_ADMIN_PASSWORD", "Admin@123#"),
+        "role": "super_admin",
+        "name": "Super Administrator",
+        "can_confirm": True,
+        "can_delete": True,
+        "can_manage_units": True,
+        "can_manage_users": True,
+        "assigned_units": "ALL"
+    },
     "manager": {
         "password": os.environ.get("MANAGER_PASSWORD", "Manager@123#"),
         "role": "manager",
@@ -560,8 +580,8 @@ async def admin_portal_login(request: Request):
             "assignedUnits": assigned_units,
             "canConfirm": user_info["can_confirm"],
             "canDelete": user_info["can_delete"],
-            "canManageUnits": user_info.get("can_manage_units", role == "super_admin"),
-            "canManageUsers": user_info.get("can_manage_users", role == "super_admin"),
+            "canManageUnits": user_info.get("can_manage_units", role in ["super_admin", "admin"]),
+            "canManageUsers": user_info.get("can_manage_users", role in ["super_admin", "admin"]),
             "message": f"Welcome {user_info['name']} ({role.upper()})"
         }
 
@@ -597,8 +617,8 @@ async def admin_portal_login(request: Request):
                 "assignedUnits": assigned_units,
                 "canConfirm": role in ["super_admin", "admin", "manager"],
                 "canDelete": role in ["super_admin", "admin"],
-                "canManageUnits": role == "super_admin",
-                "canManageUsers": role == "super_admin",
+                "canManageUnits": role in ["super_admin", "admin"],
+                "canManageUsers": role in ["super_admin", "admin"],
                 "message": f"Welcome {db_user['name']} ({role.upper()})"
             }
 
@@ -632,8 +652,8 @@ async def get_admin_profile(request: Request):
         "name": "Super Administrator" if role == "super_admin" else role.title(),
         "can_confirm": role in ["super_admin", "admin", "manager"],
         "can_delete": role in ["super_admin", "admin"],
-        "can_manage_units": role == "super_admin",
-        "can_manage_users": role == "super_admin",
+        "can_manage_units": role in ["super_admin", "admin"],
+        "can_manage_users": role in ["super_admin", "admin"],
         "assigned_units": assigned_units
     })
     return {
@@ -644,8 +664,8 @@ async def get_admin_profile(request: Request):
         "assignedUnits": assigned_units,
         "canConfirm": user_info.get("can_confirm", True if role in ["super_admin", "admin", "manager"] else False),
         "canDelete": user_info.get("can_delete", True if role in ["super_admin", "admin"] else False),
-        "canManageUnits": role == "super_admin",
-        "canManageUsers": role == "super_admin"
+        "canManageUnits": role in ["super_admin", "admin"],
+        "canManageUsers": role in ["super_admin", "admin"]
     }
 
 @app.get("/api/admin/orders")
@@ -661,7 +681,7 @@ async def get_admin_orders(request: Request, background_tasks: BackgroundTasks):
     requested_unit = request.query_params.get("unit")
 
     target_unit = requested_unit
-    if user_role != "super_admin" and user_units != "ALL":
+    if user_role not in ["super_admin", "admin"] and user_units != "ALL":
         allowed_units = [u.strip() for u in user_units.split(",") if u.strip()]
         if requested_unit and requested_unit != "ALL" and requested_unit not in allowed_units:
             raise HTTPException(status_code=403, detail=f"Permission Denied: You do not have access to {requested_unit}. Allowed: {user_units}")
@@ -686,7 +706,7 @@ async def get_admin_dashboard_stats(request: Request):
     requested_unit = request.query_params.get("unit")
 
     target_unit = requested_unit
-    if user_role != "super_admin" and user_units != "ALL":
+    if user_role not in ["super_admin", "admin"] and user_units != "ALL":
         allowed_units = [u.strip() for u in user_units.split(",") if u.strip()]
         target_unit = requested_unit if (requested_unit and requested_unit in allowed_units) else (allowed_units[0] if allowed_units else "Unit 1")
 
@@ -705,7 +725,7 @@ async def get_admin_warehouse_summary(request: Request):
     requested_unit = request.query_params.get("unit")
 
     target_unit = requested_unit
-    if user_role != "super_admin" and user_units != "ALL":
+    if user_role not in ["super_admin", "admin"] and user_units != "ALL":
         allowed_units = [u.strip() for u in user_units.split(",") if u.strip()]
         target_unit = requested_unit if (requested_unit and requested_unit in allowed_units) else (allowed_units[0] if allowed_units else "Unit 1")
 
@@ -853,7 +873,7 @@ async def delete_admin_order(request: Request):
     """
     admin_session = require_admin_auth(request)
     role = admin_session.get("role", "admin")
-    if role != "admin":
+    if role not in ["super_admin", "admin"]:
         raise HTTPException(
             status_code=403,
             detail="Forbidden: Only System Administrator has permission to delete orders. Managers and Analysts cannot delete records."
@@ -890,7 +910,7 @@ def api_get_admin_units(request: Request):
 async def api_create_or_update_unit(request: Request):
     """Super Admin dynamically creates or updates warehouse unit"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
+    if admin.get("role") not in ["super_admin", "admin"]:
         raise HTTPException(status_code=403, detail="Super Admin permission required for Unit Management")
     body = await request.json()
     res = create_or_update_unit(
@@ -907,7 +927,7 @@ async def api_create_or_update_unit(request: Request):
 async def api_toggle_unit_status(unit_id: int, request: Request):
     """Super Admin toggles unit ACTIVE/INACTIVE status"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
+    if admin.get("role") not in ["super_admin", "admin"]:
         raise HTTPException(status_code=403, detail="Super Admin permission required")
     body = await request.json()
     status = body.get("status", "ACTIVE")
@@ -920,7 +940,7 @@ async def api_toggle_unit_status(unit_id: int, request: Request):
 async def api_delete_unit(unit_id: int, request: Request):
     """Super Admin deletes a custom warehouse unit"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
+    if admin.get("role") not in ["super_admin", "admin"]:
         raise HTTPException(status_code=403, detail="Super Admin permission required")
     res = delete_unit_by_id(unit_id)
     if res.get("status") == "error":
@@ -939,7 +959,7 @@ async def api_get_admin_users(request: Request):
 async def api_save_admin_user(request: Request):
     """Creates or updates user account with role and assigned unit (Super Admin only)"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
+    if admin.get("role") not in ["super_admin", "admin"]:
         raise HTTPException(status_code=403, detail="Super Admin permission required for account management")
     body = await request.json()
     res = create_or_update_user(
@@ -960,7 +980,7 @@ async def api_save_admin_user(request: Request):
 async def api_toggle_user_status(user_id: int, request: Request):
     """Blocks or unblocks user account (Super Admin only)"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
+    if admin.get("role") not in ["super_admin", "admin"]:
         raise HTTPException(status_code=403, detail="Super Admin permission required")
     body = await request.json()
     status = body.get("status", "ACTIVE")
@@ -973,7 +993,7 @@ async def api_toggle_user_status(user_id: int, request: Request):
 async def api_delete_admin_user(user_id: int, request: Request):
     """Permanently deletes user account (Super Admin only)"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
+    if admin.get("role") not in ["super_admin", "admin"]:
         raise HTTPException(status_code=403, detail="Super Admin permission required")
     res = delete_user_by_id(user_id)
     if res.get("status") == "error":
@@ -1044,7 +1064,7 @@ async def api_get_admin_audit_logs(request: Request):
 async def api_cleanup_pankaj(request: Request):
     """Super Admin utility to retain ONLY Pankaj Kumar orders and assign to Unit 1"""
     admin = require_admin_auth(request)
-    if admin.get("role") != "super_admin":
+    if admin.get("role") not in ["super_admin", "admin"]:
         raise HTTPException(status_code=403, detail="Super Admin permission required")
     return cleanup_orders_retain_pankaj_kumar()
 
