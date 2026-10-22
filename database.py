@@ -218,6 +218,17 @@ def init_db():
         except Exception:
             pass
 
+        # 🛡️ Self-Healing Integrity: Any order that already has an SO assigned MUST be marked as CONFIRMED
+        try:
+            conn.execute("""
+            UPDATE orders 
+            SET order_status = 'CONFIRMED' 
+            WHERE (so_number IS NOT NULL AND TRIM(so_number) != '') 
+              AND (order_status = 'PENDING' OR order_status IS NULL OR order_status = '');
+            """)
+        except Exception:
+            pass
+
         # Seed initial Warehouse Units (Unit 1 to Unit 6) if units table is empty
         try:
             cur = conn.cursor()
@@ -1434,8 +1445,12 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
         total_pieces = int(order.get("totalPieces") or order.get("total_pieces", 0))
         party_code = order.get("partyCode") or order.get("party_code", "")
         data_consent = order.get("dataConsent") or order.get("data_consent", "YES (Verified)")
-        order_status = order.get("orderStatus") or order.get("order_status") or "PENDING"
-        so_number = order.get("soNumber") or order.get("so_number") or ""
+        so_number = str(order.get("so_number") or order.get("soNumber") or "").strip()
+        order_status = str(order.get("order_status") or order.get("orderStatus") or "").strip().upper()
+        if so_number and (not order_status or order_status == "PENDING"):
+            order_status = "CONFIRMED"
+        elif not order_status:
+            order_status = "PENDING"
         confirmed_at = order.get("confirmedAt") or order.get("confirmed_at") or ""
         confirmed_by = order.get("confirmedBy") or order.get("confirmed_by") or ""
         
@@ -1563,9 +1578,13 @@ def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admi
                     for o in orders_list:
                         if str(o.get("id", "")).replace("#", "").strip() == clean_id:
                             o["order_status"] = "CONFIRMED"
+                            o["orderStatus"] = "CONFIRMED"
                             o["so_number"] = clean_so
+                            o["soNumber"] = clean_so
                             o["confirmed_at"] = now_str
+                            o["confirmedAt"] = now_str
                             o["confirmed_by"] = confirmed_by
+                            o["confirmedBy"] = confirmed_by
                             break
                     with open(orders_log, "w", encoding="utf-8") as f:
                         json.dump(orders_list, f, indent=2, ensure_ascii=False)
@@ -1730,10 +1749,19 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
             if tot_bxs == 0 and calc_bxs > 0:
                 tot_bxs = calc_bxs
 
+            so_val = str(d.get("so_number") or d.get("soNumber") or "").strip()
+            st_val = str(d.get("order_status") or d.get("orderStatus") or "").strip().upper()
+            if so_val and (not st_val or st_val == "PENDING"):
+                st_val = "CONFIRMED"
+            elif not st_val:
+                st_val = "PENDING"
+
             d["totalBoxes"] = tot_bxs
             d["totalPieces"] = tot_pcs
-            d["orderStatus"] = d.get("order_status") or "PENDING"
-            d["soNumber"] = d.get("so_number") or ""
+            d["orderStatus"] = st_val
+            d["order_status"] = st_val
+            d["soNumber"] = so_val
+            d["so_number"] = so_val
             d["confirmedAt"] = d.get("confirmed_at") or ""
             d["confirmedBy"] = d.get("confirmed_by") or ""
             d["orderDate"] = d.get("order_date") or ""

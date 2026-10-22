@@ -5853,6 +5853,13 @@
       }
     }
 
+    function isOrderConfirmed(o) {
+      if (!o) return false;
+      const st = String(o.orderStatus || o.order_status || "").toUpperCase().trim();
+      const so = String(o.soNumber || o.so_number || "").trim();
+      return st === "CONFIRMED" || st === "DISPATCHED" || st === "DELIVERED" || so.length > 0;
+    }
+
     // Core Filtering Engine
     function applyAllFilters() {
       const now = new Date();
@@ -5891,7 +5898,7 @@
       let pendingTotal = 0;
       let confirmedTotal = 0;
       dateFilteredOrders.forEach(o => {
-        if (o.orderStatus === "CONFIRMED") confirmedTotal++;
+        if (isOrderConfirmed(o)) confirmedTotal++;
         else pendingTotal++;
       });
 
@@ -5915,7 +5922,7 @@
 
       // 2. Filter dataset for table display (applying status tab, ASM filter, and search term)
       filteredOrdersData = dateFilteredOrders.filter(o => {
-        const isConf = o.orderStatus === "CONFIRMED";
+        const isConf = isOrderConfirmed(o);
         if (activeStatusTab === "PENDING" && isConf) return false;
         if (activeStatusTab === "CONFIRMED" && !isConf) return false;
 
@@ -5995,7 +6002,7 @@
       const partiesSet = new Set();
 
       dateFilteredRecords.forEach(o => {
-        if (o.orderStatus === "CONFIRMED") {
+        if (isOrderConfirmed(o)) {
           confirmedOrders++;
         } else {
           pendingOrders++;
@@ -6216,7 +6223,7 @@
       pageSlice.forEach((o, index) => {
         const rowNumber = startIdx + index + 1;
         const cleanId = o.cleanId;
-        const isConfirmed = o.orderStatus === "CONFIRMED";
+        const isConfirmed = isOrderConfirmed(o);
 
         // Format Product Quantities: 1 LTR. BOTTLE x 15 (2 Bxs: 30 Pcs)
         let itemsHtml = `<div class="product-breakdown-list">`;
@@ -6260,12 +6267,19 @@
             </button>
         `;
 
-        // Confirm button: Only Admin & Manager
+        // Confirm button: Only Admin & Manager if order is not yet confirmed
         if (canConfirmOrders && !isConfirmed) {
           actionButtons += `
             <button class="btn-action-icon primary" title="Assign SO Number & Confirm Order" onclick="openConfirmSoModal('${cleanId}')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
               <span>Confirm SO</span>
+            </button>
+          `;
+        } else if (canConfirmOrders && isConfirmed && (currentUserRole === "super_admin" || currentUserRole === "admin")) {
+          actionButtons += `
+            <button class="btn-action-icon" style="color: #047857; border-color: #a7f3d0;" title="Edit Confirmed SO Number" onclick="openConfirmSoModal('${cleanId}', '${escapeHtml(o.soNumber || '')}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Edit SO</span>
             </button>
           `;
         }

@@ -243,10 +243,10 @@
     "total_pieces": 695,
     "party_code": "",
     "data_consent": "YES (Verified)",
-    "order_status": "PENDING",
-    "so_number": "",
-    "confirmed_at": "",
-    "confirmed_by": "",
+    "order_status": "CONFIRMED",
+    "so_number": "SO-TEST-OVERRIDE",
+    "confirmed_at": "22/10/2026 05:26:12 PM",
+    "confirmed_by": "super_admin (super_admin)",
     "unit": "Unit 1",
     "items": [
       {
