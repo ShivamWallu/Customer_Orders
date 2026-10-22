@@ -2048,11 +2048,11 @@
       transform: translateY(-1px);
     }
 
-    /* Filter Chips Bar (100% Mobile Optimized 4-Button Equal Grid, Zero Cut-off) */
+    /* Filter Chips Bar (100% Mobile Optimized 3-Button Equal Grid, Zero Cut-off) */
     .search-filter-chips {
       display: grid;
-      grid-template-columns: 0.85fr 1.15fr 1.15fr 1fr;
-      gap: 5px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
       margin-bottom: 12px;
     }
 
@@ -2060,13 +2060,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      padding: 8px 2px;
-      border-radius: 9px;
+      gap: 6px;
+      padding: 9px 8px;
+      border-radius: 10px;
       border: 1.5px solid #e2e8f0;
       background: #ffffff;
       color: #475569;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -2758,13 +2758,10 @@
         </button>
       </div>
 
-      <!-- Quick Filter Pills (4-Grid Equal Fit, Zero Overflow) -->
+      <!-- Quick Filter Pills (3-Grid Equal Fit, Zero Overflow) -->
       <div class="search-filter-chips">
         <button type="button" id="chipFilterAll" class="chip-filter-btn active" onclick="setSearchFilter('all')">
           <span>📋 All</span>
-        </button>
-        <button type="button" id="chipFilterHasSo" class="chip-filter-btn chip-has-so" onclick="setSearchFilter('has_so')" title="Orders with confirmed Factory Sales Order Number">
-          <span>⚡ Has SO</span>
         </button>
         <button type="button" id="chipFilterConfirmed" class="chip-filter-btn chip-confirmed" onclick="setSearchFilter('confirmed')">
           <span>✔ Confirmed</span>
@@ -3545,7 +3542,7 @@
     }
 
     // 🔍 STATEFUL SALES ORDER SEARCH (STRICTLY LOGGED-IN ASM SCOPED)
-    let currentSearchFilter = "all";  // "all", "has_so", "confirmed", "pending_so"
+    let currentSearchFilter = "all";  // "all", "confirmed", "pending_so"
 
     function getLoggedManagerName() {
       try {
@@ -3561,7 +3558,6 @@
       currentSearchFilter = filterType;
       const chips = [
         { id: "chipFilterAll", key: "all" },
-        { id: "chipFilterHasSo", key: "has_so" },
         { id: "chipFilterConfirmed", key: "confirmed" },
         { id: "chipFilterPending", key: "pending_so" }
       ];
@@ -3587,7 +3583,7 @@
     }
 
     function quickSoSearch(tag) {
-      setSearchFilter(tag.toLowerCase() === 'so' ? 'has_so' : tag.toLowerCase());
+      setSearchFilter(tag.toLowerCase() === 'so' ? 'confirmed' : tag.toLowerCase());
     }
 
     async function performSoSearch() {
