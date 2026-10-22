@@ -933,7 +933,7 @@
 
     .orders-table {
       width: 100%;
-      min-width: 1300px;
+      min-width: 1540px;
       border-collapse: separate;
       border-spacing: 0;
       font-size: 12px;
@@ -993,14 +993,14 @@
       text-align: center;
     }
 
-    /* 📌 COMPACT FIXED FIRST 3 COLUMNS */
+    /* 📌 FIXED FIRST 3 COLUMNS */
     .orders-table th.sticky-col-1,
     .orders-table td.sticky-col-1 {
       position: sticky;
       left: 0;
-      width: 38px;
-      min-width: 38px;
-      max-width: 38px;
+      width: 42px;
+      min-width: 42px;
+      max-width: 42px;
       z-index: 10;
       border-right: 1px solid var(--card-border);
     }
@@ -1016,10 +1016,10 @@
     .orders-table th.sticky-col-2,
     .orders-table td.sticky-col-2 {
       position: sticky;
-      left: 38px;
-      width: 142px;
-      min-width: 142px;
-      max-width: 142px;
+      left: 42px;
+      width: 172px;
+      min-width: 172px;
+      max-width: 172px;
       z-index: 10;
       border-right: 1px solid var(--card-border);
     }
@@ -1035,13 +1035,13 @@
     .orders-table th.sticky-col-3,
     .orders-table td.sticky-col-3 {
       position: sticky;
-      left: 180px;
-      width: 112px;
-      min-width: 112px;
-      max-width: 112px;
+      left: 214px;
+      width: 124px;
+      min-width: 124px;
+      max-width: 124px;
       z-index: 10;
       border-right: 2px solid #cbd5e1; /* Visual delimiter */
-      box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.06);
+      box-shadow: 4px 0 10px -2px rgba(0, 0, 0, 0.12);
     }
     .orders-table th.sticky-col-3 {
       top: 0;
@@ -1050,7 +1050,7 @@
       color: #ffffff !important;
       border-bottom: 2px solid #334155;
       border-right: 2px solid #475569 !important;
-      box-shadow: 4px 0 8px -2px rgba(0, 0, 0, 0.4);
+      box-shadow: 5px 0 12px -2px rgba(0, 0, 0, 0.45);
     }
 
     /* 🛡️ RBAC Switch Toggle & Permissions Matrix */
@@ -1228,29 +1228,41 @@
     .product-breakdown-list {
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      max-width: 235px;
+      gap: 4px;
+      min-width: 290px;
+      width: 100%;
     }
     .product-item-chip {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 4px;
+      font-size: 11.5px;
+      padding: 3px 8px;
+      border-radius: 5px;
       background: #f8fafc;
-      border: 1px solid var(--card-border);
+      border: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 6px;
-      color: var(--text-main);
+      gap: 12px;
+      white-space: nowrap;
+      color: #0f172a;
     }
-    .product-item-chip.mashal { border-left: 3px solid var(--brand-mashal); }
-    .product-item-chip.fauji { border-left: 3px solid var(--brand-fauji); }
+    .product-item-chip.mashal { border-left: 3px solid #dc2626; }
+    .product-item-chip.fauji { border-left: 3px solid #16a34a; }
+    .product-item-name {
+      font-weight: 600;
+      color: #1e293b;
+      white-space: nowrap;
+    }
     .product-item-chip .calc-detail {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 700;
       color: #0284c7;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      padding: 1px 7px;
+      border-radius: 4px;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .boxes-badge {
@@ -1384,22 +1396,32 @@
     .action-btn-group {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      flex-wrap: nowrap;
     }
     .btn-action-icon {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 5px;
-      padding: 5px 10px;
+      height: 28px;
+      padding: 0 9px;
       border-radius: 6px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
       border: 1px solid #e2e8f0;
       background: #ffffff;
       color: #334155;
       cursor: pointer;
+      white-space: nowrap;
+      box-sizing: border-box;
+      line-height: 1;
       transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    .btn-action-icon span {
+      white-space: nowrap;
+      line-height: 1;
     }
     .btn-action-icon:hover {
       background: #f8fafc;
@@ -2801,24 +2823,25 @@
         <thead>
           <tr>
             <!-- Fixed Column 1 -->
-            <th class="sticky-col-1 center" style="width: 38px; min-width: 38px; max-width: 38px;">#</th>
-            <!-- Fixed Column 2 -->
-            <th class="sticky-col-2" style="width: 142px; min-width: 142px; max-width: 142px;">Order ID</th>
-            <!-- Fixed Column 3: Compact 2-Line Date & Time -->
-            <th class="sticky-col-3" style="width: 112px; min-width: 112px; max-width: 112px;">Date & Time</th>
-            <!-- Horizontally Scrolling Columns with Optimized Compact Widths -->
-            <th style="width: 175px; min-width: 175px;">Customer / Party Name</th>
-            <th style="width: 95px; min-width: 95px;">Party Code</th>
-            <th style="width: 195px; min-width: 195px;">Delivery / Billing Address</th>
-            <th style="width: 130px; min-width: 130px;">Area Sales Manager</th>
-            <th style="width: 95px; min-width: 95px;" class="center">Warehouse Unit</th>
-            <th style="width: 235px; min-width: 235px;">Product Quantities & Pieces</th>
-            <th style="width: 80px; min-width: 80px;" class="center">Total Boxes</th>
-            <th style="width: 80px; min-width: 80px;" class="center">Total Pieces</th>
+            <th class="sticky-col-1 center" style="width: 42px; min-width: 42px; max-width: 42px;">#</th>
+            <!-- Fixed Column 2: Full 19-char Order ID, zero clipping -->
+            <th class="sticky-col-2" style="width: 172px; min-width: 172px; max-width: 172px;">Order ID</th>
+            <!-- Fixed Column 3: 2-Line Date & Time -->
+            <th class="sticky-col-3" style="width: 124px; min-width: 124px; max-width: 124px;">Date & Time</th>
+            <!-- Horizontally Scrolling Columns with Spacious, Clear Widths -->
+            <th style="width: 195px; min-width: 195px;">Customer / Party Name</th>
+            <th style="width: 105px; min-width: 105px;">Party Code</th>
+            <th style="width: 210px; min-width: 210px;">Delivery / Billing Address</th>
+            <th style="width: 140px; min-width: 140px;">Area Sales Manager</th>
+            <th style="width: 100px; min-width: 100px;" class="center">Warehouse Unit</th>
+            <!-- Priority Column: Product Quantities & Pieces (Spacious & Easy to Understand) -->
+            <th style="width: 300px; min-width: 300px;">Product Quantities & Pieces</th>
+            <th style="width: 90px; min-width: 90px;" class="center">Total Boxes</th>
+            <th style="width: 95px; min-width: 95px;" class="center">Total Pieces</th>
             <!-- Status & Confirmation Columns at end of table -->
-            <th style="width: 105px; min-width: 105px;" class="center">Order Status</th>
-            <th style="width: 95px; min-width: 95px;" class="center">SO Number</th>
-            <th style="width: 135px; min-width: 135px;" class="center">Actions</th>
+            <th style="width: 110px; min-width: 110px;" class="center">Order Status</th>
+            <th style="width: 120px; min-width: 120px;" class="center">SO Number</th>
+            <th style="width: 185px; min-width: 185px;" class="center">Actions</th>
           </tr>
         </thead>
         <tbody id="ordersTableBody">
@@ -5944,7 +5967,7 @@
 
             itemsHtml += `
               <div class="product-item-chip ${brandCls}">
-                <span>${escapeHtml(it.item || "")}</span>
+                <span class="product-item-name">${escapeHtml(it.item || "")}</span>
                 <span class="calc-detail">${bxs} Bx • ${pcs} Pcs</span>
               </div>
             `;
