@@ -786,9 +786,15 @@
     /* Table Horizontal Scroll Navigation Controls */
     .scroll-nav-bar {
       display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 4px 20px 8px 20px;
+      padding: 0;
+    }
+    .scroll-nav-row {
+      display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 2px 28px 8px 28px;
     }
     .scroll-nav-hint {
       font-size: 12px;
@@ -834,7 +840,7 @@
 
     /* 1. ORDER TABLE - HIGHEST VISUAL PRIORITY & READABILITY */
     .table-card-wrapper {
-      margin: 4px 20px 16px 20px;
+      margin: 0 20px 16px 20px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-md);
@@ -869,22 +875,23 @@
       background: #94a3b8;
     }
 
-    /* Horizontal Scroll Progress Line (Blue Track & Moving Thumb) */
+    /* Horizontal Scroll Progress Line (Elevated Above Header) */
     .table-scroll-track {
       width: 100%;
-      height: 3px;
+      height: 4px;
       background: #e2e8f0;
+      border-radius: 4px;
       position: relative;
       overflow: hidden;
-      z-index: 35;
       cursor: pointer;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
     }
     .table-scroll-thumb-line {
       height: 100%;
       width: 20%;
       background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
-      box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
-      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.7);
+      border-radius: 4px;
       transition: transform 0.08s ease-out, width 0.08s ease-out;
       will-change: transform, width;
     }
@@ -902,9 +909,31 @@
       gap: 4px;
     }
 
+    /* Clean Two-Line Date & Time Cell */
+    .date-cell-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      line-height: 1.25;
+      gap: 1px;
+    }
+    .date-cell-date {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+    }
+    .date-cell-time {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
     .orders-table {
       width: 100%;
-      min-width: 1360px;
+      min-width: 1300px;
       border-collapse: separate;
       border-spacing: 0;
       font-size: 12px;
@@ -988,9 +1017,9 @@
     .orders-table td.sticky-col-2 {
       position: sticky;
       left: 38px;
-      width: 154px;
-      min-width: 154px;
-      max-width: 154px;
+      width: 142px;
+      min-width: 142px;
+      max-width: 142px;
       z-index: 10;
       border-right: 1px solid var(--card-border);
     }
@@ -1006,10 +1035,10 @@
     .orders-table th.sticky-col-3,
     .orders-table td.sticky-col-3 {
       position: sticky;
-      left: 192px;
-      width: 148px;
-      min-width: 148px;
-      max-width: 148px;
+      left: 180px;
+      width: 112px;
+      min-width: 112px;
+      max-width: 112px;
       z-index: 10;
       border-right: 2px solid #cbd5e1; /* Visual delimiter */
       box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.06);
@@ -2744,27 +2773,29 @@
 
   <!-- Horizontal Scroll Navigation Controls Hint & Buttons -->
   <div class="scroll-nav-bar" id="scrollNavBar" style="display: none;">
-    <div class="scroll-nav-hint">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-      <span>Horizontal Scroll: <kbd>◀</kbd> <kbd>▶</kbd> arrow keys or buttons to slide columns</span>
-      <span class="scroll-progress-pill" id="scrollProgressPill">Start (0%)</span>
+    <div class="scroll-nav-row">
+      <div class="scroll-nav-hint">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span>Horizontal Scroll: <kbd>◀</kbd> <kbd>▶</kbd> arrow keys or buttons to slide columns</span>
+        <span class="scroll-progress-pill" id="scrollProgressPill">Start (0%)</span>
+      </div>
+      <div class="scroll-buttons">
+        <button class="btn-scroll" onclick="scrollTableHorizontally(-350)" title="Scroll Left">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="btn-scroll" onclick="scrollTableHorizontally(350)" title="Scroll Right">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
     </div>
-    <div class="scroll-buttons">
-      <button class="btn-scroll" onclick="scrollTableHorizontally(-350)" title="Scroll Left">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button class="btn-scroll" onclick="scrollTableHorizontally(350)" title="Scroll Right">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+    <!-- Horizontal Scroll Indicator Line (Elevated cleanly above the table header) -->
+    <div class="table-scroll-track" id="tableScrollTrack" onclick="handleTrackClick(event)" title="Click or slide across to navigate columns">
+      <div class="table-scroll-thumb-line" id="tableScrollProgressLine"></div>
     </div>
   </div>
 
   <!-- 1. ORDER TABLE - HIGHEST VISUAL PRIORITY WITH FIXED 3 COLUMNS -->
   <div class="table-card-wrapper" id="tableCardWrapper" style="display: none;">
-    <!-- Horizontal Scroll Indicator Line (Blue Progress Track) -->
-    <div class="table-scroll-track" id="tableScrollTrack" onclick="handleTrackClick(event)" title="Click or slide across to navigate columns">
-      <div class="table-scroll-thumb-line" id="tableScrollProgressLine"></div>
-    </div>
     <div class="table-scroll-container" id="tableScrollContainer" tabindex="0">
       <table class="orders-table">
         <thead>
@@ -2772,9 +2803,9 @@
             <!-- Fixed Column 1 -->
             <th class="sticky-col-1 center" style="width: 38px; min-width: 38px; max-width: 38px;">#</th>
             <!-- Fixed Column 2 -->
-            <th class="sticky-col-2" style="width: 154px; min-width: 154px; max-width: 154px;">Order ID</th>
-            <!-- Fixed Column 3 -->
-            <th class="sticky-col-3" style="width: 148px; min-width: 148px; max-width: 148px;">Date & Time</th>
+            <th class="sticky-col-2" style="width: 142px; min-width: 142px; max-width: 142px;">Order ID</th>
+            <!-- Fixed Column 3: Compact 2-Line Date & Time -->
+            <th class="sticky-col-3" style="width: 112px; min-width: 112px; max-width: 112px;">Date & Time</th>
             <!-- Horizontally Scrolling Columns with Optimized Compact Widths -->
             <th style="width: 175px; min-width: 175px;">Customer / Party Name</th>
             <th style="width: 95px; min-width: 95px;">Party Code</th>
@@ -3594,13 +3625,14 @@
     }
 
     /**
-     * Standardize all table dates to readable format: "21 Oct 2026, 03:20 PM"
-     * Eliminates raw seconds, numbers-only months, and handles all timestamp patterns.
+     * Standardize date & time into 2 clean readable lines:
+     * Line 1: "21 Oct 2026,"
+     * Line 2: "03:20 PM"
      */
-    function formatTableDateTime(rawStr) {
-      if (!rawStr || (typeof rawStr !== "string" && typeof rawStr !== "number")) return "-";
+    function formatTableDateParts(rawStr) {
+      if (!rawStr || (typeof rawStr !== "string" && typeof rawStr !== "number")) return { date: "-", time: "" };
       const str = String(rawStr).trim();
-      if (!str || str === "-" || str === "undefined" || str === "null") return "-";
+      if (!str || str === "-" || str === "undefined" || str === "null") return { date: "-", time: "" };
 
       const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -3623,9 +3655,12 @@
               hour = hour % 12 || 12;
             }
             const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
-            timePart = `, ${hourStr}:${minute} ${meridiem}`;
+            timePart = `${hourStr}:${minute} ${meridiem}`;
           }
-          return `${dayStr} ${mon} ${year}${timePart}`;
+          return {
+            date: `${dayStr} ${mon} ${year}${timePart ? ',' : ''}`,
+            time: timePart
+          };
         }
       }
 
@@ -3645,9 +3680,12 @@
             const meridiem = hour >= 12 ? "PM" : "AM";
             hour = hour % 12 || 12;
             const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
-            timePart = `, ${hourStr}:${minute} ${meridiem}`;
+            timePart = `${hourStr}:${minute} ${meridiem}`;
           }
-          return `${dayStr} ${mon} ${year}${timePart}`;
+          return {
+            date: `${dayStr} ${mon} ${year}${timePart ? ',' : ''}`,
+            time: timePart
+          };
         }
       }
 
@@ -3665,11 +3703,19 @@
           const meridiem = hour >= 12 ? "PM" : "AM";
           hour = hour % 12 || 12;
           const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
-          return `${dayStr} ${mon} ${year}, ${hourStr}:${minuteStr} ${meridiem}`;
+          return {
+            date: `${dayStr} ${mon} ${year},`,
+            time: `${hourStr}:${minuteStr} ${meridiem}`
+          };
         }
       } catch (e) {}
 
-      return str;
+      return { date: str, time: "" };
+    }
+
+    function formatTableDateTime(rawStr) {
+      const parts = formatTableDateParts(rawStr);
+      return parts.time ? `${parts.date} ${parts.time}` : parts.date;
     }
 
     /**
@@ -5958,6 +6004,8 @@
 
         actionButtons += `</div>`;
 
+        const dateParts = formatTableDateParts(o.formattedTimestamp || o.formattedDate || o.orderDate || o.created_at || "");
+
         html += `
           <tr>
             <!-- Fixed Col 1 -->
@@ -5966,10 +6014,11 @@
             <td class="sticky-col-2">
               <span class="order-id-link" onclick="previewSlipModal('${cleanId}')" title="View Order Slip">#${cleanId}</span>
             </td>
-            <!-- Fixed Col 3: Clean short-month readable date & time -->
-            <td class="sticky-col-3" style="font-size: 11.5px; color: #334155; font-weight: 600; white-space: nowrap;">
-              <div title="${escapeHtml(o.formattedTimestamp || o.formattedDate || o.orderDate || '')}">
-                ${escapeHtml(formatTableDateTime(o.formattedTimestamp || o.formattedDate || o.orderDate || o.created_at || ""))}
+            <!-- Fixed Col 3: Clean 2-Line Short-Month Date & Time -->
+            <td class="sticky-col-3">
+              <div class="date-cell-wrap" title="${escapeHtml(o.formattedTimestamp || o.formattedDate || o.orderDate || '')}">
+                <span class="date-cell-date">${escapeHtml(dateParts.date)}</span>
+                ${dateParts.time ? `<span class="date-cell-time">${escapeHtml(dateParts.time)}</span>` : ""}
               </div>
             </td>
             <!-- Horizontally Scrolling Columns with Auto-Text Wrap -->
