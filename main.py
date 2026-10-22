@@ -128,24 +128,45 @@ def get_ist_now() -> datetime:
     """Returns current datetime strictly in Indian Standard Time (IST)"""
     return datetime.now(timezone.utc).astimezone(IST_TZ)
 
-def convert_utc_to_ist_str(utc_dt_str: str) -> str:
-    """Converts UTC date string to IST formatted string (%d/%m/%Y %I:%M:%S %p)"""
-    if not utc_dt_str:
+def convert_utc_to_ist_str(dt_str: str) -> str:
+    """Standardizes any timestamp into clean 12-Hour Indian Standard Time (IST - %d/%m/%Y %I:%M:%S %p)"""
+    if not dt_str:
         return ""
-    try:
-        if "/" in utc_dt_str and ("AM" in utc_dt_str or "PM" in utc_dt_str):
-            clean = utc_dt_str.replace(",", "").strip()
-            parts = clean.split()
-            if len(parts) >= 3:
-                dt = datetime.strptime(f"{parts[0]} {parts[1]} {parts[2]}", "%d/%m/%Y %I:%M:%S %p")
-                return (dt + timedelta(hours=5, minutes=30)).strftime("%d/%m/%Y %I:%M:%S %p")
-        elif "T" in utc_dt_str:
-            clean = utc_dt_str.split(".")[0].replace("Z", "")
+    s = str(dt_str).strip()
+
+    # 1. If already 12-hour format with AM/PM (e.g. 22/10/2026 02:15:56 PM)
+    m12 = re.match(r"^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)$", s, re.IGNORECASE)
+    if m12:
+        d, m, y = int(m12.group(1)), int(m12.group(2)), m12.group(3)
+        h = int(m12.group(4))
+        mn = m12.group(5)
+        sc = m12.group(6) or "00"
+        ampm = m12.group(7).upper()
+        h12 = h if (1 <= h <= 12) else (h % 12 or 12)
+        return f"{d:02d}/{m:02d}/{y} {h12:02d}:{mn}:{sc} {ampm}"
+
+    # 2. If 24-hour format without AM/PM (e.g. 22/10/2026 14:15:56)
+    m24 = re.match(r"^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?$", s)
+    if m24:
+        d, m, y = int(m24.group(1)), int(m24.group(2)), m24.group(3)
+        h = int(m24.group(4))
+        mn = m24.group(5)
+        sc = m24.group(6) or "00"
+        ampm = "PM" if h >= 12 else "AM"
+        h12 = h % 12 or 12
+        return f"{d:02d}/{m:02d}/{y} {h12:02d}:{mn}:{sc} {ampm}"
+
+    # 3. If ISO timestamp from AWS (e.g. 2026-10-22T08:45:51.089243 or with Z)
+    if "T" in s or "Z" in s:
+        try:
+            clean = s.split(".")[0].replace("Z", "")
             dt = datetime.fromisoformat(clean)
+            # AWS logs in UTC, convert to IST
             return (dt + timedelta(hours=5, minutes=30)).strftime("%d/%m/%Y %I:%M:%S %p")
-    except Exception:
-        pass
-    return utc_dt_str
+        except Exception:
+            pass
+
+    return s
 
 _REMOTE_SYNC_LOCK = asyncio.Lock()
 

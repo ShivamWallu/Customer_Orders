@@ -3760,8 +3760,8 @@
             let meridiem = (dmyMatch[6] || "").toUpperCase();
             if (!meridiem) {
               meridiem = hour >= 12 ? "PM" : "AM";
-              hour = hour % 12 || 12;
             }
+            hour = hour % 12 || 12;
             const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
             timePart = `${hourStr}:${minute} ${meridiem}`;
           }

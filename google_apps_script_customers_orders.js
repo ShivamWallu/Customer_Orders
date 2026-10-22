@@ -268,9 +268,17 @@ function appendOrderToSheet(order) {
     migrateAndFormatSheet(sheet);
   }
 
-  // Format timestamp (IST)
+  // Format timestamp (Strict 12-Hour Indian Standard Time with AM/PM e.g. 22/10/2026 02:15:56 PM)
   const now = new Date();
-  const istFormattedTimestamp = Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy HH:mm:ss");
+  let istFormattedTimestamp = "";
+  if (order.formattedTimestamp && (order.formattedTimestamp.includes("M") || order.formattedTimestamp.includes("m"))) {
+    istFormattedTimestamp = order.formattedTimestamp;
+  } else if (order.formatted_timestamp && (order.formatted_timestamp.includes("M") || order.formatted_timestamp.includes("m"))) {
+    istFormattedTimestamp = order.formatted_timestamp;
+  } else {
+    // Generate clean 12-hour AM/PM format (hh:mm:ss a -> 02:15:56 PM, NOT 14:15:56)
+    istFormattedTimestamp = Utilities.formatDate(now, "Asia/Kolkata", "dd/MM/yyyy hh:mm:ss a");
+  }
   const orderId = order.id || order.orderId || ("KOGM-" + Utilities.formatDate(now, "Asia/Kolkata", "yyyyMMdd") + "-" + Math.floor(1000 + Math.random() * 9000));
 
   // Calculate Pieces and Boxes
@@ -337,7 +345,7 @@ function appendOrderToSheet(order) {
   // ⚡ BATCH ROW FORMATTING (1 network call for whole row vertical alignment!)
   sheet.getRange(lastRow, 1, 1, 11).setVerticalAlignment("middle");
 
-  sheet.getRange(lastRow, 1).setHorizontalAlignment("center"); // Timestamp
+  sheet.getRange(lastRow, 1).setNumberFormat("@").setHorizontalAlignment("center"); // Timestamp (Plain text for 12-Hour AM/PM)
   sheet.getRange(lastRow, 2).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#004b99").setHorizontalAlignment("center"); // Order ID
   sheet.getRange(lastRow, 3).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#003366").setBackground("#eff6ff").setHorizontalAlignment("center"); // Party Code
   sheet.getRange(lastRow, 4).setFontWeight("bold"); // Party Name
@@ -499,3 +507,57 @@ function buildRichBreakdownFromString(rawText) {
   }
   return buildRichItemsBreakdown(parsedItems, rawText);
 }
+
+/**
+ * 🛠️ UTILITY: Run this one-click function in Google Apps Script editor
+ * to convert all existing rows in Google Sheet from 24h format (e.g. 14:15:56)
+ * into clean 12-hour AM/PM format (e.g. 02:15:56 PM).
+ */
+function fixAllSheetTimestampsTo12HourIST() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheets()[0];
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+
+  const range = sheet.getRange(2, 1, lastRow - 1, 1);
+  const values = range.getValues();
+  let updatedCount = 0;
+
+  for (let i = 0; i < values.length; i++) {
+    const val = values[i][0];
+    if (val instanceof Date) {
+      values[i][0] = Utilities.formatDate(val, "Asia/Kolkata", "dd/MM/yyyy hh:mm:ss a");
+      updatedCount++;
+    } else if (typeof val === "string" && val.trim().length > 0) {
+      const s = val.trim();
+      const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(AM|PM))?/i);
+      if (m) {
+        const dayStr = String(m[1]).padStart(2, "0");
+        const monStr = String(m[2]).padStart(2, "0");
+        const yrStr = m[3];
+        let hr = parseInt(m[4], 10);
+        const mn = m[5];
+        const sc = m[6] || "00";
+        let ampm = (m[7] || "").toUpperCase();
+
+        if (!ampm) {
+          ampm = hr >= 12 ? "PM" : "AM";
+          hr = hr % 12 || 12;
+        } else {
+          hr = hr % 12 || 12;
+        }
+
+        const hrStr = String(hr).padStart(2, "0");
+        values[i][0] = `${dayStr}/${monStr}/${yrStr} ${hrStr}:${mn}:${sc} ${ampm}`;
+        updatedCount++;
+      }
+    }
+  }
+
+  // Set number format to plain text to prevent sheet auto-converting back to 24h
+  range.setNumberFormat("@");
+  range.setValues(values);
+  range.setHorizontalAlignment("center");
+  Logger.log("Successfully converted " + updatedCount + " rows to clean 12-hour AM/PM IST format!");
+}
+

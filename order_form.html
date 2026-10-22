@@ -2915,7 +2915,10 @@
       // Format date
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
-      const formattedTimestamp = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const formattedTimestamp = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(hours)}:${pad(now.getMinutes())}:${pad(now.getSeconds())} ${ampm}`;
       const randomCode = Math.floor(1000 + Math.random() * 9000);
       const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
       const clientOrderId = `KOGM-${datePart}-${randomCode}`;
