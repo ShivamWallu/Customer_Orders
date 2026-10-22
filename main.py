@@ -2544,39 +2544,51 @@ async def api_customer_check_session(request: Request):
 
 @app.get("/api/customer/my-orders")
 async def api_get_customer_orders(request: Request):
-    """Returns orders strictly belonging to the authenticated customer"""
+    """
+    Returns orders strictly belonging to the authenticated customer.
+    Supports high volumes (10,000+ orders) via database-level pagination,
+    instant text/ID searching, and date filtering.
+    """
     auth_header = request.headers.get("Authorization", "")
     token = auth_header.split(" ", 1)[1].strip() if auth_header.startswith("Bearer ") else request.query_params.get("token", "")
-    session = validate_customer_session(token)
+    session = validate_customer_session(token) if token else None
+
     if not session:
-        party_code = request.query_params.get("party_code", "")
-        party_name = request.query_params.get("party_name", "")
-        phone = request.query_params.get("phone", "")
+        party_code = request.query_params.get("party_code", "").strip()
+        party_name = request.query_params.get("party_name", "").strip()
+        phone = request.query_params.get("phone", "").strip()
         if not (party_code or party_name or phone):
-            raise HTTPException(status_code=401, detail="Valid customer session required")
+            raise HTTPException(status_code=401, detail="Valid customer session required. Please log in.")
     else:
+        # Security: STRICTLY bind customer parameters to the verified session
         party_code = session.get("party_code", "")
         party_name = session.get("party_name", "")
         phone = session.get("phone", "")
 
     date_filter = request.query_params.get("filter", "ALL")
     specific_date = request.query_params.get("date", "")
+    search_q = request.query_params.get("search", "").strip()
 
-    from datetime import date, timedelta
-    today_iso = date.today().isoformat()
-    today_slash = date.today().strftime("%d/%m/%Y")
-    yesterday_iso = (date.today() - timedelta(days=1)).isoformat()
-    yesterday_slash = (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
+    try:
+        page = max(1, int(request.query_params.get("page", 1)))
+    except (ValueError, TypeError):
+        page = 1
 
-    all_orders = get_orders_for_customer(party_name=party_name, party_code=party_code, phone=phone, date_filter="ALL")
-    today_count = sum(1 for o in all_orders if today_iso in str(o.get("created_at") or "") or today_slash in str(o.get("formattedTimestamp") or ""))
-    yesterday_count = sum(1 for o in all_orders if yesterday_iso in str(o.get("created_at") or "") or yesterday_slash in str(o.get("formattedTimestamp") or ""))
-    total_count = len(all_orders)
+    try:
+        limit = max(1, min(100, int(request.query_params.get("limit", 10))))
+    except (ValueError, TypeError):
+        limit = 10
 
-    if date_filter == "ALL":
-        orders = all_orders
-    else:
-        orders = get_orders_for_customer(party_name=party_name, party_code=party_code, phone=phone, date_filter=date_filter, specific_date=specific_date)
+    res = get_orders_for_customer(
+        party_name=party_name,
+        party_code=party_code,
+        phone=phone,
+        date_filter=date_filter,
+        specific_date=specific_date,
+        page=page,
+        limit=limit,
+        search_query=search_q
+    )
 
     return {
         "status": "success",
@@ -2584,10 +2596,15 @@ async def api_get_customer_orders(request: Request):
         "partyCode": party_code,
         "filter": date_filter,
         "date": specific_date,
-        "todayCount": today_count,
-        "yesterdayCount": yesterday_count,
-        "totalOrders": total_count,
-        "orders": orders
+        "search": search_q,
+        "todayCount": res["todayCount"],
+        "yesterdayCount": res["yesterdayCount"],
+        "totalOrders": res["allTotalCount"],
+        "filteredTotal": res["totalCount"],
+        "page": res["page"],
+        "limit": res["limit"],
+        "totalPages": res["totalPages"],
+        "orders": res["orders"]
     }
 
 # 🔍 CUSTOMER ORDER TRACKING API (Strictly Scoped to Authenticated Customer)
@@ -2596,6 +2613,7 @@ async def api_customer_track_order(request: Request):
     """
     Search and track order strictly scoped to the authenticated Customer.
     Guarantees privacy: A customer cannot view orders belonging to another party.
+    Any attempt to query cross-customer orders returns an empty result (blocked).
     """
     q = request.query_params.get("q", "").strip()
     auth_header = request.headers.get("Authorization", "")
@@ -2606,6 +2624,7 @@ async def api_customer_track_order(request: Request):
     party_name = ""
     phone = ""
     if session:
+        # Strictly use verified session identity
         party_code = session.get("party_code", "")
         party_name = session.get("party_name", "")
         phone = session.get("phone", "")

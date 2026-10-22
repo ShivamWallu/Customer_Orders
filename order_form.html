@@ -2032,6 +2032,89 @@
       border-radius: 6px;
       color: #475569;
     }
+    .track-step-time {
+      font-size: 9.5px;
+      color: #047857;
+      font-weight: 700;
+      margin-top: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .track-stepper.step-1-active::before {
+      background: linear-gradient(to right, #10b981 0%, #10b981 25%, #e2e8f0 25%, #e2e8f0 100%);
+    }
+    .track-step.upcoming .track-step-circle {
+      background: #f8fafc;
+      color: #cbd5e1;
+      border-color: #e2e8f0;
+      box-shadow: none;
+    }
+    .btn-card-track {
+      background: #ecfdf5 !important;
+      color: #047857 !important;
+      border-color: #a7f3d0 !important;
+      font-weight: 700 !important;
+    }
+    .btn-card-track:hover {
+      background: #047857 !important;
+      color: #ffffff !important;
+    }
+
+    /* 📄 Scalable Customer Orders Pagination & Search */
+    .cust-orders-search-wrap {
+      margin-bottom: 14px;
+    }
+    .cust-pagination-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-top: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+    .cust-page-info {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .cust-page-btns {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cust-page-btn {
+      min-width: 30px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 7px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .cust-page-btn:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .cust-page-btn.active {
+      background: #047857;
+      color: #ffffff;
+      border-color: #047857;
+    }
+    .cust-page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
 
     /* 🔐 CUSTOMER AUTH MODAL */
     .auth-input {
@@ -2393,12 +2476,29 @@
         </div>
       </div>
 
+      <!-- Scalable Customer Order Search & Filter Input -->
+      <div class="cust-orders-search-wrap">
+        <div class="track-input-wrap" style="width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <span class="track-icon-inside">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input type="text" id="custOrdersSearchInput" class="track-input-field" placeholder="Search orders by ID (e.g. #KOGM-...), SO #, or item..." oninput="debouncedSearchCustomerOrders()" onkeydown="if(event.key==='Enter') executeCustomerOrdersSearch()">
+          <button id="custOrdersSearchClearBtn" type="button" onclick="clearCustomerOrdersSearch()" style="display:none; background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 10px; font-weight:700;" title="Clear search">✕</button>
+        </div>
+      </div>
+
       <!-- Orders List Container -->
       <div id="customerOrdersListContainer">
         <div style="text-align: center; padding: 40px 16px; color: #64748b; font-size: 13px;">
           Loading your order history...
         </div>
       </div>
+
+      <!-- Scalable Pagination Bar -->
+      <div id="custOrdersPaginationContainer" class="cust-pagination-bar" style="display: none;"></div>
     </div>
 
     <!-- 🔍 SECTION 3: TRACK ORDER -->
@@ -3654,6 +3754,11 @@
     const CUSTOMER_SESSION_KEY = "kogm_customer_session_v1";
     let currentCustomerSection = "booking";
     let currentCustDateFilter = "TODAY";
+    let currentCustPage = 1;
+    let currentCustLimit = 10;
+    let currentCustSearchQuery = "";
+    let totalCustOrders = 0;
+    let totalCustPages = 1;
     let cachedCustomerOrders = [];
     let custCountdownInterval = null;
 
@@ -3968,12 +4073,38 @@
           badge.classList.remove("active");
         }
       }
-      loadCustomerOrders();
+      currentCustPage = 1;
+      loadCustomerOrders(1);
     }
 
-    async function loadCustomerOrders() {
+    const debouncedSearchCustomerOrders = debounce(() => {
+      executeCustomerOrdersSearch();
+    }, 300);
+
+    function executeCustomerOrdersSearch() {
+      const input = document.getElementById("custOrdersSearchInput");
+      const clearBtn = document.getElementById("custOrdersSearchClearBtn");
+      const q = (input ? input.value : "").trim();
+      currentCustSearchQuery = q;
+      if (clearBtn) clearBtn.style.display = q ? "inline-block" : "none";
+      currentCustPage = 1;
+      loadCustomerOrders(1);
+    }
+
+    function clearCustomerOrdersSearch() {
+      const input = document.getElementById("custOrdersSearchInput");
+      const clearBtn = document.getElementById("custOrdersSearchClearBtn");
+      if (input) input.value = "";
+      if (clearBtn) clearBtn.style.display = "none";
+      currentCustSearchQuery = "";
+      currentCustPage = 1;
+      loadCustomerOrders(1);
+    }
+
+    async function loadCustomerOrders(page) {
+      if (page) currentCustPage = Math.max(1, parseInt(page) || 1);
       const container = document.getElementById("customerOrdersListContainer");
-      container.innerHTML = `<div style="text-align: center; padding: 40px 16px; color: #64748b; font-size: 13px;">Loading your order history...</div>`;
+      container.innerHTML = `<div style="text-align: center; padding: 40px 16px; color: #64748b; font-size: 13px;"><div style="display:inline-block; width:22px; height:22px; border:2.5px solid #cbd5e1; border-top-color:#047857; border-radius:50%; animation:spin 0.8s linear infinite; vertical-align:middle; margin-right:8px;"></div>Loading orders...</div>`;
 
       let token = "";
       let partyCode = "";
@@ -3993,14 +4124,27 @@
       }
 
       try {
-        const url = `/api/customer/my-orders?token=${encodeURIComponent(token)}&party_code=${encodeURIComponent(partyCode)}&party_name=${encodeURIComponent(partyName)}&phone=${encodeURIComponent(phone)}&filter=${currentCustDateFilter}&date=${customDate}`;
-        const res = await fetch(url);
+        const params = new URLSearchParams({
+          token: token,
+          party_code: partyCode,
+          party_name: partyName,
+          phone: phone,
+          filter: currentCustDateFilter,
+          date: customDate,
+          page: currentCustPage,
+          limit: currentCustLimit,
+          search: currentCustSearchQuery
+        });
+
+        const res = await fetch(`/api/customer/my-orders?${params.toString()}`);
         const data = await res.json();
 
         if (res.ok && data.status === "success") {
           cachedCustomerOrders = data.orders || [];
+          totalCustOrders = data.filteredTotal !== undefined ? data.filteredTotal : (data.totalOrders || cachedCustomerOrders.length);
+          totalCustPages = data.totalPages || 1;
 
-          // 📊 Update Elevated KPI Cards: Today, Yesterday, All Orders
+          // 📊 Update KPI Cards: Today, Yesterday, All Orders
           if (document.getElementById("custKpiTodayOrders")) {
             document.getElementById("custKpiTodayOrders").textContent = (data.todayCount !== undefined ? data.todayCount : 0).toLocaleString();
           }
@@ -4008,34 +4152,106 @@
             document.getElementById("custKpiYesterdayOrders").textContent = (data.yesterdayCount !== undefined ? data.yesterdayCount : 0).toLocaleString();
           }
           if (document.getElementById("custKpiTotalOrders")) {
-            document.getElementById("custKpiTotalOrders").textContent = (data.totalOrders !== undefined ? data.totalOrders : cachedCustomerOrders.length).toLocaleString();
+            document.getElementById("custKpiTotalOrders").textContent = (data.totalOrders !== undefined ? data.totalOrders : 0).toLocaleString();
           }
 
-          renderCustomerOrdersList(cachedCustomerOrders);
+          renderCustomerOrdersList(cachedCustomerOrders, data);
+          renderCustomerPagination(data);
           populateQuickTrackChips();
         } else {
           container.innerHTML = `<div style="text-align: center; padding: 40px 16px; color: #dc2626; font-size: 13px;">Could not load orders: ${escapeHtml(data.detail || data.message || "Unauthorized")}</div>`;
+          const pagContainer = document.getElementById("custOrdersPaginationContainer");
+          if (pagContainer) pagContainer.style.display = "none";
         }
       } catch (e) {
         container.innerHTML = `<div style="text-align: center; padding: 40px 16px; color: #dc2626; font-size: 13px;">Error: ${escapeHtml(e.message)}</div>`;
+        const pagContainer = document.getElementById("custOrdersPaginationContainer");
+        if (pagContainer) pagContainer.style.display = "none";
       }
     }
 
-    function renderCustomerOrdersList(orders) {
+    function renderCustomerPagination(meta) {
+      const container = document.getElementById("custOrdersPaginationContainer");
+      if (!container) return;
+      const total = meta ? (meta.filteredTotal !== undefined ? meta.filteredTotal : 0) : 0;
+      const totalPages = meta ? (meta.totalPages || 1) : 1;
+      const page = meta ? (meta.page || 1) : 1;
+      const limit = meta ? (meta.limit || 10) : 10;
+
+      if (!total || total === 0) {
+        container.style.display = "none";
+        return;
+      }
+
+      const startIdx = (page - 1) * limit + 1;
+      const endIdx = Math.min(page * limit, total);
+
+      // Smart pagination buttons (window of 5 pages)
+      let pageNumbers = [];
+      if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+      } else {
+        pageNumbers.push(1);
+        if (page > 3) pageNumbers.push("...");
+        let start = Math.max(2, page - 1);
+        let end = Math.min(totalPages - 1, page + 1);
+        for (let i = start; i <= end; i++) pageNumbers.push(i);
+        if (page < totalPages - 2) pageNumbers.push("...");
+        pageNumbers.push(totalPages);
+      }
+
+      const pagesHtml = pageNumbers.map(p => {
+        if (p === "...") {
+          return `<span style="color: #94a3b8; font-size: 12px; padding: 0 3px;">...</span>`;
+        }
+        return `<button type="button" class="cust-page-btn ${p === page ? 'active' : ''}" onclick="loadCustomerOrders(${p})">${p}</button>`;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="cust-page-info">
+          Showing <strong>${startIdx.toLocaleString()}</strong>–<strong>${endIdx.toLocaleString()}</strong> of <strong>${total.toLocaleString()}</strong> orders
+        </div>
+        <div class="cust-page-btns">
+          <button type="button" class="cust-page-btn" ${page <= 1 ? 'disabled' : ''} onclick="loadCustomerOrders(${page - 1})" title="Previous Page">
+            ◀
+          </button>
+          ${pagesHtml}
+          <button type="button" class="cust-page-btn" ${page >= totalPages ? 'disabled' : ''} onclick="loadCustomerOrders(${page + 1})" title="Next Page">
+            ▶
+          </button>
+        </div>
+      `;
+      container.style.display = (totalPages > 1 || total > limit) ? "flex" : "none";
+    }
+
+    function trackCustomerOrderFromList(cleanId) {
+      switchCustomerSection('track');
+      const input = document.getElementById("trackOrderInput");
+      if (input) input.value = `#${cleanId}`;
+      trackCustomerOrder(`#${cleanId}`);
+    }
+
+    function renderCustomerOrdersList(orders, meta) {
       const container = document.getElementById("customerOrdersListContainer");
       if (!orders || orders.length === 0) {
+        const isSearch = currentCustSearchQuery.trim().length > 0;
         container.innerHTML = `
-          <div style="text-align: center; padding: 50px 16px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 14px;">
+          <div style="text-align: center; padding: 45px 16px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 14px;">
             <div style="width: 48px; height: 48px; margin: 0 auto 12px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </div>
-            <div style="font-weight: 700; color: #334155; margin-bottom: 4px; font-size: 14px;">No Orders Found</div>
-            <div style="font-size: 12px; color: #64748b;">You have no orders placed in this time period.</div>
+            <div style="font-weight: 700; color: #334155; margin-bottom: 4px; font-size: 14px;">${isSearch ? 'No Matching Orders' : 'No Orders Found'}</div>
+            <div style="font-size: 12px; color: #64748b; margin-bottom: ${isSearch ? '12px' : '0'};">
+              ${isSearch ? `No orders found matching "${escapeHtml(currentCustSearchQuery)}".` : 'You have no orders placed in this time period.'}
+            </div>
+            ${isSearch ? `
+              <button type="button" class="btn-secondary-auth" style="display: inline-flex; width: auto; height: 34px; padding: 0 14px; font-size: 12px;" onclick="clearCustomerOrdersSearch()">
+                Clear Search Filter
+              </button>
+            ` : ''}
           </div>
         `;
         return;
@@ -4086,6 +4302,12 @@
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
               </div>
               <div style="display: flex; gap: 6px;">
+                <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackCustomerOrderFromList('${escapeHtml(o.cleanId)}')" title="Live Dispatch Tracking">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  <span>Track</span>
+                </button>
                 <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openCustomerOrderDetailsModal('${escapeHtml(o.cleanId)}')" title="View all order details">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -4100,7 +4322,7 @@
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
                   </svg>
-                  <span>View Slip</span>
+                  <span>Slip</span>
                 </button>
               </div>
             </div>
@@ -4209,7 +4431,9 @@
       let ord = cachedCustomerOrders.find(o => o.cleanId === orderId);
       if (!ord) {
         try {
-          const res = await fetch(`/api/sales-orders/search?q=${encodeURIComponent(orderId)}`);
+          const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
+          const cToken = sess.token || "";
+          const res = await fetch(`/api/customer/track-order?q=${encodeURIComponent(orderId)}&token=${encodeURIComponent(cToken)}`);
           const data = await res.json();
           if (res.ok && data.orders && data.orders.length > 0) {
             ord = data.orders.find(o => o.cleanId === orderId) || data.orders[0];
@@ -4217,7 +4441,7 @@
         } catch (e) {}
       }
       if (!ord) {
-        alert("Order details not found.");
+        alert("Order details not found or access restricted.");
         return;
       }
 
@@ -4291,33 +4515,39 @@
 
       let orders = (cachedCustomerOrders && cachedCustomerOrders.length > 0) ? cachedCustomerOrders : [];
 
-      // If empty, attempt silent fetch
+      // If empty, attempt silent fetch with limit 5
       if (orders.length === 0) {
         try {
           const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
           const token = sess.token || "";
-          const pCode = sess.party_code || "";
-          const pName = sess.party_name || sess.customer_name || "";
-          const phone = sess.phone || "";
-          if (token || pCode || phone) {
-            const res = await fetch(`/api/customer/my-orders?token=${encodeURIComponent(token)}&party_code=${encodeURIComponent(pCode)}&party_name=${encodeURIComponent(pName)}&phone=${encodeURIComponent(phone)}&filter=ALL`);
+          if (token) {
+            const res = await fetch(`/api/customer/my-orders?token=${encodeURIComponent(token)}&filter=ALL&page=1&limit=5`);
             const d = await res.json();
             if (res.ok && d.orders && d.orders.length > 0) {
               cachedCustomerOrders = d.orders;
               orders = d.orders;
+              totalCustOrders = d.filteredTotal || d.totalOrders || orders.length;
             }
           }
         } catch (e) {}
       }
 
       if (orders.length > 0) {
-        const topOrders = orders.slice(0, 4);
-        list.innerHTML = topOrders.map(o => `
+        const topOrders = orders.slice(0, 5);
+        let chipsHtml = topOrders.map(o => `
           <button type="button" class="quick-chip-btn" onclick="trackCustomerOrder('#${escapeHtml(o.cleanId)}')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             <span>#${escapeHtml(o.cleanId)}</span>
           </button>
         `).join("");
+
+        chipsHtml += `
+          <button type="button" class="quick-chip-btn" style="background: #f1f5f9; border-color: #cbd5e1; color: #334155; font-weight: 700;" onclick="switchCustomerSection('orders')">
+            📜 All Orders ${totalCustOrders > 0 ? `(${totalCustOrders.toLocaleString()})` : ''}
+          </button>
+        `;
+
+        list.innerHTML = chipsHtml;
         container.style.display = "flex";
 
         // Auto populate input if currently empty
@@ -4421,6 +4651,48 @@
         });
       }
 
+      // Dynamic ERP Timeline Workflow
+      const tl = ord.timeline || {
+        activeStep: isConfirmed ? 2 : 1,
+        stages: [
+          { step: 1, id: "booked", name: "Order Booked", subtitle: "Logged in ERP", status: "completed", timestamp: ord.formattedTimestamp || ord.order_date || "" },
+          { step: 2, id: "so_confirmed", name: isConfirmed ? "SO Confirmed" : "SO In Review", subtitle: cleanSo ? "SO #" + cleanSo : "Billing Allocation", status: isConfirmed ? "completed" : "current", timestamp: ord.confirmedAt || "" },
+          { step: 3, id: "dispatch", name: "Dispatch & Loading", subtitle: isConfirmed ? "Ready for Mandi" : "Awaiting SO", status: isConfirmed ? "current" : "upcoming", timestamp: ord.dispatchAt || "" }
+        ]
+      };
+
+      const stepperClass = `step-${tl.activeStep}-active`;
+
+      let stagesHtml = "";
+      (tl.stages || []).forEach(stg => {
+        let iconHtml = "";
+        if (stg.status === "completed") {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        } else if (stg.status === "current" && stg.step === 3) {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>`;
+        } else if (stg.status === "current") {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+        } else {
+          iconHtml = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>`;
+        }
+
+        stagesHtml += `
+          <div class="track-step ${stg.status}">
+            <div class="track-step-circle">
+              ${iconHtml}
+            </div>
+            <div class="track-step-label">${escapeHtml(stg.name)}</div>
+            <div class="track-step-sub">${escapeHtml(stg.subtitle)}</div>
+            ${stg.timestamp ? `<div class="track-step-time">${escapeHtml(stg.timestamp)}</div>` : ''}
+          </div>
+        `;
+      });
+
       container.innerHTML = `
         <div class="track-result-card">
           <!-- Card Header -->
@@ -4446,44 +4718,20 @@
             </div>
           </div>
 
-          <!-- Multi-Stage Stepper -->
+          <!-- Dynamic Multi-Stage Stepper -->
           <div class="track-stepper-wrap">
-            <div class="track-stepper ${isConfirmed ? 'step-2-active' : ''}">
-              <!-- Step 1: Booked -->
-              <div class="track-step completed">
-                <div class="track-step-circle">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="track-step-label">Order Booked</div>
-                <div class="track-step-sub">Logged in ERP</div>
-              </div>
-
-              <!-- Step 2: SO Confirmed -->
-              <div class="track-step ${isConfirmed ? 'completed' : 'current'}">
-                <div class="track-step-circle">
-                  ${isConfirmed 
-                    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>` 
-                    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`
-                  }
-                </div>
-                <div class="track-step-label">${isConfirmed ? 'SO Confirmed' : 'SO In Review'}</div>
-                <div class="track-step-sub">${cleanSo ? 'SO #' + escapeHtml(cleanSo) : 'Billing Allocation'}</div>
-              </div>
-
-              <!-- Step 3: Factory Dispatch -->
-              <div class="track-step ${isConfirmed ? 'current' : ''}">
-                <div class="track-step-circle">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <rect x="1" y="3" width="15" height="13"></rect>
-                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                  </svg>
-                </div>
-                <div class="track-step-label">Dispatch & Loading</div>
-                <div class="track-step-sub">${isConfirmed ? 'Ready for Mandi' : 'Awaiting SO'}</div>
-              </div>
+            <div class="track-stepper ${stepperClass}">
+              ${stagesHtml}
             </div>
+            ${ord.unit ? `
+              <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #64748b;">
+                <span>🏭 Factory Plant: <strong>${escapeHtml(ord.unit)}</strong></span>
+                <span style="color: #047857; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                  <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                  Live ERP Synchronized
+                </span>
+              </div>
+            ` : ''}
           </div>
 
           <!-- Customer & Destination Details -->

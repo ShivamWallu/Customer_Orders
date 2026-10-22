@@ -186,6 +186,26 @@ def init_db():
             conn.execute("CREATE INDEX IF NOT EXISTS idx_orders_unit ON orders (unit);")
         except Exception:
             pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN dispatch_status TEXT DEFAULT 'PENDING';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN dispatch_at TEXT DEFAULT '';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN vehicle_number TEXT DEFAULT '';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN driver_name TEXT DEFAULT '';")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN driver_phone TEXT DEFAULT '';")
+        except Exception:
+            pass
 
         # Seed initial Warehouse Units (Unit 1 to Unit 6) if units table is empty
         try:
@@ -987,11 +1007,155 @@ def get_orders_for_asm(sales_person_name: str, phone: str = "", date_filter: str
     finally:
         conn.close()
 
-def get_orders_for_customer(party_name: str = "", party_code: str = "", phone: str = "", date_filter: str = "ALL", specific_date: str = "") -> List[Dict[str, Any]]:
+def format_order_dict(r: Any) -> Dict[str, Any]:
     """
-    Fetches orders strictly belonging to a Customer by Party Code, Party Name, or Phone.
-    Supports filters: TODAY, YESTERDAY, ALL, or specific date.
+    Standardizes and enriches order record with dynamic ERP milestone timeline,
+    box/piece totals, clean IDs, and dispatch tracking fields.
     """
+    d = dict(r)
+    try:
+        d["items"] = json.loads(d.get("items_json") or "[]")
+    except Exception:
+        d["items"] = []
+
+    clean_id = str(d.get("order_id") or "").replace("#", "")
+    d["id"] = d.get("order_id")
+    d["cleanId"] = clean_id
+    d["partyName"] = d.get("party_name") or ""
+    d["partyCode"] = d.get("party_code") or ""
+    d["partyAddress"] = d.get("party_address") or ""
+    d["deliveryAddress"] = d.get("delivery_address") or ""
+    d["salesPerson"] = d.get("sales_person") or ""
+    d["totalBoxes"] = d.get("total_boxes", 0)
+    d["totalPieces"] = d.get("total_pieces", 0)
+
+    raw_status = (d.get("order_status") or "PENDING").upper().strip()
+    so_num = str(d.get("so_number") or "").strip()
+    clean_so = so_num.replace("#", "")
+
+    # If SO is assigned, order is at minimum CONFIRMED
+    if clean_so and raw_status == "PENDING":
+        raw_status = "CONFIRMED"
+
+    d["orderStatus"] = raw_status
+    d["soNumber"] = clean_so
+    d["confirmedAt"] = d.get("confirmed_at") or ""
+    d["confirmedBy"] = d.get("confirmed_by") or ""
+    d["unit"] = d.get("unit") or "Unit 1"
+
+    dispatch_status = (d.get("dispatch_status") or "PENDING").upper().strip()
+    d["dispatchStatus"] = dispatch_status
+    d["dispatchAt"] = d.get("dispatch_at") or ""
+    d["vehicleNumber"] = d.get("vehicle_number") or ""
+    d["driverName"] = d.get("driver_name") or ""
+    d["driverPhone"] = d.get("driver_phone") or ""
+
+    d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date") or d.get("created_at") or ""
+
+    # Dynamic 3-Stage Workflow Construction
+    is_confirmed = (raw_status == "CONFIRMED") or bool(clean_so)
+    is_dispatched = (raw_status in ["DISPATCHED", "DELIVERED"]) or (dispatch_status in ["DISPATCHED", "DELIVERED", "IN_TRANSIT"])
+    is_delivered = (raw_status == "DELIVERED") or (dispatch_status == "DELIVERED")
+
+    # Stage 1: Order Booked (Logged in ERP)
+    stage1 = {
+        "step": 1,
+        "id": "booked",
+        "name": "Order Booked",
+        "subtitle": "Logged in ERP",
+        "status": "completed",
+        "timestamp": d["formattedTimestamp"],
+        "detail": f"Booked in system • Factory: {d['unit']}"
+    }
+
+    # Stage 2: SO Confirmed
+    if is_confirmed or is_dispatched or is_delivered:
+        stage2 = {
+            "step": 2,
+            "id": "so_confirmed",
+            "name": "SO Confirmed",
+            "subtitle": f"SO #{clean_so}" if clean_so else "Approved",
+            "status": "completed",
+            "timestamp": d["confirmedAt"] or "Confirmed in ERP",
+            "detail": f"Sales Order #{clean_so} Allocated" if clean_so else "Commercial verification complete"
+        }
+    else:
+        stage2 = {
+            "step": 2,
+            "id": "so_in_review",
+            "name": "SO In Review",
+            "subtitle": "Billing Allocation",
+            "status": "current",
+            "timestamp": "",
+            "detail": "Under review by Commercial & Billing team"
+        }
+
+    # Stage 3: Dispatch & Loading
+    if is_delivered:
+        stage3 = {
+            "step": 3,
+            "id": "delivered",
+            "name": "Delivered",
+            "subtitle": "Mandi Delivery Complete",
+            "status": "completed",
+            "timestamp": d["dispatchAt"] or "Delivered",
+            "detail": f"Delivered via {d['vehicleNumber']}" if d['vehicleNumber'] else "Delivered to destination mandi"
+        }
+    elif is_dispatched:
+        stage3 = {
+            "step": 3,
+            "id": "dispatched",
+            "name": "Dispatch & Loading",
+            "subtitle": "In Transit to Mandi",
+            "status": "current",
+            "timestamp": d["dispatchAt"] or "Dispatched",
+            "detail": f"Vehicle: {d['vehicleNumber']}" if d['vehicleNumber'] else f"Truck departed from {d['unit']}"
+        }
+    elif is_confirmed:
+        stage3 = {
+            "step": 3,
+            "id": "loading",
+            "name": "Dispatch & Loading",
+            "subtitle": "Ready for Mandi",
+            "status": "current",
+            "timestamp": "",
+            "detail": f"Goods staging and truck loading active at {d['unit']}"
+        }
+    else:
+        stage3 = {
+            "step": 3,
+            "id": "awaiting_so",
+            "name": "Dispatch & Loading",
+            "subtitle": "Awaiting SO",
+            "status": "upcoming",
+            "timestamp": "",
+            "detail": "Factory dispatch will initiate upon SO confirmation"
+        }
+
+    active_step = 3 if (is_dispatched or is_delivered) else (2 if is_confirmed else 1)
+
+    d["timeline"] = {
+        "activeStep": active_step,
+        "stages": [stage1, stage2, stage3]
+    }
+    return d
+
+def get_orders_for_customer(
+    party_name: str = "",
+    party_code: str = "",
+    phone: str = "",
+    date_filter: str = "ALL",
+    specific_date: str = "",
+    page: int = 1,
+    limit: int = 10,
+    search_query: str = ""
+) -> Dict[str, Any]:
+    """
+    Fetches paginated orders strictly belonging to a Customer by Party Code, Party Name, or Phone.
+    Engineered for ultra-high volumes (10,000+ orders) with zero DOM freezing or memory overload.
+    Supports filters: TODAY, YESTERDAY, CUSTOM date, ALL, plus quick text/ID search.
+    """
+    import math
     from datetime import date, timedelta
     conn = get_connection()
     try:
@@ -1014,24 +1178,47 @@ def get_orders_for_customer(party_name: str = "", party_code: str = "", phone: s
             params.append(party_name.strip().lower())
 
         if not conditions:
-            return []
+            return {
+                "orders": [], "totalCount": 0, "todayCount": 0,
+                "yesterdayCount": 0, "allTotalCount": 0, "page": page,
+                "limit": limit, "totalPages": 0
+            }
 
         base_cond = "(" + " OR ".join(conditions) + ")"
-        query = f"SELECT * FROM orders WHERE {base_cond}"
+        base_params = list(params)
 
-        # Date filter
+        # Base stats (High-speed indexed COUNT queries for KPI badges)
         today_iso = date.today().isoformat()
         today_slash = date.today().strftime("%d/%m/%Y")
         yesterday_iso = (date.today() - timedelta(days=1)).isoformat()
         yesterday_slash = (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
 
+        cur.execute(f"SELECT COUNT(*) FROM orders WHERE {base_cond}", base_params)
+        all_total_count = cur.fetchone()[0]
+
+        cur.execute(
+            f"SELECT COUNT(*) FROM orders WHERE {base_cond} AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)",
+            base_params + [f"{today_iso}%", f"%{today_iso}%", f"%{today_slash}%"]
+        )
+        today_count = cur.fetchone()[0]
+
+        cur.execute(
+            f"SELECT COUNT(*) FROM orders WHERE {base_cond} AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)",
+            base_params + [f"{yesterday_iso}%", f"%{yesterday_iso}%", f"%{yesterday_slash}%"]
+        )
+        yesterday_count = cur.fetchone()[0]
+
+        # Build filtered query
+        filter_conds = [base_cond]
+        filter_params = list(base_params)
+
         date_filter_clean = (date_filter or "ALL").upper().strip()
         if date_filter_clean == "TODAY":
-            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
-            params.extend([f"{today_iso}%", f"%{today_iso}%", f"%{today_slash}%"])
+            filter_conds.append("(created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)")
+            filter_params.extend([f"{today_iso}%", f"%{today_iso}%", f"%{today_slash}%"])
         elif date_filter_clean == "YESTERDAY":
-            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
-            params.extend([f"{yesterday_iso}%", f"%{yesterday_iso}%", f"%{yesterday_slash}%"])
+            filter_conds.append("(created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)")
+            filter_params.extend([f"{yesterday_iso}%", f"%{yesterday_iso}%", f"%{yesterday_slash}%"])
         elif date_filter_clean == "CUSTOM" and specific_date:
             clean_date = specific_date.strip()
             alt_date = clean_date
@@ -1039,33 +1226,42 @@ def get_orders_for_customer(party_name: str = "", party_code: str = "", phone: s
                 parts = clean_date.split("-")
                 if len(parts) == 3:
                     alt_date = f"{parts[2]}/{parts[1]}/{parts[0]}"
-            query += " AND (created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)"
-            params.extend([f"{clean_date}%", f"%{clean_date}%", f"%{alt_date}%"])
+            filter_conds.append("(created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)")
+            filter_params.extend([f"{clean_date}%", f"%{clean_date}%", f"%{alt_date}%"])
 
-        query += " ORDER BY created_at DESC"
-        cur.execute(query, params)
+        if search_query and search_query.strip():
+            sq = search_query.strip().lower()
+            sq_no_hash = sq.lstrip("#").strip()
+            filter_conds.append("(LOWER(order_id) LIKE ? OR LOWER(order_id) LIKE ? OR LOWER(so_number) LIKE ? OR LOWER(items_summary) LIKE ?)")
+            filter_params.extend([f"%{sq}%", f"%{sq_no_hash}%", f"%{sq_no_hash}%", f"%{sq}%"])
+
+        where_clause = " AND ".join(filter_conds)
+
+        # Total matching orders count for pagination
+        cur.execute(f"SELECT COUNT(*) FROM orders WHERE {where_clause}", filter_params)
+        total_filtered = cur.fetchone()[0]
+
+        # Paginated slice
+        p_num = max(1, int(page))
+        l_num = max(1, min(100, int(limit))) if limit else 10
+        offset = (p_num - 1) * l_num
+
+        cur.execute(f"SELECT * FROM orders WHERE {where_clause} ORDER BY created_at DESC LIMIT ? OFFSET ?", filter_params + [l_num, offset])
         rows = cur.fetchall()
+        orders = [format_order_dict(r) for r in rows]
 
-        result = []
-        for r in rows:
-            d = dict(r)
-            try:
-                d["items"] = json.loads(d.get("items_json") or "[]")
-            except Exception:
-                d["items"] = []
-            d["id"] = d.get("order_id")
-            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
-            d["partyName"] = d.get("party_name")
-            d["partyCode"] = d.get("party_code")
-            d["partyAddress"] = d.get("party_address")
-            d["salesPerson"] = d.get("sales_person")
-            d["totalBoxes"] = d.get("total_boxes", 0)
-            d["totalPieces"] = d.get("total_pieces", 0)
-            d["orderStatus"] = d.get("order_status") or "PENDING"
-            d["soNumber"] = d.get("so_number") or ""
-            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
-            result.append(d)
-        return result
+        total_pages = math.ceil(total_filtered / l_num) if l_num > 0 else 1
+
+        return {
+            "orders": orders,
+            "totalCount": total_filtered,
+            "todayCount": today_count,
+            "yesterdayCount": yesterday_count,
+            "allTotalCount": all_total_count,
+            "page": p_num,
+            "limit": l_num,
+            "totalPages": total_pages
+        }
     finally:
         conn.close()
 
@@ -1184,28 +1380,7 @@ def search_customer_orders_db(query: str, phone: str = "", party_code: str = "",
         params = cust_params + [p1, p2, p1, p3, p2, p2, limit]
         cur.execute(sql, params)
         rows = cur.fetchall()
-
-        result = []
-        for r in rows:
-            d = dict(r)
-            try:
-                d["items"] = json.loads(d.get("items_json") or "[]")
-            except Exception:
-                d["items"] = []
-            d["id"] = d.get("order_id")
-            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
-            d["partyName"] = d.get("party_name")
-            d["partyCode"] = d.get("party_code")
-            d["partyAddress"] = d.get("party_address")
-            d["deliveryAddress"] = d.get("delivery_address")
-            d["salesPerson"] = d.get("sales_person")
-            d["totalBoxes"] = d.get("total_boxes", 0)
-            d["totalPieces"] = d.get("total_pieces", 0)
-            d["orderStatus"] = d.get("order_status") or "PENDING"
-            d["soNumber"] = d.get("so_number") or ""
-            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
-            result.append(d)
-        return result
+        return [format_order_dict(r) for r in rows]
     finally:
         conn.close()
 
