@@ -122,55 +122,74 @@ app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 # High-Performance Request Tracing & Structured Logging Middleware
 app.add_middleware(RequestTracingMiddleware)
 
+_REMOTE_SYNC_LOCK = asyncio.Lock()
+
 async def sync_remote_production_orders() -> int:
     """
-    ⚡ Synchronizes orders from LIVE AWS production server (https://order.khandelia.online/api/orders/all)
-    into local SQLite/PostgreSQL database and customer_orders.json.
-    Ensures zero-lag visibility of new mobile/Google Sheet orders in /admin dashboard.
+    ⚡ Synchronizes ONLY brand-new orders from LIVE AWS production server (https://order.khandelia.online/api/orders/all)
+    into local SQLite database and customer_orders.json without locking or freezing the event loop.
     """
     remote_url = os.environ.get("REMOTE_SERVER_URL", "https://order.khandelia.online").rstrip("/")
     base_url = os.environ.get("APP_BASE_URL", "").lower()
     
-    # Avoid loopback if running directly on the production domain itself
     if "order.khandelia.online" in base_url:
         return 0
         
-    try:
-        loop = asyncio.get_event_loop()
-        def _fetch():
-            req = urllib.request.Request(
-                f"{remote_url}/api/orders/all",
-                headers={"User-Agent": "MashalAdminSync/1.0"}
-            )
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                if resp.status == 200:
-                    return json.loads(resp.read().decode("utf-8"))
-            return None
-
-        data = await loop.run_in_executor(None, _fetch)
-        if not data:
-            return 0
-            
-        remote_orders = data.get("orders", data) if isinstance(data, dict) else data
-        if not isinstance(remote_orders, list):
-            return 0
-            
-        synced_count = 0
-        for o in remote_orders:
-            oid = o.get("id") or o.get("order_id")
-            if not oid:
-                continue
-            save_order_to_db(o)
-            try:
-                await async_save_order(o)
-            except Exception:
-                pass
-            synced_count += 1
-            
-        return synced_count
-    except Exception as e:
-        logger.debug(f"Remote production sync skipped: {e}")
+    if _REMOTE_SYNC_LOCK.locked():
         return 0
+
+    async with _REMOTE_SYNC_LOCK:
+        try:
+            loop = asyncio.get_event_loop()
+            def _fetch():
+                req = urllib.request.Request(
+                    f"{remote_url}/api/orders/all",
+                    headers={"User-Agent": "MashalAdminSync/1.0"}
+                )
+                with urllib.request.urlopen(req, timeout=4) as resp:
+                    if resp.status == 200:
+                        return json.loads(resp.read().decode("utf-8"))
+                return None
+
+            data = await loop.run_in_executor(None, _fetch)
+            if not data:
+                return 0
+                
+            remote_orders = data.get("orders", data) if isinstance(data, dict) else data
+            if not isinstance(remote_orders, list):
+                return 0
+
+            # 1. Fast check existing IDs to only save brand-new orders (avoids SQLite lock)
+            def _check_and_save_new():
+                conn = get_connection()
+                try:
+                    cur = conn.cursor()
+                    cur.execute("SELECT order_id FROM orders")
+                    existing_ids = {str(row[0]).replace("#", "").strip() for row in cur.fetchall()}
+                finally:
+                    conn.close()
+
+                new_orders = [
+                    o for o in remote_orders
+                    if str(o.get("id") or o.get("order_id") or "").replace("#", "").strip() not in existing_ids
+                ]
+                
+                if not new_orders:
+                    return 0
+
+                count = 0
+                for o in new_orders:
+                    if save_order_to_db(o):
+                        count += 1
+                return count
+
+            synced_count = await loop.run_in_executor(None, _check_and_save_new)
+            if synced_count > 0:
+                logger.info(f"⚡ Live Production Sync: {synced_count} new orders imported into local database")
+            return synced_count
+        except Exception as e:
+            logger.debug(f"Remote production sync skipped: {e}")
+            return 0
 
 @app.on_event("startup")
 async def on_app_startup():
@@ -576,15 +595,12 @@ async def get_admin_profile(request: Request):
     }
 
 @app.get("/api/admin/orders")
-async def get_admin_orders(request: Request):
+async def get_admin_orders(request: Request, background_tasks: BackgroundTasks):
     """Fetches permanent orders with strict unit-based permission enforcement"""
     admin = require_admin_auth(request)
 
-    # ⚡ Real-time sync from live production server so /admin matches Google Sheet with 0 lag
-    try:
-        await sync_remote_production_orders()
-    except Exception as sync_err:
-        logger.debug(f"Admin order live sync note: {sync_err}")
+    # Trigger lightweight async background check without blocking response
+    background_tasks.add_task(sync_remote_production_orders)
 
     user_role = admin.get("role", "admin")
     user_units = admin.get("assigned_units", "ALL")
@@ -604,10 +620,6 @@ async def get_admin_orders(request: Request):
 async def get_admin_dashboard_stats(request: Request):
     """Fetches live KPI analytics metrics directly from SQLite database with unit filtering"""
     admin = require_admin_auth(request)
-    try:
-        await sync_remote_production_orders()
-    except Exception:
-        pass
     user_role = admin.get("role", "admin")
     user_units = admin.get("assigned_units", "ALL")
     requested_unit = request.query_params.get("unit")
@@ -1164,12 +1176,12 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     with open(ORDERS_LOG, "w", encoding="utf-8") as f:
         json.dump(orders_list, f, indent=2, ensure_ascii=False)
         
-    # 0. Save permanently via SQLAlchemy 2.0 Async Engine (PgBouncer & High-Concurrency pool)
+    # 0. Always save permanently to orders.db SQLite first (Instant DB Persistence)
+    save_order_to_db(order)
     try:
         await async_save_order(order)
     except Exception as async_save_err:
-        logger.warning(f"Async DB save fallback: {async_save_err}")
-        save_order_to_db(order)
+        logger.warning(f"Async DB save note: {async_save_err}")
 
     # Invalidate cached dashboard stats for real-time accuracy
     await cache.invalidate_stats()
