@@ -2079,35 +2079,49 @@
     .chip-filter-btn:hover {
       background: #f8fafc;
       border-color: #cbd5e1;
-      color: #0f172a;
+      transform: translateY(-1px);
     }
 
-    .chip-filter-btn.active {
-      background: #0f172a;
-      color: #ffffff;
-      border-color: #0f172a;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+    /* 🎨 Harmonious Inactive States (Clean, Modern Pastel Accents) */
+    .chip-filter-btn.chip-all {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #334155;
     }
 
-    .chip-filter-btn.active.chip-has-so {
-      background: #047857;
-      border-color: #047857;
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(4, 120, 87, 0.25);
+    .chip-filter-btn.chip-confirmed {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #047857;
+    }
+
+    .chip-filter-btn.chip-pending {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #b45309;
+    }
+
+    /* 💎 Premium Active States (Zero Harsh Black - Enterprise Cohesive Colorway) */
+    .chip-filter-btn.active,
+    .chip-filter-btn.active.chip-all {
+      background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.32) !important;
     }
 
     .chip-filter-btn.active.chip-confirmed {
-      background: #0284c7;
-      border-color: #0284c7;
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+      background: linear-gradient(135deg, #059669, #047857) !important;
+      border-color: #047857 !important;
+      color: #ffffff !important;
+      box-shadow: 0 3px 10px rgba(5, 150, 105, 0.32) !important;
     }
 
     .chip-filter-btn.active.chip-pending {
-      background: #d97706;
-      border-color: #d97706;
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+      background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+      border-color: #d97706 !important;
+      color: #ffffff !important;
+      box-shadow: 0 3px 10px rgba(217, 119, 6, 0.32) !important;
     }
 
     /* Explanation Banner */
@@ -2760,7 +2774,7 @@
 
       <!-- Quick Filter Pills (3-Grid Equal Fit, Zero Overflow) -->
       <div class="search-filter-chips">
-        <button type="button" id="chipFilterAll" class="chip-filter-btn active" onclick="setSearchFilter('all')">
+        <button type="button" id="chipFilterAll" class="chip-filter-btn chip-all active" onclick="setSearchFilter('all')">
           <span>📋 All</span>
         </button>
         <button type="button" id="chipFilterConfirmed" class="chip-filter-btn chip-confirmed" onclick="setSearchFilter('confirmed')">
