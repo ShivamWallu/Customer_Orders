@@ -1039,13 +1039,29 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
 
     d["orderStatus"] = raw_status
     d["soNumber"] = clean_so
-    d["confirmedAt"] = d.get("confirmed_at") or ""
+
+    raw_conf = str(d.get("confirmed_at") or "").strip()
+    if "T" in raw_conf:
+        try:
+            dt = datetime.fromisoformat(raw_conf)
+            raw_conf = dt.strftime("%d/%m/%Y %I:%M:%S %p")
+        except Exception:
+            pass
+    d["confirmedAt"] = raw_conf
     d["confirmedBy"] = d.get("confirmed_by") or ""
     d["unit"] = d.get("unit") or "Unit 1"
 
     dispatch_status = (d.get("dispatch_status") or "PENDING").upper().strip()
     d["dispatchStatus"] = dispatch_status
-    d["dispatchAt"] = d.get("dispatch_at") or ""
+
+    raw_disp = str(d.get("dispatch_at") or "").strip()
+    if "T" in raw_disp:
+        try:
+            dt = datetime.fromisoformat(raw_disp)
+            raw_disp = dt.strftime("%d/%m/%Y %I:%M:%S %p")
+        except Exception:
+            pass
+    d["dispatchAt"] = raw_disp
     d["vehicleNumber"] = d.get("vehicle_number") or ""
     d["driverName"] = d.get("driver_name") or ""
     d["driverPhone"] = d.get("driver_phone") or ""
@@ -1497,7 +1513,7 @@ def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admi
     clean_so = (so_number or "").strip()
     if not clean_so:
         return False
-    now_str = datetime.now().isoformat()
+    now_str = datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")
     conn = get_connection()
     try:
         with conn:

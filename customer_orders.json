@@ -2886,10 +2886,10 @@
     "total_pieces": 650,
     "party_code": "SDMOWB0781",
     "data_consent": "YES (Verified)",
-    "order_status": "PENDING",
-    "so_number": "",
-    "confirmed_at": "",
-    "confirmed_by": "",
+    "order_status": "CONFIRMED",
+    "so_number": "SO-98432",
+    "confirmed_at": "22/10/2026 04:35:03 PM",
+    "confirmed_by": "admin (super_admin)",
     "unit": "Unit 1",
     "items": [
       {
