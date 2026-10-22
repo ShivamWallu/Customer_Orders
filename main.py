@@ -80,6 +80,24 @@ from otp_service import (
 
 # Load configuration from .env file
 load_dotenv()
+from config import settings
+from logger_service import logger, RequestTracingMiddleware
+from cache_service import cache
+from rate_limiter import limiter, rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from async_database import (
+    init_async_db,
+    check_db_health,
+    async_save_order,
+    async_get_orders_paginated,
+    async_search_customers,
+    async_get_all_units,
+    async_confirm_order,
+    async_update_order_unit,
+    async_delete_order,
+    async_get_dashboard_stats,
+    async_log_audit
+)
 
 # Initialize permanent database and auto-migrate historical orders
 init_db()
@@ -90,10 +108,38 @@ ORDER_SLIPS_DIR = "order_slips"
 os.makedirs(ORDER_SLIPS_DIR, exist_ok=True)
 
 app = FastAPI(
-    title="Sales Customer Order Management - Sheet Sync Engine",
-    version="1.0.2",
-    description="Real-time Webhook & Dynamic Data Sync for Google Sheets 1st Tab"
+    title="Khandelia Oil & General Mills - Enterprise Sales Order Engine",
+    version=settings.APP_VERSION,
+    description="High-Concurrency Real-Time Order Management Suite (1M-10M Scale)"
 )
+
+# Attach SlowAPI Limiter state & Rate Limit Exception Handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+
+# High-Performance Request Tracing & Structured Logging Middleware
+app.add_middleware(RequestTracingMiddleware)
+
+@app.on_event("startup")
+async def on_app_startup():
+    logger.info("Initializing Enterprise High-Concurrency Architecture...")
+    await init_async_db()
+    await cache.init_cache()
+    logger.info("Startup complete: Async SQLAlchemy 2.0 Pool & Tiered Cache Active")
+
+@app.get("/health")
+async def health_check():
+    """Enterprise Liveness & Readiness Probe for Docker, ELB, and K8s"""
+    db_ok = await check_db_health()
+    cache_mode = "redis" if cache.is_redis_connected else "in-memory-lru"
+    return {
+        "status": "healthy" if db_ok else "degraded",
+        "database": "online" if db_ok else "unreachable",
+        "cache": cache_mode,
+        "version": settings.APP_VERSION,
+        "environment": settings.ENVIRONMENT,
+        "timestamp": datetime.now().isoformat()
+    }
 
 # ----------------- ⚡ ULTRA-FAST SOCIAL PREVIEW & CACHED ASSETS -----------------
 BOT_USER_AGENTS = ("whatsapp", "facebookexternalhit", "facebot", "twitterbot", "telegrambot", "linkedinbot", "slackbot", "skypeuripreview")
@@ -851,6 +897,7 @@ def generate_unique_order_id() -> str:
     return f"KOGM-{date_code}-{rand_suffix}"
 
 @app.post("/api/orders/submit")
+@limiter.limit(settings.RATE_LIMIT_ORDER_SUBMIT)
 async def receive_customer_order(request: Request, background_tasks: BackgroundTasks):
     """
     Handles order submission:
@@ -1036,8 +1083,15 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     with open(ORDERS_LOG, "w", encoding="utf-8") as f:
         json.dump(orders_list, f, indent=2, ensure_ascii=False)
         
-    # 0. Save permanently to orders.db SQLite database (Zero Data Loss Engine)
-    save_order_to_db(order)
+    # 0. Save permanently via SQLAlchemy 2.0 Async Engine (PgBouncer & High-Concurrency pool)
+    try:
+        await async_save_order(order)
+    except Exception as async_save_err:
+        logger.warning(f"Async DB save fallback: {async_save_err}")
+        save_order_to_db(order)
+
+    # Invalidate cached dashboard stats for real-time accuracy
+    await cache.invalidate_stats()
 
     # Auto-register/update party into CRM database
     contact = order.get("contactInput", "").strip()
@@ -1848,10 +1902,22 @@ def verify_order_public_portal(order_id: str):
 
 # ----------------- CRM & KIT19 OTP ENDPOINTS -----------------
 @app.get("/api/customers/search")
-def api_search_customers(q: str = ""):
-    """Ultra-fast customer autocomplete matching phone, email, party code, or name (<1ms response)"""
-    results = search_customers(q, limit=10)
-    return {"status": "success", "query": q, "count": len(results), "results": results}
+@limiter.limit(settings.RATE_LIMIT_SEARCH)
+async def api_search_customers(request: Request, q: str = ""):
+    """Ultra-fast tiered-cached customer autocomplete matching phone, email, party code, or name"""
+    clean_q = (q or "").strip()
+    if not clean_q or len(clean_q) < 2:
+        return {"status": "success", "query": q, "count": 0, "results": []}
+
+    # 1. Tier-1 & Tier-2 Cache Check (RAM & Redis)
+    cached = await cache.get_cached_customer_search(clean_q)
+    if cached is not None:
+        return {"status": "success", "query": q, "count": len(cached), "results": cached, "cached": True}
+
+    # 2. Database Indexed Fallback
+    results = await async_search_customers(clean_q, limit=15)
+    await cache.set_cached_customer_search(clean_q, results, ttl=settings.REDIS_CACHE_TTL_SEARCH)
+    return {"status": "success", "query": q, "count": len(results), "results": results, "cached": False}
 
 @app.post("/api/customers/save-new")
 async def api_save_new_customer(request: Request):
@@ -1867,6 +1933,7 @@ async def api_save_new_customer(request: Request):
     return res
 
 @app.post("/api/otp/send")
+@limiter.limit(settings.RATE_LIMIT_OTP)
 async def api_send_otp(request: Request):
     """Sends 6-digit verification OTP via Kit19 HTTP API"""
     body = await request.json()
@@ -1883,6 +1950,7 @@ async def api_verify_otp(request: Request):
 
 # 🔐 1-YEAR SALES MANAGER OTP AUTHENTICATION
 @app.post("/api/sales-manager/send-otp")
+@limiter.limit(settings.RATE_LIMIT_OTP)
 async def api_manager_send_otp(request: Request):
     """Dispatches Kit19 OTP to authorized Sales Manager's phone for 1-year device authentication"""
     body = await request.json()
@@ -2111,6 +2179,7 @@ async def api_get_manager_orders(request: Request):
 
 # 📱 CUSTOMER MOBILE OTP LOGIN & SELF-REGISTRATION
 @app.post("/api/customer/send-otp")
+@limiter.limit(settings.RATE_LIMIT_OTP)
 async def api_customer_send_otp(request: Request):
     """Dispatches Kit19 OTP to Customer phone. Supports self-registration for new customers."""
     body = await request.json()
@@ -2405,10 +2474,26 @@ async def api_customer_track_order(request: Request):
 
 # 🔍 DIRECT SALES ORDER SEARCH API
 @app.get("/api/sales-orders/search")
-def api_search_sales_orders(q: str = ""):
-    """Fast indexed search across orders in orders.db by SO Number, Order ID, Party Name or ASM"""
-    res = search_sales_orders_db(q, limit=50)
-    return {"status": "success", "query": q, "count": len(res), "orders": res}
+@limiter.limit(settings.RATE_LIMIT_SEARCH)
+async def api_search_sales_orders(
+    request: Request,
+    q: str = "",
+    page: int = 1,
+    limit: int = 50,
+    cursor: Optional[str] = None
+):
+    """Fast indexed paginated & cursor search across orders by SO Number, Order ID, Party Name or ASM"""
+    res = await async_get_orders_paginated(search_query=q, page=page, limit=limit, cursor_created_at=cursor)
+    return {
+        "status": "success",
+        "query": q,
+        "count": len(res["orders"]),
+        "total_count": res["total_count"],
+        "page": res["page"],
+        "total_pages": res["total_pages"],
+        "next_cursor": res["next_cursor"],
+        "orders": res["orders"]
+    }
 
 @app.get("/api/otp/kit19-balance")
 def api_get_kit19_balance():

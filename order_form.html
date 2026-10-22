@@ -467,6 +467,7 @@
       background: #ffffff;
       border-top: 2px solid #cbd5e1;
       padding: 10px 16px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -476,6 +477,20 @@
       width: 100%;
       max-width: 640px;
       margin: 0 auto;
+      height: 72px;
+      contain: layout paint;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    /* Optimistic UI Micro-Pulse Animation */
+    .qty-pulse {
+      animation: qtyBounce 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes qtyBounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); background-color: #eff6ff; }
+      100% { transform: scale(1); }
     }
 
     .bar-summary {
@@ -2316,7 +2331,7 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </span>
-            <input type="text" id="trackOrderInput" class="track-input-field" placeholder="Enter Order ID (e.g. #KOGM-20261019-5501) or SO Number..." onkeydown="if(event.key==='Enter') trackCustomerOrder()">
+            <input type="text" id="trackOrderInput" class="track-input-field" placeholder="Enter Order ID (e.g. #KOGM-20261019-5501) or SO Number..." oninput="debouncedTrackCustomerOrder()" onkeydown="if(event.key==='Enter') trackCustomerOrder()">
           </div>
           <button type="button" class="btn-track-submit" onclick="trackCustomerOrder()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -2727,6 +2742,15 @@
       console.error("renderItemList error:", err);
     }
 
+    // ⚡ High-Performance Debounce Utility for Inputs & Searches
+    function debounce(func, wait = 280) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
     function adjustQty(targetId, delta) {
       const inp = document.getElementById(targetId);
       if (!inp) return;
@@ -2734,6 +2758,12 @@
       if (isNaN(current)) current = 0;
       let next = Math.max(0, current + delta);
       inp.value = next > 0 ? next : "";
+
+      // Instant Optimistic Visual Feedback
+      inp.classList.remove("qty-pulse");
+      void inp.offsetWidth; // Trigger reflow for CSS animation restart
+      inp.classList.add("qty-pulse");
+
       updateTotal();
     }
 
@@ -4195,6 +4225,15 @@
         container.style.display = "none";
       }
     }
+
+    // ⚡ Debounced Live Tracking Search (Triggers as user types without lagging)
+    const debouncedTrackCustomerOrder = debounce(() => {
+      const input = document.getElementById("trackOrderInput");
+      const q = (input ? input.value : "").trim();
+      if (q.length >= 4) {
+        trackCustomerOrder();
+      }
+    }, 350);
 
     async function trackCustomerOrder(explicitQuery) {
       const input = document.getElementById("trackOrderInput");

@@ -3734,5 +3734,33 @@
     "status": "PENDING",
     "created_at": "2026-10-17T18:05:41.804204",
     "target_number": "917814749816"
+  },
+  {
+    "order_id": "KOGM-20261021-7469",
+    "party_name": "Seth Traders - Udhampur",
+    "total_boxes": 5,
+    "sales_person": "Shivam Wallu",
+    "delivery_address": "Mand Tibri, Jammu, Udhampur, Jammu and Kashmir - 182121",
+    "timestamp": "21/10/2026 03:20:43 PM",
+    "slip_image_path": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261021-7469.png",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "5 LTR CAN x 4",
+        "boxes": 3,
+        "pieces": 12,
+        "multiplier": 4
+      },
+      {
+        "brand": "Mashal",
+        "item": "2 LTR BOTTLE x 9",
+        "boxes": 2,
+        "pieces": 18,
+        "multiplier": 9
+      }
+    ],
+    "status": "PENDING",
+    "created_at": "2026-10-21T15:20:52.931694",
+    "target_number": "917814749816"
   }
 ]
