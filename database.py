@@ -1531,6 +1531,25 @@ def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admi
     finally:
         conn.close()
 
+def update_order_dispatch_in_db(order_id: str, status: str = "DELIVERED", vehicle_number: str = "DL-1AB-5501", updated_by: str = "admin") -> bool:
+    """Updates order dispatch status to DISPATCHED or DELIVERED with vehicle details"""
+    clean_id = (order_id or "").replace("#", "").strip()
+    now_str = datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            UPDATE orders 
+            SET order_status = ?, dispatch_status = ?, dispatch_at = ?, vehicle_number = ?
+            WHERE order_id = ? OR order_id = ?
+            """, (status, status, now_str, vehicle_number.strip(), clean_id, f"#{clean_id}"))
+        return True
+    except Exception as e:
+        print(f"[DATABASE DISPATCH ERROR] {e}")
+        return False
+    finally:
+        conn.close()
+
 def update_order_unit_in_db(order_id: str, new_unit: str, updated_by: str = "super_admin") -> bool:
     """Updates the warehouse unit assignment of an order in both SQLite and JSON"""
     clean_id = (order_id or "").replace("#", "").strip()

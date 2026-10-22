@@ -37,6 +37,7 @@ from database import (
     delete_admin_session,
     delete_order_from_db,
     confirm_order_in_db,
+    update_order_dispatch_in_db,
     update_order_unit_in_db,
     get_orders_stats,
     get_warehouse_production_summary,
@@ -719,7 +720,7 @@ async def confirm_admin_order(request: Request):
     """
     admin_session = require_admin_auth(request)
     role = admin_session.get("role", "admin")
-    if role not in ["admin", "manager"]:
+    if role not in ["super_admin", "admin", "manager"]:
         raise HTTPException(
             status_code=403,
             detail="Forbidden: Analysts have view-only access and cannot confirm orders."
@@ -749,6 +750,24 @@ async def confirm_admin_order(request: Request):
             "message": f"Order #{order_id} confirmed successfully with SO #{so_number}"
         }
     raise HTTPException(status_code=500, detail=f"Failed to confirm order #{order_id} in database")
+
+@app.post("/api/admin/orders/dispatch")
+async def api_dispatch_order(request: Request):
+    """Marks an order as DISPATCHED or DELIVERED with vehicle information"""
+    admin_session = require_admin_auth(request)
+    role = admin_session.get("role", "admin")
+    if role not in ["super_admin", "admin", "manager"]:
+        raise HTTPException(status_code=403, detail="Forbidden: Analysts have view-only access.")
+    data = await request.json()
+    order_id = str(data.get("orderId") or data.get("order_id") or "").replace("#", "").strip()
+    status = str(data.get("status") or "DELIVERED").upper().strip()
+    vehicle = str(data.get("vehicleNumber") or data.get("vehicle_number") or "DL-1AB-5501").strip()
+    username = admin_session.get("username", "admin")
+
+    success = update_order_dispatch_in_db(order_id, status=status, vehicle_number=vehicle, updated_by=username)
+    if success:
+        return {"status": "success", "orderId": order_id, "dispatchStatus": status, "vehicleNumber": vehicle}
+    raise HTTPException(status_code=500, detail="Failed to update dispatch status")
 
 @app.post("/api/admin/orders/change-unit")
 async def api_change_order_unit(request: Request):
