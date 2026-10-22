@@ -869,22 +869,55 @@
       background: #94a3b8;
     }
 
+    /* Horizontal Scroll Progress Line (Blue Track & Moving Thumb) */
+    .table-scroll-track {
+      width: 100%;
+      height: 3px;
+      background: #e2e8f0;
+      position: relative;
+      overflow: hidden;
+      z-index: 35;
+      cursor: pointer;
+    }
+    .table-scroll-thumb-line {
+      height: 100%;
+      width: 20%;
+      background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
+      border-radius: 2px;
+      transition: transform 0.08s ease-out, width 0.08s ease-out;
+      will-change: transform, width;
+    }
+    .scroll-progress-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: #2563eb;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .orders-table {
       width: 100%;
-      min-width: 1520px;
+      min-width: 1360px;
       border-collapse: separate;
       border-spacing: 0;
-      font-size: 12.5px;
+      font-size: 12px;
     }
 
     .orders-table th {
       background: #0f172a; /* Deep Slate / Charcoal */
       color: #ffffff;      /* High-contrast crisp white */
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 10px 14px;
+      letter-spacing: 0.05em;
+      padding: 8px 10px;
       border-bottom: 2px solid #334155;
       border-right: 1px solid rgba(255, 255, 255, 0.08);
       text-align: left;
@@ -895,13 +928,13 @@
     }
 
     .orders-table td {
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-bottom: 1px solid #e2e8f0;
       border-right: 1px solid #f1f5f9;
       vertical-align: middle;
       transition: background 0.12s ease;
       color: var(--text-main);
-      font-size: 12.5px;
+      font-size: 12px;
     }
 
     .orders-table tr:nth-child(even) td { background: #ffffff; }
@@ -931,14 +964,14 @@
       text-align: center;
     }
 
-    /* 📌 FIXED FIRST 3 COLUMNS */
+    /* 📌 COMPACT FIXED FIRST 3 COLUMNS */
     .orders-table th.sticky-col-1,
     .orders-table td.sticky-col-1 {
       position: sticky;
       left: 0;
-      width: 44px;
-      min-width: 44px;
-      max-width: 44px;
+      width: 38px;
+      min-width: 38px;
+      max-width: 38px;
       z-index: 10;
       border-right: 1px solid var(--card-border);
     }
@@ -954,10 +987,10 @@
     .orders-table th.sticky-col-2,
     .orders-table td.sticky-col-2 {
       position: sticky;
-      left: 44px;
-      width: 170px;
-      min-width: 170px;
-      max-width: 170px;
+      left: 38px;
+      width: 154px;
+      min-width: 154px;
+      max-width: 154px;
       z-index: 10;
       border-right: 1px solid var(--card-border);
     }
@@ -973,10 +1006,10 @@
     .orders-table th.sticky-col-3,
     .orders-table td.sticky-col-3 {
       position: sticky;
-      left: 214px;
-      width: 150px;
-      min-width: 150px;
-      max-width: 150px;
+      left: 192px;
+      width: 148px;
+      min-width: 148px;
+      max-width: 148px;
       z-index: 10;
       border-right: 2px solid #cbd5e1; /* Visual delimiter */
       box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.06);
@@ -1091,13 +1124,14 @@
     .order-id-link {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      font-size: 12.5px;
+      font-size: 11.5px;
       color: var(--brand-mashal);
       background: #eff6ff;
       border: 1px solid #bfdbfe;
-      padding: 4px 8px;
+      padding: 2px 6px;
       border-radius: var(--radius-sm);
       display: inline-block;
+      white-space: nowrap;
       cursor: pointer;
       transition: all 0.15s;
     }
@@ -1109,46 +1143,51 @@
 
     /* Long Text Auto-Wrapping & Optimization */
     .party-cell-wrap {
-      max-width: 250px;
+      max-width: 175px;
       word-break: break-word;
       white-space: normal;
-      line-height: 1.4;
+      line-height: 1.35;
     }
     .party-title {
       font-weight: 700;
       color: var(--text-main);
-      font-size: 13.5px;
+      font-size: 12px;
     }
 
     .party-code-tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       color: #0369a1;
       background: #f0f9ff;
       border: 1px solid #bae6fd;
-      padding: 2px 6px;
+      padding: 1px 5px;
       border-radius: 4px;
       display: inline-block;
-      margin-top: 3px;
+      white-space: nowrap;
+      margin-top: 2px;
     }
 
     .address-cell-wrap {
-      max-width: 260px;
+      max-width: 195px;
       word-break: break-word;
       white-space: normal;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-secondary);
-      line-height: 1.45;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .asm-badge {
-      background: #f1f5f9;
+      background: #f8fafc;
       border: 1px solid #e2e8f0;
       color: #334155;
-      padding: 4px 10px;
+      padding: 2px 7px;
       border-radius: var(--radius-full);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
@@ -1160,26 +1199,26 @@
     .product-breakdown-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      max-width: 340px;
+      gap: 3px;
+      max-width: 235px;
     }
     .product-item-chip {
-      font-size: 11.5px;
-      padding: 3px 8px;
+      font-size: 11px;
+      padding: 2px 6px;
       border-radius: 4px;
       background: #f8fafc;
       border: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
       color: var(--text-main);
     }
     .product-item-chip.mashal { border-left: 3px solid var(--brand-mashal); }
     .product-item-chip.fauji { border-left: 3px solid var(--brand-fauji); }
     .product-item-chip .calc-detail {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       color: #0284c7;
       white-space: nowrap;
@@ -1188,17 +1227,16 @@
     .boxes-badge {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 800;
-      font-size: 13.5px;
+      font-size: 12.5px;
       color: var(--text-main);
       display: block;
     }
     .pieces-badge {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       color: #0284c7;
       display: block;
-      margin-top: 2px;
     }
 
     /* Modern Enterprise SaaS Badge Pills with Micro-Dots */
@@ -2708,7 +2746,8 @@
   <div class="scroll-nav-bar" id="scrollNavBar" style="display: none;">
     <div class="scroll-nav-hint">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-      <span>Navigate columns with <kbd>◀</kbd> <kbd>▶</kbd> keyboard arrows or scroll buttons:</span>
+      <span>Horizontal Scroll: <kbd>◀</kbd> <kbd>▶</kbd> arrow keys or buttons to slide columns</span>
+      <span class="scroll-progress-pill" id="scrollProgressPill">Start (0%)</span>
     </div>
     <div class="scroll-buttons">
       <button class="btn-scroll" onclick="scrollTableHorizontally(-350)" title="Scroll Left">
@@ -2722,29 +2761,33 @@
 
   <!-- 1. ORDER TABLE - HIGHEST VISUAL PRIORITY WITH FIXED 3 COLUMNS -->
   <div class="table-card-wrapper" id="tableCardWrapper" style="display: none;">
+    <!-- Horizontal Scroll Indicator Line (Blue Progress Track) -->
+    <div class="table-scroll-track" id="tableScrollTrack" onclick="handleTrackClick(event)" title="Click or slide across to navigate columns">
+      <div class="table-scroll-thumb-line" id="tableScrollProgressLine"></div>
+    </div>
     <div class="table-scroll-container" id="tableScrollContainer" tabindex="0">
       <table class="orders-table">
         <thead>
           <tr>
             <!-- Fixed Column 1 -->
-            <th class="sticky-col-1 center">#</th>
+            <th class="sticky-col-1 center" style="width: 38px; min-width: 38px; max-width: 38px;">#</th>
             <!-- Fixed Column 2 -->
-            <th class="sticky-col-2">Order ID</th>
+            <th class="sticky-col-2" style="width: 154px; min-width: 154px; max-width: 154px;">Order ID</th>
             <!-- Fixed Column 3 -->
-            <th class="sticky-col-3">Date & Time</th>
-            <!-- Horizontally Scrolling Columns with Auto-Wrap -->
-            <th style="min-width: 250px;">Customer / Party Name</th>
-            <th style="min-width: 130px;">Party Code</th>
-            <th style="min-width: 260px;">Delivery / Billing Address</th>
-            <th style="min-width: 150px;">Area Sales Manager</th>
-            <th style="min-width: 110px;" class="center">Warehouse Unit</th>
-            <th style="min-width: 320px;">Product Quantities & Pieces</th>
-            <th style="min-width: 120px;" class="center">Total Boxes</th>
-            <th style="min-width: 120px;" class="center">Total Pieces</th>
+            <th class="sticky-col-3" style="width: 148px; min-width: 148px; max-width: 148px;">Date & Time</th>
+            <!-- Horizontally Scrolling Columns with Optimized Compact Widths -->
+            <th style="width: 175px; min-width: 175px;">Customer / Party Name</th>
+            <th style="width: 95px; min-width: 95px;">Party Code</th>
+            <th style="width: 195px; min-width: 195px;">Delivery / Billing Address</th>
+            <th style="width: 130px; min-width: 130px;">Area Sales Manager</th>
+            <th style="width: 95px; min-width: 95px;" class="center">Warehouse Unit</th>
+            <th style="width: 235px; min-width: 235px;">Product Quantities & Pieces</th>
+            <th style="width: 80px; min-width: 80px;" class="center">Total Boxes</th>
+            <th style="width: 80px; min-width: 80px;" class="center">Total Pieces</th>
             <!-- Status & Confirmation Columns at end of table -->
-            <th style="min-width: 140px;" class="center">Order Status</th>
-            <th style="min-width: 130px;" class="center">SO Number</th>
-            <th style="min-width: 170px;" class="center">Actions</th>
+            <th style="width: 105px; min-width: 105px;" class="center">Order Status</th>
+            <th style="width: 95px; min-width: 95px;" class="center">SO Number</th>
+            <th style="width: 135px; min-width: 135px;" class="center">Actions</th>
           </tr>
         </thead>
         <tbody id="ordersTableBody">
@@ -3550,6 +3593,138 @@
       }
     }
 
+    /**
+     * Standardize all table dates to readable format: "21 Oct 2026, 03:20 PM"
+     * Eliminates raw seconds, numbers-only months, and handles all timestamp patterns.
+     */
+    function formatTableDateTime(rawStr) {
+      if (!rawStr || (typeof rawStr !== "string" && typeof rawStr !== "number")) return "-";
+      const str = String(rawStr).trim();
+      if (!str || str === "-" || str === "undefined" || str === "null") return "-";
+
+      const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      // 1. Check DD/MM/YYYY or DD-MM-YYYY (e.g. 21/10/2026 03:20:43 PM, 19/10/2026, 11:33 AM)
+      const dmyMatch = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:[,\s]+(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?)?/i);
+      if (dmyMatch) {
+        const day = parseInt(dmyMatch[1], 10);
+        const monthIdx = parseInt(dmyMatch[2], 10) - 1;
+        const year = dmyMatch[3];
+        if (monthIdx >= 0 && monthIdx < 12) {
+          const mon = MONTH_NAMES[monthIdx];
+          const dayStr = day < 10 ? `0${day}` : `${day}`;
+          let timePart = "";
+          if (dmyMatch[4] && dmyMatch[5]) {
+            let hour = parseInt(dmyMatch[4], 10);
+            const minute = dmyMatch[5];
+            let meridiem = (dmyMatch[6] || "").toUpperCase();
+            if (!meridiem) {
+              meridiem = hour >= 12 ? "PM" : "AM";
+              hour = hour % 12 || 12;
+            }
+            const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
+            timePart = `, ${hourStr}:${minute} ${meridiem}`;
+          }
+          return `${dayStr} ${mon} ${year}${timePart}`;
+        }
+      }
+
+      // 2. Check ISO format (e.g. 2026-10-21T15:20:43 or 2026-10-21 15:20)
+      const isoMatch = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:[T\s](\d{1,2}):(\d{2})(?::\d{2})?)?/i);
+      if (isoMatch) {
+        const year = isoMatch[1];
+        const monthIdx = parseInt(isoMatch[2], 10) - 1;
+        const day = parseInt(isoMatch[3], 10);
+        if (monthIdx >= 0 && monthIdx < 12) {
+          const mon = MONTH_NAMES[monthIdx];
+          const dayStr = day < 10 ? `0${day}` : `${day}`;
+          let timePart = "";
+          if (isoMatch[4] && isoMatch[5]) {
+            let hour = parseInt(isoMatch[4], 10);
+            const minute = isoMatch[5];
+            const meridiem = hour >= 12 ? "PM" : "AM";
+            hour = hour % 12 || 12;
+            const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
+            timePart = `, ${hourStr}:${minute} ${meridiem}`;
+          }
+          return `${dayStr} ${mon} ${year}${timePart}`;
+        }
+      }
+
+      // 3. Fallback to standard Date parsing if recognizable
+      try {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) {
+          const day = d.getDate();
+          const dayStr = day < 10 ? `0${day}` : `${day}`;
+          const mon = MONTH_NAMES[d.getMonth()];
+          const year = d.getFullYear();
+          let hour = d.getHours();
+          const minute = d.getMinutes();
+          const minuteStr = minute < 10 ? `0${minute}` : `${minute}`;
+          const meridiem = hour >= 12 ? "PM" : "AM";
+          hour = hour % 12 || 12;
+          const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
+          return `${dayStr} ${mon} ${year}, ${hourStr}:${minuteStr} ${meridiem}`;
+        }
+      } catch (e) {}
+
+      return str;
+    }
+
+    /**
+     * Updates the sleek blue horizontal scroll indicator line above the table.
+     * Accurately reflects visible width, scroll fraction, and percentage pill text.
+     */
+    function updateTableScrollProgress() {
+      const container = document.getElementById("tableScrollContainer");
+      const trackLine = document.getElementById("tableScrollProgressLine");
+      const track = document.getElementById("tableScrollTrack");
+      const pill = document.getElementById("scrollProgressPill");
+      if (!container || !trackLine || !track) return;
+
+      const trackWidth = track.clientWidth || track.offsetWidth || 1;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+
+      if (maxScroll <= 5) {
+        trackLine.style.width = "100%";
+        trackLine.style.transform = "translateX(0px)";
+        if (pill) pill.textContent = "All Columns Visible (100%)";
+        return;
+      }
+
+      const visibleFraction = Math.min(1, Math.max(0.12, container.clientWidth / container.scrollWidth));
+      const thumbWidth = Math.max(40, Math.round(trackWidth * visibleFraction));
+      const scrollFraction = Math.min(1, Math.max(0, container.scrollLeft / maxScroll));
+      const maxTranslate = trackWidth - thumbWidth;
+      const translateX = Math.round(scrollFraction * maxTranslate);
+
+      trackLine.style.width = `${thumbWidth}px`;
+      trackLine.style.transform = `translateX(${translateX}px)`;
+
+      if (pill) {
+        const displayPct = Math.round(scrollFraction * 100);
+        if (displayPct <= 5) {
+          pill.textContent = "Start (0%)";
+        } else if (displayPct >= 95) {
+          pill.textContent = "End (100%)";
+        } else {
+          pill.textContent = `Scrolled ${displayPct}%`;
+        }
+      }
+    }
+
+    function handleTrackClick(e) {
+      const container = document.getElementById("tableScrollContainer");
+      const track = document.getElementById("tableScrollTrack");
+      if (!container || !track) return;
+      const rect = track.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const fraction = Math.min(1, Math.max(0, clickX / rect.width));
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      container.scrollTo({ left: fraction * maxScroll, behavior: "smooth" });
+    }
+
     // Filter states
     let activeDateFilter = "ALL"; // 'ALL', 'TODAY', 'YESTERDAY', 'CUSTOM'
     let customSelectedDate = "";
@@ -3583,6 +3758,15 @@
           scrollTableHorizontally(180);
         }
       });
+
+      // Table horizontal scroll listeners
+      const tblScrollContainer = document.getElementById("tableScrollContainer");
+      if (tblScrollContainer) {
+        tblScrollContainer.addEventListener("scroll", updateTableScrollProgress, { passive: true });
+      }
+      window.addEventListener("resize", () => {
+        updateTableScrollProgress();
+      });
     });
 
     function showLoginOverlay() {
@@ -3613,6 +3797,7 @@
       if (document.getElementById("usersCardWrapper")) document.getElementById("usersCardWrapper").style.display = "none";
       if (document.getElementById("unitsCardWrapper")) document.getElementById("unitsCardWrapper").style.display = "none";
       if (document.getElementById("logsCardWrapper")) document.getElementById("logsCardWrapper").style.display = "none";
+      setTimeout(updateTableScrollProgress, 100);
     }
 
     function updateRoleUI() {
@@ -5781,9 +5966,11 @@
             <td class="sticky-col-2">
               <span class="order-id-link" onclick="previewSlipModal('${cleanId}')" title="View Order Slip">#${cleanId}</span>
             </td>
-            <!-- Fixed Col 3 -->
-            <td class="sticky-col-3" style="font-size: 12px; color: var(--text-secondary); white-space: nowrap;">
-              <div>${escapeHtml(o.formattedTimestamp || o.formattedDate || o.orderDate || "-")}</div>
+            <!-- Fixed Col 3: Clean short-month readable date & time -->
+            <td class="sticky-col-3" style="font-size: 11.5px; color: #334155; font-weight: 600; white-space: nowrap;">
+              <div title="${escapeHtml(o.formattedTimestamp || o.formattedDate || o.orderDate || '')}">
+                ${escapeHtml(formatTableDateTime(o.formattedTimestamp || o.formattedDate || o.orderDate || o.created_at || ""))}
+              </div>
             </td>
             <!-- Horizontally Scrolling Columns with Auto-Text Wrap -->
             <td>
@@ -5829,6 +6016,9 @@
 
       // Render Pagination Buttons
       renderPaginationControls(totalPages);
+
+      // Refresh Horizontal Scroll Line Indicator
+      setTimeout(updateTableScrollProgress, 50);
     }
 
     function renderPaginationControls(totalPages) {
@@ -5867,6 +6057,7 @@
       const container = document.getElementById("tableScrollContainer");
       if (container) {
         container.scrollBy({ left: offset, behavior: "smooth" });
+        setTimeout(updateTableScrollProgress, 120);
       }
     }
 
@@ -6103,7 +6294,7 @@
       msg += `*Order ID:* #${o.cleanId}\n`;
       msg += `*Status:* ${o.orderStatus}\n`;
       if (o.soNumber) msg += `*SO Number:* #${o.soNumber}\n`;
-      msg += `*Date:* ${o.formattedTimestamp || o.formattedDate || o.orderDate}\n`;
+      msg += `*Date:* ${formatTableDateTime(o.formattedTimestamp || o.formattedDate || o.orderDate)}\n`;
       msg += `*Party Name:* ${o.partyName}\n`;
       if (o.partyCode) msg += `*Party Code:* ${o.partyCode}\n`;
       msg += `*Address:* ${o.partyAddress || o.deliveryAddress || "-"}\n`;
