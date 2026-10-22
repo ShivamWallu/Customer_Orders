@@ -1471,11 +1471,16 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
                         continue
                     b = int(it.get("boxes", 0) or 0)
                     calc_bxs += b
-                    m = re.search(r'x\s*(\d+)', str(it.get("item", "")), re.I)
-                    mult = int(m.group(1)) if m else 1
+                    raw_name = str(it.get("item") or it.get("name") or it.get("itemName") or "").strip()
+                    item_name = normalize_warehouse_sku(raw_name) or raw_name
+                    it["item"] = item_name
+                    m = re.search(r'x\s*(\d+)', item_name, re.I)
+                    stored_pcs = int(it.get("pieces") or 0)
+                    fallback_mult = round(stored_pcs / b) if b > 0 and stored_pcs > 0 else 1
+                    mult = int(m.group(1)) if m else fallback_mult
                     it["multiplier"] = mult
-                    it["pieces"] = b * mult
-                    calc_pcs += (b * mult)
+                    it["pieces"] = stored_pcs if stored_pcs > 0 else (b * mult)
+                    calc_pcs += it["pieces"]
 
             if tot_pcs == 0 and calc_pcs > 0:
                 tot_pcs = calc_pcs
@@ -1785,8 +1790,43 @@ FAUJI_MASTER_SKUS = [
     "500 ML BOTTLE x 30",
     "1 LTR. POUCH x 16",
     "15 KG CAN x 1",
-    "15 KG TIN x 1"
+    "15 KG TIN x 1",
+    "15 LTR TIN x 1"
 ]
+
+def normalize_warehouse_sku(name: str) -> str:
+    clean = re.sub(r'\s+', ' ', str(name or "")).strip().upper()
+    if not clean:
+        return ""
+    if re.search(r'15\s*LTR\.?\s*TIN', clean):
+        return "15 LTR TIN x 1"
+    if re.search(r'15\s*KG\.?\s*TIN', clean):
+        return "15 KG TIN x 1"
+    if re.search(r'15\s*LTR\.?\s*CAN', clean):
+        return "15 LTR CAN x 1"
+    if re.search(r'15\s*KG\.?\s*CAN', clean):
+        return "15 KG CAN x 1"
+    if re.search(r'1\s*/\s*2\s*LTR\.?\s*POUCH', clean):
+        return "1/2 LTR. POUCH x 32"
+    if re.search(r'1\s*LTR\.?\s*POUCH', clean):
+        return "1 LTR. POUCH x 16"
+    if re.search(r'1\s*LTR\.?\s*BOTTLE', clean):
+        return "1 LTR. BOTTLE x 15"
+    if re.search(r'500\s*ML\.?\s*BOTTLE', clean):
+        return "500 ML BOTTLE x 30"
+    if re.search(r'200\s*ML\.?\s*BOTTLE\s*x\s*60', clean):
+        return "200 ML BOTTLE x 60"
+    if re.search(r'200\s*ML\.?\s*BOTTLE\s*x\s*40', clean):
+        return "200 ML BOTTLE x 40"
+    if re.search(r'100\s*ML\.?\s*BOTTLE', clean):
+        return "100 ML BOTTLE x 120"
+    if re.search(r'5\s*LTR\.?\s*CAN', clean):
+        return "5 LTR CAN x 4"
+    if re.search(r'2\s*LTR\.?\s*BOTTLE', clean):
+        return "2 LTR BOTTLE x 9"
+    if re.search(r'2\s*LTR\.?\s*CAN', clean):
+        return "2 LTR CAN x 6"
+    return clean
 
 def get_warehouse_production_summary(orders_subset: Optional[List[Dict[str, Any]]] = None, unit: Optional[str] = None) -> Dict[str, Any]:
     """
@@ -1830,14 +1870,16 @@ def get_warehouse_production_summary(orders_subset: Optional[List[Dict[str, Any]
             if not isinstance(it, dict):
                 continue
             raw_brand = str(it.get("brand") or "Mashal").strip().lower()
-            item_name = str(it.get("item") or "").strip()
+            raw_name = str(it.get("item") or it.get("name") or it.get("itemName") or "").strip()
             boxes = int(it.get("boxes") or 0)
             if boxes <= 0:
                 continue
 
+            item_name = normalize_warehouse_sku(raw_name) or raw_name
             m = re.search(r'x\s*(\d+)', item_name, re.I)
-            multiplier = int(m.group(1)) if m else int(it.get("multiplier") or 1)
-            pieces = boxes * multiplier
+            fallback_mult = round(int(it.get("pieces") or 0) / boxes) if boxes > 0 and int(it.get("pieces") or 0) > 0 else 1
+            multiplier = int(m.group(1)) if m else int(it.get("multiplier") or fallback_mult)
+            pieces = int(it.get("pieces") or (boxes * multiplier))
 
             total_pending_boxes += boxes
             total_pending_pieces += pieces

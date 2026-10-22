@@ -2554,7 +2554,7 @@
             </span>
             <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
               <span style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80; display: inline-block;"></span>
-              <span>FAUJI: 5 Packaging SKUs</span>
+              <span>FAUJI: 6 Packaging SKUs</span>
             </span>
           </div>
         </div>
@@ -3458,8 +3458,30 @@
       { name: "500 ML BOTTLE x 30", mult: 30 },
       { name: "1 LTR. POUCH x 16", mult: 16 },
       { name: "15 KG CAN x 1", mult: 1 },
-      { name: "15 KG TIN x 1", mult: 1 }
+      { name: "15 KG TIN x 1", mult: 1 },
+      { name: "15 LTR TIN x 1", mult: 1 }
     ];
+
+    function normalizeSkuName(raw) {
+      if (!raw) return "";
+      const clean = String(raw).replace(/\s+/g, " ").trim().toUpperCase();
+      if (!clean) return "";
+      if (/15\s*LTR\.?\s*TIN/i.test(clean)) return "15 LTR TIN x 1";
+      if (/15\s*KG\.?\s*TIN/i.test(clean)) return "15 KG TIN x 1";
+      if (/15\s*LTR\.?\s*CAN/i.test(clean)) return "15 LTR CAN x 1";
+      if (/15\s*KG\.?\s*CAN/i.test(clean)) return "15 KG CAN x 1";
+      if (/1\s*\/\s*2\s*LTR\.?\s*POUCH/i.test(clean)) return "1/2 LTR. POUCH x 32";
+      if (/1\s*LTR\.?\s*POUCH/i.test(clean)) return "1 LTR. POUCH x 16";
+      if (/1\s*LTR\.?\s*BOTTLE/i.test(clean)) return "1 LTR. BOTTLE x 15";
+      if (/500\s*ML\.?\s*BOTTLE/i.test(clean)) return "500 ML BOTTLE x 30";
+      if (/200\s*ML\.?\s*BOTTLE\s*x\s*60/i.test(clean)) return "200 ML BOTTLE x 60";
+      if (/200\s*ML\.?\s*BOTTLE\s*x\s*40/i.test(clean)) return "200 ML BOTTLE x 40";
+      if (/100\s*ML\.?\s*BOTTLE/i.test(clean)) return "100 ML BOTTLE x 120";
+      if (/5\s*LTR\.?\s*CAN/i.test(clean)) return "5 LTR CAN x 4";
+      if (/2\s*LTR\.?\s*BOTTLE/i.test(clean)) return "2 LTR BOTTLE x 9";
+      if (/2\s*LTR\.?\s*CAN/i.test(clean)) return "2 LTR CAN x 6";
+      return clean;
+    }
 
     // Filter states
     let activeDateFilter = "ALL"; // 'ALL', 'TODAY', 'YESTERDAY', 'CUSTOM'
@@ -3699,11 +3721,15 @@
             items.forEach(it => {
               const b = parseInt(it.boxes, 10) || 0;
               calcBoxes += b;
-              const match = String(it.item || "").match(/x\s*(\d+)/i);
-              const multiplier = match ? parseInt(match[1], 10) : (parseInt(it.multiplier, 10) || 1);
+              const rawName = String(it.item || it.name || it.itemName || "").trim();
+              const normName = normalizeSkuName(rawName) || rawName;
+              it.item = normName;
+              const match = normName.match(/x\s*(\d+)/i);
+              const fallbackMult = (parseInt(it.pieces, 10) && b > 0) ? Math.round(parseInt(it.pieces, 10) / b) : 1;
+              const multiplier = match ? parseInt(match[1], 10) : (parseInt(it.multiplier, 10) || fallbackMult);
               it.multiplier = multiplier;
-              it.pieces = b * multiplier;
-              calcPieces += (b * multiplier);
+              it.pieces = parseInt(it.pieces, 10) || (b * multiplier);
+              calcPieces += it.pieces;
             });
 
             const totalBxs = (parseInt(o.totalBoxes, 10) || 0) || calcBoxes;
@@ -3814,8 +3840,16 @@
           const toggleIcon = document.getElementById("warehouseToggleIcon");
           if (toggleIcon) toggleIcon.textContent = "▲";
         }
-        // Refresh warehouse production counts
-        const pendingOrdersForWarehouse = (allOrdersData || []).filter(o => o.orderStatus !== "CONFIRMED");
+        // Refresh warehouse production counts (Strictly PENDING and active unit)
+        const pendingOrdersForWarehouse = (allOrdersData || []).filter(o => {
+          const isPending = (o.orderStatus || "").toUpperCase() === "PENDING";
+          if (!isPending) return false;
+          if (activeUnitFilter && activeUnitFilter !== "ALL") {
+            const ordUnit = (o.unit || "Unit 1").trim();
+            if (ordUnit !== activeUnitFilter) return false;
+          }
+          return true;
+        });
         updateWarehouseProductionSummary(pendingOrdersForWarehouse);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
@@ -5321,9 +5355,16 @@
       // 3. Update Dashboard Summary Cards (KPIs) - always reflects dateFilteredOrders accurately
       updateDashboardSummaryCards(dateFilteredOrders);
 
-      // 4. Update Warehouse Production Summary (Strictly Pending Orders)
-      // Pending orders within current date filter:
-      const pendingOrdersForWarehouse = dateFilteredOrders.filter(o => o.orderStatus !== "CONFIRMED");
+      // 4. Update Warehouse Production Summary (Strictly Pending Orders and active unit)
+      const pendingOrdersForWarehouse = dateFilteredOrders.filter(o => {
+        const isPending = (o.orderStatus || "").toUpperCase() === "PENDING";
+        if (!isPending) return false;
+        if (activeUnitFilter && activeUnitFilter !== "ALL") {
+          const ordUnit = (o.unit || "Unit 1").trim();
+          if (ordUnit !== activeUnitFilter) return false;
+        }
+        return true;
+      });
       updateWarehouseProductionSummary(pendingOrdersForWarehouse);
 
       // 5. Render Table with Pagination
@@ -5394,11 +5435,11 @@
       const faujiMap = {};
 
       MASHAL_MASTER_SKUS.forEach(s => {
-        mashalMap[s.name.toLowerCase()] = { name: s.name, boxes: 0, pieces: 0, mult: s.mult };
+        mashalMap[s.name.toUpperCase()] = { name: s.name, boxes: 0, pieces: 0, mult: s.mult, isMaster: true };
       });
 
       FAUJI_MASTER_SKUS.forEach(s => {
-        faujiMap[s.name.toLowerCase()] = { name: s.name, boxes: 0, pieces: 0, mult: s.mult };
+        faujiMap[s.name.toUpperCase()] = { name: s.name, boxes: 0, pieces: 0, mult: s.mult, isMaster: true };
       });
 
       let grandTotalBoxes = 0;
@@ -5412,23 +5453,25 @@
         const items = Array.isArray(ord.items) ? ord.items : [];
         items.forEach(it => {
           const rawBrand = String(it.brand || "Mashal").toLowerCase().trim();
-          const itemName = String(it.item || "").trim();
+          const rawName = String(it.item || it.name || it.itemName || "").trim();
           const bxs = parseInt(it.boxes, 10) || 0;
           if (bxs <= 0) return;
 
-          const match = itemName.match(/x\s*(\d+)/i);
-          const mult = match ? parseInt(match[1], 10) : (parseInt(it.multiplier, 10) || 1);
-          const pcs = bxs * mult;
+          const normName = normalizeSkuName(rawName) || rawName;
+          const match = normName.match(/x\s*(\d+)/i);
+          const fallbackMult = (parseInt(it.pieces, 10) && bxs > 0) ? Math.round(parseInt(it.pieces, 10) / bxs) : 1;
+          const mult = match ? parseInt(match[1], 10) : (parseInt(it.multiplier, 10) || fallbackMult);
+          const pcs = parseInt(it.pieces, 10) || (bxs * mult);
 
           grandTotalBoxes += bxs;
           grandTotalPieces += pcs;
 
-          const isFauji = rawBrand.includes("fauji") || itemName.toLowerCase().includes("fauji");
+          const isFauji = rawBrand.includes("fauji") || normName.toLowerCase().includes("fauji");
           const targetMap = isFauji ? faujiMap : mashalMap;
-          const key = itemName.toLowerCase();
+          const key = normName.toUpperCase();
 
           if (!targetMap[key]) {
-            targetMap[key] = { name: itemName, boxes: 0, pieces: 0, mult: mult };
+            targetMap[key] = { name: normName, boxes: 0, pieces: 0, mult: mult, isMaster: false };
           }
 
           targetMap[key].boxes += bxs;
@@ -5457,7 +5500,7 @@
       const mashalTbody = document.getElementById("whMashalTableBody");
       let mashalHtml = "";
       MASHAL_MASTER_SKUS.forEach(sku => {
-        const itemObj = mashalMap[sku.name.toLowerCase()] || { boxes: 0, pieces: 0 };
+        const itemObj = mashalMap[sku.name.toUpperCase()] || { boxes: 0, pieces: 0 };
         const b = itemObj.boxes || 0;
         const p = itemObj.pieces || 0;
         const isNonZero = b > 0;
@@ -5469,13 +5512,26 @@
           </tr>
         `;
       });
+      // Render any non-master SKUs with quantities so row sum always equals badge total
+      Object.keys(mashalMap).forEach(k => {
+        const itemObj = mashalMap[k];
+        if (!itemObj.isMaster && itemObj.boxes > 0) {
+          mashalHtml += `
+            <tr style="font-weight: 600; background: rgba(37,99,235,0.03);">
+              <td class="sku-name">${escapeHtml(itemObj.name)} <span style="font-size:10px; color:#2563eb; border:1px solid #93c5fd; padding:1px 4px; border-radius:3px;">CUSTOM</span></td>
+              <td class="boxes-val" style="text-align: right; color: #1e40af;">${itemObj.boxes.toLocaleString()} Bxs</td>
+              <td class="pieces-val" style="text-align: right;">${itemObj.pieces.toLocaleString()} Pcs</td>
+            </tr>
+          `;
+        }
+      });
       mashalTbody.innerHTML = mashalHtml;
 
       // Render Fauji SKUs Table
       const faujiTbody = document.getElementById("whFaujiTableBody");
       let faujiHtml = "";
       FAUJI_MASTER_SKUS.forEach(sku => {
-        const itemObj = faujiMap[sku.name.toLowerCase()] || { boxes: 0, pieces: 0 };
+        const itemObj = faujiMap[sku.name.toUpperCase()] || { boxes: 0, pieces: 0 };
         const b = itemObj.boxes || 0;
         const p = itemObj.pieces || 0;
         const isNonZero = b > 0;
@@ -5486,6 +5542,19 @@
             <td class="pieces-val" style="text-align: right;">${p.toLocaleString()} Pcs</td>
           </tr>
         `;
+      });
+      // Render any non-master Fauji SKUs with quantities
+      Object.keys(faujiMap).forEach(k => {
+        const itemObj = faujiMap[k];
+        if (!itemObj.isMaster && itemObj.boxes > 0) {
+          faujiHtml += `
+            <tr style="font-weight: 600; background: rgba(5,150,105,0.03);">
+              <td class="sku-name">${escapeHtml(itemObj.name)} <span style="font-size:10px; color:#059669; border:1px solid #a7f3d0; padding:1px 4px; border-radius:3px;">CUSTOM</span></td>
+              <td class="boxes-val" style="text-align: right; color: #065f46;">${itemObj.boxes.toLocaleString()} Bxs</td>
+              <td class="pieces-val" style="text-align: right;">${itemObj.pieces.toLocaleString()} Pcs</td>
+            </tr>
+          `;
+        }
       });
       faujiTbody.innerHTML = faujiHtml;
     }
