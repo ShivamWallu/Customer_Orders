@@ -2073,6 +2073,29 @@
       color: #ffffff !important;
     }
 
+    /* ⚡ Home Screen Instant Active Order Tracker Card */
+    .home-active-tracker-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+      border: 1.5px solid #a7f3d0;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .home-active-tracker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .home-active-tracker-card .track-stepper {
+      margin-bottom: 6px;
+    }
+
     /* 📄 Scalable Customer Orders Pagination & Search */
     .cust-orders-search-wrap {
       margin-bottom: 14px;
@@ -2315,6 +2338,9 @@
 
     <!-- 📝 SECTION 1: BOOK NEW ORDER FORM -->
     <div id="sectionCustomerBooking">
+      <!-- ⚡ INSTANT LIVE ACTIVE ORDER STATUS TRACKER (Appears automatically without clicking) -->
+      <div id="homeActiveOrderTracker" class="home-active-tracker-card" style="display: none;"></div>
+
       <form id="orderForm" onsubmit="submitOrder(event)">
       <!-- 📝 FULL-WIDTH PARTY DETAILS -->
       <section class="section-card">
@@ -3795,6 +3821,9 @@
 
     function switchCustomerSection(section) {
       currentCustomerSection = section;
+      try {
+        localStorage.setItem("kogm_customer_active_section", section);
+      } catch (e) {}
 
       document.querySelectorAll(".sidebar-nav-item").forEach(el => el.classList.remove("active"));
 
@@ -3834,6 +3863,14 @@
         const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "null");
         if (sess && sess.token && sess.phone) {
           applyCustomerSession(sess);
+          populateQuickTrackChips();
+
+          // Restore saved section on refresh (stay on track if previously tracking)
+          const savedSec = localStorage.getItem("kogm_customer_active_section");
+          if (savedSec && (savedSec === "track" || savedSec === "orders")) {
+            switchCustomerSection(savedSec);
+          }
+
           const res = await fetch("/api/customer/check-session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -4564,14 +4601,105 @@
         list.innerHTML = chipsHtml;
         container.style.display = "flex";
 
-        // Auto populate input if currently empty
+        // 🚀 1. Render Instant Home Live Tracker Widget
+        renderHomeActiveOrderTracker(topOrders[0]);
+
+        // 🚀 2. Auto populate input and INSTANTLY track top order without requiring manual click
         const input = document.getElementById("trackOrderInput");
-        if (input && !input.value.trim() && topOrders.length > 0) {
-          input.value = `#${topOrders[0].cleanId}`;
+        if (topOrders.length > 0) {
+          if (input && !input.value.trim()) {
+            input.value = `#${topOrders[0].cleanId}`;
+          }
+          const resContainer = document.getElementById("customerTrackResultContainer");
+          if (resContainer && !resContainer.querySelector(".track-result-card")) {
+            trackCustomerOrder(`#${topOrders[0].cleanId}`);
+          }
         }
       } else {
         container.style.display = "none";
       }
+    }
+
+    function renderHomeActiveOrderTracker(ord) {
+      const banner = document.getElementById("homeActiveOrderTracker");
+      if (!banner || !ord) return;
+
+      const isConfirmed = ord.orderStatus === "CONFIRMED";
+      const cleanSo = String(ord.soNumber || "").replace("#", "");
+      const isDelivered = (ord.orderStatus === "DELIVERED" || ord.dispatchStatus === "DELIVERED");
+      const isDispatched = (ord.orderStatus === "DISPATCHED" || ord.dispatchStatus === "DISPATCHED" || ord.dispatchStatus === "IN_TRANSIT");
+
+      const tl = ord.timeline || {
+        activeStep: isDelivered ? 3 : (isDispatched ? 3 : (isConfirmed ? 2 : 1)),
+        stages: [
+          { step: 1, id: "booked", name: "Order Booked", subtitle: "Logged in ERP", status: "completed", timestamp: ord.formattedTimestamp || ord.order_date || "" },
+          { step: 2, id: "so_confirmed", name: isConfirmed ? "SO Confirmed" : "SO In Review", subtitle: cleanSo ? "SO #" + cleanSo : "Billing Allocation", status: isConfirmed ? "completed" : "current", timestamp: ord.confirmedAt || "" },
+          { step: 3, id: "dispatch", name: isDelivered ? "Delivered" : "Dispatch & Loading", subtitle: isDelivered ? "Delivery Complete" : (isDispatched ? "In Transit" : (isConfirmed ? "Ready for Mandi" : "Awaiting SO")), status: isDelivered ? "completed" : (isConfirmed ? "current" : "upcoming"), timestamp: ord.dispatchAt || "" }
+        ]
+      };
+
+      const stepperClass = `step-${tl.activeStep}-active`;
+
+      let stagesHtml = "";
+      (tl.stages || []).forEach(stg => {
+        let iconHtml = "";
+        if (stg.status === "completed") {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        } else if (stg.status === "current" && stg.step === 3) {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
+        } else if (stg.status === "current") {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+        } else {
+          iconHtml = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>`;
+        }
+
+        stagesHtml += `
+          <div class="track-step ${stg.status}">
+            <div class="track-step-circle">
+              ${iconHtml}
+            </div>
+            <div class="track-step-label">${escapeHtml(stg.name)}</div>
+            <div class="track-step-sub">${escapeHtml(stg.subtitle)}</div>
+            ${stg.timestamp ? `<div class="track-step-time">${formatTimelineStepTimestamp(stg.timestamp)}</div>` : ''}
+          </div>
+        `;
+      });
+
+      banner.innerHTML = `
+        <div class="home-active-tracker-header">
+          <div>
+            <div style="font-size: 11px; font-weight: 800; color: #047857; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
+              <span style="width: 7px; height: 7px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+              <span>Live Order Status</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 1px;">
+              #${escapeHtml(ord.cleanId)}
+            </div>
+          </div>
+          <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+            <span class="${isConfirmed ? 'pill-status-confirmed' : 'pill-status-pending'}">
+              ${isConfirmed ? 'CONFIRMED' : 'PENDING'}
+            </span>
+            ${cleanSo ? `<span class="so-sub-badge" style="font-size: 10px; padding: 2px 6px;">SO #${escapeHtml(cleanSo)}</span>` : ''}
+          </div>
+        </div>
+
+        <div class="track-stepper-wrap" style="padding: 10px 4px 6px;">
+          <div class="track-stepper ${stepperClass}">
+            ${stagesHtml}
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+          <span style="font-size: 11.5px; color: #475569; font-weight: 600;">
+            📦 ${(ord.totalBoxes || 0).toLocaleString()} Boxes • ${(ord.totalPieces || 0).toLocaleString()} Pieces
+          </span>
+          <button type="button" class="quick-chip-btn" style="background: #047857; color: #ffffff; border-color: #047857; font-weight: 700; padding: 5px 12px; font-size: 11.5px;" onclick="trackCustomerOrderFromList('${escapeHtml(ord.cleanId)}')">
+            <span>⚡ View Full Tracking</span>
+          </button>
+        </div>
+      `;
+      banner.style.display = "block";
     }
 
     // ⚡ Debounced Live Tracking Search (Triggers as user types without lagging)
@@ -4897,6 +5025,16 @@
 
     renderItemList();
     checkCustomerSession();
+
+    // 🔄 Real-time Background Polling: Refresh active order status every 10 seconds silently
+    setInterval(() => {
+      try {
+        const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
+        if (sess && sess.token) {
+          populateQuickTrackChips();
+        }
+      } catch(e) {}
+    }, 10000);
   
     // PWA Install helper for mobile drawer
     let deferredInstallPrompt = null;
