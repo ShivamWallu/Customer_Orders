@@ -1738,8 +1738,8 @@
 
     /* 🧭 Left Navigation Sidebar - Sleek Enterprise Dark Theme */
     .admin-sidebar {
-      width: 255px;
-      min-width: 255px;
+      width: 268px;
+      min-width: 268px;
       background: #080e1a;
       background: linear-gradient(180deg, #090e1b 0%, #050811 100%);
       color: #f1f5f9;
@@ -1917,22 +1917,32 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
     }
 
     .sidebar-nav-item .nav-badge {
-      padding: 2px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 20px;
+      padding: 0 7px;
       border-radius: 9999px;
-      font-size: 10px;
-      font-weight: 800;
-      background: rgba(255, 255, 255, 0.1);
-      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.12);
+      color: #f1f5f9;
       flex-shrink: 0;
       letter-spacing: 0.2px;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
     }
 
-    .sidebar-nav-item .nav-badge.blue { background: rgba(14, 165, 233, 0.2); color: #7dd3fc; border: 1px solid rgba(14, 165, 233, 0.35); }
-    .sidebar-nav-item .nav-badge.purple { background: rgba(147, 51, 234, 0.2); color: #d8b4fe; border: 1px solid rgba(147, 51, 234, 0.35); }
-    .sidebar-nav-item .nav-badge.gold { background: rgba(217, 119, 6, 0.2); color: #fde68a; border: 1px solid rgba(217, 119, 6, 0.35); }
+    .sidebar-nav-item .nav-badge.blue { background: rgba(14, 165, 233, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); }
+    .sidebar-nav-item .nav-badge.purple { background: rgba(168, 85, 247, 0.18); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); }
+    .sidebar-nav-item .nav-badge.gold { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .sidebar-nav-item .nav-badge.green { background: rgba(16, 185, 129, 0.18); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.35); }
+    .sidebar-nav-item .nav-badge.indigo { background: rgba(99, 102, 241, 0.18); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.35); }
 
     .sidebar-footer {
       padding: 12px 14px;
@@ -2340,12 +2350,12 @@
       </button>
 
       <!-- 2. Dedicated Packing & Production Summary (Image 2) -->
-      <button class="sidebar-nav-item warehouse" id="sideNavWarehouse" onclick="selectSidebarNav('WAREHOUSE')" title="Warehouse Production & Packing Queue (Image 2)">
+      <button class="sidebar-nav-item warehouse" id="sideNavWarehouse" onclick="selectSidebarNav('WAREHOUSE')" title="Warehouse Production & Packing Queue">
         <span class="nav-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
         </span>
         <span class="nav-label">Packing Summary</span>
-        <span class="nav-badge blue" id="sideBadgeWarehouse">LIVE</span>
+        <span class="nav-badge blue" id="sideBadgeWarehouse" title="Active Pending Orders to Pack">0</span>
       </button>
 
       <div class="sidebar-section-title">ADMINISTRATION</div>
@@ -2356,7 +2366,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </span>
         <span class="nav-label">User Management</span>
-        <span class="nav-badge purple" id="sideBadgeUsers">0</span>
+        <span class="nav-badge purple" id="sideBadgeUsers" title="Authorized System Users">0</span>
       </button>
 
       <!-- 4. Unit Management -->
@@ -2365,7 +2375,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
         </span>
         <span class="nav-label">Unit Management</span>
-        <span class="nav-badge gold" id="sideBadgeUnits">6</span>
+        <span class="nav-badge gold" id="sideBadgeUnits" title="Warehouse Units">6</span>
       </button>
 
       <!-- 5. Permissions & Access Control (RBAC) -->
@@ -2374,7 +2384,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
         </span>
         <span class="nav-label">Permissions Matrix</span>
-        <span class="nav-badge green" id="sideBadgePermissions">RBAC</span>
+        <span class="nav-badge green" id="sideBadgePermissions" title="6 System Roles Configured (RBAC)">RBAC</span>
       </button>
 
       <!-- 6. System Logs -->
@@ -2383,7 +2393,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
         </span>
         <span class="nav-label">System Logs</span>
-        <span class="nav-badge purple" id="sideBadgeLogs" style="background: rgba(109, 40, 217, 0.25); color: #c4b5fd;">0</span>
+        <span class="nav-badge indigo" id="sideBadgeLogs" title="System Security Audit Logs">0</span>
       </button>
     </div>
 
@@ -3483,6 +3493,63 @@
       return clean;
     }
 
+    // Professional dynamic count formatter (future-proof for 10, 100, 1k, 10k+)
+    function formatBadgeCount(num) {
+      const n = parseInt(num, 10);
+      if (isNaN(n) || n < 0) return "0";
+      if (n < 1000) return String(n);
+      if (n < 10000) {
+        const k = (n / 1000).toFixed(1).replace(/\.0$/, "");
+        return k + "k";
+      }
+      if (n < 1000000) {
+        return Math.round(n / 1000) + "k";
+      }
+      return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    }
+
+    // Fetch live users and logs counts asynchronously on initial load so all sidebar badges are instantly accurate
+    async function fetchSidebarCounts() {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      if (!token) return;
+
+      try {
+        const [usersRes, logsRes] = await Promise.allSettled([
+          fetch("/api/admin/users", { headers: { "Authorization": `Bearer ${token}` } }),
+          fetch("/api/admin/audit-logs?page=1&limit=1", { headers: { "Authorization": `Bearer ${token}` } })
+        ]);
+
+        if (usersRes.status === "fulfilled" && usersRes.value.ok) {
+          const uData = await usersRes.value.json();
+          adminUsersList = uData.users || [];
+          const userCount = adminUsersList.length || uData.count || 0;
+          const sideUsers = document.getElementById("sideBadgeUsers");
+          if (sideUsers) {
+            sideUsers.textContent = formatBadgeCount(userCount);
+            sideUsers.title = `${userCount.toLocaleString()} Total Authorized System Users`;
+          }
+          if (document.getElementById("badgeUsersCount")) {
+            document.getElementById("badgeUsersCount").textContent = userCount;
+          }
+        }
+
+        if (logsRes.status === "fulfilled" && logsRes.value.ok) {
+          const lData = await logsRes.value.json();
+          const logCount = lData.total || 0;
+          const sideLogs = document.getElementById("sideBadgeLogs");
+          if (sideLogs) {
+            sideLogs.textContent = formatBadgeCount(logCount);
+            sideLogs.title = `${logCount.toLocaleString()} Security Audit Logs`;
+          }
+          if (document.getElementById("badgeLogsCount")) {
+            document.getElementById("badgeLogsCount").textContent = logCount;
+          }
+        }
+      } catch (err) {
+        console.warn("Sidebar counts async load:", err);
+      }
+    }
+
     // Filter states
     let activeDateFilter = "ALL"; // 'ALL', 'TODAY', 'YESTERDAY', 'CUSTOM'
     let customSelectedDate = "";
@@ -3664,6 +3731,7 @@
           showDashboardUI();
           await loadWarehouseUnits();
           await fetchOrdersData();
+          fetchSidebarCounts();
         } else {
           localStorage.removeItem(ADMIN_TOKEN_KEY);
           showLoginOverlay();
@@ -4209,7 +4277,8 @@
             document.getElementById("badgeUnitsCount").textContent = allWarehouseUnits.length;
           }
           if (document.getElementById("sideBadgeUnits")) {
-            document.getElementById("sideBadgeUnits").textContent = allWarehouseUnits.length;
+            document.getElementById("sideBadgeUnits").textContent = formatBadgeCount(allWarehouseUnits.length);
+            document.getElementById("sideBadgeUnits").title = `${allWarehouseUnits.length} Warehouse Units`;
           }
 
           renderUnitSelectorPills();
@@ -4547,7 +4616,10 @@
           const analyserCount = adminUsersList.filter(u => ["analyst", "analyser"].includes((u.role || "").toLowerCase())).length;
 
           if (document.getElementById("badgeUsersCount")) document.getElementById("badgeUsersCount").textContent = totalCount;
-          if (document.getElementById("sideBadgeUsers")) document.getElementById("sideBadgeUsers").textContent = totalCount;
+          if (document.getElementById("sideBadgeUsers")) {
+            document.getElementById("sideBadgeUsers").textContent = formatBadgeCount(totalCount);
+            document.getElementById("sideBadgeUsers").title = `${totalCount.toLocaleString()} Total Authorized Users`;
+          }
           if (document.getElementById("userCountAllPill")) document.getElementById("userCountAllPill").textContent = totalCount;
           if (document.getElementById("userCountCustPill")) document.getElementById("userCountCustPill").textContent = custCount;
           if (document.getElementById("userCountAsmPill")) document.getElementById("userCountAsmPill").textContent = asmCount;
@@ -4866,7 +4938,8 @@
             document.getElementById("badgeLogsCount").textContent = total;
           }
           if (document.getElementById("sideBadgeLogs")) {
-            document.getElementById("sideBadgeLogs").textContent = total;
+            document.getElementById("sideBadgeLogs").textContent = formatBadgeCount(total);
+            document.getElementById("sideBadgeLogs").title = `${total.toLocaleString()} Total Security Audit Logs`;
           }
           if (document.getElementById("auditTotalCountBadge")) {
             document.getElementById("auditTotalCountBadge").textContent = total;
@@ -5307,9 +5380,13 @@
       document.getElementById("badgePendingCount").textContent = pendingTotal;
       document.getElementById("badgeConfirmedCount").textContent = confirmedTotal;
 
-      if (document.getElementById("sideBadgeAll")) document.getElementById("sideBadgeAll").textContent = dateFilteredOrders.length;
+      if (document.getElementById("sideBadgeAll")) {
+        document.getElementById("sideBadgeAll").textContent = formatBadgeCount(dateFilteredOrders.length);
+        document.getElementById("sideBadgeAll").title = `${dateFilteredOrders.length.toLocaleString()} Total Orders`;
+      }
       if (document.getElementById("sideBadgeWarehouse")) {
-        document.getElementById("sideBadgeWarehouse").textContent = pendingTotal > 0 ? `${pendingTotal} PENDING` : 'LIVE';
+        document.getElementById("sideBadgeWarehouse").textContent = formatBadgeCount(pendingTotal);
+        document.getElementById("sideBadgeWarehouse").title = `${pendingTotal.toLocaleString()} Pending Orders to Pack`;
       }
       if (document.getElementById("sideBadgePending")) document.getElementById("sideBadgePending").textContent = pendingTotal;
       if (document.getElementById("sideBadgeConfirmed")) document.getElementById("sideBadgeConfirmed").textContent = confirmedTotal;
