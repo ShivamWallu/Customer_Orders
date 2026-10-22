@@ -164,7 +164,7 @@ function migrateAndFormatSheet(sheet) {
   sheet.setFrozenRows(1);
 
   // Set Column Widths
-  sheet.setColumnWidth(1, 155); // Timestamp (IST)
+  sheet.setColumnWidth(1, 195); // Timestamp (IST) - 195px width ensures Date & Time fit on 1 Single Line without wrapping
   sheet.setColumnWidth(2, 175); // Order ID
   sheet.setColumnWidth(3, 140); // Party Code (SDMOWB0307)
   sheet.setColumnWidth(4, 210); // Party Name (Customer)
@@ -352,7 +352,7 @@ function appendOrderToSheet(order) {
   // ⚡ BATCH ROW FORMATTING (1 network call for whole row vertical alignment!)
   sheet.getRange(lastRow, 1, 1, 11).setVerticalAlignment("middle");
 
-  sheet.getRange(lastRow, 1).setNumberFormat("@").setHorizontalAlignment("center"); // Timestamp (Plain text for 12-Hour AM/PM)
+  sheet.getRange(lastRow, 1).setNumberFormat("@").setHorizontalAlignment("center").setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP); // Timestamp (Plain text, 1 Single Line)
   sheet.getRange(lastRow, 2).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#004b99").setHorizontalAlignment("center"); // Order ID
   sheet.getRange(lastRow, 3).setFontFamily("Courier New").setFontWeight("bold").setFontColor("#003366").setBackground("#eff6ff").setHorizontalAlignment("center"); // Party Code
   sheet.getRange(lastRow, 4).setFontWeight("bold"); // Party Name
@@ -562,10 +562,12 @@ function fixAllSheetTimestampsTo12HourIST(targetSheet) {
     }
   }
 
-  // Set number format to plain text to prevent sheet auto-converting back to 24h
+  // Set number format to plain text and CLIP to ensure 1 Single Clean Line
   range.setNumberFormat("@");
   range.setValues(values);
   range.setHorizontalAlignment("center");
+  range.setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
+  sheet.setColumnWidth(1, 195);
   Logger.log("Successfully converted " + updatedCount + " rows to clean 12-hour AM/PM IST format!");
 }
 
