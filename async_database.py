@@ -332,6 +332,7 @@ async def async_get_orders_paginated(
     party_code: Optional[str] = None,
     unit: Optional[str] = None,
     status: Optional[str] = None,
+    has_so: Optional[bool] = None,
     search_query: Optional[str] = None,
     page: int = 1,
     limit: int = 25,
@@ -347,13 +348,17 @@ async def async_get_orders_paginated(
         filters = []
 
         if sales_person and sales_person != "ALL":
-            filters.append(OrderModel.sales_person == sales_person)
+            filters.append(OrderModel.sales_person.ilike(sales_person.strip()))
         if party_code:
             filters.append(OrderModel.party_code == party_code)
         if unit and unit != "ALL":
             filters.append(OrderModel.unit == unit)
         if status and status != "ALL":
             filters.append(OrderModel.order_status == status)
+        if has_so is True:
+            filters.append(and_(OrderModel.so_number.isnot(None), OrderModel.so_number != "", OrderModel.so_number != "-"))
+        elif has_so is False:
+            filters.append(or_(OrderModel.so_number.is_(None), OrderModel.so_number == "", OrderModel.so_number == "-"))
         if search_query:
             term = f"%{search_query.strip()}%"
             filters.append(

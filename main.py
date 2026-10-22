@@ -2478,15 +2478,47 @@ async def api_customer_track_order(request: Request):
 async def api_search_sales_orders(
     request: Request,
     q: str = "",
+    sales_person: Optional[str] = None,
+    filter_type: Optional[str] = None,
     page: int = 1,
     limit: int = 50,
     cursor: Optional[str] = None
 ):
-    """Fast indexed paginated & cursor search across orders by SO Number, Order ID, Party Name or ASM"""
-    res = await async_get_orders_paginated(search_query=q, page=page, limit=limit, cursor_created_at=cursor)
+    """Fast indexed paginated & cursor search across orders by SO Number, Order ID, Party Name or ASM with scoping"""
+    has_so = None
+    status = None
+
+    f_type = (filter_type or "").lower().strip()
+    if f_type in ["has_so", "so"]:
+        has_so = True
+    elif f_type in ["pending_so", "pending"]:
+        has_so = False
+    elif f_type == "confirmed":
+        status = "CONFIRMED"
+
+    sp = None
+    if sales_person and sales_person.strip() and sales_person.strip().upper() != "ALL":
+        sp = sales_person.strip()
+
+    # Avoid matching every string containing 'so' if raw keyword passed
+    clean_q = q.strip()
+    if clean_q.upper() in ["SO", "HAS SO", "HAS_SO", "CONFIRMED", "PENDING"]:
+        clean_q = ""
+
+    res = await async_get_orders_paginated(
+        sales_person=sp,
+        status=status,
+        has_so=has_so,
+        search_query=clean_q if clean_q else None,
+        page=page,
+        limit=limit,
+        cursor_created_at=cursor
+    )
     return {
         "status": "success",
         "query": q,
+        "sales_person": sales_person or "ALL",
+        "filter_type": filter_type or "all",
         "count": len(res["orders"]),
         "total_count": res["total_count"],
         "page": res["page"],
