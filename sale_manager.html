@@ -2048,35 +2048,32 @@
       transform: translateY(-1px);
     }
 
-    /* Filter Chips Bar */
+    /* Filter Chips Bar (100% Mobile Optimized 4-Button Equal Grid, Zero Cut-off) */
     .search-filter-chips {
-      display: flex;
-      gap: 7px;
-      overflow-x: auto;
-      padding-bottom: 4px;
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr 1.15fr 1fr;
+      gap: 5px;
       margin-bottom: 12px;
-      scrollbar-width: none;
-    }
-
-    .search-filter-chips::-webkit-scrollbar {
-      display: none;
     }
 
     .chip-filter-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 14px;
-      border-radius: 20px;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 2px;
+      border-radius: 9px;
       border: 1.5px solid #e2e8f0;
       background: #ffffff;
       color: #475569;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
+      text-align: center;
+      box-sizing: border-box;
+      width: 100%;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      flex-shrink: 0;
     }
 
     .chip-filter-btn:hover {
@@ -2519,10 +2516,10 @@
         </div>
       </div>
       <div class="manager-status-right">
-        <button type="button" class="btn-asm-switch" onclick="logoutManager()" title="Switch Account">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          <span>Switch</span>
-        </button>
+        <span style="font-size: 11px; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px;">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+          Active
+        </span>
       </div>
     </div>
 
@@ -2738,17 +2735,12 @@
 
     <!-- 🔍 SECTION 3: SALES ORDER SEARCH & DETAILS -->
     <div id="sectionSoSearch" class="so-search-wrap" style="display: none;">
-      <!-- Clean Title Bar (Strictly ASM's Own Orders) -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 2px;">
-        <div style="display: flex; align-items: center; gap: 7px;">
-          <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #0284c7; display: flex; align-items: center; justify-content: center;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-          </div>
-          <span style="font-size: 13.5px; font-weight: 800; color: #0f172a;">My Orders Search</span>
+      <!-- Clean Title Bar -->
+      <div style="margin-bottom: 12px; padding: 0 2px;">
+        <div style="font-size: 14.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Search My Sales Orders</span>
         </div>
-        <span style="font-size: 11px; font-weight: 700; color: #0369a1; background: #f0f9ff; padding: 3px 9px; border-radius: 12px; border: 1px solid #bae6fd;">
-          Territory Scoped
-        </span>
       </div>
 
       <!-- Modern Search Input with Clear Button -->
@@ -2757,7 +2749,7 @@
           <span class="so-search-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </span>
-          <input type="text" id="soSearchInput" class="so-search-input" placeholder="Search SO#, ID, or Party..." oninput="onSoSearchInputChanged()" onkeyup="if(event.key==='Enter') performSoSearch()">
+          <input type="text" id="soSearchInput" class="so-search-input" placeholder="Search SO#, Order ID, or Party..." oninput="onSoSearchInputChanged()" onkeyup="if(event.key==='Enter') performSoSearch()">
           <button type="button" id="soSearchClearBtn" class="so-search-clear-btn" onclick="clearSoSearchInput()" title="Clear">✕</button>
         </div>
         <button type="button" class="btn-so-search-submit" onclick="performSoSearch()">
@@ -2766,13 +2758,13 @@
         </button>
       </div>
 
-      <!-- Quick Filter Pills -->
+      <!-- Quick Filter Pills (4-Grid Equal Fit, Zero Overflow) -->
       <div class="search-filter-chips">
         <button type="button" id="chipFilterAll" class="chip-filter-btn active" onclick="setSearchFilter('all')">
           <span>📋 All</span>
         </button>
         <button type="button" id="chipFilterHasSo" class="chip-filter-btn chip-has-so" onclick="setSearchFilter('has_so')" title="Orders with confirmed Factory Sales Order Number">
-          <span>⚡ SO Generated</span>
+          <span>⚡ Has SO</span>
         </button>
         <button type="button" id="chipFilterConfirmed" class="chip-filter-btn chip-confirmed" onclick="setSearchFilter('confirmed')">
           <span>✔ Confirmed</span>
@@ -2780,17 +2772,6 @@
         <button type="button" id="chipFilterPending" class="chip-filter-btn chip-pending" onclick="setSearchFilter('pending_so')" title="Orders awaiting Factory SO Number">
           <span>⏳ Pending</span>
         </button>
-      </div>
-
-      <!-- Helpful Dismissible Banner explaining SO# -->
-      <div class="so-info-banner" id="soInfoBanner" style="position: relative; display: flex; justify-content: space-between; align-items: flex-start;">
-        <div style="display: flex; gap: 8px; align-items: flex-start;">
-          <div class="so-info-icon">💡</div>
-          <div class="so-info-text">
-            <strong>SO# Guide:</strong> Factory confirmation aur ERP booking ke baad official <strong>SO Number</strong> banta hai. Filter <strong>⚡ SO Generated</strong> se factory-approved orders dekhein.
-          </div>
-        </div>
-        <button type="button" style="background: none; border: none; color: #166534; font-size: 15px; cursor: pointer; padding: 0 4px; line-height: 1;" onclick="document.getElementById('soInfoBanner').style.display='none'" title="Dismiss">✕</button>
       </div>
 
       <!-- Results Container -->
@@ -3665,13 +3646,8 @@
       }
 
       let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 4px;">
-          <div style="font-size: 12.5px; font-weight: 700; color: #475569;">
-            Found <strong style="color: #0f172a;">${orders.length}</strong> matching order(s)
-          </div>
-          <div style="font-size: 11px; font-weight: 700; color: #0284c7; background: #f0f9ff; padding: 3px 8px; border-radius: 6px; border: 1px solid #bae6fd;">
-            ${escapeHtml(mgrName || 'My Orders')}
-          </div>
+        <div style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 12px; padding: 0 2px;">
+          Found <strong style="color: #0284c7;">${orders.length}</strong> sales order(s):
         </div>
       `;
 
@@ -3780,9 +3756,9 @@
     async function openSoDetailsModal(orderId) {
       let ord = cachedAsmOrders.find(o => o.cleanId === orderId);
       if (!ord) {
-        // Fetch from search API
+        // Fetch from search API strictly scoped to current manager
         try {
-          const res = await fetch(`/api/sales-orders/search?q=${encodeURIComponent(orderId)}`);
+          const res = await fetch(`/api/sales-orders/search?q=${encodeURIComponent(orderId)}&sales_person=${encodeURIComponent(getLoggedManagerName())}`);
           const data = await res.json();
           if (res.ok && data.orders && data.orders.length > 0) {
             ord = data.orders.find(o => o.cleanId === orderId) || data.orders[0];
@@ -3851,7 +3827,7 @@
       let ord = cachedAsmOrders.find(o => o.cleanId === orderId);
       if (!ord) {
         try {
-          const res = await fetch(`/api/sales-orders/search?q=${encodeURIComponent(orderId)}`);
+          const res = await fetch(`/api/sales-orders/search?q=${encodeURIComponent(orderId)}&sales_person=${encodeURIComponent(getLoggedManagerName())}`);
           const data = await res.json();
           if (res.ok && data.orders && data.orders.length > 0) {
             ord = data.orders.find(o => o.cleanId === orderId) || data.orders[0];
