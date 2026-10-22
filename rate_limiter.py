@@ -3,9 +3,26 @@ Khandelia Oil & General Mills - Enterprise Rate Limiting & Abuse Prevention Engi
 Prevents DDoS, brute-force OTP attempts, and order submission spam.
 """
 
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
+try:
+    from slowapi import Limiter
+    from slowapi.util import get_remote_address
+    from slowapi.errors import RateLimitExceeded
+    SLOWAPI_AVAILABLE = True
+except ImportError:
+    SLOWAPI_AVAILABLE = False
+    class RateLimitExceeded(Exception):
+        detail = "Rate limit exceeded"
+    class DummyLimiter:
+        def __init__(self, *args, **kwargs):
+            pass
+        def limit(self, *args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+    Limiter = DummyLimiter
+    def get_remote_address(request):
+        return "127.0.0.1"
+
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from config import settings
@@ -28,11 +45,14 @@ def get_real_client_ip(request: Request) -> str:
     return get_remote_address(request) or "127.0.0.1"
 
 # Initialize SlowAPI Limiter
-limiter = Limiter(
-    key_func=get_real_client_ip,
-    default_limits=[settings.RATE_LIMIT_GLOBAL],
-    storage_uri=settings.REDIS_URL if settings.REDIS_ENABLED and settings.RAW_DATABASE_URL.startswith("postgres") else "memory://"
-)
+if SLOWAPI_AVAILABLE:
+    limiter = Limiter(
+        key_func=get_real_client_ip,
+        default_limits=[settings.RATE_LIMIT_GLOBAL],
+        storage_uri=settings.REDIS_URL if settings.REDIS_ENABLED and settings.RAW_DATABASE_URL.startswith("postgres") else "memory://"
+    )
+else:
+    limiter = DummyLimiter()
 
 def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
     """Returns clean, structured JSON when rate limit threshold is crossed"""

@@ -6,7 +6,10 @@ Dramatically reduces database read IOPS under 1M-10M concurrent traffic spikes.
 import json
 import time
 from typing import Any, Optional, Dict
-import redis.asyncio as aioredis
+try:
+    import redis.asyncio as aioredis
+except ImportError:
+    aioredis = None
 from config import settings
 from logger_service import logger
 
@@ -44,8 +47,8 @@ class CacheService:
 
     async def init_cache(self):
         """Initializes connection pool to Redis server with auto-failover to RAM cache"""
-        if not settings.REDIS_ENABLED:
-            logger.info("Redis disabled in settings; using high-speed In-Memory Cache")
+        if not settings.REDIS_ENABLED or aioredis is None:
+            logger.info("Redis disabled or library not installed; using high-speed In-Memory Cache")
             return
 
         try:
