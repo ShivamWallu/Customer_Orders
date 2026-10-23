@@ -532,10 +532,34 @@ def delete_unit_by_id(unit_id: int) -> Dict[str, Any]:
         conn.close()
 
 # ----------------- 📜 AUDIT LOGS & SYSTEM ACTIVITY TRACKER -----------------
-def log_audit_event(user_name: str = "", phone: str = "", role: str = "", 
-                    action: str = "", status: str = "SUCCESS", details: str = "", ip_address: str = ""):
-    """Inserts an immutable audit log record into audit_logs table"""
+def log_audit_event(*args, **kwargs):
+    """
+    Inserts an immutable audit log record into audit_logs table.
+    Flexible signature accepts positional or keyword arguments:
+    user_name/user, phone, role, action, status, details, ip_address
+    """
     import time
+    user_name = kwargs.get("user_name") or kwargs.get("user") or ""
+    phone = kwargs.get("phone") or ""
+    role = kwargs.get("role") or ""
+    action = kwargs.get("action") or ""
+    status = kwargs.get("status") or "SUCCESS"
+    details = kwargs.get("details") or ""
+    ip_address = kwargs.get("ip_address") or kwargs.get("ip") or ""
+
+    # Positional args fallback
+    if args:
+        if len(args) == 1 and not action:
+            action = str(args[0])
+        elif len(args) >= 2:
+            if not action and not details:
+                action = str(args[0])
+                details = str(args[1])
+            elif not user_name:
+                user_name = str(args[0])
+                if len(args) >= 2 and not phone:
+                    phone = str(args[1])
+
     conn = get_connection()
     try:
         now_dt = datetime.now()
@@ -545,7 +569,7 @@ def log_audit_event(user_name: str = "", phone: str = "", role: str = "",
             conn.execute("""
             INSERT INTO audit_logs (user_name, phone, role, action, status, details, ip_address, created_at, timestamp)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (user_name.strip(), phone.strip(), role.strip(), action.strip(), status.upper().strip(), details.strip(), ip_address.strip(), now_iso, now_ts))
+            """, (str(user_name).strip(), str(phone).strip(), str(role).strip(), str(action).strip(), str(status).upper().strip(), str(details).strip(), str(ip_address).strip(), now_iso, now_ts))
     except Exception as e:
         print(f"[AUDIT_LOG_ERROR] Could not write audit log: {e}")
     finally:
@@ -2268,7 +2292,7 @@ def get_warehouse_production_summary(orders_subset: Optional[List[Dict[str, Any]
             m = re.search(r'x\s*(\d+)', item_name, re.I)
             fallback_mult = round(int(it.get("pieces") or 0) / boxes) if boxes > 0 and int(it.get("pieces") or 0) > 0 else 1
             multiplier = int(m.group(1)) if m else int(it.get("multiplier") or fallback_mult)
-            pieces = int(it.get("pieces") or (boxes * multiplier))
+            pieces = (boxes * multiplier) if multiplier > 1 else (int(it.get("pieces") or (boxes * multiplier)))
 
             total_pending_boxes += boxes
             total_pending_pieces += pieces
