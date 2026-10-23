@@ -1710,24 +1710,29 @@
 
     .cust-order-card-footer {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 8px;
+      flex-direction: column;
+      padding-top: 10px;
       border-top: 1px dashed #e2e8f0;
-      gap: 6px;
-      flex-wrap: nowrap;
+      gap: 8px;
+      width: 100%;
     }
 
     .order-card-badge-row {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 5px;
-      flex-wrap: nowrap;
-      flex-shrink: 0;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .cust-card-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      width: 100%;
     }
 
     .pill-boxes {
-      padding: 3px 7px;
+      padding: 3px 8px;
       background: #eff6ff;
       color: #1d4ed8;
       border: 1px solid #dbeafe;
@@ -1743,7 +1748,7 @@
     }
 
     .pill-pieces {
-      padding: 3px 7px;
+      padding: 3px 8px;
       background: #f0fdf4;
       color: #15803d;
       border: 1px solid #dcfce7;
@@ -1759,17 +1764,18 @@
     }
 
     .btn-card-action {
-      padding: 5px 8px;
+      padding: 7px 4px;
       border-radius: 8px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
       transition: all 0.15s ease;
       white-space: nowrap !important;
-      flex-shrink: 0;
+      width: 100%;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     }
 
@@ -2671,6 +2677,21 @@
         </div>
       </div>
 
+      <!-- 🏷️ Status Segmented Tabs for Customer Order History -->
+      <div class="track-status-segmented-bar" style="display: grid; margin-top: 10px; margin-bottom: 10px;">
+        <button type="button" class="track-status-tab-btn cust-status-seg-btn active" id="btnCustStatusAll" onclick="setCustomerStatusFilter('ALL')">
+          <span>All Orders</span>
+        </button>
+        <button type="button" class="track-status-tab-btn cust-status-seg-btn" id="btnCustStatusConfirmed" onclick="setCustomerStatusFilter('CONFIRMED')">
+          <span class="tab-txt-full">SO Confirmed</span>
+          <span class="tab-txt-compact">Confirmed</span>
+        </button>
+        <button type="button" class="track-status-tab-btn cust-status-seg-btn" id="btnCustStatusDispatched" onclick="setCustomerStatusFilter('DISPATCHED')">
+          <span class="tab-txt-full">Dispatch & Delivery</span>
+          <span class="tab-txt-compact">Dispatch</span>
+        </button>
+      </div>
+
       <!-- Scalable Customer Order Search & Filter Input -->
       <div class="cust-orders-search-wrap">
         <div class="track-input-wrap" style="width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
@@ -2732,17 +2753,31 @@
           </button>
         </div>
 
-        <!-- ⚡ RECENT ORDERS (ALWAYS PREVIOUS 5 ORDERS IN CLEAN WRAP) -->
+        <!-- 🏷️ CUSTOMER SALES ORDER STATUS TABS: All, Confirmed, Dispatch (Permanent 3-Column Responsive Grid) -->
+        <div class="track-status-segmented-bar" id="trackStatusSegmentedBar" style="display: grid;">
+          <button type="button" class="track-status-tab-btn active" id="btnTrackTabAll" onclick="setTrackStatusTab('ALL')">
+            <span>All</span>
+            <span class="tab-badge-pill" id="trackTabCountAll">0</span>
+          </button>
+          <button type="button" class="track-status-tab-btn" id="btnTrackTabConfirmed" onclick="setTrackStatusTab('CONFIRMED')">
+            <span class="tab-txt-full">SO Confirmed</span>
+            <span class="tab-txt-compact">Confirmed</span>
+            <span class="tab-badge-pill" id="trackTabCountConfirmed">0</span>
+          </button>
+          <button type="button" class="track-status-tab-btn" id="btnTrackTabDispatched" onclick="setTrackStatusTab('DISPATCHED')">
+            <span class="tab-txt-full">Dispatch & Delivery</span>
+            <span class="tab-txt-compact">Dispatch</span>
+            <span class="tab-badge-pill" id="trackTabCountDispatched">0</span>
+          </button>
+        </div>
+
+        <!-- ⚡ RECENT ORDERS (CLEAN WRAP OF PILLS MATCHING SELECTED TAB) -->
         <div id="quickTrackChipsContainer" class="recent-orders-card-wrap" style="display: none;">
           <div class="recent-orders-header">
             <span class="recent-orders-title">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              <span>Recent Orders (Last 5)</span>
+              <span id="recentOrdersSectionTitle">Recent Orders:</span>
             </span>
-            <button type="button" class="recent-orders-all-link" id="btnQuickTrackAllOrders" onclick="switchCustomerSection('orders')">
-              <span>View All Orders <strong id="quickTrackTotalCountBadge">(0)</strong></span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
           </div>
           <div id="quickTrackChipsList" class="recent-orders-pills-wrap"></div>
         </div>
@@ -4292,9 +4327,21 @@
       loadCustomerOrders(1);
     }
 
+    let currentCustStatusFilter = "ALL"; // 'ALL', 'CONFIRMED', 'DISPATCHED'
+
+    function setCustomerStatusFilter(status) {
+      currentCustStatusFilter = status;
+      const statusMap = { ALL: "All", CONFIRMED: "Confirmed", DISPATCHED: "Dispatched" };
+      document.querySelectorAll(".cust-status-seg-btn").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById(`btnCustStatus${statusMap[status] || status}`);
+      if (btn) btn.classList.add("active");
+      currentCustPage = 1;
+      loadCustomerOrders(1);
+    }
+
     const debouncedSearchCustomerOrders = debounce(() => {
       executeCustomerOrdersSearch();
-    }, 300);
+    }, 250);
 
     function executeCustomerOrdersSearch() {
       const input = document.getElementById("custOrdersSearchInput");
@@ -4303,6 +4350,21 @@
       currentCustSearchQuery = q;
       if (clearBtn) clearBtn.style.display = q ? "inline-block" : "none";
       currentCustPage = 1;
+
+      // ⚡ Instant Client-side Match: If customer typed 4-5 digits (e.g. 5501) or full ID, filter immediately
+      if (q && cachedCustomerOrders && cachedCustomerOrders.length > 0) {
+        const cleanQ = q.toLowerCase().replace('#', '').trim();
+        const instantMatches = cachedCustomerOrders.filter(o => {
+          const ordId = (o.cleanId || o.order_id || "").toLowerCase();
+          const soNum = (o.soNumber || o.so_number || "").toLowerCase();
+          const itSummary = (o.itemsSummary || "").toLowerCase();
+          return ordId.includes(cleanQ) || soNum.includes(cleanQ) || itSummary.includes(cleanQ);
+        });
+        if (instantMatches.length > 0) {
+          renderCustomerOrdersList(instantMatches, { totalOrders: instantMatches.length });
+        }
+      }
+
       loadCustomerOrders(1);
     }
 
@@ -4319,7 +4381,9 @@
     async function loadCustomerOrders(page) {
       if (page) currentCustPage = Math.max(1, parseInt(page) || 1);
       const container = document.getElementById("customerOrdersListContainer");
-      container.innerHTML = `<div style="text-align: center; padding: 40px 16px; color: #64748b; font-size: 13px;"><div style="display:inline-block; width:22px; height:22px; border:2.5px solid #cbd5e1; border-top-color:#047857; border-radius:50%; animation:spin 0.8s linear infinite; vertical-align:middle; margin-right:8px;"></div>Loading orders...</div>`;
+      if (!currentCustSearchQuery) {
+        container.innerHTML = `<div style="text-align: center; padding: 40px 16px; color: #64748b; font-size: 13px;"><div style="display:inline-block; width:22px; height:22px; border:2.5px solid #cbd5e1; border-top-color:#047857; border-radius:50%; animation:spin 0.8s linear infinite; vertical-align:middle; margin-right:8px;"></div>Loading orders...</div>`;
+      }
 
       let token = "";
       let partyCode = "";
@@ -4348,7 +4412,8 @@
           date: customDate,
           page: currentCustPage,
           limit: currentCustLimit,
-          search: currentCustSearchQuery
+          search: currentCustSearchQuery,
+          status: currentCustStatusFilter
         });
 
         const res = await fetch(`/api/customer/my-orders?${params.toString()}`);
@@ -4372,7 +4437,7 @@
 
           renderCustomerOrdersList(cachedCustomerOrders, data);
           renderCustomerPagination(data);
-          populateQuickTrackChips();
+          // NOTE: Do NOT call populateQuickTrackChips() here as it would overwrite active tracking/search!
         } else {
           container.innerHTML = `<div style="text-align: center; padding: 40px 16px; color: #dc2626; font-size: 13px;">Could not load orders: ${escapeHtml(data.detail || data.message || "Unauthorized")}</div>`;
           const pagContainer = document.getElementById("custOrdersPaginationContainer");
@@ -4528,7 +4593,7 @@
                 <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
               </div>
-              <div style="display: flex; gap: 6px;">
+              <div class="cust-card-actions-grid">
                 <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackCustomerOrderFromList('${escapeHtml(o.cleanId)}')" title="Live Dispatch Tracking">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
@@ -4802,7 +4867,7 @@
       document.querySelectorAll(".track-status-tab-btn").forEach(b => b.classList.remove("active"));
       const btn = document.getElementById(`btnTrackTab${tabMap[tab] || tab}`);
       if (btn) btn.classList.add("active");
-      renderFilteredQuickTrackChips(true);
+      renderFilteredQuickTrackChips(true); // Auto-tracks matching order of this status!
     }
 
     function renderFilteredQuickTrackChips(autoTrackFirst = false) {
@@ -4816,31 +4881,51 @@
         return;
       }
 
-      // Update total orders counter in header
-      const totalBadge = document.getElementById("quickTrackTotalCountBadge");
-      if (totalBadge) {
-        const count = totalCustOrders > 0 ? totalCustOrders : all.length;
-        totalBadge.textContent = `(${count.toLocaleString()})`;
+      // 1. Tally counts for status tabs
+      let countAll = all.length;
+      let countConfirmed = 0;
+      let countDispatched = 0;
+
+      all.forEach(o => {
+        const cat = getCustomerOrderCategory(o);
+        if (cat === "DISPATCHED") countDispatched++;
+        else if (cat === "CONFIRMED") countConfirmed++;
+      });
+
+      const elAll = document.getElementById("trackTabCountAll");
+      const elConf = document.getElementById("trackTabCountConfirmed");
+      const elDisp = document.getElementById("trackTabCountDispatched");
+      if (elAll) elAll.textContent = countAll;
+      if (elConf) elConf.textContent = countConfirmed;
+      if (elDisp) elDisp.textContent = countDispatched;
+
+      // 2. Filter orders matching selected status tab
+      let filtered = all;
+      if (activeTrackStatusTab === "CONFIRMED") {
+        filtered = all.filter(o => getCustomerOrderCategory(o) === "CONFIRMED");
+      } else if (activeTrackStatusTab === "DISPATCHED") {
+        filtered = all.filter(o => getCustomerOrderCategory(o) === "DISPATCHED");
       }
 
-      // ⚡ ALWAYS show the customer's previous 5 orders in Recent Orders
-      const previous5 = all.slice(0, 5);
-      if (previous5.length === 0) {
-        container.style.display = "none";
+      const topOrders = filtered.slice(0, 5);
+      if (topOrders.length === 0) {
+        const emptyLabel = activeTrackStatusTab === "CONFIRMED" ? "SO Confirmed" : (activeTrackStatusTab === "DISPATCHED" ? "Dispatched" : "");
+        list.innerHTML = `<span style="font-size: 11.5px; color: #64748b; font-style: italic; padding: 6px 4px;">No ${emptyLabel} orders found</span>`;
+        container.style.display = "block";
         return;
       }
 
       const currentInputVal = (document.getElementById("trackOrderInput")?.value || "").replace('#', '').trim();
 
-      let chipsHtml = previous5.map((o, index) => {
+      let chipsHtml = topOrders.map((o, index) => {
         const cat = getCustomerOrderCategory(o);
         const isCurrentlyTracked = currentInputVal ? (currentInputVal === o.cleanId) : (index === 0);
-        const isLatest = (index === 0);
+        const isLatest = (index === 0 && activeTrackStatusTab === "ALL");
 
         let iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
         let bgStyle = "";
         if (cat === "DISPATCHED") {
-          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
+          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
           bgStyle = "border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff;";
         } else if (cat === "CONFIRMED") {
           iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
@@ -4864,16 +4949,15 @@
       list.innerHTML = chipsHtml;
       container.style.display = "block";
 
-      if (autoTrackFirst && previous5.length > 0) {
+      // ⚡ Automatically track the first matching order when status tab is selected
+      if (autoTrackFirst && topOrders.length > 0) {
         const input = document.getElementById("trackOrderInput");
-        if (input && !input.value.trim()) {
-          input.value = `#${previous5[0].cleanId}`;
-          trackCustomerOrder(`#${previous5[0].cleanId}`);
-        }
+        if (input) input.value = `#${topOrders[0].cleanId}`;
+        trackCustomerOrder(`#${topOrders[0].cleanId}`);
       }
     }
 
-    async function populateQuickTrackChips() {
+    async function populateQuickTrackChips(isBackgroundSync = false) {
       const container = document.getElementById("quickTrackChipsContainer");
       const list = document.getElementById("quickTrackChipsList");
       if (!container || !list) return;
@@ -4898,13 +4982,17 @@
       if (orders.length > 0) {
         renderFilteredQuickTrackChips(false);
 
-        // ⚡ ALWAYS auto-populate and track the LATEST order below
-        const latestOrd = orders[0];
-        const input = document.getElementById("trackOrderInput");
-        if (input) {
-          input.value = `#${latestOrd.cleanId}`;
+        // ⚡ ONLY auto-track if this is NOT a background sync AND no order is currently tracked
+        if (!isBackgroundSync) {
+          const resContainer = document.getElementById("customerTrackResultContainer");
+          const input = document.getElementById("trackOrderInput");
+          const hasTrackCard = resContainer && resContainer.querySelector(".track-result-card");
+          if (!hasTrackCard && (!input || !input.value.trim())) {
+            const latestOrd = orders[0];
+            if (input) input.value = `#${latestOrd.cleanId}`;
+            trackCustomerOrder(`#${latestOrd.cleanId}`);
+          }
         }
-        trackCustomerOrder(`#${latestOrd.cleanId}`);
       } else {
         container.style.display = "none";
       }
@@ -5340,7 +5428,7 @@
       try {
         const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
         if (sess && sess.token) {
-          populateQuickTrackChips();
+          populateQuickTrackChips(true);
         }
       } catch(e) {}
     }, 10000);

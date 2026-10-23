@@ -2651,6 +2651,8 @@ async def api_get_customer_orders(request: Request):
     except (ValueError, TypeError):
         limit = 10
 
+    status_filter = request.query_params.get("status", "ALL")
+
     res = get_orders_for_customer(
         party_name=party_name,
         party_code=party_code,
@@ -2659,7 +2661,8 @@ async def api_get_customer_orders(request: Request):
         specific_date=specific_date,
         page=page,
         limit=limit,
-        search_query=search_q
+        search_query=search_q,
+        status_filter=status_filter
     )
 
     return {

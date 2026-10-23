@@ -1210,12 +1210,13 @@ def get_orders_for_customer(
     specific_date: str = "",
     page: int = 1,
     limit: int = 10,
-    search_query: str = ""
+    search_query: str = "",
+    status_filter: str = "ALL"
 ) -> Dict[str, Any]:
     """
     Fetches paginated orders strictly belonging to a Customer by Party Code, Party Name, or Phone.
     Engineered for ultra-high volumes (10,000+ orders) with zero DOM freezing or memory overload.
-    Supports filters: TODAY, YESTERDAY, CUSTOM date, ALL, plus quick text/ID search.
+    Supports filters: TODAY, YESTERDAY, CUSTOM date, ALL, status filter (CONFIRMED/DISPATCHED), plus quick text/ID search.
     """
     import math
     from datetime import date, timedelta
@@ -1290,6 +1291,13 @@ def get_orders_for_customer(
                     alt_date = f"{parts[2]}/{parts[1]}/{parts[0]}"
             filter_conds.append("(created_at LIKE ? OR order_date LIKE ? OR formatted_timestamp LIKE ?)")
             filter_params.extend([f"{clean_date}%", f"%{clean_date}%", f"%{alt_date}%"])
+
+        # Status filter (ALL, CONFIRMED, DISPATCHED)
+        status_clean = (status_filter or "ALL").upper().strip()
+        if status_clean == "CONFIRMED":
+            filter_conds.append("(order_status = 'CONFIRMED' OR (so_number IS NOT NULL AND TRIM(so_number) != ''))")
+        elif status_clean in ("DISPATCHED", "DELIVERED"):
+            filter_conds.append("(order_status IN ('DISPATCHED', 'DELIVERED') OR dispatch_status IN ('DISPATCHED', 'DELIVERED', 'IN_TRANSIT'))")
 
         if search_query and search_query.strip():
             sq = search_query.strip().lower()
