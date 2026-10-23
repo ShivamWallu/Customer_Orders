@@ -2158,6 +2158,38 @@
       box-shadow: 0 3px 10px rgba(37, 99, 235, 0.32) !important;
     }
 
+    .chip-badge-count {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.08);
+      color: inherit;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .chip-filter-btn.active .chip-badge-count {
+      background: rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+    }
+
+    @media (max-width: 440px) {
+      .search-filter-chips {
+        gap: 5px;
+      }
+      .chip-filter-btn {
+        padding: 7px 4px;
+        font-size: 11px;
+        gap: 4px;
+      }
+      .chip-badge-count {
+        padding: 1px 4px;
+        font-size: 9.5px;
+      }
+    }
+
     .so-search-clear-btn {
       position: absolute;
       right: 10px;
@@ -3035,12 +3067,15 @@
       <div class="search-filter-chips">
         <button type="button" id="chipCustFilterAll" class="chip-filter-btn chip-all active" onclick="setCustTrackSearchFilter('all')">
           <span>📋 All</span>
+          <span id="chipCustFilterCountAll" class="chip-badge-count">0</span>
         </button>
         <button type="button" id="chipCustFilterConfirmed" class="chip-filter-btn chip-confirmed" onclick="setCustTrackSearchFilter('confirmed')">
           <span>✔ Confirmed</span>
+          <span id="chipCustFilterCountConfirmed" class="chip-badge-count">0</span>
         </button>
         <button type="button" id="chipCustFilterDispatched" class="chip-filter-btn chip-dispatched" onclick="setCustTrackSearchFilter('dispatched')">
           <span>🚚 Dispatched</span>
+          <span id="chipCustFilterCountDispatched" class="chip-badge-count">0</span>
         </button>
       </div>
 
@@ -4979,17 +5014,23 @@
         badge.style.color = "#047857";
         badge.style.borderColor = "#a7f3d0";
       } else if (isDispatched) {
-        badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> DISPATCHED`;
+        badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> DISPATCHED`;
         badge.className = "pill-status-confirmed";
         badge.style.background = "#eff6ff";
         badge.style.color = "#1d4ed8";
         badge.style.borderColor = "#bfdbfe";
+      } else if (cleanSo) {
+        badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> SO #${escapeHtml(cleanSo)}`;
+        badge.className = "pill-status-confirmed";
+        badge.style.background = "#ecfdf5";
+        badge.style.color = "#047857";
+        badge.style.borderColor = "#a7f3d0";
       } else if (isConfirmed) {
         badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> SO CONFIRMED`;
         badge.className = "pill-status-confirmed";
-        badge.style.background = "";
-        badge.style.color = "";
-        badge.style.borderColor = "";
+        badge.style.background = "#ecfdf5";
+        badge.style.color = "#047857";
+        badge.style.borderColor = "#a7f3d0";
       } else {
         badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO`;
         badge.className = "pill-status-pending";
@@ -5035,10 +5076,24 @@
       let calculatedTotalPieces = 0;
 
       if (Array.isArray(items) && items.length > 0) {
-        items.forEach(it => {
+        items.forEach((it, idx) => {
           const bxs = parseInt(it.boxes || 0);
           calculatedTotalBoxes += bxs;
-          const rawName = String(it.item || it.name || it.itemName || it.product || it.description || "-").trim();
+
+          let rawName = String(it.item || "").trim();
+          if (!rawName || rawName === "-" || rawName === "—" || rawName === "null" || rawName === "undefined") {
+            rawName = String(it.name || it.itemName || it.product || it.description || it.packaging || "").trim();
+          }
+          if ((!rawName || rawName === "-" || rawName === "—") && (ord.itemsSummary || ord.items_summary)) {
+            const summaryStr = String(ord.itemsSummary || ord.items_summary || "");
+            const lines = summaryStr.split(/[\n\r,]+/).map(s => s.trim()).filter(Boolean);
+            if (idx < lines.length) {
+              rawName = lines[idx].replace(/[\(\[\{].*?[\)\]\}]/g, '').replace(/[🔵🟢🔴🟡⚪🟣📦➔➜|].*/g, '').trim();
+            }
+          }
+          if (!rawName || rawName === "-" || rawName === "—") {
+            rawName = "Packaging Item";
+          }
           
           // Smart multiplier resolution
           let mult = parseInt(it.multiplier || 0);
@@ -5054,14 +5109,19 @@
           let pcs = (mult > 1) ? (bxs * mult) : (parseInt(it.pieces) || bxs);
           calculatedTotalPieces += pcs;
 
-          const brandBadge = it.brand ? `<span style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; margin-right: 5px; font-weight: 700; display: inline-block;">${escapeHtml(it.brand)}</span>` : "";
+          let brandText = it.brand || "";
+          if (!brandText) {
+            if (/mashal/i.test(rawName)) brandText = "MASHAL";
+            else if (/fauji/i.test(rawName)) brandText = "FAUJI";
+          }
+          const brandBadge = brandText ? `<span style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; margin-right: 5px; font-weight: 700; display: inline-block;">${escapeHtml(brandText)}</span>` : "";
 
           itemsHtml += `
             <tr style="border-bottom: 1px solid #f1f5f9;">
-              <td style="padding: 9px 10px; font-weight: 600; color: #1e293b; font-size: 12.5px;">${brandBadge}${escapeHtml(rawName)}</td>
-              <td style="padding: 9px 10px; text-align: center; color: #64748b; font-weight: 700; font-size: 12px;">x${mult}</td>
-              <td style="padding: 9px 10px; text-align: right; font-weight: 700; color: #0284c7; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">${bxs.toLocaleString()}</td>
-              <td style="padding: 9px 10px; text-align: right; font-weight: 700; color: #16a34a; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">${pcs.toLocaleString()}</td>
+              <td style="padding: 10px 10px; font-weight: 600; color: #1e293b; font-size: 12.5px;">${brandBadge}${escapeHtml(rawName)}</td>
+              <td style="padding: 10px 10px; text-align: center; color: #475569; font-weight: 700; font-size: 12px;"><span style="background: #f1f5f9; padding: 2px 7px; border-radius: 6px; border: 1px solid #e2e8f0;">x${mult}</span></td>
+              <td style="padding: 10px 10px; text-align: right; font-weight: 700; color: #0284c7; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">${bxs.toLocaleString()}</td>
+              <td style="padding: 10px 10px; text-align: right; font-weight: 700; color: #16a34a; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">${pcs.toLocaleString()}</td>
             </tr>
           `;
         });
@@ -5211,6 +5271,25 @@
       return "PENDING";
     }
 
+    function updateCustFilterCounts(ordersList) {
+      const orders = (ordersList && Array.isArray(ordersList)) ? ordersList : (cachedCustomerOrders || []);
+      let allCount = orders.length;
+      let confCount = 0;
+      let dispCount = 0;
+      orders.forEach(o => {
+        const cat = getCustomerOrderCategory(o);
+        if (cat === "CONFIRMED") confCount++;
+        else if (cat === "DISPATCHED") dispCount++;
+      });
+
+      const elAll = document.getElementById("chipCustFilterCountAll");
+      const elConf = document.getElementById("chipCustFilterCountConfirmed");
+      const elDisp = document.getElementById("chipCustFilterCountDispatched");
+      if (elAll) elAll.textContent = allCount;
+      if (elConf) elConf.textContent = confCount;
+      if (elDisp) elDisp.textContent = dispCount;
+    }
+
     function renderFilteredQuickTrackChips(autoTrackFirst = false) {
       const container = document.getElementById("quickTrackChipsContainer");
       const list = document.getElementById("quickTrackChipsList");
@@ -5312,6 +5391,7 @@
       } catch (e) {}
 
       if (orders.length > 0) {
+        updateCustFilterCounts(orders);
         renderFilteredQuickTrackChips(false);
 
         // ⚡ ONLY auto-track if this is NOT a background sync AND no order is currently tracked
@@ -5493,6 +5573,10 @@
             orders = d.orders;
           }
         } catch(e) {}
+      }
+
+      if (orders && orders.length > 0) {
+        updateCustFilterCounts(orders);
       }
 
       // 🎯 Strict separation of All, Confirmed, Dispatched

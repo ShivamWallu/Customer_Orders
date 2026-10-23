@@ -182,6 +182,10 @@ def init_db():
         except Exception:
             pass
         try:
+            conn.execute("ALTER TABLE users ADD COLUMN password TEXT DEFAULT '';")
+        except Exception:
+            pass
+        try:
             conn.execute("ALTER TABLE admin_sessions ADD COLUMN role TEXT DEFAULT 'admin';")
         except Exception:
             pass
@@ -659,8 +663,8 @@ def get_all_users(role: Optional[str] = None) -> List[Dict[str, Any]]:
     finally:
         conn.close()
 
-def create_or_update_user(name: str, phone: str, role: str, party_code: str = "", party_name: str = "", assigned_units: str = "Unit 1", status: str = "ACTIVE", created_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
-    """Super Admin creates or updates an authorized user with assigned unit(s)"""
+def create_or_update_user(name: str, phone: str, role: str, party_code: str = "", party_name: str = "", assigned_units: str = "Unit 1", status: str = "ACTIVE", created_by: str = "SUPER_ADMIN", password: str = "") -> Dict[str, Any]:
+    """Super Admin creates or updates an authorized user with assigned unit(s) and optional password"""
     digits = "".join(filter(str.isdigit, str(phone)))
     clean_p = digits[-10:] if len(digits) >= 10 else digits
     if len(clean_p) != 10:
@@ -681,9 +685,15 @@ def create_or_update_user(name: str, phone: str, role: str, party_code: str = ""
     conn = get_connection()
     try:
         with conn:
+            cur = conn.cursor()
+            cur.execute("SELECT password FROM users WHERE phone = ?", (clean_p,))
+            existing_row = cur.fetchone()
+            existing_pw = existing_row["password"] if existing_row and "password" in existing_row.keys() else ""
+            final_pw = password.strip() if password.strip() else existing_pw
+
             conn.execute("""
-            INSERT INTO users (name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(phone) DO UPDATE SET
                 name = excluded.name,
                 role = excluded.role,
@@ -692,8 +702,9 @@ def create_or_update_user(name: str, phone: str, role: str, party_code: str = ""
                 assigned_units = excluded.assigned_units,
                 status = excluded.status,
                 updated_at = excluded.updated_at,
-                created_by = excluded.created_by;
-            """, (name.strip(), clean_p, role, party_code.strip(), party_name.strip(), assigned_units_clean, status.upper(), now_iso, now_iso, created_by))
+                created_by = excluded.created_by,
+                password = CASE WHEN excluded.password != '' THEN excluded.password ELSE users.password END;
+            """, (name.strip(), clean_p, role, party_code.strip(), party_name.strip(), assigned_units_clean, status.upper(), now_iso, now_iso, created_by, final_pw))
         
         user = get_user_by_phone(clean_p)
         log_audit_event(user_name=name.strip(), phone=clean_p, role=role, action="USER_CREATED", status="SUCCESS", details=f"User '{name.strip()}' saved with role '{role}' ({assigned_units_clean}) by {created_by}")
@@ -721,9 +732,10 @@ def toggle_user_status(user_id: int, new_status: str) -> Dict[str, Any]:
             cur.execute("UPDATE users SET status = ?, updated_at = ? WHERE id = ?", (new_status, now_iso, user_id))
             if new_status == "BLOCKED":
                 # 🚫 Instant session revocation across Customer, Sales Manager, and Admin session stores
-                cur.execute("DELETE FROM customer_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
-                cur.execute("DELETE FROM sales_manager_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{u_phone}"))
-                cur.execute("DELETE FROM admin_sessions WHERE username = ? OR username = ?", (row["name"], u_phone))
+                clean_d = "".join(filter(str.isdigit, str(u_phone)))[-10:]
+                cur.execute("DELETE FROM customer_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{clean_d}%"))
+                cur.execute("DELETE FROM sales_manager_sessions WHERE phone = ? OR phone LIKE ?", (u_phone, f"%{clean_d}%"))
+                cur.execute("DELETE FROM admin_sessions WHERE username = ? OR username = ? OR username LIKE ?", (row["name"], u_phone, f"%{clean_d}%"))
         
         audit_action = "USER_BLOCKED" if new_status == "BLOCKED" else "USER_UNBLOCKED"
         log_audit_event(
@@ -1051,19 +1063,43 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
     calc_bxs_total = 0
     calc_pcs_total = 0
     if isinstance(d.get("items"), list):
-        for it in d["items"]:
+        summary_lines = []
+        raw_summary = str(d.get("items_summary") or "").strip()
+        if raw_summary:
+            summary_lines = [s.strip() for s in re.split(r'[\n\r,]+', raw_summary) if s.strip()]
+
+        for idx, it in enumerate(d["items"]):
             if not isinstance(it, dict):
                 continue
             b = int(it.get("boxes", 0) or 0)
             calc_bxs_total += b
-            raw_name = str(it.get("item") or it.get("name") or it.get("itemName") or "").strip()
-            item_name = normalize_warehouse_sku(raw_name) or raw_name
+
+            # Extract valid raw name, avoiding '-' or empty placeholders
+            raw_item = str(it.get("item") or "").strip()
+            raw_name_val = str(it.get("name") or it.get("itemName") or it.get("product") or it.get("description") or "").strip()
+            
+            cand_name = raw_item if (raw_item and raw_item not in ["-", "—", "None", "null"]) else raw_name_val
+            if not cand_name or cand_name in ["-", "—", "None", "null"]:
+                cand_name = str(it.get("packaging") or it.get("sku") or "").strip()
+
+            # If still missing, check corresponding line from summary
+            if (not cand_name or cand_name in ["-", "—"]) and idx < len(summary_lines):
+                cand_name = re.sub(r'[\(\[\{].*?[\)\]\}]', '', summary_lines[idx]).strip()
+                cand_name = re.sub(r'[🔵🟢🔴🟡⚪🟣📦\u2794\u279c|].*', '', cand_name).strip()
+
+            if not cand_name:
+                cand_name = "-"
+
+            item_name = normalize_warehouse_sku(cand_name) or cand_name
             it["item"] = item_name
             it["name"] = item_name
+
             m = re.search(r'x\s*(\d+)', item_name, re.I)
             stored_pcs = int(it.get("pieces") or 0)
             fallback_mult = round(stored_pcs / b) if b > 0 and stored_pcs > 0 else 1
             mult = int(m.group(1)) if m else (int(it.get("multiplier", 0)) or fallback_mult)
+            if mult < 1:
+                mult = 1
             it["multiplier"] = mult
             it["pieces"] = (b * mult) if mult > 1 else (stored_pcs if stored_pcs > 0 else b)
             calc_pcs_total += it["pieces"]
@@ -1498,9 +1534,13 @@ def save_order_to_db(order: Dict[str, Any]) -> bool:
                     b = int(it.get("boxes", 0) or 0)
                 except (ValueError, TypeError):
                     b = 0
-                calc_bxs += b
-                m = re.search(r'x\s*(\d+)', str(it.get("item", "")), re.I)
-                mult = int(m.group(1)) if m else 1
+                cand = str(it.get("item") or "").strip()
+                if not cand or cand in ["-", "—"]:
+                    cand = str(it.get("name") or it.get("itemName") or it.get("product") or "").strip()
+                m = re.search(r'x\s*(\d+)', cand, re.I)
+                mult = int(m.group(1)) if m else (int(it.get("multiplier", 0)) or 1)
+                if mult < 1:
+                    mult = 1
                 it["multiplier"] = mult
                 it["pieces"] = b * mult
                 calc_pcs += (b * mult)
@@ -1929,6 +1969,15 @@ def validate_admin_session(token: str) -> Optional[Dict[str, Any]]:
         cur.execute("SELECT username, role, assigned_units, token, expires_at FROM admin_sessions WHERE token = ?", (token,))
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
+            u_name = str(row["username"] or "").strip()
+            # If user is in users table and marked BLOCKED, revoke immediately
+            cur.execute("SELECT status FROM users WHERE phone = ? OR phone LIKE ? OR LOWER(name) = ? LIMIT 1", (u_name, f"%{u_name}", u_name.lower()))
+            u_check = cur.fetchone()
+            if u_check and str(u_check["status"]).upper() == "BLOCKED":
+                with conn:
+                    conn.execute("DELETE FROM admin_sessions WHERE token = ?", (token,))
+                return None
+
             role_val = row["role"] if "role" in row.keys() and row["role"] else "admin"
             assigned_u = row["assigned_units"] if "assigned_units" in row.keys() and row["assigned_units"] else "ALL"
             return {

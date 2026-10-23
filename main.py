@@ -626,28 +626,40 @@ async def admin_portal_login(request: Request):
         finally:
             conn.close()
 
-    if db_user and db_user.get("status") == "ACTIVE" and db_user.get("role") in ["super_admin", "admin", "manager", "analyst", "analyser"]:
-        allowed_passwords = ["Admin@123#", "Manager@123#", "Analyst@123#", "admin", "123456"]
-        if password in allowed_passwords:
-            role = db_user["role"]
-            if role == "analyser":
-                role = "analyst"
-            assigned_units = db_user.get("assigned_units", "ALL")
-            token = create_admin_session(username=db_user["phone"], role=role, assigned_units=assigned_units)
-            log_audit_event(user_name=db_user["name"], phone=db_user["phone"], role=role, action="ADMIN_LOGIN_SUCCESS", status="SUCCESS", details=f"Database user '{db_user['name']}' logged in as {role.upper()}")
-            return {
-                "status": "success",
-                "token": token,
-                "username": db_user["phone"],
-                "role": role,
-                "roleName": db_user["name"],
-                "assignedUnits": assigned_units,
-                "canConfirm": role in ["super_admin", "admin", "manager"],
-                "canDelete": role in ["super_admin", "admin"],
-                "canManageUnits": role in ["super_admin", "admin"],
-                "canManageUsers": role in ["super_admin", "admin"],
-                "message": f"Welcome {db_user['name']} ({role.upper()})"
-            }
+    if db_user:
+        if db_user.get("status") == "BLOCKED":
+            log_audit_event(user_name=db_user.get("name", username), phone=db_user.get("phone", username), role=db_user.get("role", "admin"), action="ADMIN_LOGIN_BLOCKED", status="FAILED", details="Blocked admin/manager attempted login")
+            raise HTTPException(status_code=403, detail="Your account has been BLOCKED by Super Admin. Please contact administrator.")
+
+        if db_user.get("role") in ["customer", "asm"]:
+            log_audit_event(user_name=db_user.get("name", username), phone=db_user.get("phone", username), role=db_user.get("role"), action="ADMIN_LOGIN_ROLE_DENIED", status="FAILED", details="Customer/ASM attempted admin portal login")
+            raise HTTPException(status_code=403, detail="Access Denied: This account is registered as Customer or Area Sales Manager. Only Executive Admin accounts can access the Admin Portal.")
+
+        if db_user.get("role") in ["super_admin", "admin", "manager", "analyst", "analyser"]:
+            saved_pw = (db_user.get("password") or "").strip()
+            allowed_passwords = ["Admin@123#", "Manager@123#", "Analyst@123#", "admin", "123456"]
+            is_valid_pw = (saved_pw and password == saved_pw) or (password in allowed_passwords)
+
+            if is_valid_pw:
+                role = db_user["role"]
+                if role == "analyser":
+                    role = "analyst"
+                assigned_units = db_user.get("assigned_units", "ALL")
+                token = create_admin_session(username=db_user["phone"], role=role, assigned_units=assigned_units)
+                log_audit_event(user_name=db_user["name"], phone=db_user["phone"], role=role, action="ADMIN_LOGIN_SUCCESS", status="SUCCESS", details=f"Database user '{db_user['name']}' logged in as {role.upper()}")
+                return {
+                    "status": "success",
+                    "token": token,
+                    "username": db_user["phone"],
+                    "role": role,
+                    "roleName": db_user["name"],
+                    "assignedUnits": assigned_units,
+                    "canConfirm": role in ["super_admin", "admin", "manager"],
+                    "canDelete": role in ["super_admin", "admin"],
+                    "canManageUnits": role in ["super_admin", "admin"],
+                    "canManageUsers": role in ["super_admin", "admin"],
+                    "message": f"Welcome {db_user['name']} ({role.upper()})"
+                }
 
     log_audit_event(user_name=username, phone=username, role="admin", action="ADMIN_LOGIN_FAILED", status="FAILED", details=f"Failed admin portal login attempt for username '{username}'")
     raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -1031,7 +1043,8 @@ async def api_save_admin_user(request: Request):
         party_name=body.get("party_name", ""),
         assigned_units=body.get("assigned_units", "Unit 1"),
         status=body.get("status", "ACTIVE"),
-        created_by=admin.get("username", "SUPER_ADMIN")
+        created_by=admin.get("username", "SUPER_ADMIN"),
+        password=body.get("password", "")
     )
     if res.get("status") == "error":
         raise HTTPException(status_code=400, detail=res.get("message"))
@@ -2216,31 +2229,24 @@ async def api_manager_send_otp(request: Request):
         return {"status": "error", "message": "Please enter a valid 10-digit mobile number"}
 
     user = get_user_by_phone(clean_p)
-    if not user:
-        # 👥 Dynamic Automatic ASM Self-Registration & Centralized Tracking
-        mgr_name = (body.get("manager_name") or body.get("name") or "").strip()
-        if not mgr_name:
-            mgr_name = f"Area Sales Manager ({clean_p[-4:]})"
-        create_or_update_user(
-            name=mgr_name,
-            phone=clean_p,
-            role="asm",
-            party_code="",
-            party_name="Staff / System Account",
-            assigned_units="Unit 1",
-            status="ACTIVE",
-            created_by="ASM_PORTAL_REGISTRATION"
-        )
-        user = get_user_by_phone(clean_p)
+    if not user or user.get("role") not in ["asm", "admin", "super_admin"]:
+        input_name = (body.get("manager_name") or body.get("name") or "Unknown").strip()
         log_audit_event(
-            user_name=mgr_name,
+            user_name=input_name,
             phone=clean_p,
             role="asm",
-            action="ASM_REGISTRATION",
-            status="SUCCESS",
-            details=f"New Area Sales Manager dynamically registered: '{mgr_name}' (+91 {clean_p})",
+            action="ASM_LOGIN_UNAUTHORIZED",
+            status="FAILED",
+            details=f"Unregistered mobile number '{clean_p}' ({input_name}) attempted ASM login",
             ip_address=client_ip
         )
+        return {
+            "status": "error",
+            "error_type": "UNAUTHORIZED_ASM",
+            "message": "Yeh mobile number Area Sales Manager ke roop me registered nahi hai. Login karne ke liye kripya Admin se sampark karein (Please contact Admin to create your account).\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "toll_free": "1800 103 3211",
+            "email": "customercare@khandelia.com"
+        }
 
     if user.get("status") == "BLOCKED":
         log_audit_event(
@@ -2255,27 +2261,10 @@ async def api_manager_send_otp(request: Request):
         return {
             "status": "error",
             "error_type": "BLOCKED_ASM",
-            "message": "Your Area Sales Manager account has been temporarily blocked by Super Admin. Please contact Customer Care:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
+            "message": "Aapka Area Sales Manager account Super Admin dwara temporarily BLOCK kar diya gaya hai. Kripya Admin se sampark karein:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
             "toll_free": "1800 103 3211",
             "email": "customercare@khandelia.com",
             "force_logout": True
-        }
-    if user.get("role") not in ["asm", "admin", "manager", "super_admin"]:
-        log_audit_event(
-            user_name=user.get("name", "User"),
-            phone=clean_p,
-            role=user.get("role", "unknown"),
-            action="ROLE_MISMATCH",
-            status="FAILED",
-            details=f"User with role '{user.get('role')}' attempted ASM login",
-            ip_address=client_ip
-        )
-        return {
-            "status": "error",
-            "error_type": "ROLE_MISMATCH",
-            "message": "This mobile number is not authorized for Area Sales Manager access. Please contact Super Admin:\n\n📞 Toll-Free: 1800 103 3211\n✉️ Email: customercare@khandelia.com",
-            "toll_free": "1800 103 3211",
-            "email": "customercare@khandelia.com"
         }
     
     res = send_kit19_otp(clean_p)
@@ -2313,47 +2302,32 @@ async def api_manager_verify_otp(request: Request):
     user = get_user_by_phone(clean_p)
     name = (body.get("manager_name") or body.get("name") or "").strip()
     
-    if user and user.get("status") == "BLOCKED":
+    if not user or user.get("role") not in ["asm", "admin", "super_admin"]:
+        return JSONResponse(
+            status_code=403,
+            content={
+                "status": "error",
+                "error_type": "UNAUTHORIZED_ASM",
+                "message": "Access Denied: This mobile number is not registered as an Area Sales Manager. Please contact Admin to create your account.",
+                "force_logout": True
+            }
+        )
+
+    if user.get("status") == "BLOCKED":
         return JSONResponse(
             status_code=403,
             content={
                 "status": "error",
                 "error_type": "BLOCKED_ASM",
-                "message": "Your account has been BLOCKED by Super Admin.",
+                "message": "Aapka Area Sales Manager account Super Admin dwara temporarily BLOCK kar diya gaya hai.",
                 "force_logout": True
             }
         )
 
-    res = verify_manager_login_otp(clean_p, otp, name or (user.get("name") if user else ""))
+    res = verify_manager_login_otp(clean_p, otp, user.get("name", name) or name)
     if res.get("status") == "success":
-        if not user:
-            user_name = name or f"Area Sales Manager ({clean_p[-4:]})"
-            create_or_update_user(
-                name=user_name,
-                phone=clean_p,
-                role="asm",
-                party_code="",
-                party_name="Staff / System Account",
-                assigned_units="Unit 1",
-                status="ACTIVE",
-                created_by="ASM_PORTAL_REGISTRATION"
-            )
-            user = get_user_by_phone(clean_p)
-        elif name and (user.get("name") in ["", "ASM", "Area Sales Manager", None] or str(user.get("name")).startswith("Area Sales Manager (")):
-            create_or_update_user(
-                name=name,
-                phone=clean_p,
-                role=user.get("role", "asm"),
-                party_code=user.get("party_code", ""),
-                party_name=user.get("party_name", "") or "Staff / System Account",
-                assigned_units=user.get("assigned_units", "Unit 1"),
-                status=user.get("status", "ACTIVE"),
-                created_by=user.get("created_by", "ASM_PORTAL_REGISTRATION")
-            )
-            user = get_user_by_phone(clean_p)
-
-        role = user.get("role", "asm") if user else "asm"
-        user_name = user.get("name", name) if user else name
+        role = user.get("role", "asm")
+        user_name = user.get("name") or name or "Area Sales Manager"
         res["role"] = role
         res["manager_name"] = user_name
         log_audit_event(
@@ -2565,12 +2539,26 @@ async def api_customer_verify_otp(request: Request):
     if not user:
         # 🌟 AUTOMATIC NEW CUSTOMER SELF-REGISTRATION
         resolved_name = customer_input_name or "New Customer"
+        party_code = ""
+        party_name = resolved_name
+        try:
+            conn = get_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT party_name, party_code FROM orders WHERE customer_phone LIKE ? ORDER BY id DESC LIMIT 1", (f"%{clean_p}%",))
+            past_o = cur.fetchone()
+            if past_o:
+                party_name = past_o["party_name"] or resolved_name
+                party_code = past_o["party_code"] or ""
+            conn.close()
+        except Exception:
+            pass
+
         create_or_update_user(
             name=resolved_name,
             phone=clean_p,
             role="customer",
-            party_code="",
-            party_name=resolved_name,
+            party_code=party_code,
+            party_name=party_name,
             assigned_units="Unit 1",
             status="ACTIVE",
             created_by="SELF_REGISTERED"
@@ -2665,6 +2653,13 @@ async def api_get_customer_orders(request: Request):
         party_name = session.get("party_name", "")
         phone = session.get("phone", "")
 
+    clean_phone = "".join(filter(str.isdigit, str(phone)))[-10:]
+    if clean_phone and is_user_phone_blocked(clean_phone):
+        raise HTTPException(
+            status_code=403,
+            detail={"status": "error", "error_type": "ACCOUNT_BLOCKED", "message": "Your Customer account has been BLOCKED by Super Admin. Please contact customer care.", "force_logout": True}
+        )
+
     date_filter = request.query_params.get("filter", "ALL")
     specific_date = request.query_params.get("date", "")
     search_q = request.query_params.get("search", "").strip()
@@ -2738,6 +2733,13 @@ async def api_customer_track_order(request: Request):
 
     if not (party_code or party_name or phone):
         raise HTTPException(status_code=401, detail="Valid customer session or credentials required to track orders")
+
+    clean_phone = "".join(filter(str.isdigit, str(phone)))[-10:]
+    if clean_phone and is_user_phone_blocked(clean_phone):
+        raise HTTPException(
+            status_code=403,
+            detail={"status": "error", "error_type": "ACCOUNT_BLOCKED", "message": "Your Customer account has been BLOCKED by Super Admin. Please contact customer care.", "force_logout": True}
+        )
 
     results = search_customer_orders_db(query=q, phone=phone, party_code=party_code, party_name=party_name, limit=10)
     return {
