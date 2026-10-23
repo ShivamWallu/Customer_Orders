@@ -12,6 +12,7 @@ Features:
 import os
 import json
 import time
+import re
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
@@ -54,6 +55,11 @@ class OrderModel(Base):
     confirmed_at: Mapped[Optional[str]] = mapped_column(String(64))
     confirmed_by: Mapped[Optional[str]] = mapped_column(String(128))
     unit: Mapped[str] = mapped_column(String(64), default="Unit 1")
+    dispatch_status: Mapped[Optional[str]] = mapped_column(String(64), default="PENDING")
+    dispatch_at: Mapped[Optional[str]] = mapped_column(String(64))
+    vehicle_number: Mapped[Optional[str]] = mapped_column(String(64))
+    driver_name: Mapped[Optional[str]] = mapped_column(String(128))
+    driver_phone: Mapped[Optional[str]] = mapped_column(String(64))
 
     # High-Frequency Query & Reporting Composite Indexes
     __table_args__ = (
@@ -341,6 +347,7 @@ async def async_get_orders_paginated(
     unit: Optional[str] = None,
     status: Optional[str] = None,
     has_so: Optional[bool] = None,
+    dispatch_status: Optional[str] = None,
     search_query: Optional[str] = None,
     page: int = 1,
     limit: int = 25,
@@ -367,6 +374,8 @@ async def async_get_orders_paginated(
             filters.append(and_(OrderModel.so_number.isnot(None), OrderModel.so_number != "", OrderModel.so_number != "-"))
         elif has_so is False:
             filters.append(or_(OrderModel.so_number.is_(None), OrderModel.so_number == "", OrderModel.so_number == "-"))
+        if dispatch_status and dispatch_status != "ALL":
+            filters.append(or_(OrderModel.dispatch_status == dispatch_status, OrderModel.order_status == dispatch_status))
         if search_query:
             term = f"%{search_query.strip()}%"
             filters.append(
@@ -407,9 +416,35 @@ async def async_get_orders_paginated(
         next_cursor = None
         for o in orders:
             try:
-                items = json.loads(o.items_json) if o.items_json else []
+                raw_items = json.loads(o.items_json) if o.items_json else []
             except Exception:
-                items = []
+                raw_items = []
+
+            # 🛠️ Guarantee fully normalized items for UI details & breakdown calculations
+            norm_items = []
+            computed_boxes = 0
+            computed_pieces = 0
+            for it in (raw_items if isinstance(raw_items, list) else []):
+                raw_name = str(it.get("item") or it.get("name") or it.get("itemName") or it.get("product") or "").strip()
+                b = int(it.get("boxes") or it.get("box") or 0)
+                m = int(it.get("multiplier") or 0)
+                if not m or m <= 1:
+                    match = re.search(r'x\s*(\d+)', raw_name, re.IGNORECASE)
+                    if match:
+                        m = int(match.group(1))
+                if not m or m <= 0:
+                    m = 1
+                p = int(it.get("pieces") or (b * m))
+                computed_boxes += b
+                computed_pieces += p
+                norm_items.append({
+                    "item": raw_name,
+                    "name": raw_name,
+                    "itemName": raw_name,
+                    "boxes": b,
+                    "multiplier": m,
+                    "pieces": p
+                })
 
             item_dict = {
                 "order_id": o.order_id,
@@ -431,11 +466,11 @@ async def async_get_orders_paginated(
                 "formattedTimestamp": o.formatted_timestamp,
                 "created_at": o.created_at,
                 "createdAt": o.created_at,
-                "total_boxes": o.total_boxes,
-                "totalBoxes": o.total_boxes,
-                "total_pieces": o.total_pieces,
-                "totalPieces": o.total_pieces,
-                "items": items,
+                "total_boxes": o.total_boxes or computed_boxes,
+                "totalBoxes": o.total_boxes or computed_boxes,
+                "total_pieces": o.total_pieces or computed_pieces,
+                "totalPieces": o.total_pieces or computed_pieces,
+                "items": norm_items,
                 "items_summary": o.items_summary,
                 "itemsSummary": o.items_summary,
                 "slip_image_url": o.slip_image_url,
@@ -447,6 +482,16 @@ async def async_get_orders_paginated(
                 "confirmed_at": o.confirmed_at,
                 "confirmed_by": o.confirmed_by,
                 "unit": o.unit,
+                "dispatch_status": getattr(o, "dispatch_status", None) or "PENDING",
+                "dispatchStatus": getattr(o, "dispatch_status", None) or "PENDING",
+                "dispatch_at": getattr(o, "dispatch_at", None),
+                "dispatchAt": getattr(o, "dispatch_at", None),
+                "vehicle_number": getattr(o, "vehicle_number", None),
+                "vehicleNumber": getattr(o, "vehicle_number", None),
+                "driver_name": getattr(o, "driver_name", None),
+                "driverName": getattr(o, "driver_name", None),
+                "driver_phone": getattr(o, "driver_phone", None),
+                "driverPhone": getattr(o, "driver_phone", None),
                 "synced_to_sheet": o.synced_to_sheet,
                 "whatsapp_status": o.whatsapp_status
             }

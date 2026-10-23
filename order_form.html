@@ -125,15 +125,35 @@
     }
 
     .company-name {
-      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      font-size: 12.5px;
       font-weight: 800;
       color: #ffffff;
       letter-spacing: 0.02em;
       line-height: 1.2;
       text-transform: uppercase;
+    }
+
+    .company-name-main {
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .company-name-sub {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #a7f3d0;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 1px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
 
     .order-badge-title {
@@ -188,31 +208,24 @@
     }
 
     .label-tag {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
     }
 
-    .tag-blue {
-      background: #e0f2fe;
-      color: #0369a1;
-    }
-
-    .tag-green {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .tag-purple {
-      background: #f3e8ff;
-      color: #7e22ce;
-    }
-
+    .tag-blue,
+    .tag-green,
+    .tag-purple,
     .tag-pink {
-      background: #ffe4e6;
-      color: #be123c;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
     }
 
     .input-control {
@@ -280,8 +293,8 @@
 
     .input-control:focus {
       background: #ffffff;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      border-color: #047857;
+      box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.14);
     }
 
     textarea.input-control {
@@ -316,7 +329,7 @@
       }
     }
 
-    /* 📦 BRAND SECTION HEADERS */
+    /* 📦 BRAND SECTION HEADERS (Harmonized Executive Palette) */
     .brand-banner {
       display: flex;
       align-items: center;
@@ -329,19 +342,23 @@
     }
 
     .banner-mashal {
-      background: linear-gradient(135deg, #004b99, #003366);
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-left: 4px solid #f59e0b;
     }
 
     .banner-fauji {
-      background: linear-gradient(135deg, #007a3d, #00552b);
+      background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+      border-left: 4px solid #34d399;
     }
 
     .banner-badge {
-      background: rgba(255, 255, 255, 0.2);
-      font-size: 11px;
-      font-weight: 700;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 10.5px;
+      font-weight: 800;
       padding: 3px 8px;
-      border-radius: 4px;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      letter-spacing: 0.02em;
     }
 
     /* 📋 ITEM ROWS (Spacious Mobile Ergonomics) */
@@ -546,14 +563,14 @@
     .bar-summary-val span {
       font-size: 13px;
       font-weight: 700;
-      color: var(--primary);
+      color: #047857;
     }
 
     .order-action-btn {
       flex: 1;
       max-width: 220px;
       height: 48px;
-      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      background: linear-gradient(135deg, #047857 0%, #059669 100%);
       color: #ffffff;
       border: none;
       border-radius: 10px;
@@ -564,13 +581,13 @@
       justify-content: center;
       gap: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 4px 14px rgba(4, 120, 87, 0.35);
       transition: all 0.2s;
     }
 
     .order-action-btn:active {
       transform: scale(0.98);
-      background: #1e40af;
+      background: #064e3b;
     }
 
     .order-action-btn:disabled {
@@ -2516,8 +2533,11 @@
     <!-- 🍔 Top Branding with Mobile Three-Line Hamburger Menu -->
     <div class="brand-header-wrap">
       <header class="brand-header">
-        <div class="company-name">Khandelia Oil and General Mills Pvt. Ltd.</div>
-        <div class="order-badge-title" style="background: #047857;">CUSTOMER ORDER PORTAL</div>
+        <div class="company-name">
+          <span class="company-name-main">Khandelia Oil &amp; General Mills</span>
+          <span class="company-name-sub">Pvt. Ltd.</span>
+        </div>
+        <div class="order-badge-title">CUSTOMER ORDER PORTAL</div>
       </header>
       <button type="button" class="btn-hamburger" id="btnCustomerHamburger" onclick="toggleCustomerSidebar()" title="Open Navigation Menu" aria-label="Open Navigation Menu">
         <span class="hamburger-bar"></span>

@@ -2746,6 +2746,7 @@ async def api_search_sales_orders(
     """Fast indexed paginated & cursor search across orders by SO Number, Order ID, Party Name or ASM with scoping"""
     has_so = None
     status = None
+    disp_status = None
 
     f_type = (filter_type or "").lower().strip()
     if f_type in ["has_so", "so"]:
@@ -2754,6 +2755,10 @@ async def api_search_sales_orders(
         has_so = False
     elif f_type == "confirmed":
         status = "CONFIRMED"
+    elif f_type in ["dispatched", "dispatch"]:
+        disp_status = "DISPATCHED"
+    elif f_type in ["delivered"]:
+        disp_status = "DELIVERED"
 
     sp = None
     auth_header = request.headers.get("Authorization", "")
@@ -2775,6 +2780,7 @@ async def api_search_sales_orders(
         sales_person=sp,
         status=status,
         has_so=has_so,
+        dispatch_status=disp_status,
         search_query=clean_q if clean_q else None,
         page=page,
         limit=limit,

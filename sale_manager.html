@@ -107,15 +107,35 @@
     }
 
     .company-name {
-      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      font-size: 12.5px;
       font-weight: 800;
       color: #ffffff;
       letter-spacing: 0.02em;
       line-height: 1.2;
       text-transform: uppercase;
+    }
+
+    .company-name-main {
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .company-name-sub {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #93c5fd;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 1px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
 
     .order-badge-title {
@@ -1863,19 +1883,39 @@
       flex-shrink: 0;
     }
 
+    .asm-card-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      width: 100%;
+    }
+
     .btn-card-action {
-      padding: 5px 8px;
+      height: 32px;
+      padding: 0 6px;
       border-radius: 8px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
       transition: all 0.15s ease;
       white-space: nowrap !important;
-      flex-shrink: 0;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .btn-card-track {
+      background: #eff6ff !important;
+      border: 1.5px solid #bfdbfe !important;
+      color: #1d4ed8 !important;
+    }
+
+    .btn-card-track:hover {
+      background: #1d4ed8 !important;
+      color: #ffffff !important;
+      border-color: #1d4ed8 !important;
     }
 
     .btn-card-details {
@@ -1885,9 +1925,9 @@
     }
 
     .btn-card-details:hover {
-      background: #0284c7;
+      background: #0f172a;
       color: #ffffff;
-      border-color: #0284c7;
+      border-color: #0f172a;
     }
 
     .btn-card-slip {
@@ -2102,6 +2142,12 @@
       color: #b45309;
     }
 
+    .chip-filter-btn.chip-dispatched {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+    }
+
     /* 💎 Premium Active States (Zero Harsh Black - Enterprise Cohesive Colorway) */
     .chip-filter-btn.active,
     .chip-filter-btn.active.chip-all {
@@ -2118,11 +2164,115 @@
       box-shadow: 0 3px 10px rgba(5, 150, 105, 0.32) !important;
     }
 
+    .chip-filter-btn.active.chip-dispatched {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+      border-color: #1d4ed8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.32) !important;
+    }
+
     .chip-filter-btn.active.chip-pending {
       background: linear-gradient(135deg, #f59e0b, #d97706) !important;
       border-color: #d97706 !important;
       color: #ffffff !important;
       box-shadow: 0 3px 10px rgba(217, 119, 6, 0.32) !important;
+    }
+
+    /* 🚚 Live Order Lifecycle Stepper */
+    .track-stepper-wrap {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 12px 14px;
+      margin: 14px 0;
+    }
+    .track-stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+    }
+    .track-stepper::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    .track-stepper.step-1-active::before {
+      background: linear-gradient(to right, #10b981 0%, #10b981 25%, #e2e8f0 25%, #e2e8f0 100%);
+    }
+    .track-stepper.step-2-active::before {
+      background: linear-gradient(to right, #10b981 0%, #10b981 60%, #e2e8f0 60%, #e2e8f0 100%);
+    }
+    .track-stepper.step-3-active::before {
+      background: #10b981;
+    }
+    .track-step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      flex: 1;
+      padding: 0 4px;
+    }
+    .track-step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      background: #ffffff;
+      color: #94a3b8;
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+    .track-step.completed .track-step-circle {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #059669;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+    .track-step.current .track-step-circle {
+      background: #f59e0b;
+      color: #ffffff;
+      border-color: #d97706;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+    }
+    .track-step.upcoming .track-step-circle {
+      background: #f8fafc;
+      color: #cbd5e1;
+      border-color: #e2e8f0;
+      box-shadow: none;
+    }
+    .track-step-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #1e293b;
+      line-height: 1.25;
+    }
+    .track-step-sub {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+    .track-step-time {
+      font-size: 9px;
+      color: #047857;
+      font-weight: 700;
+      margin-top: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.25;
+      text-align: center;
     }
 
     /* Explanation Banner */
@@ -2413,7 +2563,10 @@
     <!-- 🍔 Top Branding with Mobile Three-Line Hamburger Menu -->
     <div class="brand-header-wrap">
       <header class="brand-header">
-        <div class="company-name">Khandelia Oil and General Mills Pvt. Ltd.</div>
+        <div class="company-name">
+          <span class="company-name-main">Khandelia Oil &amp; General Mills</span>
+          <span class="company-name-sub">Pvt. Ltd.</span>
+        </div>
         <div class="order-badge-title">AREA SALES MANAGER PORTAL</div>
       </header>
       <button type="button" class="btn-hamburger" id="btnHamburger" onclick="toggleSidebarMenu()" title="Open Navigation Menu" aria-label="Open Navigation Menu">
@@ -2781,8 +2934,8 @@
         <button type="button" id="chipFilterConfirmed" class="chip-filter-btn chip-confirmed" onclick="setSearchFilter('confirmed')">
           <span>✔ Confirmed</span>
         </button>
-        <button type="button" id="chipFilterPending" class="chip-filter-btn chip-pending" onclick="setSearchFilter('pending_so')" title="Orders awaiting Factory SO Number">
-          <span>⏳ Pending</span>
+        <button type="button" id="chipFilterDispatched" class="chip-filter-btn chip-dispatched" onclick="setSearchFilter('dispatched')">
+          <span>🚚 Dispatched</span>
         </button>
       </div>
 
@@ -2806,6 +2959,9 @@
         </div>
         <button type="button" class="btn-tool" style="padding: 4px 10px; font-size: 16px;" onclick="closeSoDetailsModal()">✕</button>
       </div>
+
+      <!-- 🚚 Live Real-Time Order Lifecycle Stepper -->
+      <div id="modalSoStepperContainer"></div>
 
       <!-- Party Card -->
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 14px;">
@@ -3467,12 +3623,24 @@
 
       let html = "";
       orders.forEach(o => {
-        const isConfirmed = o.orderStatus === "CONFIRMED";
-        const statusBadge = isConfirmed
-          ? `<span class="pill-status-confirmed"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> CONFIRMED</span>`
-          : `<span class="pill-status-pending"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO</span>`;
-        const soSubBadge = (isConfirmed && o.soNumber)
-          ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(String(o.soNumber).replace('#',''))}</span>`
+        const isDelivered = (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED");
+        const isDispatched = (o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
+        const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
+        const isConfirmed = (o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || Boolean(cleanSo));
+
+        let statusBadge = "";
+        if (isDelivered) {
+          statusBadge = `<span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> DELIVERED</span>`;
+        } else if (isDispatched) {
+          statusBadge = `<span class="pill-status-confirmed" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> DISPATCHED</span>`;
+        } else if (isConfirmed || cleanSo) {
+          statusBadge = `<span class="pill-status-confirmed"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> SO CONFIRMED</span>`;
+        } else {
+          statusBadge = `<span class="pill-status-pending"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO</span>`;
+        }
+
+        const soSubBadge = cleanSo
+          ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(cleanSo)}</span>`
           : '';
 
         html += `
@@ -3530,7 +3698,13 @@
                 <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
               </div>
-              <div style="display: flex; gap: 6px;">
+              <div class="asm-card-actions-grid">
+                <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackAsmOrderFromList('${escapeHtml(o.cleanId)}')" title="Live Dispatch Tracking">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  <span>Track</span>
+                </button>
                 <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openSoDetailsModal('${escapeHtml(o.cleanId)}')" title="View all order details">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -3545,7 +3719,7 @@
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
                   </svg>
-                  <span>View Slip</span>
+                  <span>Slip</span>
                 </button>
               </div>
             </div>
@@ -3574,7 +3748,7 @@
       const chips = [
         { id: "chipFilterAll", key: "all" },
         { id: "chipFilterConfirmed", key: "confirmed" },
-        { id: "chipFilterPending", key: "pending_so" }
+        { id: "chipFilterDispatched", key: "dispatched" }
       ];
       chips.forEach(c => {
         const el = document.getElementById(c.id);
@@ -3663,22 +3837,38 @@
       `;
 
       orders.forEach(o => {
-        const isConfirmed = o.orderStatus === "CONFIRMED";
-        const hasSoNum = o.soNumber && String(o.soNumber).trim() !== "" && String(o.soNumber).trim() !== "-";
+        const isDelivered = (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED");
+        const isDispatched = (o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
+        const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
+        const isConfirmed = (o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || Boolean(cleanSo));
 
         let statusPillHtml = '';
-        if (hasSoNum) {
+        if (isDelivered) {
+          statusPillHtml = `
+            <span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 800;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              DELIVERED
+            </span>
+          `;
+        } else if (isDispatched) {
+          statusPillHtml = `
+            <span class="pill-status-confirmed" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 800;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              DISPATCHED
+            </span>
+          `;
+        } else if (cleanSo) {
           statusPillHtml = `
             <span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 800;">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              SO #${escapeHtml(String(o.soNumber).replace('#', ''))}
+              SO #${escapeHtml(cleanSo)}
             </span>
           `;
         } else if (isConfirmed) {
           statusPillHtml = `
             <span class="pill-status-confirmed">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              CONFIRMED
+              SO CONFIRMED
             </span>
           `;
         } else {
@@ -3737,7 +3927,13 @@
                 <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
               </div>
-              <div style="display: flex; gap: 6px; align-items: center;">
+              <div class="asm-card-actions-grid">
+                <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackAsmOrderFromList('${escapeHtml(o.cleanId)}')" title="Live Dispatch Tracking">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  <span>Track</span>
+                </button>
                 <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openSoDetailsModal('${escapeHtml(o.cleanId)}')" title="View all order details">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -3745,7 +3941,7 @@
                     <line x1="16" y1="17" x2="8" y2="17"></line>
                     <polyline points="10 9 9 9 8 9"></polyline>
                   </svg>
-                  <span>Details ➔</span>
+                  <span>Details</span>
                 </button>
                 <button type="button" class="btn-card-action btn-card-slip" onclick="event.stopPropagation(); viewOrderSlip('${escapeHtml(o.cleanId)}')" title="View digital order slip">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -3761,6 +3957,10 @@
       });
 
       container.innerHTML = html;
+    }
+
+    function trackAsmOrderFromList(orderId) {
+      openSoDetailsModal(orderId);
     }
 
     // 📄 SO DETAILS MODAL
@@ -3782,41 +3982,148 @@
         return;
       }
 
-      const isConfirmed = ord.orderStatus === "CONFIRMED";
-      const badge = document.getElementById("modalSoStatusBadge");
-      badge.textContent = isConfirmed ? "✔ CONFIRMED" : "⏳ PENDING SO";
-      badge.className = isConfirmed ? "pill-boxes pill-status-confirmed" : "pill-boxes pill-status-pending";
+      const isDelivered = (ord.orderStatus === "DELIVERED" || ord.dispatchStatus === "DELIVERED" || ord.dispatch_status === "DELIVERED");
+      const isDispatched = (ord.orderStatus === "DISPATCHED" || ord.dispatchStatus === "DISPATCHED" || ord.dispatchStatus === "IN_TRANSIT" || ord.dispatch_status === "DISPATCHED" || ord.dispatch_status === "IN_TRANSIT");
+      const cleanSo = String(ord.soNumber || ord.so_number || "").replace("#", "").trim();
+      const isConfirmed = (ord.orderStatus === "CONFIRMED" || ord.order_status === "CONFIRMED" || Boolean(cleanSo));
 
-      document.getElementById("modalSoNumberTitle").textContent = ord.soNumber ? `SO #${ord.soNumber}` : `Order #${ord.cleanId}`;
+      const badge = document.getElementById("modalSoStatusBadge");
+      if (isDelivered) {
+        badge.textContent = "✔ DELIVERED";
+        badge.className = "pill-boxes pill-status-confirmed";
+        badge.style.background = "#ecfdf5";
+        badge.style.color = "#047857";
+        badge.style.border = "1px solid #a7f3d0";
+      } else if (isDispatched) {
+        badge.textContent = "🚚 DISPATCHED";
+        badge.className = "pill-boxes pill-status-confirmed";
+        badge.style.background = "#eff6ff";
+        badge.style.color = "#1d4ed8";
+        badge.style.border = "1px solid #bfdbfe";
+      } else if (isConfirmed || cleanSo) {
+        badge.textContent = "✔ SO CONFIRMED";
+        badge.className = "pill-boxes pill-status-confirmed";
+        badge.style.background = "#eff6ff";
+        badge.style.color = "#1d4ed8";
+        badge.style.border = "1px solid #bfdbfe";
+      } else {
+        badge.textContent = "⏳ PENDING SO";
+        badge.className = "pill-boxes pill-status-pending";
+        badge.style.background = "#fef3c7";
+        badge.style.color = "#b45309";
+        badge.style.border = "1px solid #fde68a";
+      }
+
+      document.getElementById("modalSoNumberTitle").textContent = cleanSo ? `SO #${cleanSo}` : `Order #${ord.cleanId}`;
       document.getElementById("modalSoOrderId").textContent = `Order ID: #${ord.cleanId} • Date: ${ord.formattedTimestamp || ord.order_date || "-"}`;
       document.getElementById("modalSoPartyName").textContent = `${ord.partyName || "Customer"} ${ord.partyCode ? '[' + ord.partyCode + ']' : ''}`;
       document.getElementById("modalSoPartyAddress").textContent = ord.partyAddress || ord.deliveryAddress || "-";
       document.getElementById("modalSoSalesPerson").textContent = `👔 Sales Manager: ${ord.salesPerson || "-"}`;
 
+      // 🚚 Render Real-Time Lifecycle Stepper
+      const stepperContainer = document.getElementById("modalSoStepperContainer");
+      if (stepperContainer) {
+        const orderDateStr = ord.order_date || ord.orderDate || (ord.formattedTimestamp ? ord.formattedTimestamp.split(" ")[0] : "-");
+        const orderTimeStr = ord.formattedTimestamp ? (ord.formattedTimestamp.split(" ")[1] || "") : "";
+        const soDateStr = ord.confirmed_at || ord.confirmedAt || "";
+        const dispDateStr = ord.dispatch_at || ord.dispatchAt || "";
+
+        let stepperClass = "";
+        if (isDelivered) stepperClass = "step-3-active";
+        else if (isDispatched) stepperClass = "step-2-active";
+        else if (isConfirmed) stepperClass = "step-1-active";
+
+        stepperContainer.innerHTML = `
+          <div class="track-stepper-wrap" style="margin: 0 0 14px 0;">
+            <div class="track-stepper ${stepperClass}">
+              <!-- Step 1: Booked -->
+              <div class="track-step completed">
+                <div class="track-step-circle">✓</div>
+                <div class="track-step-label">Booked</div>
+                <div class="track-step-time">
+                  <span class="step-time-date">${escapeHtml(orderDateStr)}</span>
+                  ${orderTimeStr ? `<span class="step-time-clock">${escapeHtml(orderTimeStr)}</span>` : ''}
+                </div>
+              </div>
+              <!-- Step 2: SO Confirmed -->
+              <div class="track-step ${isConfirmed ? 'completed' : 'upcoming'}">
+                <div class="track-step-circle">${isConfirmed ? '✓' : '2'}</div>
+                <div class="track-step-label">SO Confirmed</div>
+                <div class="track-step-time">
+                  ${cleanSo ? `<span class="step-time-date" style="font-weight: 800;">SO #${escapeHtml(cleanSo)}</span>` : ''}
+                  ${soDateStr ? `<span class="step-time-clock">${escapeHtml(soDateStr)}</span>` : (isConfirmed ? `<span class="step-time-clock">Confirmed</span>` : '')}
+                </div>
+              </div>
+              <!-- Step 3: Dispatched -->
+              <div class="track-step ${isDispatched ? 'completed' : (isConfirmed ? 'current' : 'upcoming')}">
+                <div class="track-step-circle">${isDispatched ? '✓' : (isConfirmed ? '⏳' : '3')}</div>
+                <div class="track-step-label">Dispatched</div>
+                <div class="track-step-time">
+                  ${dispDateStr ? `<span class="step-time-date">${escapeHtml(dispDateStr)}</span>` : (isDispatched ? `<span class="step-time-date">In Transit</span>` : '')}
+                </div>
+              </div>
+              <!-- Step 4: Delivered -->
+              <div class="track-step ${isDelivered ? 'completed' : (isDispatched ? 'current' : 'upcoming')}">
+                <div class="track-step-circle">${isDelivered ? '✓' : '4'}</div>
+                <div class="track-step-label">Delivered</div>
+                <div class="track-step-time">
+                  ${isDelivered ? `<span class="step-time-date">Received</span>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      let totalComputedBoxes = 0;
+      let totalComputedPieces = 0;
       const tbody = document.getElementById("modalSoItemsTableBody");
       let itemsHtml = "";
       const items = ord.items || [];
       if (Array.isArray(items) && items.length > 0) {
         items.forEach(it => {
-          const bxs = parseInt(it.boxes || 0);
-          const mult = parseInt(it.multiplier || 1);
-          const pcs = parseInt(it.pieces || (bxs * mult));
+          const rawName = String(it.item || it.name || it.itemName || it.product || "-").trim();
+          const bxs = parseInt(it.boxes || it.box || 0) || 0;
+          
+          let mult = parseInt(it.multiplier || 0);
+          if (!mult || mult <= 1) {
+            const multMatch = rawName.match(/x\s*(\d+)/i);
+            if (multMatch) mult = parseInt(multMatch[1]);
+          }
+          if (!mult || mult <= 0) mult = 1;
+
+          const pcs = parseInt(it.pieces || 0) || (bxs * mult);
+          totalComputedBoxes += bxs;
+          totalComputedPieces += pcs;
+
+          const isFauji = rawName.toUpperCase().includes("FAUJI");
+          const brandPill = isFauji
+            ? `<span style="display: inline-block; font-size: 9px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 1px 5px; border-radius: 4px; margin-right: 5px;">FAUJI</span>`
+            : `<span style="display: inline-block; font-size: 9px; font-weight: 800; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 1px 5px; border-radius: 4px; margin-right: 5px;">MASHAL</span>`;
+
           itemsHtml += `
             <tr style="border-bottom: 1px solid #f1f5f9;">
-              <td style="padding: 8px 10px; font-weight: 600;">${escapeHtml(it.item || "-")}</td>
-              <td style="padding: 8px 10px; text-align: center; color: #64748b;">x${mult}</td>
-              <td style="padding: 8px 10px; text-align: right; font-weight: 700; color: #0284c7;">${bxs.toLocaleString()}</td>
-              <td style="padding: 8px 10px; text-align: right; font-weight: 700; color: #16a34a;">${pcs.toLocaleString()}</td>
+              <td style="padding: 10px 10px; font-weight: 600; color: #0f172a;">
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                  ${brandPill}
+                  <span>${escapeHtml(rawName)}</span>
+                </div>
+              </td>
+              <td style="padding: 10px 10px; text-align: center; color: #64748b; font-weight: 700;">x${mult}</td>
+              <td style="padding: 10px 10px; text-align: right; font-weight: 800; color: #0284c7;">${bxs.toLocaleString()}</td>
+              <td style="padding: 10px 10px; text-align: right; font-weight: 800; color: #16a34a;">${pcs.toLocaleString()}</td>
             </tr>
           `;
         });
       } else {
-        itemsHtml = `<tr><td colspan="4" style="padding: 10px; text-align: center; color: #64748b;">${escapeHtml(ord.itemsSummary || "No items")}</td></tr>`;
+        itemsHtml = `<tr><td colspan="4" style="padding: 14px; text-align: center; color: #64748b;">${escapeHtml(ord.itemsSummary || "No item details available")}</td></tr>`;
       }
       tbody.innerHTML = itemsHtml;
 
-      document.getElementById("modalSoTotalBoxes").textContent = `${(ord.totalBoxes || 0).toLocaleString()} Bxs`;
-      document.getElementById("modalSoTotalPieces").textContent = `${(ord.totalPieces || 0).toLocaleString()} Pcs`;
+      const finalBoxes = totalComputedBoxes || parseInt(ord.totalBoxes || 0);
+      const finalPieces = totalComputedPieces || parseInt(ord.totalPieces || 0);
+      document.getElementById("modalSoTotalBoxes").textContent = `${finalBoxes.toLocaleString()} Bxs`;
+      document.getElementById("modalSoTotalPieces").textContent = `${finalPieces.toLocaleString()} Pcs`;
 
       const btnSlip = document.getElementById("btnModalViewSlip");
       if (btnSlip) {
