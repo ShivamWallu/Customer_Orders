@@ -1090,9 +1090,9 @@
     .sidebar-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.60);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.68);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 1000;
       opacity: 0;
       visibility: hidden;
@@ -1111,21 +1111,21 @@
       top: 0;
       right: 0;
       bottom: 0;
-      width: 86%;
-      max-width: 340px;
+      width: 88%;
+      max-width: 350px;
       background: #ffffff;
       z-index: 1001;
-      border-radius: 24px 0 0 24px;
-      box-shadow: -12px 0 40px rgba(0, 0, 0, 0.28), -2px 0 12px rgba(0, 0, 0, 0.12);
+      border-radius: 28px 0 0 28px;
+      box-shadow: -14px 0 45px rgba(0, 0, 0, 0.32), -2px 0 14px rgba(0, 0, 0, 0.1);
       transform: translateX(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       pointer-events: none;
-      padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     }
 
     .sidebar-drawer.active {
@@ -1135,27 +1135,60 @@
 
     /* 💎 Premium Executive Profile Header Card */
     .sidebar-header {
-      padding: 24px 20px 22px;
-      background: linear-gradient(135deg, #0b192c 0%, #1e1b4b 48%, #1e3a8a 100%);
+      padding: 26px 20px 22px;
+      background: linear-gradient(145deg, #091526 0%, #0f2744 52%, #064e3b 100%);
       color: #ffffff;
       display: flex;
       align-items: center;
       gap: 14px;
       position: relative;
-      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12), 0 4px 18px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
+    }
+
+    .sidebar-header-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+      background-size: 14px 14px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .sidebar-user-avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+      z-index: 1;
     }
 
     .sidebar-user-avatar {
       width: 52px;
       height: 52px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06));
-      border: 2px solid rgba(255, 255, 255, 0.38);
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      border: 2.5px solid rgba(255, 255, 255, 0.88);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 0 18px rgba(59, 130, 246, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.42), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    .avatar-status-dot {
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 13px;
+      height: 13px;
+      background: #10b981;
+      border: 2.5px solid #091526;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
     }
 
     .sidebar-user-info {
@@ -1163,28 +1196,53 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 2.5px;
+      z-index: 1;
+    }
+
+    .sidebar-user-name-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
     }
 
     .sidebar-user-info h3 {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 800;
       color: #ffffff;
-      white-space: nowrap;
+      text-transform: capitalize;
+      letter-spacing: -0.02em;
+      margin: 0;
+      line-height: 1.2;
+      max-width: 145px;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: -0.01em;
-      margin: 0;
-      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .verified-buyer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: rgba(16, 185, 129, 0.22);
+      color: #6ee7b7;
+      border: 1px solid rgba(110, 231, 183, 0.35);
+      padding: 2px 6px;
+      border-radius: 20px;
     }
 
     .sidebar-user-role {
-      font-size: 12px;
-      color: #93c5fd;
+      font-size: 11.5px;
+      color: #cbd5e1;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1194,20 +1252,22 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 11.5px;
-      color: #e2e8f0;
+      font-size: 11px;
+      color: #f1f5f9;
+      font-weight: 600;
       font-family: 'JetBrains Mono', monospace;
       text-decoration: none;
       background: rgba(255, 255, 255, 0.12);
       padding: 3px 8px;
-      border-radius: 6px;
+      border-radius: 7px;
       border: 1px solid rgba(255, 255, 255, 0.18);
-      margin-top: 4px;
+      margin-top: 3px;
       width: fit-content;
       transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
     }
     .sidebar-user-phone-link:hover {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.24);
       color: #ffffff;
       border-color: rgba(255, 255, 255, 0.4);
       transform: translateY(-1px);
@@ -1217,35 +1277,33 @@
       position: absolute;
       top: 14px;
       right: 14px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: #ffffff;
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      min-height: 40px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      z-index: 2;
     }
     .btn-sidebar-close:hover {
-      background: rgba(255, 255, 255, 0.28);
-      transform: scale(1.08);
-      border-color: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.06);
+      border-color: rgba(255, 255, 255, 0.4);
     }
     .btn-sidebar-close:active {
-      transform: scale(0.94);
+      transform: scale(0.92);
     }
 
     .sidebar-nav {
-      padding: 18px 14px;
+      padding: 16px 12px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
       flex: 1;
       overflow-y: auto;
     }
@@ -1253,87 +1311,153 @@
     .sidebar-nav-item {
       display: flex;
       align-items: center;
-      gap: 13px;
-      padding: 12px 14px;
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      color: #1e293b;
-      font-size: 14px;
-      font-weight: 700;
+      gap: 12px;
+      padding: 11px 12px;
+      background: #ffffff;
+      border: 1.5px solid #f1f5f9;
+      border-radius: 14px;
+      color: #0f172a;
       cursor: pointer;
       text-align: left;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       width: 100%;
+      position: relative;
     }
 
     .sidebar-nav-item:hover {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border-color: #dbeafe;
+      background: #f8fafc;
+      border-color: #cbd5e1;
       transform: translateX(3px);
     }
 
     .sidebar-nav-item.active {
-      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
-      color: #047857;
-      border: 1px solid #bbf7d0;
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 1.5px solid #a7f3d0;
       border-left: 4.5px solid #059669;
-      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.12);
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.1);
     }
 
     .sidebar-nav-item .nav-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      background: #f1f5f9;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      color: #475569;
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease;
     }
 
     .sidebar-nav-item:hover .nav-icon {
-      background: #dbeafe;
-      color: #2563eb;
       transform: scale(1.06);
     }
 
-    .sidebar-nav-item.active .nav-icon {
-      background: #d1fae5;
+    .nav-icon-booking {
+      background: #ecfdf5;
       color: #059669;
+    }
+    .nav-icon-orders {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+    .nav-icon-track {
+      background: #f0f9ff;
+      color: #0284c7;
+    }
+    .nav-icon-app {
+      background: #f5f3ff;
+      color: #7c3aed;
+    }
+    .nav-icon-logout {
+      background: #fff1f2;
+      color: #e11d48;
+    }
+
+    .nav-text-block {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5px;
+    }
+
+    .nav-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.25;
+    }
+
+    .sidebar-nav-item.active .nav-title {
+      color: #065f46;
+      font-weight: 800;
+    }
+
+    .nav-subtitle {
+      font-size: 11px;
+      font-weight: 500;
+      color: #64748b;
+      line-height: 1.2;
+    }
+
+    .nav-chevron {
+      color: #cbd5e1;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-nav-item:hover .nav-chevron {
+      color: #0f172a;
+      transform: translateX(2px);
+    }
+
+    .sidebar-nav-item.active .nav-chevron {
+      color: #059669;
+    }
+
+    .nav-counter-pill {
+      font-size: 10.5px;
+      font-weight: 700;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 2.5px 8px;
+      border-radius: 12px;
+      margin-right: 2px;
+    }
+
+    .nav-apk-chip {
+      font-size: 10px;
+      font-weight: 800;
+      background: #ede9fe;
+      color: #6d28d9;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .sidebar-divider {
       height: 1px;
-      background: #e2e8f0;
-      margin: 10px 4px;
+      background: #f1f5f9;
+      margin: 8px 4px;
     }
 
     .sidebar-nav-item.logout {
       color: #dc2626;
       margin-top: auto;
       background: #fff5f5;
-      border: 1px solid #fee2e2;
+      border: 1.5px solid #fee2e2;
     }
 
-    .sidebar-nav-item.logout .nav-icon {
-      background: #fee2e2;
+    .sidebar-nav-item.logout .nav-title {
       color: #dc2626;
     }
 
     .sidebar-nav-item.logout:hover {
-      background: #fef2f2;
+      background: #fee2e2;
       border-color: #fca5a5;
       color: #b91c1c;
       transform: translateX(3px);
-    }
-
-    .sidebar-nav-item.logout:hover .nav-icon {
-      background: #fecaca;
-      color: #b91c1c;
     }
 
     /* 🏷️ TOP SEGMENTED TAB BAR */
@@ -2394,24 +2518,40 @@
     <div class="sidebar-drawer" id="customerSidebarDrawer">
       <!-- 💎 Premium Profile Header Card -->
       <div class="sidebar-header">
-        <div class="sidebar-user-avatar">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
+        <div class="sidebar-header-pattern"></div>
+        <div class="sidebar-user-avatar-wrap">
+          <div class="sidebar-user-avatar" id="sidebarCustomerAvatar">
+            <span id="sidebarCustomerAvatarInitial">S</span>
+          </div>
+          <span class="avatar-status-dot" title="Account Active"></span>
         </div>
         <div class="sidebar-user-info">
-          <h3 id="sidebarCustomerName">Customer Account</h3>
+          <div class="sidebar-user-name-row">
+            <h3 id="sidebarCustomerName">Customer Account</h3>
+            <span class="verified-buyer-badge" title="Authorized Direct Buyer">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Verified</span>
+            </span>
+          </div>
           <div class="sidebar-user-role" id="sidebarCustomerPartyCode">
-            <span>🛒</span> <span>Customer (Direct Buyer)</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <polyline points="17 11 19 13 23 9"></polyline>
+            </svg>
+            <span id="sidebarCustomerRoleText">Customer (Direct Buyer)</span>
           </div>
           <a href="tel:" id="sidebarCustomerPhoneLink" class="sidebar-user-phone-link" title="Call mobile number">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
             <span id="sidebarCustomerPhone">+91 —</span>
           </a>
         </div>
         <button type="button" class="btn-sidebar-close" onclick="closeCustomerSidebar()" aria-label="Close menu" title="Close Menu">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -2422,62 +2562,91 @@
       <nav class="sidebar-nav">
         <!-- 1. Book New Order -->
         <button type="button" class="sidebar-nav-item active" id="custNavItemBooking" onclick="switchCustomerSection('booking'); closeCustomerSidebar();">
-          <span class="nav-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <span class="nav-icon nav-icon-booking">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
           </span>
-          <span>Book New Order</span>
+          <div class="nav-text-block">
+            <span class="nav-title">Book New Order</span>
+            <span class="nav-subtitle">Direct factory order placement</span>
+          </div>
+          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
 
         <!-- 2. My Orders & History -->
         <button type="button" class="sidebar-nav-item" id="custNavItemOrders" onclick="switchCustomerSection('orders'); closeCustomerSidebar();">
-          <span class="nav-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <span class="nav-icon nav-icon-orders">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
               <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
               <line x1="12" y1="22.08" x2="12" y2="12"></line>
             </svg>
           </span>
-          <span>My Orders & History</span>
+          <div class="nav-text-block">
+            <span class="nav-title">My Orders & History</span>
+            <span class="nav-subtitle">View SO status & order slips</span>
+          </div>
+          <span class="nav-counter-pill" id="navDrawerOrdersCount">Orders</span>
+          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
 
         <!-- 3. Sales Order Search / Track Order -->
         <button type="button" class="sidebar-nav-item" id="custNavItemTrack" onclick="switchCustomerSection('track'); closeCustomerSidebar();">
-          <span class="nav-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <span class="nav-icon nav-icon-track">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </span>
-          <span>Sales Order Search</span>
+          <div class="nav-text-block">
+            <span class="nav-title">Sales Order Search</span>
+            <span class="nav-subtitle">Instant factory dispatch tracking</span>
+          </div>
+          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
 
         <div class="sidebar-divider"></div>
 
         <!-- 4. Install Android Mobile App -->
         <button type="button" class="sidebar-nav-item" id="btnSidebarInstallApp" onclick="triggerPWAInstall(); closeCustomerSidebar();">
-          <span class="nav-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <span class="nav-icon nav-icon-app">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
               <line x1="12" y1="18" x2="12.01" y2="18"></line>
               <path d="M9 2v1m6-1v1"></path>
             </svg>
           </span>
-          <span>Install Android Mobile App</span>
+          <div class="nav-text-block">
+            <span class="nav-title">Install Android Mobile App</span>
+            <span class="nav-subtitle">Fast 1-tap home screen access</span>
+          </div>
+          <span class="nav-apk-chip">PWA / APK</span>
         </button>
 
         <!-- 5. Sign Out -->
         <button type="button" class="sidebar-nav-item logout" onclick="logoutCustomer()">
-          <span class="nav-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <span class="nav-icon nav-icon-logout">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
               <polyline points="16 17 21 12 16 7"></polyline>
               <line x1="21" y1="12" x2="9" y2="12"></line>
             </svg>
           </span>
-          <span>Sign Out</span>
+          <div class="nav-text-block">
+            <span class="nav-title">Sign Out</span>
+            <span class="nav-subtitle">Securely exit customer account</span>
+          </div>
+          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </nav>
     </div>
@@ -4127,8 +4296,13 @@
       if (document.getElementById("sidebarCustomerName")) {
         document.getElementById("sidebarCustomerName").textContent = name;
       }
-      if (document.getElementById("sidebarCustomerPartyCode")) {
-        document.getElementById("sidebarCustomerPartyCode").textContent = code ? `Party Code: ${code}` : "🛒 Customer (Direct Buyer)";
+      if (document.getElementById("sidebarCustomerAvatarInitial")) {
+        const cleanInitial = (name && name.trim()) ? name.trim()[0].toUpperCase() : "C";
+        document.getElementById("sidebarCustomerAvatarInitial").textContent = cleanInitial;
+      }
+      const roleText = document.getElementById("sidebarCustomerRoleText");
+      if (roleText) {
+        roleText.textContent = code ? `Party: ${code}` : "Customer (Direct Buyer)";
       }
       if (document.getElementById("sidebarCustomerPhone")) {
         const formattedPhone = phone ? (phone.startsWith("+91") ? phone : `+91 ${phone.replace(/^\+91/, "").trim()}`) : "+91 —";
@@ -4415,6 +4589,10 @@
           }
           if (document.getElementById("custKpiTotalOrders")) {
             document.getElementById("custKpiTotalOrders").textContent = (data.totalOrders !== undefined ? data.totalOrders : 0).toLocaleString();
+          }
+          if (document.getElementById("navDrawerOrdersCount")) {
+            const countVal = data.totalOrders !== undefined ? data.totalOrders : (cachedCustomerOrders ? cachedCustomerOrders.length : 0);
+            document.getElementById("navDrawerOrdersCount").textContent = `${countVal} Orders`;
           }
 
           renderCustomerOrdersList(cachedCustomerOrders, data);
