@@ -2201,14 +2201,91 @@
       background: #e2e8f0;
       z-index: 1;
     }
-    .track-stepper.step-1-active::before {
-      background: linear-gradient(to right, #10b981 0%, #10b981 25%, #e2e8f0 25%, #e2e8f0 100%);
-    }
     .track-stepper.step-2-active::before {
-      background: linear-gradient(to right, #10b981 0%, #10b981 60%, #e2e8f0 60%, #e2e8f0 100%);
+      background: linear-gradient(to right, #10b981 0%, #10b981 50%, #e2e8f0 50%, #e2e8f0 100%);
     }
     .track-stepper.step-3-active::before {
       background: #10b981;
+    }
+
+    /* ⚡ Recent Orders Section (Exact Match to Customer Portal) */
+    .recent-orders-card-wrap {
+      margin-top: 14px;
+      margin-bottom: 4px;
+      width: 100%;
+    }
+    .recent-orders-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 0 2px;
+    }
+    .recent-orders-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .recent-orders-pills-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .recent-order-pill {
+      padding: 6px 11px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .recent-order-pill:hover {
+      transform: translateY(-1px);
+      border-color: #047857;
+      background: #f0fdf4;
+    }
+    .recent-order-pill:active {
+      transform: scale(0.97);
+    }
+    .recent-order-pill.active-order {
+      border-color: #047857 !important;
+      background: #ecfdf5 !important;
+      color: #047857 !important;
+      box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.25), 0 2px 6px rgba(4, 120, 87, 0.12) !important;
+      font-weight: 800 !important;
+    }
+    .recent-order-pill .pill-latest-tag {
+      font-size: 8.5px;
+      background: #047857;
+      color: #ffffff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      margin-left: 2px;
+      line-height: 1.2;
+    }
+    .track-result-card {
+      background: #ffffff;
+      border: 1.5px solid #d1fae5;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 18px rgba(4, 120, 87, 0.08);
     }
     .track-step {
       position: relative;
@@ -2893,6 +2970,19 @@
         </div>
       </div>
 
+      <!-- Scalable Search & Filter Input for ASM Orders History -->
+      <div class="cust-orders-search-wrap" style="margin-top: 10px; margin-bottom: 12px;">
+        <div class="so-search-box" style="margin-bottom: 0;">
+          <div class="so-search-input-wrap">
+            <span class="so-search-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" id="asmOrdersSearchInput" class="so-search-input" placeholder="Search orders by ID (e.g. #KOGM-...), SO #, or Customer..." oninput="debouncedSearchAsmOrders()" onkeydown="if(event.key==='Enter') executeAsmOrdersSearch()">
+            <button type="button" id="asmOrdersSearchClearBtn" class="so-search-clear-btn" onclick="clearAsmOrdersSearch()" title="Clear">✕</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Orders List Container -->
       <div id="asmOrdersListContainer">
         <div style="text-align: center; padding: 40px 16px; color: #64748b; font-size: 13px;">
@@ -2939,8 +3029,22 @@
         </button>
       </div>
 
+      <!-- ⚡ RECENT ORDERS (ALWAYS PREVIOUS 5 ORDERS IN CLEAN WRAP) -->
+      <div id="asmQuickTrackChipsContainer" class="recent-orders-card-wrap" style="display: none;">
+        <div class="recent-orders-header">
+          <span class="recent-orders-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span id="asmRecentOrdersSectionTitle">Recent Orders (Last 5)</span>
+          </span>
+        </div>
+        <div id="asmQuickTrackChipsList" class="recent-orders-pills-wrap"></div>
+      </div>
+
+      <!-- Live Stepper Card (Exact same as Customer Portal Image 3) -->
+      <div id="asmTrackResultContainer" style="margin-top: 10px;"></div>
+
       <!-- Results Container -->
-      <div id="soSearchResultsContainer">
+      <div id="soSearchResultsContainer" style="margin-top: 12px;">
         <div style="text-align: center; padding: 30px 16px; color: #64748b; font-size: 13px;">
           Type an SO number (e.g. SO-102), Order ID, or Customer name to view complete order details.
         </div>
@@ -2950,17 +3054,17 @@
 
   <!-- 📄 COMPLETE SALES ORDER DETAILS MODAL -->
   <div class="modal-backdrop" id="soDetailsModal" style="display: none; align-items: flex-end; padding: 0;">
-    <div class="modal-content" style="max-width: 600px; width: 100%; max-height: 90vh; border-radius: 20px 20px 0 0; text-align: left; padding: 24px 20px; overflow-y: auto;">
+    <div class="modal-content" style="max-width: 600px; width: 100%; max-height: 90vh; border-radius: 20px 20px 0 0; text-align: left; padding: 22px 18px; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
         <div>
           <span class="pill-boxes" id="modalSoStatusBadge">CONFIRMED</span>
           <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 6px;" id="modalSoNumberTitle">SO #—</h3>
           <div style="font-size: 12px; color: #64748b;" id="modalSoOrderId">Order ID: —</div>
         </div>
-        <button type="button" class="btn-tool" style="padding: 4px 10px; font-size: 16px;" onclick="closeSoDetailsModal()">✕</button>
+        <button type="button" class="btn-tool" style="padding: 6px 12px; font-size: 16px; border-radius: 8px;" onclick="closeSoDetailsModal()">✕</button>
       </div>
 
-      <!-- 🚚 Live Real-Time Order Lifecycle Stepper -->
+      <!-- 🚚 Live Real-Time 3-Step Lifecycle Stepper -->
       <div id="modalSoStepperContainer"></div>
 
       <!-- Party Card -->
@@ -2968,12 +3072,21 @@
         <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Customer Information</div>
         <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 2px;" id="modalSoPartyName">—</div>
         <div style="font-size: 12px; color: #475569;" id="modalSoPartyAddress">—</div>
-        <div style="font-size: 12px; color: #2563eb; font-weight: 700; margin-top: 4px;" id="modalSoSalesPerson">ASM: —</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; font-size: 11.5px; font-weight: 700;">
+          <span style="color: #2563eb;" id="modalSoSalesPerson">👔 Sales Manager: —</span>
+          <span style="color: #047857;" id="modalSoUnitBadge">🏭 Factory Plant: Unit 1</span>
+          <span style="color: #d97706;" id="modalSoSubBadge"></span>
+        </div>
       </div>
 
       <!-- Packaging & Quantities Breakdown Table -->
       <div style="margin-bottom: 16px;">
-        <div style="font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Order Items & Packaging Breakdown</div>
+        <div style="font-size: 12.5px; font-weight: 800; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+          <span>Order Items & Packaging Breakdown</span>
+        </div>
         <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
           <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
             <thead>
@@ -2997,14 +3110,26 @@
         </div>
       </div>
 
-      <!-- Actions: Image 2 requested button removed, keeping clean full-width close button -->
-      <div>
-        <button type="button" class="btn-primary-auth" style="margin-top: 0; width: 100%; padding: 12px; font-size: 13.5px; font-weight: 700; background: #0f172a; color: #ffffff; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(15,23,42,0.12); cursor: pointer;" onclick="closeSoDetailsModal()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+      <!-- Action Buttons Bar in Modal -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+        <button type="button" class="btn-card-action btn-card-slip" id="btnModalViewSlip" style="height: 42px; justify-content: center; font-size: 13px; border-radius: 10px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span>Close Details</span>
+          <span>View Slip</span>
+        </button>
+        <button type="button" class="btn-card-action btn-card-details" id="btnModalWhatsApp" style="height: 42px; justify-content: center; font-size: 13px; border-radius: 10px; background: #25d366; color: #ffffff; border-color: #22c55e;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </button>
+      </div>
+
+      <div>
+        <button type="button" class="btn-primary-auth" style="margin-top: 0; width: 100%; padding: 11px; font-size: 13px; font-weight: 700; background: #0f172a; color: #ffffff; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(15,23,42,0.12); cursor: pointer;" onclick="closeSoDetailsModal()">
+          ✕ Close Details
         </button>
       </div>
     </div>
@@ -3523,6 +3648,7 @@
         if (sectionOrders) sectionOrders.style.display = "none";
         if (sectionSearch) sectionSearch.style.display = "block";
         if (stickyBar) stickyBar.style.display = "none";
+        populateAsmQuickTrackChips();
         performSoSearch();
       }
     }
@@ -3730,8 +3856,76 @@
       container.innerHTML = html;
     }
 
+    // 🔍 SEARCH FOR ASM MY ORDERS HISTORY
+    let asmOrdersSearchDebounceTimer = null;
+    function debouncedSearchAsmOrders() {
+      clearTimeout(asmOrdersSearchDebounceTimer);
+      asmOrdersSearchDebounceTimer = setTimeout(() => {
+        executeAsmOrdersSearch();
+      }, 250);
+    }
+
+    function executeAsmOrdersSearch() {
+      const q = (document.getElementById("asmOrdersSearchInput")?.value || "").trim().toLowerCase();
+      const clearBtn = document.getElementById("asmOrdersSearchClearBtn");
+      if (clearBtn) clearBtn.style.display = q ? "block" : "none";
+
+      if (!cachedAsmOrders || cachedAsmOrders.length === 0) return;
+      if (!q) {
+        renderAsmOrdersList(cachedAsmOrders);
+        return;
+      }
+      const cleanQ = q.replace('#', '');
+      const filtered = cachedAsmOrders.filter(o => {
+        const id = String(o.cleanId || o.orderId || "").toLowerCase();
+        const so = String(o.soNumber || o.so_number || "").toLowerCase();
+        const party = String(o.partyName || o.party_name || "").toLowerCase();
+        const items = String(o.itemsSummary || "").toLowerCase();
+        return id.includes(cleanQ) || so.includes(cleanQ) || party.includes(q) || items.includes(q);
+      });
+      renderAsmOrdersList(filtered);
+    }
+
+    function clearAsmOrdersSearch() {
+      const input = document.getElementById("asmOrdersSearchInput");
+      if (input) input.value = "";
+      const clearBtn = document.getElementById("asmOrdersSearchClearBtn");
+      if (clearBtn) clearBtn.style.display = "none";
+      renderAsmOrdersList(cachedAsmOrders);
+    }
+
+    // 🕒 TIMELINE STEP TIMESTAMP FORMATTER
+    function formatTimelineStepTimestamp(ts) {
+      if (!ts) return "";
+      let raw = String(ts).trim();
+      if (raw.includes("T") || (raw.includes("-") && raw.length >= 19)) {
+        try {
+          const d = new Date(raw);
+          if (!isNaN(d.getTime())) {
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            let hours = d.getHours();
+            const mins = String(d.getMinutes()).padStart(2, '0');
+            const secs = String(d.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const hh = String(hours).padStart(2, '0');
+            return `<span class="step-time-date">${dd}/${mm}/${yyyy}</span><span class="step-time-clock">${hh}:${mins}:${secs} ${ampm}</span>`;
+          }
+        } catch(e) {}
+      }
+      if (raw.includes(" ")) {
+        const parts = raw.split(" ");
+        if (parts.length >= 2) {
+          return `<span class="step-time-date">${escapeHtml(parts[0])}</span><span class="step-time-clock">${escapeHtml(parts.slice(1).join(" "))}</span>`;
+        }
+      }
+      return `<span>${escapeHtml(raw)}</span>`;
+    }
+
     // 🔍 STATEFUL SALES ORDER SEARCH (STRICTLY LOGGED-IN ASM SCOPED)
-    let currentSearchFilter = "all";  // "all", "confirmed", "pending_so"
+    let currentSearchFilter = "all";  // "all", "confirmed", "dispatched"
 
     function getLoggedManagerName() {
       try {
@@ -3741,6 +3935,433 @@
       const el = document.getElementById("loggedManagerName");
       if (el && el.textContent) return el.textContent.trim();
       return "";
+    }
+
+    function getAsmOrderCategory(o) {
+      if (!o) return "PENDING";
+      const isDelivered = (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED");
+      const isDispatched = (o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
+      if (isDelivered || isDispatched) return "DISPATCHED";
+      const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
+      const isConfirmed = (o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || cleanSo.length > 0);
+      if (isConfirmed) return "CONFIRMED";
+      return "PENDING";
+    }
+
+    async function populateAsmQuickTrackChips(isBackgroundSync = false) {
+      const container = document.getElementById("asmQuickTrackChipsContainer");
+      if (!container) return;
+
+      let mgrName = getLoggedManagerName();
+      let token = "";
+      try {
+        const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
+        token = sess.token || "";
+        if (!mgrName) mgrName = sess.manager_name || "";
+      } catch (e) {}
+
+      if (!cachedAsmOrders || cachedAsmOrders.length === 0) {
+        try {
+          const res = await fetch(`/api/sales-orders/search?q=&token=${encodeURIComponent(token)}&sales_person=${encodeURIComponent(mgrName)}&filter_type=all&limit=50`);
+          const d = await res.json();
+          if (res.ok && d.orders) {
+            cachedAsmOrders = d.orders;
+          }
+        } catch (e) {}
+      }
+
+      if (cachedAsmOrders && cachedAsmOrders.length > 0) {
+        renderFilteredAsmQuickTrackChips(false);
+
+        if (!isBackgroundSync) {
+          const resContainer = document.getElementById("asmTrackResultContainer");
+          const hasTrackCard = resContainer && resContainer.querySelector(".track-result-card");
+          if (!hasTrackCard) {
+            const latestOrd = cachedAsmOrders[0];
+            trackAsmOrder(`#${latestOrd.cleanId}`, false);
+          }
+        }
+      } else {
+        container.style.display = "none";
+      }
+    }
+
+    function renderFilteredAsmQuickTrackChips(autoTrackFirst = false) {
+      const container = document.getElementById("asmQuickTrackChipsContainer");
+      const list = document.getElementById("asmQuickTrackChipsList");
+      if (!container || !list) return;
+
+      const all = cachedAsmOrders || [];
+      if (all.length === 0) {
+        container.style.display = "none";
+        return;
+      }
+
+      // Filter pool strictly according to currentSearchFilter
+      let pool = all;
+      if (currentSearchFilter === "confirmed") {
+        pool = all.filter(o => getAsmOrderCategory(o) === "CONFIRMED");
+      } else if (currentSearchFilter === "dispatched") {
+        pool = all.filter(o => getAsmOrderCategory(o) === "DISPATCHED");
+      }
+
+      const topOrders = pool.slice(0, 5);
+      if (topOrders.length === 0) {
+        container.style.display = "none";
+      } else {
+        container.style.display = "block";
+      }
+
+      const titleEl = document.getElementById("asmRecentOrdersSectionTitle");
+      if (titleEl) {
+        if (currentSearchFilter === "confirmed") {
+          titleEl.textContent = `Confirmed Orders (${topOrders.length})`;
+        } else if (currentSearchFilter === "dispatched") {
+          titleEl.textContent = `Dispatched & Delivered (${topOrders.length})`;
+        } else {
+          titleEl.textContent = `Recent Orders (Last 5)`;
+        }
+      }
+
+      const currentInputVal = (document.getElementById("soSearchInput")?.value || "").replace('#', '').trim();
+
+      let chipsHtml = topOrders.map((o, index) => {
+        const cat = getAsmOrderCategory(o);
+        const isCurrentlyTracked = currentInputVal ? (currentInputVal === o.cleanId) : (index === 0);
+        const isLatest = (index === 0);
+
+        let iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+        let bgStyle = "";
+        if (cat === "DISPATCHED") {
+          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
+          bgStyle = "border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff;";
+        } else if (cat === "CONFIRMED") {
+          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          bgStyle = "border-color: #a7f3d0; color: #047857; background: #ecfdf5;";
+        } else {
+          iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+          bgStyle = "border-color: #fde68a; color: #b45309; background: #fffbeb;";
+        }
+
+        const latestTag = isLatest ? `<span class="pill-latest-tag">LATEST</span>` : "";
+
+        return `
+          <button type="button" class="recent-order-pill ${isCurrentlyTracked ? 'active-order' : ''}" style="${bgStyle}" onclick="trackAsmOrder('#${escapeHtml(o.cleanId)}')">
+            ${iconHtml}
+            <span>#${escapeHtml(o.cleanId)}</span>
+            ${latestTag}
+          </button>
+        `;
+      }).join("");
+
+      list.innerHTML = chipsHtml;
+
+      if (autoTrackFirst && topOrders.length > 0) {
+        trackAsmOrder(`#${topOrders[0].cleanId}`);
+      } else if (autoTrackFirst && topOrders.length === 0) {
+        const resContainer = document.getElementById("asmTrackResultContainer");
+        if (resContainer) resContainer.innerHTML = "";
+      }
+    }
+
+    async function trackAsmOrder(explicitQuery, updateInput = false) {
+      const input = document.getElementById("soSearchInput");
+      const q = (explicitQuery !== undefined ? explicitQuery : (input ? input.value : "")).trim();
+      const container = document.getElementById("asmTrackResultContainer");
+      if (!container) return;
+
+      if (input && updateInput && explicitQuery !== undefined) {
+        input.value = explicitQuery;
+        const btn = document.getElementById("soSearchClearBtn");
+        if (btn) btn.style.display = explicitQuery ? "block" : "none";
+      }
+
+      // Highlight active chip in Recent Orders
+      const cleanQ = q.replace('#', '').trim();
+      document.querySelectorAll("#asmQuickTrackChipsList .recent-order-pill").forEach(btn => {
+        const txt = btn.textContent || "";
+        if (cleanQ && txt.includes(cleanQ)) {
+          btn.classList.add("active-order");
+        } else {
+          btn.classList.remove("active-order");
+        }
+      });
+
+      if (!q) {
+        container.innerHTML = "";
+        return;
+      }
+
+      // Check cachedAsmOrders first
+      let ord = (cachedAsmOrders || []).find(o => o.cleanId === cleanQ || o.orderId === cleanQ || (o.soNumber && o.soNumber.replace('#','').trim() === cleanQ));
+      if (ord) {
+        renderAsmTrackResult(ord);
+        return;
+      }
+
+      let token = "";
+      let mgrName = "";
+      try {
+        const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
+        token = sess.token || "";
+        mgrName = sess.manager_name || "";
+      } catch (e) {}
+      if (!mgrName) mgrName = getLoggedManagerName();
+
+      container.innerHTML = `
+        <div style="text-align: center; padding: 36px 16px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px;">
+          <div style="display: inline-block; width: 30px; height: 30px; border: 3px solid #e2e8f0; border-top-color: #0284c7; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px;"></div>
+          <div style="font-weight: 700; color: #1e293b; font-size: 13.5px;">Searching Order Status...</div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 3px;">Loading live tracking for <strong>${escapeHtml(q)}</strong></div>
+        </div>
+      `;
+
+      try {
+        const url = `/api/sales-orders/search?q=${encodeURIComponent(q)}&token=${encodeURIComponent(token)}&sales_person=${encodeURIComponent(mgrName)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (res.ok && data.orders && data.orders.length > 0) {
+          ord = data.orders.find(o => o.cleanId === cleanQ) || data.orders[0];
+          renderAsmTrackResult(ord);
+        } else {
+          container.innerHTML = "";
+        }
+      } catch (err) {
+        container.innerHTML = "";
+      }
+    }
+
+    function renderAsmTrackResult(ord) {
+      const container = document.getElementById("asmTrackResultContainer");
+      if (!container || !ord) return;
+      const isDelivered = (ord.orderStatus === "DELIVERED" || ord.dispatchStatus === "DELIVERED" || ord.dispatch_status === "DELIVERED");
+      const isDispatched = (ord.orderStatus === "DISPATCHED" || ord.dispatchStatus === "DISPATCHED" || ord.dispatchStatus === "IN_TRANSIT" || ord.dispatch_status === "DISPATCHED" || ord.dispatch_status === "IN_TRANSIT");
+      const cleanSo = String(ord.soNumber || ord.so_number || "").replace("#", "").trim();
+      const isConfirmed = (ord.orderStatus === "CONFIRMED" || ord.order_status === "CONFIRMED" || Boolean(cleanSo));
+
+      let trackBadgeHtml = "";
+      if (isDelivered) {
+        trackBadgeHtml = `<span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> DELIVERED</span>`;
+      } else if (isDispatched) {
+        trackBadgeHtml = `<span class="pill-status-confirmed" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> DISPATCHED</span>`;
+      } else if (isConfirmed || cleanSo) {
+        trackBadgeHtml = `<span class="pill-status-confirmed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> SO CONFIRMED</span>`;
+      } else {
+        trackBadgeHtml = `<span class="pill-status-pending"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO</span>`;
+      }
+
+      let itemsHtml = "";
+      const items = ord.items || [];
+      if (Array.isArray(items) && items.length > 0) {
+        items.forEach(it => {
+          const bxs = parseInt(it.boxes || it.box || 0);
+          const rawName = String(it.name || it.item || it.itemName || it.product || "-").trim();
+          let mult = parseInt(it.multiplier || 0);
+          if (!mult || mult <= 1) {
+            const match = rawName.match(/x\s*(\d+)/i);
+            if (match) mult = parseInt(match[1]);
+            else mult = 1;
+          }
+          let pcs = parseInt(it.pieces || 0);
+          if (!pcs || pcs === bxs) {
+            pcs = bxs * mult;
+          }
+          const isFauji = rawName.toUpperCase().includes("FAUJI");
+          const brandBadge = isFauji
+            ? `<span style="font-size: 10px; background: #ecfdf5; color: #047857; padding: 1px 5px; border-radius: 4px; margin-right: 5px; font-weight: 700;">FAUJI</span>`
+            : `<span style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 1px 5px; border-radius: 4px; margin-right: 5px; font-weight: 700;">MASHAL</span>`;
+          itemsHtml += `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 7px 10px; font-weight: 600; color: #1e293b; font-size: 12px;">${brandBadge}${escapeHtml(rawName)}</td>
+              <td style="padding: 7px 6px; text-align: center; color: #64748b; font-size: 11px; font-weight: 600;">x${mult}</td>
+              <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #0284c7; font-size: 12px; font-family: 'JetBrains Mono', monospace;">${bxs.toLocaleString()}</td>
+              <td style="padding: 7px 10px; text-align: right; font-weight: 700; color: #16a34a; font-size: 12px; font-family: 'JetBrains Mono', monospace;">${pcs.toLocaleString()}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // 3 Stages Workflow exactly matching Image 3
+      let stepperClass = "step-1-active";
+      let step1Status = "completed";
+      let step2Status = "upcoming";
+      let step3Status = "upcoming";
+
+      if (isDelivered || isDispatched) {
+        stepperClass = "step-3-active";
+        step1Status = "completed";
+        step2Status = "completed";
+        step3Status = isDelivered ? "completed" : "current";
+      } else if (isConfirmed) {
+        stepperClass = "step-2-active";
+        step1Status = "completed";
+        step2Status = "completed";
+        step3Status = "current";
+      } else {
+        stepperClass = "step-1-active";
+        step1Status = "completed";
+        step2Status = "current";
+        step3Status = "upcoming";
+      }
+
+      const stages = [
+        {
+          step: 1,
+          name: "Order Booked",
+          subtitle: "Logged in ERP",
+          status: step1Status,
+          timestamp: ord.formattedTimestamp || ord.order_date || ""
+        },
+        {
+          step: 2,
+          name: isConfirmed ? "SO Confirmed" : "SO In Review",
+          subtitle: cleanSo ? `SO #${cleanSo}` : (isConfirmed ? "Billing Allocation" : "SO In Review"),
+          status: step2Status,
+          timestamp: ord.confirmed_at || ord.confirmedAt || (isConfirmed ? "Confirmed in ERP" : "")
+        },
+        {
+          step: 3,
+          name: "Dispatch & Loading",
+          subtitle: isDelivered ? "Delivered to Mandi" : (isDispatched ? "Vehicle In Transit" : (isConfirmed ? "Ready for Mandi" : "Awaiting SO")),
+          status: step3Status,
+          timestamp: ord.dispatch_at || ord.dispatchAt || ""
+        }
+      ];
+
+      let stagesHtml = "";
+      stages.forEach(stg => {
+        let iconHtml = "";
+        if (stg.status === "completed") {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        } else if (stg.status === "current" && stg.step === 3) {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>`;
+        } else if (stg.status === "current") {
+          iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+        } else {
+          iconHtml = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>`;
+        }
+
+        stagesHtml += `
+          <div class="track-step ${stg.status}">
+            <div class="track-step-circle">
+              ${iconHtml}
+            </div>
+            <div class="track-step-label">${escapeHtml(stg.name)}</div>
+            <div class="track-step-sub">${escapeHtml(stg.subtitle)}</div>
+            ${stg.timestamp ? `<div class="track-step-time">${formatTimelineStepTimestamp(stg.timestamp)}</div>` : ''}
+          </div>
+        `;
+      });
+
+      container.innerHTML = `
+        <div class="track-result-card">
+          <!-- Card Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 8px;">
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Order Identifier</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 800; color: #047857; letter-spacing: -0.3px;">
+                #${escapeHtml(ord.cleanId)}
+              </div>
+              <div style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #64748b; margin-top: 3px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>Booked: ${escapeHtml(ord.formattedTimestamp || ord.order_date || "-")}</span>
+              </div>
+            </div>
+            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+              ${trackBadgeHtml}
+              ${cleanSo ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(cleanSo)}</span>` : ''}
+            </div>
+          </div>
+
+          <!-- Dynamic Multi-Stage Stepper -->
+          <div class="track-stepper-wrap">
+            <div class="track-stepper ${stepperClass}">
+              ${stagesHtml}
+            </div>
+            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #64748b;">
+              <span>🏭 Factory Plant: <strong>${escapeHtml(ord.unit || "Unit 1")}</strong></span>
+              <span style="color: #047857; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                Live ERP Synchronized
+              </span>
+            </div>
+          </div>
+
+          <!-- Customer & Destination Details -->
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <span>${escapeHtml(ord.partyName || "Customer")}</span>
+              ${ord.partyCode ? `<span style="font-size: 11px; background: #ecfdf5; color: #047857; padding: 2px 6px; border-radius: 4px; font-weight: 700;">[${escapeHtml(ord.partyCode)}]</span>` : ''}
+            </div>
+            <div style="font-size: 11.5px; color: #475569; display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; margin-bottom: 6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" style="flex-shrink: 0; margin-top: 2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span>${escapeHtml(ord.deliveryAddress || ord.partyAddress || "Mandi / Factory Address")}</span>
+            </div>
+            ${ord.salesPerson ? `
+              <div style="font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 5px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Sales Manager: <strong>${escapeHtml(ord.salesPerson)}</strong></span>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Items Breakdown Table -->
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin-bottom: 14px;">
+            <div style="padding: 9px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; font-weight: 800; color: #334155; display: inline-flex; align-items: center; gap: 4px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                Ordered Items
+              </span>
+              <div class="order-card-badge-row">
+                <span class="pill-boxes">${(ord.totalBoxes || 0).toLocaleString()} Boxes</span>
+                <span class="pill-pieces">${(ord.totalPieces || 0).toLocaleString()} Pieces</span>
+              </div>
+            </div>
+            ${itemsHtml ? `
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="background: #fafafa; border-bottom: 1px solid #f1f5f9; font-size: 10.5px; color: #64748b; text-transform: uppercase;">
+                      <th style="padding: 6px 10px; text-align: left;">Product</th>
+                      <th style="padding: 6px 6px; text-align: center;">Pack</th>
+                      <th style="padding: 6px 8px; text-align: right;">Boxes</th>
+                      <th style="padding: 6px 10px; text-align: right;">Pieces</th>
+                    </tr>
+                  </thead>
+                  <tbody>${itemsHtml}</tbody>
+                </table>
+              </div>
+            ` : `
+              <div style="padding: 10px 12px; font-size: 12px; color: #64748b;">${escapeHtml(ord.itemsSummary || 'Standard Packing')}</div>
+            `}
+          </div>
+
+          <!-- Action Buttons Bar -->
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-card-action btn-card-slip" style="flex: 1; height: 42px; justify-content: center; font-size: 13px; border-radius: 10px;" onclick="viewOrderSlip('${escapeHtml(ord.cleanId)}')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>View Order Slip</span>
+            </button>
+            <button type="button" class="btn-card-action btn-card-details" style="flex: 1; height: 42px; justify-content: center; font-size: 13px; border-radius: 10px;" onclick="openSoDetailsModal('${escapeHtml(ord.cleanId)}')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              <span>All Details</span>
+            </button>
+          </div>
+        </div>
+      `;
     }
 
     function setSearchFilter(filterType) {
@@ -3754,6 +4375,16 @@
         const el = document.getElementById(c.id);
         if (el) el.classList.toggle("active", c.key === filterType);
       });
+
+      // Clear search input if single order # was typed so full category displays
+      const input = document.getElementById("soSearchInput");
+      const clearBtn = document.getElementById("soSearchClearBtn");
+      if (input && input.value.trim().startsWith("#")) {
+        input.value = "";
+        if (clearBtn) clearBtn.style.display = "none";
+      }
+
+      renderFilteredAsmQuickTrackChips(true);
       performSoSearch();
     }
 
@@ -3768,6 +4399,7 @@
       if (input) input.value = "";
       const clearBtn = document.getElementById("soSearchClearBtn");
       if (clearBtn) clearBtn.style.display = "none";
+      renderFilteredAsmQuickTrackChips(true);
       performSoSearch();
     }
 
@@ -3960,7 +4592,12 @@
     }
 
     function trackAsmOrderFromList(orderId) {
-      openSoDetailsModal(orderId);
+      switchAsmSection('search');
+      trackAsmOrder(`#${orderId}`, false);
+      const resContainer = document.getElementById("asmTrackResultContainer");
+      if (resContainer) {
+        resContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     // 📄 SO DETAILS MODAL
@@ -4019,58 +4656,113 @@
       document.getElementById("modalSoPartyName").textContent = `${ord.partyName || "Customer"} ${ord.partyCode ? '[' + ord.partyCode + ']' : ''}`;
       document.getElementById("modalSoPartyAddress").textContent = ord.partyAddress || ord.deliveryAddress || "-";
       document.getElementById("modalSoSalesPerson").textContent = `👔 Sales Manager: ${ord.salesPerson || "-"}`;
+      
+      const unitBadge = document.getElementById("modalSoUnitBadge");
+      if (unitBadge) {
+        unitBadge.textContent = `🏭 Factory Plant: ${ord.unit || "Unit 1"}`;
+      }
+      const subBadge = document.getElementById("modalSoSubBadge");
+      if (subBadge) {
+        if (cleanSo) {
+          subBadge.textContent = `• SO #${cleanSo}`;
+          subBadge.style.display = "inline";
+        } else {
+          subBadge.style.display = "none";
+        }
+      }
 
-      // 🚚 Render Real-Time Lifecycle Stepper
+      // 🚚 Render Real-Time 3-Step Lifecycle Stepper (Exact same as Customer Portal Image 3)
       const stepperContainer = document.getElementById("modalSoStepperContainer");
       if (stepperContainer) {
-        const orderDateStr = ord.order_date || ord.orderDate || (ord.formattedTimestamp ? ord.formattedTimestamp.split(" ")[0] : "-");
-        const orderTimeStr = ord.formattedTimestamp ? (ord.formattedTimestamp.split(" ")[1] || "") : "";
-        const soDateStr = ord.confirmed_at || ord.confirmedAt || "";
-        const dispDateStr = ord.dispatch_at || ord.dispatchAt || "";
+        let stepperClass = "step-1-active";
+        let step1Status = "completed";
+        let step2Status = "upcoming";
+        let step3Status = "upcoming";
 
-        let stepperClass = "";
-        if (isDelivered) stepperClass = "step-3-active";
-        else if (isDispatched) stepperClass = "step-2-active";
-        else if (isConfirmed) stepperClass = "step-1-active";
+        if (isDelivered || isDispatched) {
+          stepperClass = "step-3-active";
+          step1Status = "completed";
+          step2Status = "completed";
+          step3Status = isDelivered ? "completed" : "current";
+        } else if (isConfirmed) {
+          stepperClass = "step-2-active";
+          step1Status = "completed";
+          step2Status = "completed";
+          step3Status = "current";
+        } else {
+          stepperClass = "step-1-active";
+          step1Status = "completed";
+          step2Status = "current";
+          step3Status = "upcoming";
+        }
+
+        const step1Time = ord.formattedTimestamp || ord.order_date || "-";
+        const step2Sub = cleanSo ? `SO #${escapeHtml(cleanSo)}` : (isConfirmed ? "Billing Allocation" : "SO In Review");
+        const step2Time = ord.confirmed_at || ord.confirmedAt || (isConfirmed ? "Confirmed in ERP" : "Awaiting SO");
+        
+        let step3Sub = "Ready for Mandi";
+        let step3Time = "";
+        if (isDelivered) {
+          step3Sub = "Delivered to Mandi";
+          step3Time = ord.dispatch_at || ord.dispatchAt || "Delivered";
+        } else if (isDispatched) {
+          step3Sub = "Vehicle In Transit";
+          step3Time = ord.dispatch_at || ord.dispatchAt || "Dispatched";
+        } else if (isConfirmed) {
+          step3Sub = "Ready for Mandi";
+          step3Time = "Factory Allocation";
+        } else {
+          step3Sub = "Awaiting SO";
+          step3Time = "";
+        }
 
         stepperContainer.innerHTML = `
           <div class="track-stepper-wrap" style="margin: 0 0 14px 0;">
             <div class="track-stepper ${stepperClass}">
-              <!-- Step 1: Booked -->
-              <div class="track-step completed">
-                <div class="track-step-circle">✓</div>
-                <div class="track-step-label">Booked</div>
-                <div class="track-step-time">
-                  <span class="step-time-date">${escapeHtml(orderDateStr)}</span>
-                  ${orderTimeStr ? `<span class="step-time-clock">${escapeHtml(orderTimeStr)}</span>` : ''}
+              <!-- Step 1: Order Booked -->
+              <div class="track-step ${step1Status}">
+                <div class="track-step-circle">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
+                <div class="track-step-label">Order Booked</div>
+                <div class="track-step-sub">Logged in ERP</div>
+                <div class="track-step-time">${escapeHtml(step1Time)}</div>
               </div>
+
               <!-- Step 2: SO Confirmed -->
-              <div class="track-step ${isConfirmed ? 'completed' : 'upcoming'}">
-                <div class="track-step-circle">${isConfirmed ? '✓' : '2'}</div>
-                <div class="track-step-label">SO Confirmed</div>
-                <div class="track-step-time">
-                  ${cleanSo ? `<span class="step-time-date" style="font-weight: 800;">SO #${escapeHtml(cleanSo)}</span>` : ''}
-                  ${soDateStr ? `<span class="step-time-clock">${escapeHtml(soDateStr)}</span>` : (isConfirmed ? `<span class="step-time-clock">Confirmed</span>` : '')}
+              <div class="track-step ${step2Status}">
+                <div class="track-step-circle">
+                  ${step2Status === 'completed' 
+                    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>` 
+                    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`}
                 </div>
+                <div class="track-step-label">${isConfirmed ? 'SO Confirmed' : 'SO In Review'}</div>
+                <div class="track-step-sub">${step2Sub}</div>
+                <div class="track-step-time">${escapeHtml(step2Time)}</div>
               </div>
-              <!-- Step 3: Dispatched -->
-              <div class="track-step ${isDispatched ? 'completed' : (isConfirmed ? 'current' : 'upcoming')}">
-                <div class="track-step-circle">${isDispatched ? '✓' : (isConfirmed ? '⏳' : '3')}</div>
-                <div class="track-step-label">Dispatched</div>
-                <div class="track-step-time">
-                  ${dispDateStr ? `<span class="step-time-date">${escapeHtml(dispDateStr)}</span>` : (isDispatched ? `<span class="step-time-date">In Transit</span>` : '')}
+
+              <!-- Step 3: Dispatch & Loading -->
+              <div class="track-step ${step3Status}">
+                <div class="track-step-circle">
+                  ${step3Status === 'completed'
+                    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+                    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`}
                 </div>
-              </div>
-              <!-- Step 4: Delivered -->
-              <div class="track-step ${isDelivered ? 'completed' : (isDispatched ? 'current' : 'upcoming')}">
-                <div class="track-step-circle">${isDelivered ? '✓' : '4'}</div>
-                <div class="track-step-label">Delivered</div>
-                <div class="track-step-time">
-                  ${isDelivered ? `<span class="step-time-date">Received</span>` : ''}
-                </div>
+                <div class="track-step-label">Dispatch & Loading</div>
+                <div class="track-step-sub">${step3Sub}</div>
+                ${step3Time ? `<div class="track-step-time">${escapeHtml(step3Time)}</div>` : ''}
               </div>
             </div>
+
+            ${ord.unit ? `
+              <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #64748b;">
+                <span>🏭 Factory Plant: <strong>${escapeHtml(ord.unit)}</strong></span>
+                <span style="color: #047857; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                  <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                  Live ERP Synchronized
+                </span>
+              </div>
+            ` : ''}
           </div>
         `;
       }
@@ -4092,7 +4784,10 @@
           }
           if (!mult || mult <= 0) mult = 1;
 
-          const pcs = parseInt(it.pieces || 0) || (bxs * mult);
+          let pcs = parseInt(it.pieces || 0);
+          if (!pcs || pcs === bxs) {
+            pcs = bxs * mult;
+          }
           totalComputedBoxes += bxs;
           totalComputedPieces += pcs;
 
@@ -4128,6 +4823,15 @@
       const btnSlip = document.getElementById("btnModalViewSlip");
       if (btnSlip) {
         btnSlip.onclick = () => viewOrderSlip(ord.cleanId);
+      }
+
+      const btnWA = document.getElementById("btnModalWhatsApp");
+      if (btnWA) {
+        btnWA.onclick = () => {
+          const text = buildWhatsAppMessage(ord);
+          const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+          window.open(waUrl, '_blank');
+        };
       }
 
       document.getElementById("soDetailsModal").style.display = "flex";
