@@ -813,10 +813,11 @@ async def api_dispatch_order(request: Request):
     data = await request.json()
     order_id = str(data.get("orderId") or data.get("order_id") or "").replace("#", "").strip()
     status = str(data.get("status") or "DELIVERED").upper().strip()
-    vehicle = str(data.get("vehicleNumber") or data.get("vehicle_number") or "DL-1AB-5501").strip()
+    invoice = str(data.get("invoiceNumber") or data.get("invoice_number") or data.get("vehicleNumber") or data.get("vehicle_number") or "").strip()
+    vehicle = str(data.get("vehicleNumber") or data.get("vehicle_number") or invoice or "DL-1AB-5501").strip()
     username = admin_session.get("username", "admin")
 
-    success = update_order_dispatch_in_db(order_id, status=status, vehicle_number=vehicle, updated_by=username)
+    success = update_order_dispatch_in_db(order_id, status=status, vehicle_number=vehicle, invoice_number=invoice, updated_by=username)
     if success:
         client_ip = request.client.host if request.client else "unknown"
         try:
@@ -826,12 +827,12 @@ async def api_dispatch_order(request: Request):
                 role=role,
                 action="ORDER_DISPATCH_UPDATE",
                 status="SUCCESS",
-                details=f"Order #{order_id} dispatch updated to {status} (Vehicle: {vehicle}) by {username} ({role})",
+                details=f"Order #{order_id} dispatch updated to {status} (Invoice: {invoice}, Vehicle: {vehicle}) by {username} ({role})",
                 ip_address=client_ip
             )
         except Exception:
             pass
-        return {"status": "success", "orderId": order_id, "dispatchStatus": status, "vehicleNumber": vehicle}
+        return {"status": "success", "orderId": order_id, "dispatchStatus": status, "vehicleNumber": vehicle, "invoiceNumber": invoice}
     raise HTTPException(status_code=500, detail="Failed to update dispatch status")
 
 @app.post("/api/admin/orders/change-unit")

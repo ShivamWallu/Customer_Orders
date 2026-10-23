@@ -58,6 +58,7 @@ class OrderModel(Base):
     dispatch_status: Mapped[Optional[str]] = mapped_column(String(64), default="PENDING")
     dispatch_at: Mapped[Optional[str]] = mapped_column(String(64))
     vehicle_number: Mapped[Optional[str]] = mapped_column(String(64))
+    invoice_number: Mapped[Optional[str]] = mapped_column(String(64))
     driver_name: Mapped[Optional[str]] = mapped_column(String(128))
     driver_phone: Mapped[Optional[str]] = mapped_column(String(64))
 
@@ -488,6 +489,8 @@ async def async_get_orders_paginated(
                 "dispatchAt": getattr(o, "dispatch_at", None),
                 "vehicle_number": getattr(o, "vehicle_number", None),
                 "vehicleNumber": getattr(o, "vehicle_number", None),
+                "invoice_number": getattr(o, "invoice_number", None) or getattr(o, "vehicle_number", None) or "",
+                "invoiceNumber": getattr(o, "invoice_number", None) or getattr(o, "vehicle_number", None) or "",
                 "driver_name": getattr(o, "driver_name", None),
                 "driverName": getattr(o, "driver_name", None),
                 "driver_phone": getattr(o, "driver_phone", None),

@@ -3449,11 +3449,19 @@
           <div style="font-size: 12px; color: var(--text-secondary);" id="confirmSoQtyDisplay">0 Boxes • 0 Pieces</div>
         </div>
 
-        <label style="font-size: 12.5px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 6px;">
-          Sales Order (SO) Number <span style="color: #dc2626;">*</span>
-        </label>
-        <input type="text" id="inputSoNumber" class="login-input" placeholder="e.g. SO-98432 or SO-2026-102" required style="font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 0.5px;">
-        <div id="soModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none; margin-top: -6px;"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="font-size: 12.5px; font-weight: 700; color: var(--text-main); margin-bottom: 0;">
+            Sales Order (SO) Number <span style="color: #dc2626;">*</span>
+          </label>
+          <button type="button" class="btn-tool" style="padding: 2px 8px; font-size: 11px; font-weight: 700; background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;" onclick="autoSuggestSoNumber()" title="Auto-generate standard ERP SO Number">
+            ⚡ Suggest ERP SO#
+          </button>
+        </div>
+        <input type="text" id="inputSoNumber" class="login-input" placeholder="e.g. KOGMU1/FY 2026-27/SOMOL/0930" required style="font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">
+        <div style="font-size: 11px; color: #64748b; margin-top: 4px; margin-bottom: 8px;">
+          Standard Format: <code>KOGM{Unit}/FY {Year}/SOMOL/{Seq}</code> (e.g. <strong>KOGMU1/FY 2026-27/SOMOL/0930</strong>)
+        </div>
+        <div id="soModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none; margin-top: -4px; margin-bottom: 8px;"></div>
       </div>
       <div class="generic-modal-footer">
         <button class="btn-tool" onclick="closeGenericModal('confirmSoModalOverlay')">Cancel</button>
@@ -3477,7 +3485,7 @@
       </div>
       <div class="generic-modal-body">
         <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
-          Update commercial dispatch, Mandi truck loading, and delivery status for this order. This controls the 3rd milestone on the Customer Order Portal timeline.
+          Update commercial dispatch, Mandi truck loading, and invoice details. This live-reflects on both Customer & Area Sales Manager portal timelines.
         </p>
 
         <div style="background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
@@ -3496,10 +3504,23 @@
           <option value="DISPATCHED">🚚 Dispatched / In Transit (Truck en route to Mandi)</option>
         </select>
 
-        <label style="font-size: 12.5px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 6px;">
-          Vehicle / Truck Number
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="font-size: 12.5px; font-weight: 700; color: var(--text-main); margin-bottom: 0;">
+            Commercial Invoice Number <span style="color: #dc2626;">*</span>
+          </label>
+          <button type="button" class="btn-tool" style="padding: 2px 8px; font-size: 11px; font-weight: 700; background: #fff7ed; color: #ea580c; border-color: #fed7aa;" onclick="autoSuggestInvoiceNumber()" title="Auto-suggest standard ERP Invoice Number">
+            ⚡ Suggest Invoice#
+          </button>
+        </div>
+        <input type="text" id="dispatchInvoiceInput" class="login-input" placeholder="e.g. KOGMU1272966" style="font-family: 'JetBrains Mono', monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+        <div style="font-size: 11px; color: #64748b; margin-top: 2px; margin-bottom: 12px;">
+          Standard Format: <strong>KOGMU1272966</strong> (live visible on Customer and ASM portals)
+        </div>
+
+        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">
+          Vehicle / Truck Number (Optional)
         </label>
-        <input type="text" id="dispatchVehicleInput" class="login-input" placeholder="e.g. DL-1AB-5501 or HR-55-9821" style="font-family: 'JetBrains Mono', monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">
+        <input type="text" id="dispatchVehicleInput" class="login-input" placeholder="e.g. DL-1AB-5501 (Optional)" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; margin-bottom: 8px;">
 
         <div id="dispatchModalError" style="color: #dc2626; font-size: 12px; font-weight: 600; display: none; margin-top: 4px;"></div>
       </div>
@@ -3507,7 +3528,7 @@
         <button class="btn-tool" onclick="closeGenericModal('dispatchOrderModalOverlay')">Cancel</button>
         <button class="btn-tool" style="background: #ea580c; color: #ffffff; border-color: #c2410c; font-weight: 700;" id="btnSubmitDispatch" onclick="submitOrderDispatch()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Save Dispatch Status</span>
+          <span>Save Dispatch &amp; Invoice</span>
         </button>
       </div>
     </div>
@@ -6423,6 +6444,37 @@
     }
 
     // 6. Sales Order Confirmation Modal & API
+    function generateSuggestedSoNumber(order) {
+      if (!order) return "KOGMU1/FY 2026-27/SOMOL/0930";
+      // Format requested: KOGMU1/FY 2026-27/SOMOL/0930
+      const unitStr = String(order.unit || "Unit 1").replace(/\s+/g, '');
+      const unitCode = unitStr.toLowerCase().startsWith('unit') ? 'U' + unitStr.slice(4) : (unitStr.toUpperCase() || 'U1');
+      
+      const now = new Date();
+      const curYear = now.getFullYear();
+      const curMonth = now.getMonth(); // 0-indexed (3 = April)
+      const startYear = curMonth >= 3 ? curYear : (curYear - 1);
+      const endYearShort = String(startYear + 1).slice(-2);
+      const fyStr = `FY ${startYear}-${endYearShort}`;
+      
+      const cleanId = String(order.cleanId || order.orderId || "").replace('#', '');
+      const digits = cleanId.replace(/\D/g, '');
+      const seq = (digits.length >= 4 ? digits.slice(-4) : cleanId.slice(-4)).padStart(4, '0');
+      
+      return `KOGM${unitCode}/${fyStr}/SOMOL/${seq}`;
+    }
+
+    function autoSuggestSoNumber() {
+      const order = allOrdersData.find(o => o.cleanId === currentConfirmOrderId);
+      const suggested = generateSuggestedSoNumber(order);
+      const input = document.getElementById("inputSoNumber");
+      if (input) {
+        input.value = suggested;
+        input.focus();
+        input.select();
+      }
+    }
+
     function openConfirmSoModal(orderId) {
       currentConfirmOrderId = orderId;
       const order = allOrdersData.find(o => o.cleanId === orderId);
@@ -6434,11 +6486,15 @@
       document.getElementById("confirmSoQtyDisplay").textContent = `${order.totalBoxes} Boxes • ${order.totalPieces} Pieces`;
       
       const input = document.getElementById("inputSoNumber");
-      input.value = "";
+      const existingSo = String(order.soNumber || "").trim();
+      input.value = (existingSo && existingSo !== "-") ? existingSo : generateSuggestedSoNumber(order);
       document.getElementById("soModalError").style.display = "none";
 
       document.getElementById("confirmSoModalOverlay").style.display = "flex";
-      setTimeout(() => input.focus(), 50);
+      setTimeout(() => {
+        input.focus();
+        input.select();
+      }, 50);
     }
 
     async function submitOrderConfirmation() {
@@ -6480,6 +6536,7 @@
             ord.soNumber = soNumber;
           }
           closeGenericModal("confirmSoModalOverlay");
+          showToast(`Order #${currentConfirmOrderId} Confirmed with SO #${soNumber}!`, "success");
           // Re-apply filters so order moves immediately to Confirmed tab and exits Warehouse pending load
           applyAllFilters();
         } else {
@@ -6498,6 +6555,27 @@
     // 🚚 Dispatch & Mandi Loading Modal Handler (Admin & Super Admin)
     let currentDispatchOrderId = null;
 
+    function generateSuggestedInvoiceNumber(order) {
+      if (!order) return "KOGMU1272966";
+      const unitStr = String(order.unit || "Unit 1").replace(/\s+/g, '');
+      const unitCode = unitStr.toLowerCase().startsWith('unit') ? 'U' + unitStr.slice(4) : (unitStr.toUpperCase() || 'U1');
+      const cleanId = String(order.cleanId || order.orderId || "").replace('#', '');
+      const digits = cleanId.replace(/\D/g, '');
+      const seq = (digits.length >= 6 ? digits.slice(-6) : (digits + '272966').slice(0, 6));
+      return `KOGM${unitCode}${seq || '272966'}`;
+    }
+
+    function autoSuggestInvoiceNumber() {
+      const order = allOrdersData.find(o => o.cleanId === currentDispatchOrderId);
+      const suggested = generateSuggestedInvoiceNumber(order);
+      const input = document.getElementById("dispatchInvoiceInput");
+      if (input) {
+        input.value = suggested;
+        input.focus();
+        input.select();
+      }
+    }
+
     function openDispatchOrderModal(orderId) {
       currentDispatchOrderId = orderId;
       const order = allOrdersData.find(o => o.cleanId === orderId);
@@ -6510,22 +6588,39 @@
 
       const currentDisp = (order.dispatchStatus || order.orderStatus || "DELIVERED").toUpperCase();
       document.getElementById("dispatchStatusSelect").value = (currentDisp === "DISPATCHED" || currentDisp === "IN_TRANSIT") ? "DISPATCHED" : "DELIVERED";
-      document.getElementById("dispatchVehicleInput").value = order.vehicleNumber || "DL-1AB-5501";
+      
+      const invInput = document.getElementById("dispatchInvoiceInput");
+      const existingInv = String(order.invoiceNumber || order.invoice_number || "").trim();
+      invInput.value = existingInv || generateSuggestedInvoiceNumber(order);
+
+      const vehInput = document.getElementById("dispatchVehicleInput");
+      vehInput.value = order.vehicleNumber || "";
+
       document.getElementById("dispatchModalError").style.display = "none";
 
       document.getElementById("dispatchOrderModalOverlay").style.display = "flex";
-      setTimeout(() => document.getElementById("dispatchVehicleInput").focus(), 50);
+      setTimeout(() => {
+        invInput.focus();
+        invInput.select();
+      }, 50);
     }
 
     async function submitOrderDispatch() {
       const status = document.getElementById("dispatchStatusSelect").value;
-      const vehicle = document.getElementById("dispatchVehicleInput").value.trim() || "DL-1AB-5501";
+      const invoice = document.getElementById("dispatchInvoiceInput").value.trim();
+      const vehicle = document.getElementById("dispatchVehicleInput").value.trim() || invoice;
       const errEl = document.getElementById("dispatchModalError");
       const btn = document.getElementById("btnSubmitDispatch");
 
+      if (!invoice) {
+        errEl.textContent = "Please enter a valid Commercial Invoice Number (e.g. KOGMU1272966).";
+        errEl.style.display = "block";
+        return;
+      }
+
       errEl.style.display = "none";
       btn.disabled = true;
-      btn.textContent = "Updating Dispatch...";
+      btn.textContent = "Updating Dispatch & Invoice...";
 
       const token = localStorage.getItem(ADMIN_TOKEN_KEY);
 
@@ -6539,6 +6634,7 @@
           body: JSON.stringify({
             orderId: currentDispatchOrderId,
             status: status,
+            invoiceNumber: invoice,
             vehicleNumber: vehicle
           })
         });
@@ -6549,10 +6645,12 @@
           if (ord) {
             ord.orderStatus = status;
             ord.dispatchStatus = status;
+            ord.invoiceNumber = invoice;
+            ord.invoice_number = invoice;
             ord.vehicleNumber = vehicle;
           }
           closeGenericModal("dispatchOrderModalOverlay");
-          showToast(`Order #${currentDispatchOrderId} status updated to ${status}!`, "success");
+          showToast(`Order #${currentDispatchOrderId} marked as ${status} (Invoice: ${invoice})!`, "success");
           applyAllFilters();
         } else {
           errEl.textContent = data.detail || data.message || "Failed to update dispatch status.";
@@ -6563,7 +6661,7 @@
         errEl.style.display = "block";
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg><span>Save Dispatch Status</span>`;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg><span>Save Dispatch &amp; Invoice</span>`;
       }
     }
 

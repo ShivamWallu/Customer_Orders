@@ -2083,6 +2083,107 @@
     .btn-track-submit:active {
       transform: scale(0.97);
     }
+
+    /* Filter Chips Bar (100% Mobile Optimized 3-Button Equal Grid, Zero Cut-off) */
+    .search-filter-chips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .chip-filter-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 8px;
+      border-radius: 10px;
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      text-align: center;
+      box-sizing: border-box;
+      width: 100%;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .chip-filter-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    .chip-filter-btn.chip-all {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+
+    .chip-filter-btn.chip-confirmed {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #047857;
+    }
+
+    .chip-filter-btn.chip-dispatched {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+    }
+
+    .chip-filter-btn.active,
+    .chip-filter-btn.active.chip-all {
+      background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.32) !important;
+    }
+
+    .chip-filter-btn.active.chip-confirmed {
+      background: linear-gradient(135deg, #059669, #047857) !important;
+      color: #ffffff !important;
+      border-color: #059669 !important;
+      box-shadow: 0 3px 10px rgba(5, 150, 105, 0.32) !important;
+    }
+
+    .chip-filter-btn.active.chip-dispatched {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+      color: #ffffff !important;
+      border-color: #2563eb !important;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.32) !important;
+    }
+
+    .so-search-clear-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #64748b;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      transition: all 0.15s ease;
+      z-index: 2;
+    }
+
+    .so-search-clear-btn:hover {
+      background: #cbd5e1;
+      color: #0f172a;
+    }
+
     /* ⚡ Recent 5 Orders Section (Clean, Professional & Mobile Perfect) */
     .recent-orders-card-wrap {
       margin-top: 14px;
@@ -2919,55 +3020,60 @@
       <div id="custOrdersPaginationContainer" class="cust-pagination-bar" style="display: none;"></div>
     </div>
 
-    <!-- 🔍 SECTION 3: TRACK ORDER -->
+    <!-- 🔍 SECTION 3: SALES ORDER SEARCH & TRACKING -->
     <div id="sectionCustomerTrack" class="customer-orders-wrap" style="display: none;">
-      <div class="track-search-box">
-        <div class="track-search-header">
-          <div class="track-search-header-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="1" y="3" width="15" height="13"></rect>
-              <polygon points="16 8 20 8 23 11 23 16 16 16 16 16 8"></polygon>
-              <circle cx="5.5" cy="18.5" r="2.5"></circle>
-              <circle cx="18.5" cy="18.5" r="2.5"></circle>
-            </svg>
-          </div>
-          <div>
-            <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.2;">Live Order Dispatch Tracking</h3>
-            <p style="font-size: 11.5px; color: #64748b; margin: 2px 0 0; line-height: 1.35;">Instant visibility into factory dispatch, SO confirmation & delivery status for your account.</p>
-          </div>
-        </div>
-
-        <div class="track-input-group">
-          <div class="track-input-wrap">
-            <span class="track-icon-inside">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </span>
-            <input type="text" id="trackOrderInput" class="track-input-field" placeholder="Enter Order ID (e.g. #KOGM-20261019-5501) or SO Number..." oninput="debouncedTrackCustomerOrder()" onkeydown="if(event.key==='Enter') trackCustomerOrder()">
-          </div>
-          <button type="button" class="btn-track-submit" onclick="trackCustomerOrder()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <span>Track</span>
-          </button>
-        </div>
-
-        <!-- ⚡ RECENT ORDERS (ALWAYS PREVIOUS 5 ORDERS IN CLEAN WRAP) -->
-        <div id="quickTrackChipsContainer" class="recent-orders-card-wrap" style="display: none;">
-          <div class="recent-orders-header">
-            <span class="recent-orders-title">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              <span id="recentOrdersSectionTitle">Recent Orders (Last 5)</span>
-            </span>
-          </div>
-          <div id="quickTrackChipsList" class="recent-orders-pills-wrap"></div>
+      <!-- Clean Title Bar (Matches ASM portal) -->
+      <div style="margin-bottom: 12px; padding: 0 2px;">
+        <div style="font-size: 14.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Search My Sales Orders</span>
         </div>
       </div>
 
-      <div id="customerTrackResultContainer"></div>
+      <!-- Modern Search Input with Clear Button -->
+      <div class="so-search-box" style="margin-bottom: 10px; display: flex; gap: 8px;">
+        <div class="track-input-wrap" style="position: relative; flex: 1;">
+          <span class="track-icon-inside">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input type="text" id="trackOrderInput" class="track-input-field" placeholder="Search SO#, Order ID, or Item..." oninput="onCustTrackSearchInputChanged()" onkeydown="if(event.key==='Enter') performCustTrackSearch()">
+          <button type="button" id="trackSearchClearBtn" class="so-search-clear-btn" style="display: none;" onclick="clearCustTrackSearchInput()" title="Clear">✕</button>
+        </div>
+        <button type="button" class="btn-track-submit" onclick="performCustTrackSearch()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Search</span>
+        </button>
+      </div>
+
+      <!-- Quick Filter Pills (3-Grid Equal Fit, Zero Overflow) -->
+      <div class="search-filter-chips">
+        <button type="button" id="chipCustFilterAll" class="chip-filter-btn chip-all active" onclick="setCustTrackSearchFilter('all')">
+          <span>📋 All</span>
+        </button>
+        <button type="button" id="chipCustFilterConfirmed" class="chip-filter-btn chip-confirmed" onclick="setCustTrackSearchFilter('confirmed')">
+          <span>✔ Confirmed</span>
+        </button>
+        <button type="button" id="chipCustFilterDispatched" class="chip-filter-btn chip-dispatched" onclick="setCustTrackSearchFilter('dispatched')">
+          <span>🚚 Dispatched</span>
+        </button>
+      </div>
+
+      <!-- ⚡ RECENT ORDERS (ALWAYS PREVIOUS 5 ORDERS IN CLEAN WRAP) -->
+      <div id="quickTrackChipsContainer" class="recent-orders-card-wrap" style="display: none;">
+        <div class="recent-orders-header">
+          <span class="recent-orders-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span id="recentOrdersSectionTitle">Recent Orders (Last 5)</span>
+          </span>
+        </div>
+        <div id="quickTrackChipsList" class="recent-orders-pills-wrap"></div>
+      </div>
+
+      <!-- Live Tracking Stepper Card (When an order is tracked) -->
+      <div id="customerTrackResultContainer" style="margin-top: 10px;"></div>
+
+      <!-- Matching Orders List (Identical to ASM Sales Order Search results) -->
+      <div id="customerTrackOrdersListContainer" style="margin-top: 12px;"></div>
     </div>
   </div>
 
@@ -3053,6 +3159,7 @@
           <span style="color: #2563eb;" id="custModalSalesPerson">👔 Area Sales Manager: —</span>
           <span style="color: #047857;" id="custModalUnitBadge">🏭 Unit: —</span>
           <span style="color: #d97706;" id="custModalSoBadge"></span>
+          <span style="color: #c2410c; display: none;" id="custModalInvoiceBadge"></span>
         </div>
       </div>
 
@@ -4238,6 +4345,7 @@
         if (sectionTrack) sectionTrack.style.display = "block";
         if (stickyBar) stickyBar.style.display = "none";
         populateQuickTrackChips();
+        performCustTrackSearch();
       }
     }
 
@@ -4700,8 +4808,13 @@
     function trackCustomerOrderFromList(cleanId) {
       switchCustomerSection('track');
       const input = document.getElementById("trackOrderInput");
-      if (input) input.value = `#${cleanId}`;
+      if (input) {
+        input.value = `#${cleanId}`;
+        const btn = document.getElementById("trackSearchClearBtn");
+        if (btn) btn.style.display = "flex";
+      }
       trackCustomerOrder(`#${cleanId}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderCustomerOrdersList(orders, meta) {
@@ -4785,6 +4898,7 @@
               <div class="order-card-badge-row">
                 <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
                 <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
+                ${(o.invoiceNumber || o.invoice_number) ? `<span class="pill-boxes" style="background: #fff7ed; color: #c2410c; border-color: #ffedd5;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> Inv #${escapeHtml(o.invoiceNumber || o.invoice_number)}</span>` : ''}
               </div>
               <div class="cust-card-actions-grid">
                 <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackCustomerOrderFromList('${escapeHtml(o.cleanId)}')" title="Live Dispatch Tracking">
@@ -4887,6 +5001,17 @@
         soBadge.style.display = "inline";
       } else {
         soBadge.style.display = "none";
+      }
+
+      const invNum = ord.invoiceNumber || ord.invoice_number;
+      const invBadge = document.getElementById("custModalInvoiceBadge");
+      if (invBadge) {
+        if (invNum) {
+          invBadge.textContent = `🧾 Inv #${invNum}`;
+          invBadge.style.display = "inline";
+        } else {
+          invBadge.style.display = "none";
+        }
       }
 
       const tbody = document.getElementById("custModalItemsTableBody");
@@ -5241,6 +5366,245 @@
         </div>
       `;
       banner.style.display = "block";
+    }
+
+
+    // 🔍 STATEFUL CUSTOMER SALES ORDER SEARCH & TRACKING (Identical to ASM Portal)
+    let currentCustSearchFilter = "all"; // "all", "confirmed", "dispatched"
+
+    function onCustTrackSearchInputChanged() {
+      const input = document.getElementById("trackOrderInput");
+      const btn = document.getElementById("trackSearchClearBtn");
+      if (input && btn) {
+        btn.style.display = input.value.trim() ? "flex" : "none";
+      }
+      debouncedCustTrackSearch();
+    }
+
+    function clearCustTrackSearchInput() {
+      const input = document.getElementById("trackOrderInput");
+      const btn = document.getElementById("trackSearchClearBtn");
+      if (input) {
+        input.value = "";
+        input.focus();
+      }
+      if (btn) btn.style.display = "none";
+      performCustTrackSearch();
+    }
+
+    const debouncedCustTrackSearch = debounce(() => {
+      performCustTrackSearch();
+    }, 300);
+
+    function setCustTrackSearchFilter(filter) {
+      currentCustSearchFilter = filter;
+      document.querySelectorAll(".search-filter-chips .chip-filter-btn").forEach(btn => btn.classList.remove("active"));
+      if (filter === "all") {
+        document.getElementById("chipCustFilterAll")?.classList.add("active");
+      } else if (filter === "confirmed") {
+        document.getElementById("chipCustFilterConfirmed")?.classList.add("active");
+      } else if (filter === "dispatched") {
+        document.getElementById("chipCustFilterDispatched")?.classList.add("active");
+      }
+      performCustTrackSearch();
+    }
+
+    async function performCustTrackSearch() {
+      const input = document.getElementById("trackOrderInput");
+      const q = (input ? input.value : "").trim();
+      const container = document.getElementById("customerTrackOrdersListContainer");
+      if (!container) return;
+
+      let cPhone = "", cCode = "", cName = "", cToken = "";
+      try {
+        const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
+        cPhone = sess.phone || "";
+        cCode = sess.party_code || "";
+        cName = sess.party_name || sess.customer_name || "";
+        cToken = sess.token || "";
+      } catch (e) {}
+
+      // If user typed exact Order ID or SO number, auto-load the live stepper card above results
+      if (q.length >= 4 && (q.startsWith("#") || q.toUpperCase().startsWith("KOGM") || q.toUpperCase().startsWith("SO-"))) {
+        trackCustomerOrder(q);
+      }
+
+      // Filter locally from cachedCustomerOrders or fetch
+      let orders = (cachedCustomerOrders && cachedCustomerOrders.length > 0) ? cachedCustomerOrders : [];
+      if (orders.length === 0 && cToken) {
+        try {
+          const res = await fetch(`/api/customer/my-orders?token=${encodeURIComponent(cToken)}&filter=ALL&page=1&limit=100`);
+          const d = await res.json();
+          if (res.ok && d.orders) {
+            cachedCustomerOrders = d.orders;
+            orders = d.orders;
+          }
+        } catch(e) {}
+      }
+
+      // Filter by currentCustSearchFilter
+      let filtered = orders;
+      if (currentCustSearchFilter === "confirmed") {
+        filtered = filtered.filter(o => {
+          const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
+          return o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || cleanSo.length > 0;
+        });
+      } else if (currentCustSearchFilter === "dispatched") {
+        filtered = filtered.filter(o => {
+          return (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED" ||
+                  o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
+        });
+      }
+
+      // Filter by text query if present
+      if (q) {
+        const needle = q.toLowerCase().replace("#", "");
+        filtered = filtered.filter(o => {
+          const id = String(o.cleanId || o.orderId || "").toLowerCase();
+          const so = String(o.soNumber || o.so_number || "").toLowerCase();
+          const items = String(o.itemsSummary || "").toLowerCase();
+          const party = String(o.partyName || "").toLowerCase();
+          return id.includes(needle) || so.includes(needle) || items.includes(needle) || party.includes(needle);
+        });
+      }
+
+      renderCustTrackOrdersList(filtered);
+    }
+
+    function renderCustTrackOrdersList(orders) {
+      const container = document.getElementById("customerTrackOrdersListContainer");
+      if (!container) return;
+
+      if (!orders || orders.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px 16px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 14px; margin-top: 10px;">
+            <div style="font-size: 36px; margin-bottom: 8px;">🔍</div>
+            <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">No Sales Orders Found</div>
+            <div style="font-size: 12.5px; color: #64748b; max-width: 320px; margin: 0 auto; line-height: 1.45;">
+              Aapke account me is search ya filter se koi order nahi mila.
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <div style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 12px; padding: 0 2px;">
+          Found <strong style="color: #047857;">${orders.length}</strong> sales order(s):
+        </div>
+      `;
+
+      orders.forEach(o => {
+        const isDelivered = (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED");
+        const isDispatched = (o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
+        const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
+        const isConfirmed = (o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || Boolean(cleanSo));
+
+        let statusBadge = "";
+        if (isDelivered) {
+          statusBadge = `
+            <span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 800;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              DELIVERED
+            </span>
+          `;
+        } else if (isDispatched) {
+          statusBadge = `
+            <span class="pill-status-confirmed" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 800;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              DISPATCHED
+            </span>
+          `;
+        } else if (cleanSo) {
+          statusBadge = `
+            <span class="pill-status-confirmed" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 800;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              SO #${escapeHtml(cleanSo)}
+            </span>
+          `;
+        } else if (isConfirmed) {
+          statusBadge = `
+            <span class="pill-status-confirmed">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              SO CONFIRMED
+            </span>
+          `;
+        } else {
+          statusBadge = `
+            <span class="pill-status-pending">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              PENDING SO
+            </span>
+          `;
+        }
+
+        const inv = o.invoiceNumber || o.invoice_number || "";
+        const invPill = inv ? `<span class="pill-boxes" style="background: #fff7ed; color: #c2410c; border-color: #ffedd5;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> Inv #${escapeHtml(inv)}</span>` : "";
+
+        html += `
+          <div class="cust-order-card" onclick="openCustomerOrderDetailsModal('${escapeHtml(o.cleanId)}')">
+            <div class="cust-order-card-header">
+              <div class="cust-order-card-header-left">
+                <div class="cust-order-card-id-badge">#${escapeHtml(o.cleanId)}</div>
+                <div class="cust-order-card-date">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>${escapeHtml(o.formattedTimestamp || o.order_date || "-")}</span>
+                </div>
+              </div>
+              <div class="cust-order-card-header-right">
+                ${statusBadge}
+              </div>
+            </div>
+
+            <div class="cust-order-card-items-box">
+              <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: #047857;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                Items:
+              </span>
+              <span>${escapeHtml(o.itemsSummary || "Packaging items")}</span>
+            </div>
+
+            <div class="cust-order-card-footer" onclick="event.stopPropagation()">
+              <div class="order-card-badge-row">
+                <span class="pill-boxes">${(o.totalBoxes || 0).toLocaleString()} Boxes</span>
+                <span class="pill-pieces">${(o.totalPieces || 0).toLocaleString()} Pieces</span>
+                ${invPill}
+              </div>
+              <div class="cust-card-actions-grid">
+                <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackCustomerOrderFromList('${escapeHtml(o.cleanId)}')" title="Live Dispatch Tracking">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  <span>Track</span>
+                </button>
+                <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openCustomerOrderDetailsModal('${escapeHtml(o.cleanId)}')" title="View all order details">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  <span>Details</span>
+                </button>
+                <button type="button" class="btn-card-action btn-card-slip" onclick="event.stopPropagation(); openCustomerOrderSlipModal('${escapeHtml(o.cleanId)}')" title="View digital order slip">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <span>Slip</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
     }
 
     // ⚡ Debounced Live Tracking Search (Triggers as user types without lagging)

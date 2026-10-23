@@ -217,6 +217,10 @@ def init_db():
             conn.execute("ALTER TABLE orders ADD COLUMN driver_phone TEXT DEFAULT '';")
         except Exception:
             pass
+        try:
+            conn.execute("ALTER TABLE orders ADD COLUMN invoice_number TEXT DEFAULT '';")
+        except Exception:
+            pass
 
         # 🛡️ Self-Healing Integrity: Any order that already has an SO assigned MUST be marked as CONFIRMED
         try:
@@ -1108,7 +1112,10 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
         except Exception:
             pass
     d["dispatchAt"] = raw_disp
-    d["vehicleNumber"] = d.get("vehicle_number") or ""
+    inv_num = str(d.get("invoice_number") or d.get("invoiceNumber") or d.get("vehicle_number") or "").strip()
+    d["invoiceNumber"] = inv_num
+    d["invoice_number"] = inv_num
+    d["vehicleNumber"] = d.get("vehicle_number") or inv_num
     d["driverName"] = d.get("driver_name") or ""
     d["driverPhone"] = d.get("driver_phone") or ""
 
@@ -1152,26 +1159,26 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
             "detail": "Under review by Commercial & Billing team"
         }
 
-    # Stage 3: Dispatch & Loading
+    # Stage 3: Dispatch & Loading (With Invoice Display)
     if is_delivered:
         stage3 = {
             "step": 3,
             "id": "delivered",
             "name": "Delivered",
-            "subtitle": "Mandi Delivery Complete",
+            "subtitle": f"Invoice: {inv_num}" if inv_num else "Delivery Complete",
             "status": "completed",
             "timestamp": d["dispatchAt"] or "Delivered",
-            "detail": f"Delivered via {d['vehicleNumber']}" if d['vehicleNumber'] else "Delivered to destination mandi"
+            "detail": f"Invoice #{inv_num} • Mandi Delivered" if inv_num else "Delivered to destination mandi"
         }
     elif is_dispatched:
         stage3 = {
             "step": 3,
             "id": "dispatched",
             "name": "Dispatch & Loading",
-            "subtitle": "In Transit to Mandi",
+            "subtitle": f"Invoice: {inv_num}" if inv_num else "In Transit to Mandi",
             "status": "current",
             "timestamp": d["dispatchAt"] or "Dispatched",
-            "detail": f"Vehicle: {d['vehicleNumber']}" if d['vehicleNumber'] else f"Truck departed from {d['unit']}"
+            "detail": f"Invoice #{inv_num} • Dispatched" if inv_num else f"Truck departed from {d['unit']}"
         }
     elif is_confirmed:
         stage3 = {
@@ -1610,18 +1617,48 @@ def confirm_order_in_db(order_id: str, so_number: str, confirmed_by: str = "admi
     finally:
         conn.close()
 
-def update_order_dispatch_in_db(order_id: str, status: str = "DELIVERED", vehicle_number: str = "DL-1AB-5501", updated_by: str = "admin") -> bool:
-    """Updates order dispatch status to DISPATCHED or DELIVERED with vehicle details"""
+def update_order_dispatch_in_db(order_id: str, status: str = "DELIVERED", vehicle_number: str = "", invoice_number: str = "", updated_by: str = "admin") -> bool:
+    """Updates order dispatch status to DISPATCHED or DELIVERED with invoice and vehicle details in SQLite & JSON"""
     clean_id = (order_id or "").replace("#", "").strip()
     now_str = datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")
+    inv = (invoice_number or vehicle_number or "").strip()
+    veh = (vehicle_number or invoice_number or "").strip()
     conn = get_connection()
     try:
         with conn:
             conn.execute("""
             UPDATE orders 
-            SET order_status = ?, dispatch_status = ?, dispatch_at = ?, vehicle_number = ?
+            SET order_status = ?, dispatch_status = ?, dispatch_at = ?, vehicle_number = ?, invoice_number = ?
             WHERE order_id = ? OR order_id = ?
-            """, (status, status, now_str, vehicle_number.strip(), clean_id, f"#{clean_id}"))
+            """, (status, status, now_str, veh, inv, clean_id, f"#{clean_id}"))
+
+        # Synchronize into customer_orders.json
+        try:
+            if os.path.exists("customer_orders.json"):
+                with open("customer_orders.json", "r", encoding="utf-8") as f:
+                    orders_list = json.load(f)
+                updated = False
+                for ord in (orders_list if isinstance(orders_list, list) else []):
+                    oid = str(ord.get("order_id") or ord.get("orderId") or "").replace("#", "").strip()
+                    if oid == clean_id:
+                        ord["order_status"] = status
+                        ord["orderStatus"] = status
+                        ord["dispatch_status"] = status
+                        ord["dispatchStatus"] = status
+                        ord["dispatch_at"] = now_str
+                        ord["dispatchAt"] = now_str
+                        ord["vehicle_number"] = veh
+                        ord["vehicleNumber"] = veh
+                        ord["invoice_number"] = inv
+                        ord["invoiceNumber"] = inv
+                        updated = True
+                        break
+                if updated:
+                    with open("customer_orders.json", "w", encoding="utf-8") as f:
+                        json.dump(orders_list, f, indent=2, ensure_ascii=False)
+        except Exception as json_e:
+            print(f"[JSON DISPATCH UPDATE ERROR] {json_e}")
+
         return True
     except Exception as e:
         print(f"[DATABASE DISPATCH ERROR] {e}")
