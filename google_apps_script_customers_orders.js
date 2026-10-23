@@ -609,10 +609,16 @@ function applyTodayYellowHighlightRule(targetSheet) {
   const rules = sheet.getConditionalFormatRules() || [];
   // Filter out any existing TODAY highlight rules to prevent duplicates
   const filteredRules = rules.filter(function(r) {
-    const cond = r.getBooleanCondition();
-    if (!cond) return true;
-    const args = cond.getArguments() || [];
-    return !args.some(function(arg) { return arg && String(arg).indexOf("TODAY") !== -1; });
+    try {
+      const cond = r.getBooleanCondition();
+      if (!cond) return true;
+      const vals = (typeof cond.getCriteriaValues === "function")
+        ? (cond.getCriteriaValues() || [])
+        : ((typeof cond.getArguments === "function") ? (cond.getArguments() || []) : []);
+      return !vals.some(function(v) { return v && String(v).indexOf("TODAY") !== -1; });
+    } catch (e) {
+      return true;
+    }
   });
 
   const range = sheet.getRange("A2:K10000");

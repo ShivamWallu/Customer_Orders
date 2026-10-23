@@ -227,9 +227,24 @@ async def sync_remote_production_orders() -> int:
 
                 count = 0
                 for o in new_orders:
-                    # Convert AWS UTC timestamp to IST
-                    raw_ts = o.get("formattedTimestamp") or o.get("formatted_timestamp") or o.get("created_at") or ""
-                    if raw_ts:
+                    # Convert AWS UTC timestamp to IST strictly
+                    created_at_val = o.get("created_at") or o.get("timestamp") or ""
+                    raw_ts = o.get("formattedTimestamp") or o.get("formatted_timestamp") or created_at_val
+                    if created_at_val and ("T" in created_at_val or "Z" in created_at_val):
+                        try:
+                            clean = created_at_val.split(".")[0].replace("Z", "")
+                            dt = datetime.fromisoformat(clean)
+                            ist_dt = dt + timedelta(hours=5, minutes=30)
+                            ist_ts = ist_dt.strftime("%d/%m/%Y %I:%M:%S %p")
+                            o["formattedTimestamp"] = ist_ts
+                            o["formatted_timestamp"] = ist_ts
+                            o["order_date"] = ist_dt.strftime("%Y-%m-%d")
+                            o["orderDate"] = ist_dt.strftime("%Y-%m-%d")
+                        except Exception:
+                            ist_ts = convert_utc_to_ist_str(raw_ts)
+                            o["formattedTimestamp"] = ist_ts
+                            o["formatted_timestamp"] = ist_ts
+                    elif raw_ts:
                         ist_ts = convert_utc_to_ist_str(raw_ts)
                         o["formattedTimestamp"] = ist_ts
                         o["formatted_timestamp"] = ist_ts

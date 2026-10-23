@@ -2980,20 +2980,6 @@
         </div>
       </div>
 
-      <!-- 🏷️ Status Segmented Tabs for Customer Order History -->
-      <div class="track-status-segmented-bar" style="display: grid; margin-top: 10px; margin-bottom: 10px;">
-        <button type="button" class="track-status-tab-btn cust-status-seg-btn active" id="btnCustStatusAll" onclick="setCustomerStatusFilter('ALL')">
-          <span>All Orders</span>
-        </button>
-        <button type="button" class="track-status-tab-btn cust-status-seg-btn" id="btnCustStatusConfirmed" onclick="setCustomerStatusFilter('CONFIRMED')">
-          <span class="tab-txt-full">SO Confirmed</span>
-          <span class="tab-txt-compact">Confirmed</span>
-        </button>
-        <button type="button" class="track-status-tab-btn cust-status-seg-btn" id="btnCustStatusDispatched" onclick="setCustomerStatusFilter('DISPATCHED')">
-          <span class="tab-txt-full">Dispatch & Delivery</span>
-          <span class="tab-txt-compact">Dispatch</span>
-        </button>
-      </div>
 
       <!-- Scalable Customer Order Search & Filter Input -->
       <div class="cust-orders-search-wrap">
@@ -5166,8 +5152,6 @@
       document.getElementById("customerOrderSlipModal").style.display = "none";
     }
 
-    let activeTrackStatusTab = "ALL"; // 'ALL', 'CONFIRMED', 'DISPATCHED', 'PENDING'
-
     function getCustomerOrderCategory(o) {
       if (!o) return "PENDING";
       const isDelivered = (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED");
@@ -5177,11 +5161,6 @@
       const isConfirmed = (o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || cleanSo.length > 0);
       if (isConfirmed) return "CONFIRMED";
       return "PENDING";
-    }
-
-    function setTrackStatusTab(tab) {
-      activeTrackStatusTab = tab;
-      renderFilteredQuickTrackChips(true);
     }
 
     function renderFilteredQuickTrackChips(autoTrackFirst = false) {
@@ -5195,11 +5174,30 @@
         return;
       }
 
-      // Always show previous 5 orders cleanly
-      const topOrders = all.slice(0, 5);
+      // 🎯 Filter pool strictly according to currentCustSearchFilter
+      let pool = all;
+      if (currentCustSearchFilter === "confirmed") {
+        pool = all.filter(o => getCustomerOrderCategory(o) === "CONFIRMED");
+      } else if (currentCustSearchFilter === "dispatched") {
+        pool = all.filter(o => getCustomerOrderCategory(o) === "DISPATCHED");
+      }
+
+      const topOrders = pool.slice(0, 5);
       if (topOrders.length === 0) {
         container.style.display = "none";
-        return;
+      } else {
+        container.style.display = "block";
+      }
+
+      const titleEl = document.getElementById("recentOrdersSectionTitle");
+      if (titleEl) {
+        if (currentCustSearchFilter === "confirmed") {
+          titleEl.textContent = `Confirmed Orders (${topOrders.length})`;
+        } else if (currentCustSearchFilter === "dispatched") {
+          titleEl.textContent = `Dispatched & Delivered (${topOrders.length})`;
+        } else {
+          titleEl.textContent = `Recent Orders (Last 5)`;
+        }
       }
 
       const currentInputVal = (document.getElementById("trackOrderInput")?.value || "").replace('#', '').trim();
@@ -5234,14 +5232,12 @@
       }).join("");
 
       list.innerHTML = chipsHtml;
-      container.style.display = "block";
 
       if (autoTrackFirst && topOrders.length > 0) {
-        const input = document.getElementById("trackOrderInput");
-        if (input && !input.value.trim()) {
-          input.value = `#${topOrders[0].cleanId}`;
-          trackCustomerOrder(`#${topOrders[0].cleanId}`);
-        }
+        trackCustomerOrder(`#${topOrders[0].cleanId}`);
+      } else if (autoTrackFirst && topOrders.length === 0) {
+        const resContainer = document.getElementById("customerTrackResultContainer");
+        if (resContainer) resContainer.innerHTML = "";
       }
     }
 
@@ -5273,17 +5269,15 @@
         // ⚡ ONLY auto-track if this is NOT a background sync AND no order is currently tracked
         if (!isBackgroundSync) {
           const resContainer = document.getElementById("customerTrackResultContainer");
-          const input = document.getElementById("trackOrderInput");
           const hasTrackCard = resContainer && resContainer.querySelector(".track-result-card");
-          if (!hasTrackCard && (!input || !input.value.trim())) {
+          if (!hasTrackCard) {
             const latestOrd = orders[0];
-            if (input) input.value = `#${latestOrd.cleanId}`;
             trackCustomerOrder(`#${latestOrd.cleanId}`);
           }
         }
+        performCustTrackSearch();
       } else {
         container.style.display = "none";
-      }
     }
 
     function renderHomeActiveOrderTracker(ord) {
@@ -5406,6 +5400,16 @@
       } else if (filter === "dispatched") {
         document.getElementById("chipCustFilterDispatched")?.classList.add("active");
       }
+
+      // If user had searched a single order starting with #, clear search input so the whole category is shown
+      const input = document.getElementById("trackOrderInput");
+      const clearBtn = document.getElementById("trackSearchClearBtn");
+      if (input && input.value.trim().startsWith("#")) {
+        input.value = "";
+        if (clearBtn) clearBtn.style.display = "none";
+      }
+
+      renderFilteredQuickTrackChips(true);
       performCustTrackSearch();
     }
 
@@ -5442,18 +5446,12 @@
         } catch(e) {}
       }
 
-      // Filter by currentCustSearchFilter
+      // 🎯 Strict separation of All, Confirmed, Dispatched
       let filtered = orders;
       if (currentCustSearchFilter === "confirmed") {
-        filtered = filtered.filter(o => {
-          const cleanSo = String(o.soNumber || o.so_number || "").replace("#", "").trim();
-          return o.orderStatus === "CONFIRMED" || o.order_status === "CONFIRMED" || cleanSo.length > 0;
-        });
+        filtered = filtered.filter(o => getCustomerOrderCategory(o) === "CONFIRMED");
       } else if (currentCustSearchFilter === "dispatched") {
-        filtered = filtered.filter(o => {
-          return (o.orderStatus === "DELIVERED" || o.dispatchStatus === "DELIVERED" || o.dispatch_status === "DELIVERED" ||
-                  o.orderStatus === "DISPATCHED" || o.dispatchStatus === "DISPATCHED" || o.dispatchStatus === "IN_TRANSIT" || o.dispatch_status === "DISPATCHED" || o.dispatch_status === "IN_TRANSIT");
-        });
+        filtered = filtered.filter(o => getCustomerOrderCategory(o) === "DISPATCHED");
       }
 
       // Filter by text query if present
@@ -5616,13 +5614,15 @@
       }
     }, 350);
 
-    async function trackCustomerOrder(explicitQuery) {
+    async function trackCustomerOrder(explicitQuery, updateInput = false) {
       const input = document.getElementById("trackOrderInput");
       const q = (explicitQuery !== undefined ? explicitQuery : (input ? input.value : "")).trim();
       const container = document.getElementById("customerTrackResultContainer");
 
-      if (input && explicitQuery !== undefined) {
+      if (input && updateInput && explicitQuery !== undefined) {
         input.value = explicitQuery;
+        const btn = document.getElementById("trackSearchClearBtn");
+        if (btn) btn.style.display = explicitQuery ? "flex" : "none";
       }
 
       // ⚡ Highlight active chip in Recent Orders
