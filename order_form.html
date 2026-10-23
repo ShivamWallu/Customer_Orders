@@ -4011,13 +4011,15 @@
         ctx.fillText(it.brand || "Mashal", 85, curY + 23);
 
         // Item name
+        const itemName = String(it.item || it.name || it.itemName || it.product || "").trim();
         ctx.fillStyle = "#0f172a";
         ctx.font = "bold 13px 'Arial', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText(it.item || "", 135, curY + 23);
+        ctx.fillText(itemName, 135, curY + 23);
 
         // Pieces Multiplier Calculation
-        const multiplier = (it.item && it.item.match(/x\s*(\d+)/i)) ? parseInt(it.item.match(/x\s*(\d+)/i)[1], 10) : 1;
+        const matchMult = itemName.match(/x\s*(\d+)/i);
+        const multiplier = matchMult ? parseInt(matchMult[1], 10) : (parseInt(it.multiplier, 10) || 1);
         const bxs = parseInt(it.boxes, 10) || 0;
         const pcs = bxs * multiplier;
         totalBoxes += bxs;
@@ -4166,10 +4168,13 @@
       (o.items || []).forEach((it, i) => {
         const icon = (it.brand || "Mashal").toLowerCase() === "mashal" ? "🔵" : "🟢";
         const bxs = parseInt(it.boxes, 10) || 0;
-        const multiplier = (it.item && it.item.match(/x\s*(\d+)/i)) ? parseInt(it.item.match(/x\s*(\d+)/i)[1], 10) : 1;
+        const itemName = String(it.item || it.name || it.itemName || it.product || "-").trim();
+        const brand = it.brand || "Mashal";
+        const matchMult = itemName.match(/x\s*(\d+)/i);
+        const multiplier = matchMult ? parseInt(matchMult[1], 10) : (parseInt(it.multiplier, 10) || 1);
         const pcs = bxs * multiplier;
         totalPieces += pcs;
-        msg += `${i + 1}. ${icon} [${it.brand}] ${it.item} ➔ *${pcs.toLocaleString()} Pcs*  |  *[ ${bxs} Boxes ]*\n`;
+        msg += `${i + 1}. ${icon} [${brand}] ${itemName} ➔ *${pcs.toLocaleString()} Pcs*  |  *[ ${bxs} Boxes ]*\n`;
       });
       msg += `------------------------------------\n`;
       msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES*  |  *${totalPieces.toLocaleString()} PIECES*\n`;
@@ -4851,11 +4856,14 @@
           ? `<span class="so-sub-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> SO #${escapeHtml(cleanSo)}</span>`
           : '';
 
+        const shortId = String(o.shortId || (o.cleanId && o.cleanId.includes('-') ? o.cleanId.split('-').pop() : o.cleanId) || "").replace('#', '');
+        const targetId = o.fullOrderId || o.orderId || o.order_id || o.cleanId || shortId;
+
         html += `
-          <div class="cust-order-card" onclick="openCustomerOrderDetailsModal('${escapeHtml(o.cleanId)}')">
+          <div class="cust-order-card" onclick="openCustomerOrderDetailsModal('${escapeHtml(targetId)}')">
             <div class="cust-order-card-header">
               <div class="cust-order-card-header-left">
-                <div class="cust-order-card-id-badge">#${escapeHtml(o.cleanId)}</div>
+                <div class="cust-order-card-id-badge">#${escapeHtml(shortId)}</div>
                 <div class="cust-order-card-date">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -4887,13 +4895,13 @@
                 ${(o.invoiceNumber || o.invoice_number) ? `<span class="pill-boxes" style="background: #fff7ed; color: #c2410c; border-color: #ffedd5;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> Inv #${escapeHtml(o.invoiceNumber || o.invoice_number)}</span>` : ''}
               </div>
               <div class="cust-card-actions-grid">
-                <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackCustomerOrderFromList('${escapeHtml(o.cleanId)}')" title="Live Dispatch Tracking">
+                <button type="button" class="btn-card-action btn-card-track" onclick="event.stopPropagation(); trackCustomerOrderFromList('${escapeHtml(shortId)}')" title="Live Dispatch Tracking">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                   </svg>
                   <span>Track</span>
                 </button>
-                <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openCustomerOrderDetailsModal('${escapeHtml(o.cleanId)}')" title="View all order details">
+                <button type="button" class="btn-card-action btn-card-details" onclick="event.stopPropagation(); openCustomerOrderDetailsModal('${escapeHtml(targetId)}')" title="View all order details">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -4902,7 +4910,7 @@
                   </svg>
                   <span>Details</span>
                 </button>
-                <button type="button" class="btn-card-action btn-card-slip" onclick="event.stopPropagation(); openCustomerOrderSlipModal('${escapeHtml(o.cleanId)}')" title="View digital order slip">
+                <button type="button" class="btn-card-action btn-card-slip" onclick="event.stopPropagation(); openCustomerOrderSlipModal('${escapeHtml(targetId)}')" title="View digital order slip">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
@@ -4919,7 +4927,16 @@
     }
 
     async function openCustomerOrderDetailsModal(orderId) {
-      let ord = cachedCustomerOrders.find(o => o.cleanId === orderId);
+      const cleanTarget = String(orderId || "").replace('#', '').trim();
+      let ord = (cachedCustomerOrders || []).find(o => 
+        o.cleanId === cleanTarget || 
+        o.shortId === cleanTarget || 
+        o.orderId === cleanTarget || 
+        o.order_id === cleanTarget || 
+        o.fullOrderId === cleanTarget ||
+        (o.cleanId && o.cleanId.endsWith(cleanTarget)) ||
+        (o.order_id && o.order_id.endsWith(cleanTarget))
+      );
       if (!ord) {
         try {
           let cPhone = "", cCode = "", cToken = "";
@@ -4929,10 +4946,18 @@
             cCode = sess.party_code || "";
             cToken = sess.token || "";
           } catch(e) {}
-          const res = await fetch(`/api/customer/track-order?q=${encodeURIComponent(orderId)}&phone=${encodeURIComponent(cPhone)}&party_code=${encodeURIComponent(cCode)}&token=${encodeURIComponent(cToken)}`);
+          const res = await fetch(`/api/customer/track-order?q=${encodeURIComponent(cleanTarget)}&phone=${encodeURIComponent(cPhone)}&party_code=${encodeURIComponent(cCode)}&token=${encodeURIComponent(cToken)}`);
           const data = await res.json();
           if (res.ok && data.orders && data.orders.length > 0) {
-            ord = data.orders.find(o => o.cleanId === orderId) || data.orders[0];
+            ord = data.orders.find(o => 
+              o.cleanId === cleanTarget || 
+              o.shortId === cleanTarget || 
+              o.orderId === cleanTarget || 
+              o.order_id === cleanTarget || 
+              o.fullOrderId === cleanTarget ||
+              (o.cleanId && o.cleanId.endsWith(cleanTarget)) ||
+              (o.order_id && o.order_id.endsWith(cleanTarget))
+            ) || data.orders[0];
           }
         } catch (e) {}
       }
@@ -4973,7 +4998,10 @@
         badge.style.borderColor = "";
       }
 
-      document.getElementById("custModalOrderId").textContent = `Order #${ord.cleanId}`;
+      const shortId = String(ord.shortId || (ord.cleanId && ord.cleanId.includes('-') ? ord.cleanId.split('-').pop() : ord.cleanId) || "").replace('#', '');
+      const fullId = ord.fullOrderId || ord.order_id || ord.orderId || ord.cleanId;
+
+      document.getElementById("custModalOrderId").textContent = `Order #${shortId}`;
       document.getElementById("custModalOrderTime").textContent = `Booked: ${ord.formattedTimestamp || ord.order_date || "-"}`;
       document.getElementById("custModalPartyName").textContent = `${ord.partyName || ord.party_name || "Customer"} ${ord.partyCode || ord.party_code ? '[' + (ord.partyCode || ord.party_code) + ']' : ''}`;
       document.getElementById("custModalPartyAddress").textContent = ord.partyAddress || ord.deliveryAddress || ord.party_address || "Address on record";
@@ -5052,7 +5080,7 @@
       const btnViewSlip = document.getElementById("btnCustModalViewSlip");
       if (btnViewSlip) {
         btnViewSlip.onclick = () => {
-          openCustomerOrderSlipModal(ord.cleanId);
+          openCustomerOrderSlipModal(fullId);
         };
       }
       const btnWA = document.getElementById("btnCustModalWhatsApp");
@@ -5072,15 +5100,32 @@
     }
 
     async function openCustomerOrderSlipModal(orderId) {
-      let ord = cachedCustomerOrders.find(o => o.cleanId === orderId);
+      const cleanTarget = String(orderId || "").replace('#', '').trim();
+      let ord = (cachedCustomerOrders || []).find(o => 
+        o.cleanId === cleanTarget || 
+        o.shortId === cleanTarget || 
+        o.orderId === cleanTarget || 
+        o.order_id === cleanTarget || 
+        o.fullOrderId === cleanTarget ||
+        (o.cleanId && o.cleanId.endsWith(cleanTarget)) ||
+        (o.order_id && o.order_id.endsWith(cleanTarget))
+      );
       if (!ord) {
         try {
           const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
           const cToken = sess.token || "";
-          const res = await fetch(`/api/customer/track-order?q=${encodeURIComponent(orderId)}&token=${encodeURIComponent(cToken)}`);
+          const res = await fetch(`/api/customer/track-order?q=${encodeURIComponent(cleanTarget)}&token=${encodeURIComponent(cToken)}`);
           const data = await res.json();
           if (res.ok && data.orders && data.orders.length > 0) {
-            ord = data.orders.find(o => o.cleanId === orderId) || data.orders[0];
+            ord = data.orders.find(o => 
+              o.cleanId === cleanTarget || 
+              o.shortId === cleanTarget || 
+              o.orderId === cleanTarget || 
+              o.order_id === cleanTarget || 
+              o.fullOrderId === cleanTarget ||
+              (o.cleanId && o.cleanId.endsWith(cleanTarget)) ||
+              (o.order_id && o.order_id.endsWith(cleanTarget))
+            ) || data.orders[0];
           }
         } catch (e) {}
       }
@@ -5097,13 +5142,16 @@
       const btnDownload = document.getElementById("btnCustSlipDownload");
       const btnWhatsApp = document.getElementById("btnCustSlipWhatsApp");
 
-      titleEl.textContent = `Order #${ord.cleanId}`;
-      verifyLink.href = `/verify/${ord.cleanId}`;
+      const shortId = String(ord.shortId || (ord.cleanId && ord.cleanId.includes('-') ? ord.cleanId.split('-').pop() : ord.cleanId) || "").replace('#', '');
+      const fullId = ord.fullOrderId || ord.order_id || ord.orderId || ord.cleanId;
+
+      titleEl.textContent = `Order #${shortId}`;
+      verifyLink.href = `/verify/${fullId}`;
       imgEl.style.display = "none";
       spinner.style.display = "flex";
       modal.style.display = "flex";
 
-      const slipUrl = `/order_slips/${ord.cleanId}.png`;
+      const slipUrl = `/order_slips/${fullId}.png`;
       
       // Try loading server slip PNG image, or fallback dynamically to client canvas render
       const testImg = new Image();
@@ -5130,7 +5178,7 @@
         try {
           const c = generateOrderSlipCanvas(ord);
           const link = document.createElement("a");
-          link.download = `Khandelia_Order_Slip_${ord.cleanId}.png`;
+          link.download = `Khandelia_Order_Slip_${shortId || fullId}.png`;
           link.href = c.toDataURL("image/png");
           document.body.appendChild(link);
           link.click();

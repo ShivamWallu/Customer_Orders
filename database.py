@@ -1017,10 +1017,13 @@ def get_orders_for_asm(sales_person_name: str, phone: str = "", date_filter: str
                 d["items"] = json.loads(d.get("items_json") or "[]")
             except Exception:
                 d["items"] = []
+            raw_id = str(d.get("order_id") or "").replace("#", "").strip()
+            short_clean_id = raw_id.split("-")[-1] if "-" in raw_id else raw_id
             d["id"] = d.get("order_id")
-            d["cleanId"] = str(d.get("order_id") or "").replace("#", "")
-            d["partyName"] = d.get("party_name")
-            d["partyCode"] = d.get("party_code")
+            d["orderId"] = d.get("order_id")
+            d["fullOrderId"] = raw_id
+            d["cleanId"] = short_clean_id
+            d["shortId"] = short_clean_id
             d["partyAddress"] = d.get("party_address")
             d["salesPerson"] = d.get("sales_person")
             d["totalBoxes"] = d.get("total_boxes", 0)
@@ -1065,9 +1068,13 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
             it["pieces"] = (b * mult) if mult > 1 else (stored_pcs if stored_pcs > 0 else b)
             calc_pcs_total += it["pieces"]
 
-    clean_id = str(d.get("order_id") or "").replace("#", "")
+    raw_id = str(d.get("order_id") or "").replace("#", "").strip()
+    clean_id = raw_id.split("-")[-1] if "-" in raw_id else raw_id
     d["id"] = d.get("order_id")
+    d["orderId"] = d.get("order_id")
+    d["fullOrderId"] = raw_id
     d["cleanId"] = clean_id
+    d["shortId"] = clean_id
     d["partyName"] = d.get("party_name") or ""
     d["partyCode"] = d.get("party_code") or ""
     d["partyAddress"] = d.get("party_address") or ""
@@ -1763,7 +1770,13 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
                 d["items"] = json.loads(d.get("items_json") or "[]")
             except Exception:
                 d["items"] = []
+            raw_id = str(d.get("order_id") or "").replace("#", "").strip()
+            short_clean_id = raw_id.split("-")[-1] if "-" in raw_id else raw_id
             d["id"] = d["order_id"]
+            d["orderId"] = d["order_id"]
+            d["fullOrderId"] = raw_id
+            d["cleanId"] = short_clean_id
+            d["shortId"] = short_clean_id
             d["partyName"] = d["party_name"]
             d["partyCode"] = d.get("party_code", "")
             d["partyAddress"] = d["party_address"]
@@ -1831,7 +1844,7 @@ def get_order_by_id(order_id: str) -> Optional[Dict[str, Any]]:
     conn = get_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM orders WHERE order_id = ? OR order_id = ?", (clean_id, f"#{clean_id}"))
+        cursor.execute("SELECT * FROM orders WHERE order_id = ? OR order_id = ? OR order_id LIKE ?", (clean_id, f"#{clean_id}", f"%-{clean_id}"))
         row = cursor.fetchone()
         if row:
             d = dict(row)
@@ -1839,7 +1852,13 @@ def get_order_by_id(order_id: str) -> Optional[Dict[str, Any]]:
                 d["items"] = json.loads(d.get("items_json") or "[]")
             except Exception:
                 d["items"] = []
+            raw_id = str(d.get("order_id") or "").replace("#", "").strip()
+            short_clean_id = raw_id.split("-")[-1] if "-" in raw_id else raw_id
             d["id"] = d["order_id"]
+            d["orderId"] = d["order_id"]
+            d["fullOrderId"] = raw_id
+            d["cleanId"] = short_clean_id
+            d["shortId"] = short_clean_id
             d["partyName"] = d["party_name"]
             d["partyCode"] = d.get("party_code", "")
             d["partyAddress"] = d["party_address"]
