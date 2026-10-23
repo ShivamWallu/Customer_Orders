@@ -30,6 +30,13 @@
   <meta name="twitter:image" content="https://order.khandelia.online/images/customer_order_preview.jpg">
   <link rel="image_src" href="https://order.khandelia.online/images/customer_order_preview.jpg">
 
+  <!-- 📱 PWA & MOBILE STATUS BAR (Option B: Corporate Forest Emerald) -->
+  <meta name="theme-color" content="#047857">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#047857">
+  <meta name="apple-mobile-web-app-title" content="KOGM Customer">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -38,18 +45,24 @@
   <script src="/js/qrcode.min.js"></script>
   <style>
     :root {
-      --navy: #0a2540;
-      --navy-light: #123760;
+      --corporate-emerald: #047857;
+      --corporate-emerald-dark: #064e3b;
+      --corporate-emerald-light: #059669;
+      --corporate-slate: #0f172a;
+      --corporate-border: #e2e8f0;
+      --corporate-bg: #f8fafc;
+      --navy: #0f172a;
+      --navy-light: #1e293b;
       --mashal-blue: #0056b3;
       --mashal-bg: #fffbf0;
       --mashal-border: #fde68a;
-      --fauji-green: #0a7c42;
+      --fauji-green: #047857;
       --fauji-bg: #f0fdf4;
       --fauji-border: #bbf7d0;
       --border-gray: #e2e8f0;
       --text-dark: #0f172a;
       --text-muted: #64748b;
-      --primary: #2563eb;
+      --primary: #047857;
     }
 
     * {
@@ -113,8 +126,8 @@
     .company-name {
       font-size: 13.5px;
       font-weight: 800;
-      color: var(--navy);
-      letter-spacing: 0.01em;
+      color: #ffffff;
+      letter-spacing: 0.02em;
       line-height: 1.2;
       text-transform: uppercase;
       white-space: nowrap;
@@ -126,15 +139,16 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: #047857;
-      color: #ffffff;
-      font-size: 10px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #a7f3d0;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      font-size: 9.5px;
       font-weight: 800;
       letter-spacing: 0.06em;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 5px;
       width: fit-content;
-      margin-top: 0;
+      margin-top: 1px;
       line-height: 1.3;
       text-transform: uppercase;
     }
@@ -1024,20 +1038,20 @@
       }
     }
 
-    /* 🍔 THREE-LINE HAMBURGER MENU & SLIDE-OUT SIDEBAR */
+    /* 🍔 THREE-LINE HAMBURGER MENU & SLIDE-OUT SIDEBAR (Option B: Corporate Forest Emerald) */
     .brand-header-wrap {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-gray);
+      background: linear-gradient(135deg, #064e3b 0%, #047857 65%, #0f172a 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px 8px 14px;
-      min-height: 52px;
+      padding: 10px 14px;
+      min-height: 56px;
       box-sizing: border-box;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 16px rgba(6, 78, 59, 0.22);
     }
 
     .btn-hamburger {
@@ -1047,9 +1061,9 @@
       right: auto;
       width: 38px;
       height: 38px;
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -1059,28 +1073,25 @@
       flex-shrink: 0;
       margin-left: 10px;
       z-index: 50;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       transition: all 0.2s ease;
       padding: 0;
     }
 
     .btn-hamburger:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.4);
     }
 
     .btn-hamburger:active {
-      transform: scale(0.94);
-      background: #e2e8f0;
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.35);
     }
 
     .hamburger-bar {
       width: 18px;
       height: 2px;
-      background: var(--navy);
-      border-radius: 2px;
-      transition: all 0.25s ease;
-    }
+      background: #ffffff;
       border-radius: 2px;
       transition: all 0.25s ease;
     }
@@ -1496,19 +1507,20 @@
       border-bottom: 2px solid #16a34a;
     }
 
-    /* Customer Status Strip */
+    /* Customer Status Strip (Option B: Clean Emerald) */
     .customer-status-strip {
-      background: #f8fafc;
-      border-bottom: 1px solid var(--border-gray);
-      padding: 8px 16px;
+      background: #f0fdf4;
+      border-bottom: 1px solid #dcfce7;
+      padding: 9px 16px;
       font-size: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: #064e3b;
     }
 
     .customer-status-strip strong {
-      color: var(--navy);
+      color: #064e3b;
     }
 
     /* 📊 CUSTOMER ORDERS & HISTORY */

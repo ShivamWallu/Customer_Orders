@@ -32,10 +32,10 @@
 
   <!-- 📱 PWA & MOBILE ANDROID APP (2X Speed & Standalone WebAPK) -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#003366">
+  <meta name="theme-color" content="#0a192f">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#0a192f">
   <meta name="apple-mobile-web-app-title" content="Mashal Sales">
   <link rel="apple-touch-icon" href="/images/icons/icon-192.png">
 
@@ -109,8 +109,8 @@
     .company-name {
       font-size: 13.5px;
       font-weight: 800;
-      color: var(--navy);
-      letter-spacing: 0.01em;
+      color: #ffffff;
+      letter-spacing: 0.02em;
       line-height: 1.2;
       text-transform: uppercase;
       white-space: nowrap;
@@ -122,15 +122,16 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: var(--navy);
-      color: #ffffff;
-      font-size: 10px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #93c5fd;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      font-size: 9.5px;
       font-weight: 800;
       letter-spacing: 0.06em;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 5px;
       width: fit-content;
-      margin-top: 0;
+      margin-top: 1px;
       line-height: 1.3;
       text-transform: uppercase;
     }
@@ -1137,20 +1138,20 @@
       cursor: not-allowed;
     }
 
-    /* 🍔 THREE-LINE HAMBURGER MENU & SLIDE-OUT SIDEBAR */
+    /* 🍔 THREE-LINE HAMBURGER MENU & SLIDE-OUT SIDEBAR (Area Sales Manager: Royal Sapphire) */
     .brand-header-wrap {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-gray);
+      background: linear-gradient(135deg, #0a192f 0%, #1e3a8a 65%, #1d4ed8 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px 8px 14px;
-      min-height: 52px;
+      padding: 10px 14px;
+      min-height: 56px;
       box-sizing: border-box;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 16px rgba(10, 25, 47, 0.25);
     }
 
     .btn-hamburger {
@@ -1160,9 +1161,9 @@
       right: auto;
       width: 38px;
       height: 38px;
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -1172,25 +1173,25 @@
       flex-shrink: 0;
       margin-left: 10px;
       z-index: 50;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       transition: all 0.2s ease;
       padding: 0;
     }
 
     .btn-hamburger:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.4);
     }
 
     .btn-hamburger:active {
-      transform: scale(0.94);
-      background: #e2e8f0;
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.35);
     }
 
     .hamburger-bar {
       width: 18px;
       height: 2px;
-      background: var(--navy);
+      background: #ffffff;
       border-radius: 2px;
       transition: all 0.25s ease;
     }
