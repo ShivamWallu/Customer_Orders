@@ -293,7 +293,7 @@ def is_social_crawler(request: Request) -> bool:
 
 @app.get("/manifest.json")
 def serve_manifest():
-    """Serves PWA Web App Manifest for Android APK installation"""
+    """Serves PWA Web App Manifest for Android APK installation (Sales Manager)"""
     file_path = os.path.join(BASE_DIR, "manifest.json")
     if os.path.exists(file_path):
         return FileResponse(
@@ -302,6 +302,18 @@ def serve_manifest():
             headers={"Cache-Control": "public, max-age=3600", "Access-Control-Allow-Origin": "*"}
         )
     raise HTTPException(status_code=404, detail="Manifest not found")
+
+@app.get("/customer-manifest.json")
+def serve_customer_manifest():
+    """Serves PWA Web App Manifest for Customer Order Portal Android WebAPK installation"""
+    file_path = os.path.join(BASE_DIR, "customer_manifest.json")
+    if os.path.exists(file_path):
+        return FileResponse(
+            file_path,
+            media_type="application/manifest+json",
+            headers={"Cache-Control": "public, max-age=3600", "Access-Control-Allow-Origin": "*"}
+        )
+    raise HTTPException(status_code=404, detail="Customer Manifest not found")
 
 @app.get("/sw.js")
 def serve_service_worker():
