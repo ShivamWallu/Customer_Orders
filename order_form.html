@@ -1923,30 +1923,30 @@
     .btn-track-submit:active {
       transform: scale(0.97);
     }
-    /* ⚡ Enterprise Quick Orders Horizontal Scroll Rail (Scalable for 100+ Orders) */
-    .quick-chips-wrapper {
-      margin-top: 10px;
-      margin-bottom: 2px;
+    /* ⚡ Recent 5 Orders Section (Clean, Professional & Mobile Perfect) */
+    .recent-orders-card-wrap {
+      margin-top: 14px;
+      margin-bottom: 4px;
       width: 100%;
     }
-    .quick-chips-header {
+    .recent-orders-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       padding: 0 2px;
     }
-    .quick-chip-label {
-      font-size: 11px;
+    .recent-orders-title {
+      font-size: 11.5px;
       font-weight: 800;
-      color: #64748b;
+      color: #475569;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
-    .quick-chips-all-btn {
+    .recent-orders-all-link {
       font-size: 11px;
       font-weight: 700;
       color: #047857;
@@ -1961,31 +1961,23 @@
       transition: all 0.2s ease;
       white-space: nowrap;
     }
-    .quick-chips-all-btn:hover {
+    .recent-orders-all-link:hover {
       background: #047857;
       color: #ffffff;
       border-color: #047857;
       box-shadow: 0 2px 6px rgba(4, 120, 87, 0.2);
     }
-    .quick-chips-scroll-rail {
+    .recent-orders-pills-wrap {
       display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      white-space: nowrap;
-      flex-wrap: nowrap;
-      padding: 2px 2px 6px;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
+      flex-wrap: wrap;
+      gap: 7px;
     }
-    .quick-chips-scroll-rail::-webkit-scrollbar {
-      display: none;
-    }
-    .quick-chip-btn {
-      padding: 5px 10px;
+    .recent-order-pill {
+      padding: 6px 11px;
       background: #ffffff;
-      border: 1px solid #cbd5e1;
+      border: 1.5px solid #cbd5e1;
       border-radius: 20px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       font-family: 'JetBrains Mono', monospace;
       color: #334155;
@@ -1993,21 +1985,35 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      flex-shrink: 0;
-      transition: all 0.15s ease;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
       user-select: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .quick-chip-btn:hover {
+    .recent-order-pill:hover {
       transform: translateY(-1px);
+      border-color: #047857;
+      background: #f0fdf4;
     }
-    .quick-chip-btn:active {
-      transform: scale(0.96);
+    .recent-order-pill:active {
+      transform: scale(0.97);
     }
-    .quick-chip-btn.active-order {
+    .recent-order-pill.active-order {
       border-color: #047857 !important;
-      background: #f0fdf4 !important;
-      box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.3) !important;
+      background: #ecfdf5 !important;
+      color: #047857 !important;
+      box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.25), 0 2px 6px rgba(4, 120, 87, 0.12) !important;
       font-weight: 800 !important;
+    }
+    .recent-order-pill .pill-latest-tag {
+      font-size: 8.5px;
+      background: #047857;
+      color: #ffffff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      margin-left: 2px;
+      line-height: 1.2;
     }
     .track-result-card {
       background: #ffffff;
@@ -2726,38 +2732,19 @@
           </button>
         </div>
 
-        <!-- 🏷️ CUSTOMER SALES ORDER STATUS TABS: All, SO Confirmed, Dispatch & Delivery (Responsive 3-Column) -->
-        <div class="track-status-segmented-bar" id="trackStatusSegmentedBar" style="display: none;">
-          <button type="button" class="track-status-tab-btn active" id="btnTrackTabAll" onclick="setTrackStatusTab('ALL')">
-            <span>All</span>
-            <span class="tab-badge-pill" id="trackTabCountAll">0</span>
-          </button>
-          <button type="button" class="track-status-tab-btn" id="btnTrackTabConfirmed" onclick="setTrackStatusTab('CONFIRMED')">
-            <span class="tab-txt-full">SO Confirmed</span>
-            <span class="tab-txt-compact">Confirmed</span>
-            <span class="tab-badge-pill" id="trackTabCountConfirmed">0</span>
-          </button>
-          <button type="button" class="track-status-tab-btn" id="btnTrackTabDispatched" onclick="setTrackStatusTab('DISPATCHED')">
-            <span class="tab-txt-full">Dispatch & Delivery</span>
-            <span class="tab-txt-compact">Dispatch</span>
-            <span class="tab-badge-pill" id="trackTabCountDispatched">0</span>
-          </button>
-        </div>
-
-        <!-- Quick Track Recent Orders Carousel Rail (Scalable for 100+ Orders) -->
-        <div id="quickTrackChipsContainer" class="quick-chips-wrapper" style="display: none;">
-          <div class="quick-chips-header">
-            <span class="quick-chip-label" id="quickTrackChipsLabel">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              <span>Recent Orders</span>
+        <!-- ⚡ RECENT ORDERS (ALWAYS PREVIOUS 5 ORDERS IN CLEAN WRAP) -->
+        <div id="quickTrackChipsContainer" class="recent-orders-card-wrap" style="display: none;">
+          <div class="recent-orders-header">
+            <span class="recent-orders-title">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              <span>Recent Orders (Last 5)</span>
             </span>
-            <button type="button" class="quick-chips-all-btn" id="btnQuickTrackAllOrders" onclick="switchCustomerSection('orders')">
-              <span>All Orders</span>
-              <span id="quickTrackTotalCountBadge" style="font-family:'JetBrains Mono', monospace; font-weight:800;">(0)</span>
-              <span>➔</span>
+            <button type="button" class="recent-orders-all-link" id="btnQuickTrackAllOrders" onclick="switchCustomerSection('orders')">
+              <span>View All Orders <strong id="quickTrackTotalCountBadge">(0)</strong></span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
-          <div id="quickTrackChipsList" class="quick-chips-scroll-rail"></div>
+          <div id="quickTrackChipsList" class="recent-orders-pills-wrap"></div>
         </div>
       </div>
 
@@ -4829,42 +4816,6 @@
         return;
       }
 
-      // 1. Tally counts for status tabs
-      let countAll = all.length;
-      let countConfirmed = 0;
-      let countDispatched = 0;
-      let countPending = 0;
-
-      all.forEach(o => {
-        const cat = getCustomerOrderCategory(o);
-        if (cat === "DISPATCHED") countDispatched++;
-        else if (cat === "CONFIRMED") countConfirmed++;
-        else countPending++;
-      });
-
-      const elAll = document.getElementById("trackTabCountAll");
-      const elConf = document.getElementById("trackTabCountConfirmed");
-      const elDisp = document.getElementById("trackTabCountDispatched");
-      const elPend = document.getElementById("trackTabCountPending");
-
-      if (elAll) elAll.textContent = countAll;
-      if (elConf) elConf.textContent = countConfirmed;
-      if (elDisp) elDisp.textContent = countDispatched;
-      if (elPend) elPend.textContent = countPending;
-
-      const segBar = document.getElementById("trackStatusSegmentedBar");
-      if (segBar) segBar.style.display = "grid";
-
-      // 2. Filter for currently active tab
-      let filtered = all;
-      if (activeTrackStatusTab === "CONFIRMED") {
-        filtered = all.filter(o => getCustomerOrderCategory(o) === "CONFIRMED");
-      } else if (activeTrackStatusTab === "DISPATCHED") {
-        filtered = all.filter(o => getCustomerOrderCategory(o) === "DISPATCHED");
-      } else if (activeTrackStatusTab === "PENDING") {
-        filtered = all.filter(o => getCustomerOrderCategory(o) === "PENDING");
-      }
-
       // Update total orders counter in header
       const totalBadge = document.getElementById("quickTrackTotalCountBadge");
       if (totalBadge) {
@@ -4872,18 +4823,20 @@
         totalBadge.textContent = `(${count.toLocaleString()})`;
       }
 
-      const topOrders = filtered.slice(0, 5);
-      if (topOrders.length === 0) {
-        list.innerHTML = `<span style="font-size: 11.5px; color: #64748b; font-style: italic; padding: 4px 6px;">No ${activeTrackStatusTab.toLowerCase()} orders found</span>`;
-        container.style.display = "block";
+      // ⚡ ALWAYS show the customer's previous 5 orders in Recent Orders
+      const previous5 = all.slice(0, 5);
+      if (previous5.length === 0) {
+        container.style.display = "none";
         return;
       }
 
       const currentInputVal = (document.getElementById("trackOrderInput")?.value || "").replace('#', '').trim();
 
-      let chipsHtml = topOrders.map(o => {
+      let chipsHtml = previous5.map((o, index) => {
         const cat = getCustomerOrderCategory(o);
-        const isActive = (currentInputVal && currentInputVal === o.cleanId);
+        const isCurrentlyTracked = currentInputVal ? (currentInputVal === o.cleanId) : (index === 0);
+        const isLatest = (index === 0);
+
         let iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
         let bgStyle = "";
         if (cat === "DISPATCHED") {
@@ -4896,10 +4849,14 @@
           iconHtml = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
           bgStyle = "border-color: #fde68a; color: #b45309; background: #fffbeb;";
         }
+
+        const latestTag = isLatest ? `<span class="pill-latest-tag">LATEST</span>` : "";
+
         return `
-          <button type="button" class="quick-chip-btn ${isActive ? 'active-order' : ''}" style="${bgStyle}" onclick="trackCustomerOrder('#${escapeHtml(o.cleanId)}')">
+          <button type="button" class="recent-order-pill ${isCurrentlyTracked ? 'active-order' : ''}" style="${bgStyle}" onclick="trackCustomerOrder('#${escapeHtml(o.cleanId)}')">
             ${iconHtml}
             <span>#${escapeHtml(o.cleanId)}</span>
+            ${latestTag}
           </button>
         `;
       }).join("");
@@ -4907,11 +4864,11 @@
       list.innerHTML = chipsHtml;
       container.style.display = "block";
 
-      if (autoTrackFirst && topOrders.length > 0) {
+      if (autoTrackFirst && previous5.length > 0) {
         const input = document.getElementById("trackOrderInput");
         if (input && !input.value.trim()) {
-          input.value = `#${topOrders[0].cleanId}`;
-          trackCustomerOrder(`#${topOrders[0].cleanId}`);
+          input.value = `#${previous5[0].cleanId}`;
+          trackCustomerOrder(`#${previous5[0].cleanId}`);
         }
       }
     }
@@ -4941,17 +4898,13 @@
       if (orders.length > 0) {
         renderFilteredQuickTrackChips(false);
 
-        // Auto populate input in Track Orders tab if empty
+        // ⚡ ALWAYS auto-populate and track the LATEST order below
+        const latestOrd = orders[0];
         const input = document.getElementById("trackOrderInput");
-        if (orders.length > 0) {
-          if (input && !input.value.trim()) {
-            input.value = `#${orders[0].cleanId}`;
-          }
-          const resContainer = document.getElementById("customerTrackResultContainer");
-          if (resContainer && !resContainer.querySelector(".track-result-card")) {
-            trackCustomerOrder(`#${orders[0].cleanId}`);
-          }
+        if (input) {
+          input.value = `#${latestOrd.cleanId}`;
         }
+        trackCustomerOrder(`#${latestOrd.cleanId}`);
       } else {
         container.style.display = "none";
       }
@@ -5057,9 +5010,9 @@
         input.value = explicitQuery;
       }
 
-      // ⚡ Highlight active chip in the quick scroll rail
+      // ⚡ Highlight active chip in Recent Orders
       const cleanQ = q.replace('#', '').trim();
-      document.querySelectorAll(".quick-chip-btn").forEach(btn => {
+      document.querySelectorAll(".recent-order-pill, .quick-chip-btn").forEach(btn => {
         const txt = btn.textContent || "";
         if (cleanQ && txt.includes(cleanQ)) {
           btn.classList.add("active-order");
