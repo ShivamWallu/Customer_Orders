@@ -12,7 +12,7 @@ Features:
 import os
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional, Tuple
 import re
 import threading
@@ -143,6 +143,20 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_audit_phone ON audit_logs (phone);
             CREATE INDEX IF NOT EXISTS idx_audit_role ON audit_logs (role);
             CREATE INDEX IF NOT EXISTS idx_audit_status ON audit_logs (status);
+
+            CREATE TABLE IF NOT EXISTS godown_stock (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                brand TEXT NOT NULL,
+                sku TEXT NOT NULL,
+                boxes INTEGER DEFAULT 0,
+                multiplier INTEGER DEFAULT 1,
+                pieces INTEGER DEFAULT 0,
+                unit TEXT DEFAULT 'ALL',
+                updated_by TEXT DEFAULT 'admin',
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(brand, sku, unit)
+            );
+            CREATE INDEX IF NOT EXISTS idx_godown_brand_unit ON godown_stock (brand, unit);
             """)
         # Safe migration for new columns
         try:
@@ -886,12 +900,39 @@ def get_role_permissions() -> List[Dict[str, Any]]:
     finally:
         conn.close()
 
+def get_permissions_for_role(role: str) -> Dict[str, Any]:
+    """Returns granular permissions for a specific role from database"""
+    clean_role = (role or "").strip().lower()
+    if clean_role == "super_admin":
+        return {
+            "can_add_order": 1, "can_edit_unit": 1, "can_confirm_so": 1,
+            "can_delete_order": 1, "can_block_user": 1, "can_manage_users": 1,
+            "can_manage_units": 1, "can_manage_permissions": 1, "can_view_logs": 1,
+            "can_export_csv": 1
+        }
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM role_permissions WHERE role = ? LIMIT 1", (clean_role,))
+        row = cur.fetchone()
+        if row:
+            return dict(row)
+        return {
+            "can_add_order": 0, "can_edit_unit": 0, "can_confirm_so": 0,
+            "can_delete_order": 0, "can_block_user": 0, "can_manage_users": 0,
+            "can_manage_units": 0, "can_manage_permissions": 0, "can_view_logs": 0,
+            "can_export_csv": 0
+        }
+    finally:
+        conn.close()
+
 def update_role_permission(role: str, permission_key: str, enabled: bool, updated_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
     """Updates a specific permission toggle for a role and records audit log"""
     valid_keys = [
         "can_add_order", "can_edit_unit", "can_confirm_so", 
-        "can_delete_order", "can_block_user", "can_manage_units", 
-        "can_view_logs", "can_export_csv"
+        "can_delete_order", "can_block_user", "can_manage_users",
+        "can_manage_units", "can_manage_permissions", "can_view_logs", 
+        "can_export_csv"
     ]
     if permission_key not in valid_keys:
         return {"status": "error", "message": f"Invalid permission key: {permission_key}"}
@@ -1046,29 +1087,7 @@ def get_orders_for_asm(sales_person_name: str, phone: str = "", date_filter: str
         cur.execute(query, params)
         rows = cur.fetchall()
 
-        result = []
-        for r in rows:
-            d = dict(r)
-            try:
-                d["items"] = json.loads(d.get("items_json") or "[]")
-            except Exception:
-                d["items"] = []
-            raw_id = str(d.get("order_id") or "").replace("#", "").strip()
-            short_clean_id = raw_id.split("-")[-1] if "-" in raw_id else raw_id
-            d["id"] = d.get("order_id")
-            d["orderId"] = d.get("order_id")
-            d["fullOrderId"] = raw_id
-            d["cleanId"] = short_clean_id
-            d["shortId"] = short_clean_id
-            d["partyAddress"] = d.get("party_address")
-            d["salesPerson"] = d.get("sales_person")
-            d["totalBoxes"] = d.get("total_boxes", 0)
-            d["totalPieces"] = d.get("total_pieces", 0)
-            d["orderStatus"] = d.get("order_status") or "PENDING"
-            d["soNumber"] = d.get("so_number") or ""
-            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date")
-            result.append(d)
-        return result
+        return [format_order_dict(r) for r in rows]
     finally:
         conn.close()
 
@@ -1140,6 +1159,26 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
     d["partyAddress"] = d.get("party_address") or ""
     d["deliveryAddress"] = d.get("delivery_address") or ""
     d["salesPerson"] = d.get("sales_person") or ""
+
+    raw_summary = str(d.get("items_summary") or d.get("itemsSummary") or "").strip()
+    if not raw_summary or raw_summary.lower() == "packaging items":
+        parts = []
+        if isinstance(d.get("items"), list):
+            for it in d["items"]:
+                if isinstance(it, dict):
+                    nm = it.get("item") or it.get("name") or it.get("itemName") or ""
+                    bx = int(it.get("boxes", 0) or 0)
+                    pc = int(it.get("pieces", 0) or 0)
+                    if nm and nm != "-":
+                        if bx > 0 and pc > 0:
+                            parts.append(f"{nm} ({bx} Bxs / {pc:,} Pcs)")
+                        elif bx > 0:
+                            parts.append(f"{nm} ({bx} Bxs)")
+                        else:
+                            parts.append(nm)
+        raw_summary = ", ".join(parts) if parts else (raw_summary or "Packaging items")
+    d["itemsSummary"] = raw_summary
+    d["items_summary"] = raw_summary
 
     stored_bxs = int(d.get("total_boxes") or 0)
     stored_pcs = int(d.get("total_pieces") or 0)
@@ -1816,8 +1855,16 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
     conn = get_connection()
     try:
         cursor = conn.cursor()
-        if unit and unit.upper() != "ALL":
-            cursor.execute("SELECT * FROM orders WHERE unit = ? OR (unit IS NULL AND ? = 'Unit 1') ORDER BY created_at DESC LIMIT ?", (unit, unit, limit))
+        if unit and str(unit).strip().upper() != "ALL":
+            clean_u = str(unit).strip()
+            cursor.execute("""
+                SELECT * FROM orders 
+                WHERE LOWER(TRIM(unit)) = LOWER(?) 
+                   OR LOWER(TRIM(unit)) = (SELECT LOWER(TRIM(unit_code)) FROM units WHERE LOWER(TRIM(unit_name)) = LOWER(?) LIMIT 1)
+                   OR LOWER(TRIM(unit)) = (SELECT LOWER(TRIM(unit_name)) FROM units WHERE LOWER(TRIM(unit_code)) = LOWER(?) LIMIT 1)
+                   OR (unit IS NULL AND (LOWER(?) = 'unit 1' OR LOWER(?) = 'unit-1'))
+                ORDER BY created_at DESC LIMIT ?
+            """, (clean_u, clean_u, clean_u, clean_u, clean_u, limit))
         else:
             cursor.execute("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?", (limit,))
         rows = cursor.fetchall()
@@ -2340,6 +2387,348 @@ def get_warehouse_production_summary(orders_subset: Optional[List[Dict[str, Any]
                 "skus": list(fauji_summary.values())
             }
         }
+    }
+
+# ============================================================================
+# 🏢 WAREHOUSE GODOWN AVAILABLE STOCK & NET PRODUCTION DEFICIT ANALYSIS
+# ============================================================================
+
+def get_sku_multiplier(sku: str) -> int:
+    m = re.search(r'x\s*(\d+)', str(sku or ''), re.I)
+    return int(m.group(1)) if m else 1
+
+def seed_godown_stock_defaults(unit: str = "ALL"):
+    """Seeds 0-quantity default rows for all master SKUs if not already initialized."""
+    conn = get_connection()
+    try:
+        with conn:
+            for sku in MASHAL_MASTER_SKUS:
+                mult = get_sku_multiplier(sku)
+                conn.execute("""
+                    INSERT OR IGNORE INTO godown_stock (brand, sku, boxes, multiplier, pieces, unit, updated_by, updated_at)
+                    VALUES ('MASHAL', ?, 0, ?, 0, ?, 'SYSTEM', datetime('now', 'localtime'))
+                """, (sku, mult, unit))
+            for sku in FAUJI_MASTER_SKUS:
+                mult = get_sku_multiplier(sku)
+                conn.execute("""
+                    INSERT OR IGNORE INTO godown_stock (brand, sku, boxes, multiplier, pieces, unit, updated_by, updated_at)
+                    VALUES ('FAUJI', ?, 0, ?, 0, ?, 'SYSTEM', datetime('now', 'localtime'))
+                """, (sku, mult, unit))
+    except Exception as e:
+        logger.error(f"Error seeding godown stock: {e}")
+    finally:
+        conn.close()
+
+def get_godown_stock(unit: Optional[str] = "ALL") -> Dict[str, Dict[str, Any]]:
+    """Returns map of current godown stock by brand and uppercase SKU."""
+    target_unit = unit or "ALL"
+    seed_godown_stock_defaults(target_unit)
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT brand, sku, boxes, multiplier, pieces, unit, updated_by, updated_at
+            FROM godown_stock
+            WHERE unit = ? OR unit = 'ALL'
+        """, (target_unit,))
+        rows = cursor.fetchall()
+
+        stock_map = {"MASHAL": {}, "FAUJI": {}}
+        for r in rows:
+            brand = (r["brand"] or "MASHAL").upper()
+            sku_name = (r["sku"] or "").strip()
+            if brand not in stock_map:
+                stock_map[brand] = {}
+            stock_map[brand][sku_name.upper()] = {
+                "brand": brand,
+                "sku": sku_name,
+                "boxes": int(r["boxes"] or 0),
+                "multiplier": int(r["multiplier"] or get_sku_multiplier(sku_name)),
+                "pieces": int(r["pieces"] or 0),
+                "unit": r["unit"] or target_unit,
+                "updatedBy": r["updated_by"] or "admin",
+                "updatedAt": r["updated_at"] or ""
+            }
+        return stock_map
+    except Exception as e:
+        logger.error(f"Error fetching godown stock: {e}")
+        return {"MASHAL": {}, "FAUJI": {}}
+    finally:
+        conn.close()
+
+def update_single_godown_stock(brand: str, sku: str, boxes: int, unit: str = "ALL", updated_by: str = "admin") -> Dict[str, Any]:
+    """Updates stock for a single SKU in godown and recalculates pieces."""
+    clean_brand = str(brand or "MASHAL").strip().upper()
+    clean_sku = str(sku or "").strip()
+    clean_unit = str(unit or "ALL").strip()
+    boxes = max(0, int(boxes or 0))
+    multiplier = get_sku_multiplier(clean_sku)
+    pieces = boxes * multiplier
+
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+                INSERT INTO godown_stock (brand, sku, boxes, multiplier, pieces, unit, updated_by, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'))
+                ON CONFLICT(brand, sku, unit) DO UPDATE SET
+                    boxes = excluded.boxes,
+                    multiplier = excluded.multiplier,
+                    pieces = excluded.pieces,
+                    updated_by = excluded.updated_by,
+                    updated_at = excluded.updated_at
+            """, (clean_brand, clean_sku, boxes, multiplier, pieces, clean_unit, updated_by))
+        return {
+            "brand": clean_brand,
+            "sku": clean_sku,
+            "boxes": boxes,
+            "multiplier": multiplier,
+            "pieces": pieces,
+            "unit": clean_unit,
+            "updatedBy": updated_by
+        }
+    finally:
+        conn.close()
+
+def bulk_update_godown_stock(items: List[Dict[str, Any]], unit: str = "ALL", updated_by: str = "admin") -> int:
+    """Updates multiple SKUs in a single database transaction."""
+    clean_unit = str(unit or "ALL").strip()
+    conn = get_connection()
+    updated_count = 0
+    try:
+        with conn:
+            for it in items:
+                clean_brand = str(it.get("brand") or "MASHAL").strip().upper()
+                clean_sku = str(it.get("sku") or "").strip()
+                if not clean_sku:
+                    continue
+                boxes = max(0, int(it.get("boxes") or 0))
+                multiplier = get_sku_multiplier(clean_sku)
+                pieces = boxes * multiplier
+                conn.execute("""
+                    INSERT INTO godown_stock (brand, sku, boxes, multiplier, pieces, unit, updated_by, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'))
+                    ON CONFLICT(brand, sku, unit) DO UPDATE SET
+                        boxes = excluded.boxes,
+                        multiplier = excluded.multiplier,
+                        pieces = excluded.pieces,
+                        updated_by = excluded.updated_by,
+                        updated_at = excluded.updated_at
+                """, (clean_brand, clean_sku, boxes, multiplier, pieces, clean_unit, updated_by))
+                updated_count += 1
+        return updated_count
+    finally:
+        conn.close()
+
+def get_today_yesterday_brand_orders(unit: Optional[str] = "ALL") -> Dict[str, Any]:
+    """
+    📅 Computes Today's and Yesterday's Orders, Boxes & Pieces separately for Brand MASHAL and Brand FAUJI.
+    Dynamically filters by active unit (or ALL).
+    Uses IST dates strictly.
+    """
+    ist_tz = timezone(timedelta(hours=5, minutes=30))
+    now = datetime.now(timezone.utc).astimezone(ist_tz)
+    yesterday = now - timedelta(days=1)
+
+    today_str = now.strftime("%Y-%m-%d")
+    today_ddmm = now.strftime("%d/%m/%Y")
+    yest_str = yesterday.strftime("%Y-%m-%d")
+    yest_ddmm = yesterday.strftime("%d/%m/%Y")
+
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        query = "SELECT order_id, order_date, formatted_timestamp, created_at, unit, items_json FROM orders"
+        params = []
+        if unit and unit != "ALL":
+            query += " WHERE LOWER(unit) = LOWER(?)"
+            params.append(unit)
+        cur.execute(query, params)
+        rows = cur.fetchall()
+    finally:
+        conn.close()
+
+    res = {
+        "today": {
+            "date": today_str,
+            "displayDate": now.strftime("%d %b"),
+            "mashal": {"orders": 0, "boxes": 0, "pieces": 0},
+            "fauji": {"orders": 0, "boxes": 0, "pieces": 0}
+        },
+        "yesterday": {
+            "date": yest_str,
+            "displayDate": yesterday.strftime("%d %b"),
+            "mashal": {"orders": 0, "boxes": 0, "pieces": 0},
+            "fauji": {"orders": 0, "boxes": 0, "pieces": 0}
+        }
+    }
+
+    for r in rows:
+        oid, o_date, f_ts, c_at, u_val, items_json = r
+        d_str = str(f_ts or o_date or c_at or "").strip()
+        is_today = (today_str in d_str) or (today_ddmm in d_str)
+        is_yest = (yest_str in d_str) or (yest_ddmm in d_str)
+
+        if not is_today and not is_yest:
+            continue
+
+        try:
+            items = json.loads(items_json) if items_json else []
+        except Exception:
+            items = []
+
+        m_bxs, m_pcs = 0, 0
+        f_bxs, f_pcs = 0, 0
+
+        for it in items:
+            raw_b = str(it.get("brand") or "Mashal").lower().strip()
+            raw_n = str(it.get("name") or it.get("item") or "").lower().strip()
+            bxs = int(it.get("boxes") or 0)
+            if bxs <= 0:
+                continue
+            mult = int(it.get("multiplier") or get_sku_multiplier(raw_n))
+            pcs = int(it.get("pieces") or (bxs * mult))
+
+            if "fauji" in raw_b or "fauji" in raw_n:
+                f_bxs += bxs
+                f_pcs += pcs
+            else:
+                m_bxs += bxs
+                m_pcs += pcs
+
+        target = res["today"] if is_today else res["yesterday"]
+        if m_bxs > 0:
+            target["mashal"]["orders"] += 1
+            target["mashal"]["boxes"] += m_bxs
+            target["mashal"]["pieces"] += m_pcs
+        if f_bxs > 0:
+            target["fauji"]["orders"] += 1
+            target["fauji"]["boxes"] += f_bxs
+            target["fauji"]["pieces"] += f_pcs
+
+    return res
+
+def get_inventory_production_analysis(unit: Optional[str] = "ALL") -> Dict[str, Any]:
+    """
+    🏭 Combines Pending Demand with Godown Stock to calculate Net Production Deficit.
+    Tells factory managers exactly how much stock is in godown and how much MORE needs to be produced.
+    """
+    wh_summary = get_warehouse_production_summary(unit=unit)
+    godown_map = get_godown_stock(unit=unit)
+    today_yest_kpis = get_today_yesterday_brand_orders(unit=unit)
+
+    brands_result = {}
+    grand_godown_boxes = 0
+    grand_godown_pieces = 0
+    grand_pending_boxes = wh_summary.get("totalBoxes", 0)
+    grand_pending_pieces = wh_summary.get("totalPieces", 0)
+    grand_deficit_boxes = 0
+    grand_deficit_pieces = 0
+    grand_surplus_boxes = 0
+    grand_surplus_pieces = 0
+
+    for brand_key, master_list in [("MASHAL", MASHAL_MASTER_SKUS), ("FAUJI", FAUJI_MASTER_SKUS)]:
+        brand_wh = wh_summary.get("brands", {}).get(brand_key, {})
+        brand_wh_skus = {s["sku"].upper(): s for s in brand_wh.get("skus", [])}
+        brand_stock = godown_map.get(brand_key, {})
+
+        sku_list = []
+        b_godown_bxs = 0
+        b_godown_pcs = 0
+        b_pending_bxs = brand_wh.get("totalBoxes", 0)
+        b_pending_pcs = brand_wh.get("totalPieces", 0)
+        b_deficit_bxs = 0
+        b_deficit_pcs = 0
+        b_surplus_bxs = 0
+        b_surplus_pcs = 0
+
+        for sku in master_list:
+            mult = get_sku_multiplier(sku)
+            stock_entry = brand_stock.get(sku.upper()) or {}
+            g_bxs = int(stock_entry.get("boxes") or 0)
+            g_pcs = g_bxs * mult
+
+            wh_entry = brand_wh_skus.get(sku.upper()) or {}
+            p_bxs = int(wh_entry.get("boxes") or 0)
+            p_pcs = int(wh_entry.get("pieces") or (p_bxs * mult))
+
+            # Deficit: exact how many more boxes the factory must produce
+            d_bxs = max(0, p_bxs - g_bxs)
+            d_pcs = d_bxs * mult
+
+            # Surplus: how much will remain in godown after fulfilling pending orders
+            s_bxs = max(0, g_bxs - p_bxs)
+            s_pcs = s_bxs * mult
+
+            if p_bxs == 0 and g_bxs == 0:
+                status = "IDLE"
+            elif p_bxs == 0 and g_bxs > 0:
+                status = "IN_STOCK"
+            elif g_bxs >= p_bxs:
+                status = "SUFFICIENT"
+            elif g_bxs > 0:
+                status = "PARTIAL_DEFICIT"
+            else:
+                status = "FULL_DEFICIT"
+
+            b_godown_bxs += g_bxs
+            b_godown_pcs += g_pcs
+            b_deficit_bxs += d_bxs
+            b_deficit_pcs += d_pcs
+            b_surplus_bxs += s_bxs
+            b_surplus_pcs += s_pcs
+
+            sku_list.append({
+                "sku": sku,
+                "multiplier": mult,
+                "godownBoxes": g_bxs,
+                "godownPieces": g_pcs,
+                "pendingBoxes": p_bxs,
+                "pendingPieces": p_pcs,
+                "deficitBoxes": d_bxs,
+                "deficitPieces": d_pcs,
+                "surplusBoxes": s_bxs,
+                "surplusPieces": s_pcs,
+                "status": status,
+                "updatedAt": stock_entry.get("updatedAt", "")
+            })
+
+        grand_godown_boxes += b_godown_bxs
+        grand_godown_pieces += b_godown_pcs
+        grand_deficit_boxes += b_deficit_bxs
+        grand_deficit_pieces += b_deficit_pcs
+        grand_surplus_boxes += b_surplus_bxs
+        grand_surplus_pieces += b_surplus_pcs
+
+        brands_result[brand_key] = {
+            "brandName": brand_key,
+            "godownBoxes": b_godown_bxs,
+            "godownPieces": b_godown_pcs,
+            "pendingBoxes": b_pending_bxs,
+            "pendingPieces": b_pending_pcs,
+            "deficitBoxes": b_deficit_bxs,
+            "deficitPieces": b_deficit_pcs,
+            "surplusBoxes": b_surplus_bxs,
+            "surplusPieces": b_surplus_pcs,
+            "skus": sku_list
+        }
+
+    coverage_pct = round((grand_godown_boxes / grand_pending_boxes * 100), 1) if grand_pending_boxes > 0 else 100.0
+
+    return {
+        "unit": unit or "ALL",
+        "pendingOrdersCount": wh_summary.get("pendingOrdersCount", 0),
+        "totalGodownBoxes": grand_godown_boxes,
+        "totalGodownPieces": grand_godown_pieces,
+        "totalPendingBoxes": grand_pending_boxes,
+        "totalPendingPieces": grand_pending_pieces,
+        "totalDeficitBoxes": grand_deficit_boxes,
+        "totalDeficitPieces": grand_deficit_pieces,
+        "totalSurplusBoxes": grand_surplus_boxes,
+        "totalSurplusPieces": grand_surplus_pieces,
+        "coveragePercent": min(100.0, coverage_pct),
+        "todayYesterday": today_yest_kpis,
+        "brands": brands_result
     }
 
 if __name__ == "__main__":

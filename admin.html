@@ -1261,8 +1261,8 @@
       white-space: nowrap;
       color: #0f172a;
     }
-    .product-item-chip.mashal { border-left: 3px solid #dc2626; }
-    .product-item-chip.fauji { border-left: 3px solid #16a34a; }
+    .product-item-chip.mashal { border-left: 3px solid #eab308; background: #fefce8; }
+    .product-item-chip.fauji { border-left: 3px solid #16a34a; background: #f0fdf4; }
     .product-item-name {
       font-weight: 600;
       color: #1e293b;
@@ -1616,13 +1616,14 @@
       text-align: center;
     }
     .login-card .brand-img {
-      width: 68px;
-      height: 68px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--card-border);
-      padding: 4px;
+      height: 52px;
+      width: auto;
+      max-width: 80px;
+      border: none;
+      padding: 0;
       margin: 0 auto 14px auto;
       object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
     }
     .login-card h2 {
       font-size: 19px;
@@ -1867,23 +1868,44 @@
     }
 
     .sidebar-brand {
-      padding: 14px 16px;
+      padding: 12px 14px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.25);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0.28) 100%);
+    }
+
+    .sidebar-brand-card {
+      background: transparent;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+    .sidebar-brand-card:hover {
+      transform: scale(1.04);
     }
 
     .sidebar-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      background: #ffffff;
-      padding: 2px;
+      height: 42px;
+      width: auto;
+      max-width: 68px;
       object-fit: contain;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-      flex-shrink: 0;
+      display: block;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+    }
+
+    .header-brand-logo-card {
+      display: none !important;
+    }
+
+    .header-brand-logo {
+      display: none !important;
     }
 
     .sidebar-brand-text {
@@ -2476,6 +2498,283 @@
       }
     }
 
+    /* 🏭 WAREHOUSE GODOWN AVAILABLE STOCK & NET PRODUCTION DEFICIT STYLES */
+    .warehouse-subnav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      border: 1px solid #e2e8f0;
+    }
+    .warehouse-view-tabs {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+    }
+    .wh-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      background: transparent;
+      border: none;
+      outline: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: inherit;
+    }
+    .wh-tab-btn:hover {
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .wh-tab-btn.active {
+      background: #ffffff;
+      color: #2563eb;
+      font-weight: 800;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .stock-analysis-banner {
+      background: linear-gradient(135deg, #091e3a 0%, #102a4e 50%, #0c356a 100%) !important;
+      color: #ffffff !important;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      box-shadow: 0 4px 16px rgba(12, 53, 106, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    @media (max-width: 1200px) {
+      .stock-analysis-banner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .stock-analysis-banner {
+        grid-template-columns: 1fr;
+      }
+    }
+    .stock-stat-card {
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    .stock-stat-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .stock-stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #93c5fd;
+      font-weight: 800;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .brand-dot-mashal {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .brand-dot-fauji {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .date-badge-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.14);
+      color: #e2e8f0;
+      margin-left: auto;
+      letter-spacing: 0.3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .stock-stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.15;
+    }
+    .stock-stat-sub {
+      font-size: 11.5px;
+      color: #cbd5e1;
+      font-weight: 600;
+      margin-top: 5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .godown-stock-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .godown-stock-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 9px 12px;
+      border-bottom: 1.5px solid #e2e8f0;
+      text-align: left;
+    }
+    .godown-stock-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    .godown-stock-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    .godown-stock-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .godown-stock-input {
+      width: 82px;
+      padding: 5px 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      text-align: right;
+      transition: all 0.15s ease;
+    }
+    .godown-stock-input:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+      background: #f0f9ff;
+    }
+    .godown-pcs-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #0369a1;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .badge-deficit {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 800;
+      color: #b91c1c;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .badge-surplus {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 800;
+      color: #047857;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .badge-neutral {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+    .deficit-sub {
+      font-size: 10px;
+      font-weight: 700;
+      color: #dc2626;
+      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .demand-bxs {
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      color: #1e293b;
+    }
+    .demand-pcs-sub {
+      font-size: 10.5px;
+      color: #64748b;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .mult-tag {
+      font-size: 9.5px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #475569;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-left: 5px;
+      display: inline-block;
+    }
+    .stock-save-toast {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #059669;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .stock-save-toast.visible {
+      opacity: 1;
+    }
+
   </style>
 </head>
 <body>
@@ -2488,7 +2787,9 @@
   <aside class="admin-sidebar" id="adminSidebar" style="display: none;">
     <!-- Brand / Header -->
     <div class="sidebar-brand">
-      <img src="/images/mashal_official_logo.png" alt="Mashal" class="sidebar-logo">
+      <div class="sidebar-brand-card" title="Mashal Kachi Ghani Mustard Oil">
+        <img src="/images/mashal_mobile_logo.png" alt="Mashal Official Brand Logo" class="sidebar-logo">
+      </div>
       <div class="sidebar-brand-text">
         <span class="sidebar-brand-title">Khandelia Mills</span>
         <span class="sidebar-brand-sub">Enterprise Order Suite</span>
@@ -2522,7 +2823,7 @@
         <span class="nav-badge blue" id="sideBadgeWarehouse" title="Active Pending Orders to Pack">0</span>
       </button>
 
-      <div class="sidebar-section-title">ADMINISTRATION</div>
+      <div class="sidebar-section-title" id="sidebarAdminSectionTitle">ADMINISTRATION</div>
 
       <!-- 3. User Management -->
       <button class="sidebar-nav-item users" id="sideNavUsers" onclick="selectSidebarNav('USERS')" title="Manage user roles, accounts & mobile authorizations">
@@ -2548,7 +2849,6 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
         </span>
         <span class="nav-label">Permissions Matrix</span>
-        <span class="nav-badge green" id="sideBadgePermissions" title="6 System Roles Configured (RBAC)">RBAC</span>
       </button>
 
       <!-- 6. System Logs -->
@@ -2614,9 +2914,9 @@
     </div>
 
     <div class="header-right" id="headerRight" style="display: none;">
-      <div class="db-source-pill" title="100% Sourced from permanent SQLite orders.db (Zero delay)">
+      <div class="db-source-pill" title="System Operational & Live Sync Active">
         <span class="db-dot"></span>
-        <span>SQLite orders.db</span>
+        <span>System Live</span>
       </div>
       <div id="roleBadgeContainer"></div>
       <button class="btn-logout" onclick="adminLogout()" title="Logout from system">
@@ -2697,109 +2997,244 @@
     </div>
   </div>
 
-  <!-- 🏭 3. WAREHOUSE PRODUCTION & PACKING SUMMARY (PENDING ORDERS ONLY) -->
+  <!-- 🏭 3. WAREHOUSE PRODUCTION, GODOWN STOCK & PACKING SUMMARY -->
   <div class="warehouse-section" id="warehouseSection" style="display: none;">
-    <div class="warehouse-header-bar" onclick="toggleWarehouseSection()">
+    <div class="warehouse-header-bar" onclick="event.stopPropagation()">
       <div class="warehouse-title-wrap">
         <h2>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; color: #2563eb;"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-          <span>Warehouse Production & Packing Summary</span>
+          <span>Factory Production & Warehouse Management</span>
         </h2>
-        <span class="badge-pill status-pending" style="font-size: 11px;">
-          <span class="badge-dot amber"></span>
-          <span>PENDING ORDERS ONLY</span>
-        </span>
+        <div class="warehouse-view-tabs">
+          <button type="button" class="wh-tab-btn active" id="whTabStockDeficit" onclick="switchWarehouseSubTab('DEFICIT')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <span>Godown Stock & Net To Produce (Deficit)</span>
+          </button>
+          <button type="button" class="wh-tab-btn" id="whTabPackingQueue" onclick="switchWarehouseSubTab('QUEUE')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></svg>
+            <span>Pending Orders Packing Queue</span>
+          </button>
+        </div>
       </div>
-      <div class="warehouse-header-actions" onclick="event.stopPropagation()">
-        <button class="btn-action-icon" onclick="printWarehouseSummary()" title="Print packing sheet for factory clipboard">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
-          <span>Print Packing Sheet</span>
+      <div class="warehouse-header-actions">
+        <span class="stock-save-toast" id="stockSaveToast">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Stock Saved</span>
+        </span>
+        <button class="btn-action-icon success" id="btnSaveGodownStock" onclick="saveAllGodownStock()" title="Save all godown stock counts to database">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <span style="font-weight: 700;">Save Godown Stock</span>
         </button>
-        <button class="btn-action-icon" id="btnToggleWarehouse" onclick="toggleWarehouseSection()">
-          <span id="warehouseToggleIcon">▲</span>
-          <span id="warehouseToggleText">Collapse</span>
+        <button class="btn-action-icon primary" onclick="printWarehouseSummary()" title="Print factory clipboard packing sheet">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+          <span style="font-weight: 700;">Print Sheet</span>
         </button>
       </div>
     </div>
 
     <div class="warehouse-body-content" id="warehouseBodyContent">
-      <!-- Warehouse Dispatch Queue Banner -->
-      <div class="warehouse-grand-banner">
-        <div class="banner-stat-item">
-          <span class="stat-label">Pending Orders Queue</span>
-          <span class="stat-val" id="whPendingOrdersCount">0 Orders to Pack</span>
-        </div>
-        <div class="banner-stat-item">
-          <span class="stat-label">Active Factory Brands</span>
-          <div style="display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap;">
-            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; display: inline-block;"></span>
-              <span>MASHAL: 14 Packaging SKUs</span>
-            </span>
-            <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80; display: inline-block;"></span>
-              <span>FAUJI: 6 Packaging SKUs</span>
-            </span>
+      <!-- 🏭 1. GODOWN STOCK & NET PRODUCTION DEFICIT ANALYSIS (NEW TABLE REQUESTED) -->
+      <div id="warehouseStockDeficitView">
+        <div class="stock-analysis-banner">
+          <!-- 1. TODAY: MASHAL -->
+          <div class="stock-stat-card">
+            <div class="stock-stat-label">
+              <span class="brand-dot-mashal"></span>
+              <span style="color: #93c5fd;">Today: MASHAL Orders</span>
+              <span class="date-badge-pill" id="badgeDateTodayMashal">Today</span>
+            </div>
+            <div class="stock-stat-val" style="color: #38bdf8;">
+              <span id="stkTodayMashalBoxes">0</span> <small style="font-size: 13px; font-weight: 700; color: #bae6fd;">Bxs</small>
+            </div>
+            <div class="stock-stat-sub">
+              <strong id="stkTodayMashalOrders" style="color: #ffffff;">0 Orders</strong> • <span id="stkTodayMashalPieces">0</span> Pieces
+            </div>
+          </div>
+
+          <!-- 2. TODAY: FAUJI -->
+          <div class="stock-stat-card">
+            <div class="stock-stat-label">
+              <span class="brand-dot-fauji"></span>
+              <span style="color: #a7f3d0;">Today: FAUJI Orders</span>
+              <span class="date-badge-pill" id="badgeDateTodayFauji">Today</span>
+            </div>
+            <div class="stock-stat-val" style="color: #4ade80;">
+              <span id="stkTodayFaujiBoxes">0</span> <small style="font-size: 13px; font-weight: 700; color: #bbf7d0;">Bxs</small>
+            </div>
+            <div class="stock-stat-sub">
+              <strong id="stkTodayFaujiOrders" style="color: #ffffff;">0 Orders</strong> • <span id="stkTodayFaujiPieces">0</span> Pieces
+            </div>
+          </div>
+
+          <!-- 3. YESTERDAY: MASHAL -->
+          <div class="stock-stat-card">
+            <div class="stock-stat-label">
+              <span class="brand-dot-mashal" style="opacity: 0.7;"></span>
+              <span style="color: #cbd5e1;">Yesterday: MASHAL</span>
+              <span class="date-badge-pill" id="badgeDateYestMashal">Yesterday</span>
+            </div>
+            <div class="stock-stat-val" style="color: #93c5fd;">
+              <span id="stkYestMashalBoxes">0</span> <small style="font-size: 13px; font-weight: 700; color: #bfdbfe;">Bxs</small>
+            </div>
+            <div class="stock-stat-sub">
+              <strong id="stkYestMashalOrders" style="color: #ffffff;">0 Orders</strong> • <span id="stkYestMashalPieces">0</span> Pieces
+            </div>
+          </div>
+
+          <!-- 4. YESTERDAY: FAUJI -->
+          <div class="stock-stat-card">
+            <div class="stock-stat-label">
+              <span class="brand-dot-fauji" style="opacity: 0.7;"></span>
+              <span style="color: #cbd5e1;">Yesterday: FAUJI</span>
+              <span class="date-badge-pill" id="badgeDateYestFauji">Yesterday</span>
+            </div>
+            <div class="stock-stat-val" style="color: #a7f3d0;">
+              <span id="stkYestFaujiBoxes">0</span> <small style="font-size: 13px; font-weight: 700; color: #d1fae5;">Bxs</small>
+            </div>
+            <div class="stock-stat-sub">
+              <strong id="stkYestFaujiOrders" style="color: #ffffff;">0 Orders</strong> • <span id="stkYestFaujiPieces">0</span> Pieces
+            </div>
           </div>
         </div>
-        <div class="banner-stat-item" style="text-align: right;">
-          <span class="stat-label">Factory Packing Status</span>
-          <span class="stat-val" style="font-size: 15px; color: #a7f3d0; font-weight: 700;">Active Production Queue</span>
+
+        <!-- Two Brand Cards for Stock & Deficit (MASHAL & FAUJI) -->
+        <div class="warehouse-brands-grid">
+          <!-- Brand: MASHAL -->
+          <div class="brand-production-card">
+            <div class="brand-card-header mashal">
+              <h3>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #2563eb; display: inline-block;"></span>
+                <span>Brand: MASHAL (Godown Stock vs Demand)</span>
+              </h3>
+              <div class="brand-summary-pills">
+                <span class="brand-stat-pill" id="stkMashalGodownSummary" style="color: #0369a1; font-weight: 800;">0 Bxs Stock</span>
+                <span class="brand-stat-pill" id="stkMashalDeficitSummary" style="color: #b91c1c; font-weight: 800;">0 Bxs Deficit</span>
+              </div>
+            </div>
+            <table class="godown-stock-table">
+              <thead>
+                <tr>
+                  <th style="width: 32%;">PRODUCT & PACKAGING</th>
+                  <th style="width: 30%;">🏢 GODOWN STOCK</th>
+                  <th style="width: 18%; text-align: right;">📋 DEMAND</th>
+                  <th style="width: 20%; text-align: right;">⚡ TO PRODUCE</th>
+                </tr>
+              </thead>
+              <tbody id="godownMashalTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Brand: FAUJI -->
+          <div class="brand-production-card">
+            <div class="brand-card-header fauji">
+              <h3>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #059669; display: inline-block;"></span>
+                <span>Brand: FAUJI (Godown Stock vs Demand)</span>
+              </h3>
+              <div class="brand-summary-pills">
+                <span class="brand-stat-pill" id="stkFaujiGodownSummary" style="color: #047857; font-weight: 800;">0 Bxs Stock</span>
+                <span class="brand-stat-pill" id="stkFaujiDeficitSummary" style="color: #b91c1c; font-weight: 800;">0 Bxs Deficit</span>
+              </div>
+            </div>
+            <table class="godown-stock-table">
+              <thead>
+                <tr>
+                  <th style="width: 32%;">PRODUCT & PACKAGING</th>
+                  <th style="width: 30%;">🏢 GODOWN STOCK</th>
+                  <th style="width: 18%; text-align: right;">📋 DEMAND</th>
+                  <th style="width: 20%; text-align: right;">⚡ TO PRODUCE</th>
+                </tr>
+              </thead>
+              <tbody id="godownFaujiTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- Brands Grid: Brand MASHAL (14 SKUs) & Brand FAUJI (5 SKUs) -->
-      <div class="warehouse-brands-grid">
-        <!-- Brand: MASHAL -->
-        <div class="brand-production-card">
-          <div class="brand-card-header mashal">
-            <h3>
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #2563eb; display: inline-block;"></span>
-              <span>Brand: MASHAL</span>
-            </h3>
-            <div class="brand-summary-pills">
-              <span class="brand-stat-pill" id="whMashalTotalBoxes" style="color: #1e40af; font-weight: 800;">0 Bxs</span>
-              <span class="brand-stat-pill" id="whMashalTotalPieces" style="color: #0284c7; font-weight: 800;">0 Pcs</span>
+      <!-- 📦 2. PENDING ORDERS PACKING QUEUE VIEW (ORIGINAL VIEW) -->
+      <div id="warehousePackingQueueView" style="display: none;">
+        <!-- Warehouse Dispatch Queue Banner -->
+        <div class="warehouse-grand-banner">
+          <div class="banner-stat-item">
+            <span class="stat-label">Pending Orders Queue</span>
+            <span class="stat-val" id="whPendingOrdersCount">0 Orders to Pack</span>
+          </div>
+          <div class="banner-stat-item">
+            <span class="stat-label">Active Factory Brands</span>
+            <div style="display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap;">
+              <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; display: inline-block;"></span>
+                <span>MASHAL: 14 Packaging SKUs</span>
+              </span>
+              <span style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80; display: inline-block;"></span>
+                <span>FAUJI: 6 Packaging SKUs</span>
+              </span>
             </div>
           </div>
-          <table class="production-table">
-            <thead>
-              <tr>
-                <th style="width: 50%;">PRODUCT TYPE & PACKAGING</th>
-                <th style="width: 25%; text-align: right;">BOXES TO PREPARE</th>
-                <th style="width: 25%; text-align: right;">TOTAL PIECES</th>
-              </tr>
-            </thead>
-            <tbody id="whMashalTableBody">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
+          <div class="banner-stat-item" style="text-align: right;">
+            <span class="stat-label">Factory Packing Status</span>
+            <span class="stat-val" style="font-size: 15px; color: #a7f3d0; font-weight: 700;">Active Production Queue</span>
+          </div>
         </div>
 
-        <!-- Brand: FAUJI -->
-        <div class="brand-production-card">
-          <div class="brand-card-header fauji">
-            <h3>
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #059669; display: inline-block;"></span>
-              <span>Brand: FAUJI</span>
-            </h3>
-            <div class="brand-summary-pills">
-              <span class="brand-stat-pill" id="whFaujiTotalBoxes" style="color: #065f46; font-weight: 800;">0 Bxs</span>
-              <span class="brand-stat-pill" id="whFaujiTotalPieces" style="color: #059669; font-weight: 800;">0 Pcs</span>
+        <!-- Brands Grid: Brand MASHAL (14 SKUs) & Brand FAUJI (6 SKUs) -->
+        <div class="warehouse-brands-grid">
+          <!-- Brand: MASHAL -->
+          <div class="brand-production-card">
+            <div class="brand-card-header mashal">
+              <h3>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #2563eb; display: inline-block;"></span>
+                <span>Brand: MASHAL</span>
+              </h3>
+              <div class="brand-summary-pills">
+                <span class="brand-stat-pill" id="whMashalTotalBoxes" style="color: #1e40af; font-weight: 800;">0 Bxs</span>
+                <span class="brand-stat-pill" id="whMashalTotalPieces" style="color: #0284c7; font-weight: 800;">0 Pcs</span>
+              </div>
             </div>
+            <table class="production-table">
+              <thead>
+                <tr>
+                  <th style="width: 50%;">PRODUCT TYPE & PACKAGING</th>
+                  <th style="width: 25%; text-align: right;">BOXES TO PREPARE</th>
+                  <th style="width: 25%; text-align: right;">TOTAL PIECES</th>
+                </tr>
+              </thead>
+              <tbody id="whMashalTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
           </div>
-          <table class="production-table">
-            <thead>
-              <tr>
-                <th style="width: 50%;">PRODUCT TYPE & PACKAGING</th>
-                <th style="width: 25%; text-align: right;">BOXES TO PREPARE</th>
-                <th style="width: 25%; text-align: right;">TOTAL PIECES</th>
-              </tr>
-            </thead>
-            <tbody id="whFaujiTableBody">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
+
+          <!-- Brand: FAUJI -->
+          <div class="brand-production-card">
+            <div class="brand-card-header fauji">
+              <h3>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #059669; display: inline-block;"></span>
+                <span>Brand: FAUJI</span>
+              </h3>
+              <div class="brand-summary-pills">
+                <span class="brand-stat-pill" id="whFaujiTotalBoxes" style="color: #065f46; font-weight: 800;">0 Bxs</span>
+                <span class="brand-stat-pill" id="whFaujiTotalPieces" style="color: #059669; font-weight: 800;">0 Pcs</span>
+              </div>
+            </div>
+            <table class="production-table">
+              <thead>
+                <tr>
+                  <th style="width: 50%;">PRODUCT TYPE & PACKAGING</th>
+                  <th style="width: 25%; text-align: right;">BOXES TO PREPARE</th>
+                  <th style="width: 25%; text-align: right;">TOTAL PIECES</th>
+                </tr>
+              </thead>
+              <tbody id="whFaujiTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -2987,21 +3422,7 @@
       </div>
     </div>
 
-    <!-- 🔒 Security Notice Banner -->
-    <div class="user-auth-banner">
-      <div style="flex-shrink: 0; color: #2563eb; margin-top: 2px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-      </div>
-      <div>
-        <div style="font-size: 14px; font-weight: 800; color: #1e40af; margin-bottom: 3px;">Centralized Access & Role Authorization System Active</div>
-        <div style="font-size: 12.5px; color: #1e3a8a; line-height: 1.5;">
-          • <strong>Customer Portal:</strong> Self-registered customers are automatically added below with exact timestamps.<br>
-          • <strong>Area Sales Manager (ASM):</strong> Mobile numbers registered below or on self-login can access the APK or Web portal.<br>
-          • <strong>Admin / Manager / Analyser:</strong> Desktop-only portal accounts with designated role permissions.<br>
-          • <strong>Status Control:</strong> Blocking an account immediately revokes all device sessions and rejects subsequent API requests (403 Forbidden).
-        </div>
-      </div>
-    </div>
+
 
     <!-- Filter & Search Toolbar for Users -->
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; background: #ffffff; padding: 12px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); max-width: 100%; box-sizing: border-box;">
@@ -3120,21 +3541,23 @@
       <table class="orders-table" style="width: 100%;">
         <thead>
           <tr>
-            <th style="min-width: 170px;">Role / Persona</th>
-            <th class="center" style="min-width: 110px;">Add Order</th>
-            <th class="center" style="min-width: 110px;">Edit Unit</th>
-            <th class="center" style="min-width: 110px;">Confirm SO</th>
-            <th class="center" style="min-width: 110px;">Delete Order</th>
-            <th class="center" style="min-width: 110px;">Block User</th>
-            <th class="center" style="min-width: 110px;">Manage Units</th>
-            <th class="center" style="min-width: 110px;">View Logs</th>
-            <th class="center" style="min-width: 110px;">Export CSV</th>
+            <th style="min-width: 220px;">Role / Persona</th>
+            <th class="center" style="min-width: 95px;">Add Order</th>
+            <th class="center" style="min-width: 95px;">Edit Unit</th>
+            <th class="center" style="min-width: 95px;">Confirm SO</th>
+            <th class="center" style="min-width: 95px;">Delete Order</th>
+            <th class="center" style="min-width: 95px;">Block User</th>
+            <th class="center" style="min-width: 125px; background: rgba(147, 51, 234, 0.05); color: #7e22ce;">User Mgmt</th>
+            <th class="center" style="min-width: 125px; background: rgba(217, 119, 6, 0.05); color: #b45309;">Unit Mgmt</th>
+            <th class="center" style="min-width: 135px; background: rgba(16, 185, 129, 0.05); color: #047857;">Permissions Tab</th>
+            <th class="center" style="min-width: 120px; background: rgba(99, 102, 241, 0.05); color: #4338ca;">System Logs</th>
+            <th class="center" style="min-width: 95px;">Export CSV</th>
             <th style="min-width: 170px;">Audit & Last Modified</th>
           </tr>
         </thead>
         <tbody id="permissionsTableBody">
           <tr>
-            <td colspan="10" class="empty-state-cell">Loading permissions matrix from database...</td>
+            <td colspan="12" class="empty-state-cell">Loading permissions matrix from database...</td>
           </tr>
         </tbody>
       </table>
@@ -3196,7 +3619,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
           <span>System Logs & Security Audit Trail</span>
         </h2>
-        <p style="font-size: 13px; color: var(--text-secondary);">Permanent database audit trail stored in orders.db. Tracks customer registration, OTP events, login attempts, user management, and security alerts.</p>
+        <p style="font-size: 13px; color: var(--text-secondary);">Enterprise security audit trail. Tracks customer registrations, OTP authentications, executive logins, order dispatches, and system actions.</p>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <div style="background: #ede9fe; color: #6d28d9; font-weight: 800; font-size: 13px; padding: 6px 14px; border-radius: 20px; border: 1px solid #ddd6fe;">
@@ -3408,7 +3831,7 @@
   <!-- 🔐 Three Role-Based Login Modal Overlay -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
-      <img src="/images/mashal_official_logo.png" alt="Mashal" class="brand-img">
+      <img src="/images/mashal_mobile_logo.png" alt="Mashal" class="brand-img">
       <h2>Order Management Portal</h2>
       <p>Sign in with your role-based executive credentials</p>
 
@@ -3630,7 +4053,7 @@
       </div>
       <div class="generic-modal-body">
         <div class="git-delete-warning">
-          <strong>CRITICAL WARNING:</strong> This will permanently erase order <strong id="deleteTargetOrderDisplay">#KOGM-XXXX</strong> from the SQLite database and JSON audit log. This action cannot be reversed.
+          <strong>CRITICAL WARNING:</strong> This will permanently erase order <strong id="deleteTargetOrderDisplay">#KOGM-XXXX</strong> from the system. This action cannot be reversed.
         </div>
         <div class="git-delete-prompt">
           To confirm deletion, please type <code id="deleteVerificationTarget">DELETE #KOGM-XXXX</code> in the field below:
@@ -3686,6 +4109,8 @@
     let canDeleteOrders = true;
     let canManageUnits = false;
     let canManageUsers = false;
+    let canManagePermissions = false;
+    let canViewLogs = false;
     let userAssignedUnits = "ALL";
     let activeUnitFilter = "ALL"; // 'ALL', 'Unit 1', 'Unit 2', etc.
     let allWarehouseUnits = [];
@@ -3981,15 +4406,69 @@
         showLoginOverlay();
       }
 
-      // Keyboard navigation for horizontal table scrolling
-      window.addEventListener("keydown", (e) => {
-        if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
-        if (e.key === "ArrowLeft") {
-          scrollTableHorizontally(-180);
-        } else if (e.key === "ArrowRight") {
-          scrollTableHorizontally(180);
+      function isUserTypingInField() {
+        const el = document.activeElement;
+        if (!el) return false;
+        const tag = (el.tagName || "").toUpperCase();
+        if (tag === "INPUT" || tag === "TEXTAREA") {
+          const type = (el.type || "").toLowerCase();
+          return !["checkbox", "radio", "button", "submit", "reset"].includes(type);
         }
-      });
+        if (tag === "SELECT") return true;
+        if (el.isContentEditable) return true;
+        return false;
+      }
+
+      function isAnyOverlayModalVisible() {
+        const modalOverlays = [
+          "loginOverlay",
+          "confirmSoModalOverlay", 
+          "dispatchOrderModalOverlay", 
+          "deleteOrderModalOverlay", 
+          "slipModalOverlay", 
+          "createUserModalOverlay",
+          "changeUnitModalOverlay",
+          "createUnitModalOverlay",
+          "reassignUserUnitModalOverlay",
+          "userManagementModal",
+          "permissionMatrixModal",
+          "unitManagementModal",
+          "systemLogsModal"
+        ];
+        for (const id of modalOverlays) {
+          const m = document.getElementById(id);
+          if (m && window.getComputedStyle(m).display !== "none") {
+            return true;
+          }
+        }
+        const anyVisible = document.querySelector('.modal-overlay:not([style*="display: none"])');
+        if (anyVisible && window.getComputedStyle(anyVisible).display !== "none") {
+          return true;
+        }
+        return false;
+      }
+
+      // Universal Global Keyboard navigation for horizontal table scrolling
+      // Works anywhere on the page automatically WITHOUT needing to click on the table first!
+      document.addEventListener("keydown", (e) => {
+        if (isUserTypingInField()) return;
+        if (isAnyOverlayModalVisible()) return;
+
+        const container = document.getElementById("tableScrollContainer");
+        if (!container) return;
+        const wrapper = document.getElementById("tableCardWrapper");
+        if (wrapper && (wrapper.style.display === "none" || window.getComputedStyle(wrapper).display === "none")) return;
+
+        if (e.key === "ArrowLeft" || e.keyCode === 37) {
+          e.preventDefault();
+          const step = e.repeat ? 160 : 300;
+          scrollTableHorizontally(-step, !e.repeat);
+        } else if (e.key === "ArrowRight" || e.keyCode === 39) {
+          e.preventDefault();
+          const step = e.repeat ? 160 : 300;
+          scrollTableHorizontally(step, !e.repeat);
+        }
+      }, { capture: true });
 
       // Keyboard shortcut: Ctrl + B / Cmd + B to toggle left sidebar
       window.addEventListener("keydown", (e) => {
@@ -4078,6 +4557,28 @@
       if (sbName) sbName.textContent = currentUsername || "Admin";
       if (sbRole) sbRole.textContent = `${roleTitle} • ${unitNote}`;
       if (sbAvatar) sbAvatar.innerHTML = roleIconSvg;
+
+      // 🛡️ DYNAMIC ROLE-BASED VISIBILITY FOR ADMINISTRATION TABS
+      const isSuper = (currentUserRole === "super_admin");
+      const showUsers = Boolean(isSuper || canManageUsers);
+      const showUnits = Boolean(isSuper || canManageUnits);
+      const showPerms = Boolean(isSuper || canManagePermissions);
+      const showLogs = Boolean(isSuper || canViewLogs);
+
+      const navUsers = document.getElementById("sideNavUsers");
+      const navUnits = document.getElementById("sideNavUnits");
+      const navPerms = document.getElementById("sideNavPermissions");
+      const navLogs = document.getElementById("sideNavLogs");
+      const navAdminTitle = document.getElementById("sidebarAdminSectionTitle");
+
+      if (navUsers) navUsers.style.display = showUsers ? "flex" : "none";
+      if (navUnits) navUnits.style.display = showUnits ? "flex" : "none";
+      if (navPerms) navPerms.style.display = showPerms ? "flex" : "none";
+      if (navLogs) navLogs.style.display = showLogs ? "flex" : "none";
+
+      if (navAdminTitle) {
+        navAdminTitle.style.display = (showUsers || showUnits || showPerms || showLogs) ? "block" : "none";
+      }
     }
 
     // Login Handler
@@ -4107,6 +4608,8 @@
           canDeleteOrders = Boolean(data.canDelete);
           canManageUnits = Boolean(data.canManageUnits);
           canManageUsers = Boolean(data.canManageUsers);
+          canManagePermissions = Boolean(data.canManagePermissions);
+          canViewLogs = Boolean(data.canViewLogs);
           userAssignedUnits = data.assignedUnits || "ALL";
 
           if (userAssignedUnits !== "ALL" && !userAssignedUnits.includes(",")) {
@@ -4147,6 +4650,8 @@
           canDeleteOrders = Boolean(profile.canDelete);
           canManageUnits = Boolean(profile.canManageUnits);
           canManageUsers = Boolean(profile.canManageUsers);
+          canManagePermissions = Boolean(profile.canManagePermissions);
+          canViewLogs = Boolean(profile.canViewLogs);
           userAssignedUnits = profile.assignedUnits || "ALL";
 
           if (userAssignedUnits !== "ALL" && !userAssignedUnits.includes(",")) {
@@ -4332,6 +4837,21 @@
 
     // 2 & 4. Status Tab & View Filtering Logic
     function setStatusTab(statusType) {
+      const isSuper = (currentUserRole === "super_admin");
+      if (statusType === "USERS" && !isSuper && !canManageUsers) {
+        showToast("Access Denied: You do not have permission to access User Management", "error");
+        statusType = "ALL";
+      } else if (statusType === "UNITS" && !isSuper && !canManageUnits) {
+        showToast("Access Denied: You do not have permission to access Unit Management", "error");
+        statusType = "ALL";
+      } else if (statusType === "PERMISSIONS" && !isSuper && !canManagePermissions) {
+        showToast("Access Denied: You do not have permission to access Permissions Matrix", "error");
+        statusType = "ALL";
+      } else if (statusType === "LOGS" && !isSuper && !canViewLogs) {
+        showToast("Access Denied: You do not have permission to access System Logs", "error");
+        statusType = "ALL";
+      }
+
       activeStatusTab = statusType;
 
       // Table Header Sub-tabs
@@ -4388,22 +4908,21 @@
           warehouseSection.style.display = "block";
           const whBody = document.getElementById("warehouseBodyContent");
           if (whBody) whBody.style.display = "block";
-          const toggleText = document.getElementById("warehouseToggleText");
-          if (toggleText) toggleText.textContent = "Collapse";
-          const toggleIcon = document.getElementById("warehouseToggleIcon");
-          if (toggleIcon) toggleIcon.textContent = "▲";
         }
         // Refresh warehouse production counts (Strictly PENDING and active unit)
         const pendingOrdersForWarehouse = (allOrdersData || []).filter(o => {
           const isPending = (o.orderStatus || "").toUpperCase() === "PENDING";
           if (!isPending) return false;
           if (activeUnitFilter && activeUnitFilter !== "ALL") {
-            const ordUnit = (o.unit || "Unit 1").trim();
-            if (ordUnit !== activeUnitFilter) return false;
+            const ordUnit = (o.unit || "Unit 1").trim().toLowerCase().replace(/[-\s_]/g, "");
+            const targetUnit = String(activeUnitFilter).trim().toLowerCase().replace(/[-\s_]/g, "");
+            if (ordUnit !== targetUnit) return false;
           }
           return true;
         });
         updateWarehouseProductionSummary(pendingOrdersForWarehouse);
+        loadGodownStockAndAnalysis();
+        switchWarehouseSubTab(_activeWarehouseSubTab);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       } else if (statusType === "USERS") {
@@ -4870,6 +5389,9 @@
       renderUnitSelectorPills();
       currentPage = 1;
       fetchOrdersData();
+      if (activeStatusTab === "WAREHOUSE") {
+        loadGodownStockAndAnalysis();
+      }
     }
 
     function renderUnitsTable() {
@@ -5281,7 +5803,7 @@
 
       const tbody = document.getElementById("permissionsTableBody");
       if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="10" class="empty-state-cell">Loading role permissions matrix...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="empty-state-cell">Loading role permissions matrix...</td></tr>`;
       }
 
       try {
@@ -5293,11 +5815,11 @@
           cachedRolePermissions = data.permissions;
           renderPermissionsMatrix(cachedRolePermissions);
         } else {
-          if (tbody) tbody.innerHTML = `<tr><td colspan="10" class="empty-state-cell" style="color:#ef4444;">Failed to load permissions: ${escapeHtml(data.detail || data.message || "Unknown error")}</td></tr>`;
+          if (tbody) tbody.innerHTML = `<tr><td colspan="12" class="empty-state-cell" style="color:#ef4444;">Failed to load permissions: ${escapeHtml(data.detail || data.message || "Unknown error")}</td></tr>`;
         }
       } catch (err) {
         console.error("Failed to fetch role permissions:", err);
-        if (tbody) tbody.innerHTML = `<tr><td colspan="10" class="empty-state-cell" style="color:#ef4444;">Network error fetching permissions.</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="12" class="empty-state-cell" style="color:#ef4444;">Network error fetching permissions.</td></tr>`;
       }
     }
 
@@ -5306,17 +5828,48 @@
       if (!tbody) return;
 
       if (!perms || perms.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="empty-state-cell">No role definitions configured in database.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="empty-state-cell">No role definitions configured in database.</td></tr>`;
         return;
       }
 
-      const roleDisplayNames = {
-        "super_admin": "👑 Super Admin",
-        "admin": "🛡️ Administrator",
-        "manager": "💼 Manager",
-        "analyst": "📊 Analyst",
-        "asm": "👔 Area Sales Manager (ASM)",
-        "customer": "🛒 Customer Portal"
+      // 🎨 Bespoke Professional SVG Icons & Color Palettes (Replacing consumer emojis)
+      const roleMeta = {
+        "super_admin": {
+          name: "Super Admin",
+          iconSvg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`,
+          bg: "#fffbeb",
+          border: "#fde68a"
+        },
+        "admin": {
+          name: "Administrator",
+          iconSvg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+          bg: "#eff6ff",
+          border: "#bfdbfe"
+        },
+        "manager": {
+          name: "Manager",
+          iconSvg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+          bg: "#eef2ff",
+          border: "#c7d2fe"
+        },
+        "analyst": {
+          name: "Analyst",
+          iconSvg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>`,
+          bg: "#ecfdf5",
+          border: "#a7f3d0"
+        },
+        "asm": {
+          name: "Area Sales Manager (ASM)",
+          iconSvg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+          bg: "#f0f9ff",
+          border: "#bae6fd"
+        },
+        "customer": {
+          name: "Customer Portal",
+          iconSvg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+          bg: "#f5f3ff",
+          border: "#ddd6fe"
+        }
       };
 
       const keys = [
@@ -5325,7 +5878,9 @@
         "can_confirm_so",
         "can_delete_order",
         "can_block_user",
+        "can_manage_users",
         "can_manage_units",
+        "can_manage_permissions",
         "can_view_logs",
         "can_export_csv"
       ];
@@ -5335,7 +5890,12 @@
       let html = "";
       perms.forEach(p => {
         const role = p.role;
-        const displayName = roleDisplayNames[role] || role.toUpperCase();
+        const meta = roleMeta[role] || {
+          name: role.toUpperCase(),
+          iconSvg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>`,
+          bg: "#f8fafc",
+          border: "#e2e8f0"
+        };
         const roleBadge = getRoleBadgeHtml(role);
         const isMaster = (role === "super_admin");
 
@@ -5377,8 +5937,13 @@
         html += `
           <tr>
             <td>
-              <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main); margin-bottom: 2px;">${displayName}</div>
-              <div style="font-size: 11px; color: var(--text-muted);">${roleBadge}</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                <div style="width: 26px; height: 26px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: ${meta.bg}; border: 1px solid ${meta.border}; flex-shrink: 0;">
+                  ${meta.iconSvg}
+                </div>
+                <span style="font-weight: 800; font-size: 13px; color: #0f172a; letter-spacing: -0.2px;">${meta.name}</span>
+              </div>
+              <div style="padding-left: 34px;">${roleBadge}</div>
             </td>
             ${togglesHtml}
             <td style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.3;">
@@ -5421,6 +5986,17 @@
           showToast(data.message || `Permission updated successfully!`, "success");
           const p = cachedRolePermissions.find(item => item.role === role);
           if (p) p[key] = isChecked ? 1 : 0;
+
+          // Reactively update current session permissions if the modified role matches the logged-in user
+          if (role === currentUserRole) {
+            if (key === "can_manage_users") canManageUsers = isChecked;
+            if (key === "can_manage_units") canManageUnits = isChecked;
+            if (key === "can_manage_permissions") canManagePermissions = isChecked;
+            if (key === "can_view_logs") canViewLogs = isChecked;
+            if (key === "can_confirm_so") canConfirmOrders = isChecked;
+            if (key === "can_delete_order") canDeleteOrders = isChecked;
+            updateRoleUI();
+          }
         } else {
           inputEl.checked = !isChecked;
           showToast(data.detail || data.message || "Failed to update permission", "error");
@@ -5976,12 +6552,13 @@
       updateDashboardSummaryCards(dateFilteredOrders);
 
       // 4. Update Warehouse Production Summary (Strictly Pending Orders and active unit)
-      const pendingOrdersForWarehouse = dateFilteredOrders.filter(o => {
+      const pendingOrdersForWarehouse = (allOrdersData || []).filter(o => {
         const isPending = (o.orderStatus || "").toUpperCase() === "PENDING";
         if (!isPending) return false;
         if (activeUnitFilter && activeUnitFilter !== "ALL") {
-          const ordUnit = (o.unit || "Unit 1").trim();
-          if (ordUnit !== activeUnitFilter) return false;
+          const ordUnit = (o.unit || "Unit 1").trim().toLowerCase().replace(/[-\s_]/g, "");
+          const targetUnit = String(activeUnitFilter).trim().toLowerCase().replace(/[-\s_]/g, "");
+          if (ordUnit !== targetUnit) return false;
         }
         return true;
       });
@@ -6110,14 +6687,34 @@
         });
       });
 
+      // Calculate true totals directly from SKU maps to guarantee 100% mathematical match between badges and rows
+      let computedMashalBoxes = 0;
+      let computedMashalPieces = 0;
+      Object.values(mashalMap).forEach(v => {
+        computedMashalBoxes += (v.boxes || 0);
+        computedMashalPieces += (v.pieces || 0);
+      });
+
+      let computedFaujiBoxes = 0;
+      let computedFaujiPieces = 0;
+      Object.values(faujiMap).forEach(v => {
+        computedFaujiBoxes += (v.boxes || 0);
+        computedFaujiPieces += (v.pieces || 0);
+      });
+
+      // Save for professional print packing sheet
+      _lastWarehousePendingOrders = pendingOrders || [];
+      _lastWarehouseMashalMap = mashalMap;
+      _lastWarehouseFaujiMap = faujiMap;
+
       // Update Highlights Banner
       document.getElementById("whPendingOrdersCount").textContent = `${pendingOrders.length.toLocaleString()} Orders to Pack`;
 
-      document.getElementById("whMashalTotalBoxes").textContent = `${mashalBoxes.toLocaleString()} Bxs`;
-      document.getElementById("whMashalTotalPieces").textContent = `${mashalPieces.toLocaleString()} Pcs`;
+      document.getElementById("whMashalTotalBoxes").textContent = `${computedMashalBoxes.toLocaleString()} Bxs`;
+      document.getElementById("whMashalTotalPieces").textContent = `${computedMashalPieces.toLocaleString()} Pcs`;
 
-      document.getElementById("whFaujiTotalBoxes").textContent = `${faujiBoxes.toLocaleString()} Bxs`;
-      document.getElementById("whFaujiTotalPieces").textContent = `${faujiPieces.toLocaleString()} Pcs`;
+      document.getElementById("whFaujiTotalBoxes").textContent = `${computedFaujiBoxes.toLocaleString()} Bxs`;
+      document.getElementById("whFaujiTotalPieces").textContent = `${computedFaujiPieces.toLocaleString()} Pcs`;
 
       // Render Mashal SKUs Table
       const mashalTbody = document.getElementById("whMashalTableBody");
@@ -6182,23 +6779,1124 @@
       faujiTbody.innerHTML = faujiHtml;
     }
 
-    function toggleWarehouseSection() {
-      const content = document.getElementById("warehouseBodyContent");
-      const icon = document.getElementById("warehouseToggleIcon");
-      const text = document.getElementById("warehouseToggleText");
-      if (content.style.display === "none") {
-        content.style.display = "block";
-        icon.textContent = "▲";
-        text.textContent = "Collapse";
-      } else {
-        content.style.display = "none";
-        icon.textContent = "▼";
-        text.textContent = "Expand";
+    // 🏢 WAREHOUSE SUB-TABS: DEFICIT (GODOWN STOCK) vs QUEUE (PACKING ORDERS)
+    let _activeWarehouseSubTab = "DEFICIT";
+    let _cachedGodownAnalysis = null;
+    let _godownDebounceTimers = {};
+
+    function switchWarehouseSubTab(tabKey) {
+      _activeWarehouseSubTab = tabKey || "DEFICIT";
+      const btnDeficit = document.getElementById("whTabStockDeficit");
+      const btnQueue = document.getElementById("whTabPackingQueue");
+      const viewDeficit = document.getElementById("warehouseStockDeficitView");
+      const viewQueue = document.getElementById("warehousePackingQueueView");
+      const btnSave = document.getElementById("btnSaveGodownStock");
+
+      if (btnDeficit) btnDeficit.classList.toggle("active", _activeWarehouseSubTab === "DEFICIT");
+      if (btnQueue) btnQueue.classList.toggle("active", _activeWarehouseSubTab === "QUEUE");
+      if (viewDeficit) viewDeficit.style.display = (_activeWarehouseSubTab === "DEFICIT") ? "block" : "none";
+      if (viewQueue) viewQueue.style.display = (_activeWarehouseSubTab === "QUEUE") ? "block" : "none";
+      if (btnSave) btnSave.style.display = (_activeWarehouseSubTab === "DEFICIT") ? "inline-flex" : "none";
+
+      if (_activeWarehouseSubTab === "DEFICIT") {
+        loadGodownStockAndAnalysis();
       }
     }
 
+    function renderFallbackLocalGodownAnalysis() {
+      const mashalMap = _lastWarehouseMashalMap || {};
+      const faujiMap = _lastWarehouseFaujiMap || {};
+
+      let grandPendingBxs = 0;
+      let grandPendingPcs = 0;
+
+      const mSkus = (MASHAL_MASTER_SKUS || []).map(m => {
+        const pItem = mashalMap[m.name.toUpperCase()] || { boxes: 0, pieces: 0 };
+        const pBxs = pItem.boxes || 0;
+        const pPcs = pItem.pieces || (pBxs * m.mult);
+        grandPendingBxs += pBxs;
+        grandPendingPcs += pPcs;
+        return {
+          sku: m.name,
+          multiplier: m.mult,
+          godownBoxes: 0,
+          godownPieces: 0,
+          pendingBoxes: pBxs,
+          pendingPieces: pPcs,
+          deficitBoxes: pBxs,
+          deficitPieces: pPcs,
+          surplusBoxes: 0,
+          surplusPieces: 0,
+          status: pBxs > 0 ? "FULL_DEFICIT" : "IDLE"
+        };
+      });
+
+      const fSkus = (FAUJI_MASTER_SKUS || []).map(f => {
+        const pItem = faujiMap[f.name.toUpperCase()] || { boxes: 0, pieces: 0 };
+        const pBxs = pItem.boxes || 0;
+        const pPcs = pItem.pieces || (pBxs * f.mult);
+        grandPendingBxs += pBxs;
+        grandPendingPcs += pPcs;
+        return {
+          sku: f.name,
+          multiplier: f.mult,
+          godownBoxes: 0,
+          godownPieces: 0,
+          pendingBoxes: pBxs,
+          pendingPieces: pPcs,
+          deficitBoxes: pBxs,
+          deficitPieces: pPcs,
+          surplusBoxes: 0,
+          surplusPieces: 0,
+          status: pBxs > 0 ? "FULL_DEFICIT" : "IDLE"
+        };
+      });
+
+      const fallbackAnalysis = {
+        totalGodownBoxes: 0,
+        totalGodownPieces: 0,
+        totalPendingBoxes: grandPendingBxs,
+        totalPendingPieces: grandPendingPcs,
+        totalDeficitBoxes: grandPendingBxs,
+        totalDeficitPieces: grandPendingPcs,
+        coveragePercent: 0,
+        brands: {
+          MASHAL: {
+            brandName: "MASHAL",
+            godownBoxes: 0,
+            godownPieces: 0,
+            pendingBoxes: mSkus.reduce((a, b) => a + b.pendingBoxes, 0),
+            pendingPieces: mSkus.reduce((a, b) => a + b.pendingPieces, 0),
+            deficitBoxes: mSkus.reduce((a, b) => a + b.deficitBoxes, 0),
+            skus: mSkus
+          },
+          FAUJI: {
+            brandName: "FAUJI",
+            godownBoxes: 0,
+            godownPieces: 0,
+            pendingBoxes: fSkus.reduce((a, b) => a + b.pendingBoxes, 0),
+            pendingPieces: fSkus.reduce((a, b) => a + b.pendingPieces, 0),
+            deficitBoxes: fSkus.reduce((a, b) => a + b.deficitBoxes, 0),
+            skus: fSkus
+          }
+        }
+      };
+
+      renderGodownStockTables(fallbackAnalysis);
+    }
+
+    async function loadGodownStockAndAnalysis() {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY) || localStorage.getItem("mashal_admin_token") || (typeof adminAuthToken !== "undefined" ? adminAuthToken : "") || "";
+      const targetUnit = activeUnitFilter || "ALL";
+
+      // Always render local table immediately so screen is never blank!
+      if (!_cachedGodownAnalysis) {
+        renderFallbackLocalGodownAnalysis();
+      } else {
+        renderGodownStockTables(_cachedGodownAnalysis);
+      }
+
+      try {
+        const res = await fetch(`/api/admin/godown-stock?unit=${encodeURIComponent(targetUnit)}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (!res.ok) {
+          console.warn("Could not load godown stock:", res.status);
+          return;
+        }
+        const data = await res.json();
+        if (data.status === "success" && data.analysis) {
+          _cachedGodownAnalysis = data.analysis;
+          renderGodownStockTables(data.analysis);
+        }
+      } catch (err) {
+        console.error("Error loading godown stock analysis:", err);
+      }
+    }
+
+    function updateTodayYesterdayBrandKpis(apiTodayYest) {
+      const now = new Date();
+      const todayDDMMYYYY = getFormattedDateStr(now); // "27/10/2026"
+      const todayYYYYMMDD = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`; // "2026-10-27"
+      
+      const yesterday = new Date();
+      yesterday.setDate(now.getDate() - 1);
+      const yestDDMMYYYY = getFormattedDateStr(yesterday); // "26/10/2026"
+      const yestYYYYMMDD = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`; // "2026-10-26"
+
+      const shortToday = now.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+      const shortYest = yesterday.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+
+      const elDateTodayM = document.getElementById("badgeDateTodayMashal");
+      const elDateTodayF = document.getElementById("badgeDateTodayFauji");
+      const elDateYestM = document.getElementById("badgeDateYestMashal");
+      const elDateYestF = document.getElementById("badgeDateYestFauji");
+
+      if (elDateTodayM) elDateTodayM.textContent = shortToday;
+      if (elDateTodayF) elDateTodayF.textContent = shortToday;
+      if (elDateYestM) elDateYestM.textContent = shortYest;
+      if (elDateYestF) elDateYestF.textContent = shortYest;
+
+      let todayM_orders = 0, todayM_bxs = 0, todayM_pcs = 0;
+      let todayF_orders = 0, todayF_bxs = 0, todayF_pcs = 0;
+      let yestM_orders = 0, yestM_bxs = 0, yestM_pcs = 0;
+      let yestF_orders = 0, yestF_bxs = 0, yestF_pcs = 0;
+
+      if (apiTodayYest && apiTodayYest.today && apiTodayYest.yesterday) {
+        todayM_orders = apiTodayYest.today.mashal?.orders || 0;
+        todayM_bxs = apiTodayYest.today.mashal?.boxes || 0;
+        todayM_pcs = apiTodayYest.today.mashal?.pieces || 0;
+
+        todayF_orders = apiTodayYest.today.fauji?.orders || 0;
+        todayF_bxs = apiTodayYest.today.fauji?.boxes || 0;
+        todayF_pcs = apiTodayYest.today.fauji?.pieces || 0;
+
+        yestM_orders = apiTodayYest.yesterday.mashal?.orders || 0;
+        yestM_bxs = apiTodayYest.yesterday.mashal?.boxes || 0;
+        yestM_pcs = apiTodayYest.yesterday.mashal?.pieces || 0;
+
+        yestF_orders = apiTodayYest.yesterday.fauji?.orders || 0;
+        yestF_bxs = apiTodayYest.yesterday.fauji?.boxes || 0;
+        yestF_pcs = apiTodayYest.yesterday.fauji?.pieces || 0;
+      } else if (Array.isArray(allOrdersData) && allOrdersData.length > 0) {
+        const activeUnit = (activeUnitFilter || "ALL").trim().toLowerCase().replace(/[-\s_]/g, "");
+
+        allOrdersData.forEach(ord => {
+          if (activeUnit !== "all") {
+            const ordUnit = String(ord.unit || "Unit 1").trim().toLowerCase().replace(/[-\s_]/g, "");
+            if (ordUnit !== activeUnit) return;
+          }
+
+          const dStr = extractDateString(ord);
+          const isToday = dStr.includes(todayDDMMYYYY) || dStr.includes(todayYYYYMMDD);
+          const isYest = dStr.includes(yestDDMMYYYY) || dStr.includes(yestYYYYMMDD);
+
+          if (!isToday && !isYest) return;
+
+          let ordMashalBxs = 0, ordMashalPcs = 0;
+          let ordFaujiBxs = 0, ordFaujiPcs = 0;
+
+          const items = Array.isArray(ord.items) ? ord.items : [];
+          items.forEach(it => {
+            const rawBrand = String(it.brand || "Mashal").toLowerCase().trim();
+            const rawName = String(it.item || it.name || it.itemName || "").trim();
+            const bxs = parseInt(it.boxes, 10) || 0;
+            if (bxs <= 0) return;
+
+            const normName = normalizeSkuName(rawName) || rawName;
+            const match = normName.match(/x\s*(\d+)/i);
+            const fallbackMult = (parseInt(it.pieces, 10) && bxs > 0) ? Math.round(parseInt(it.pieces, 10) / bxs) : 1;
+            const mult = match ? parseInt(match[1], 10) : (parseInt(it.multiplier, 10) || fallbackMult);
+            const pcs = parseInt(it.pieces, 10) || (bxs * mult);
+
+            const isFauji = rawBrand.includes("fauji") || normName.toLowerCase().includes("fauji");
+            if (isFauji) {
+              ordFaujiBxs += bxs;
+              ordFaujiPcs += pcs;
+            } else {
+              ordMashalBxs += bxs;
+              ordMashalPcs += pcs;
+            }
+          });
+
+          if (isToday) {
+            if (ordMashalBxs > 0) {
+              todayM_orders++;
+              todayM_bxs += ordMashalBxs;
+              todayM_pcs += ordMashalPcs;
+            }
+            if (ordFaujiBxs > 0) {
+              todayF_orders++;
+              todayF_bxs += ordFaujiBxs;
+              todayF_pcs += ordFaujiPcs;
+            }
+          }
+
+          if (isYest) {
+            if (ordMashalBxs > 0) {
+              yestM_orders++;
+              yestM_bxs += ordMashalBxs;
+              yestM_pcs += ordMashalPcs;
+            }
+            if (ordFaujiBxs > 0) {
+              yestF_orders++;
+              yestF_bxs += ordFaujiBxs;
+              yestF_pcs += ordFaujiPcs;
+            }
+          }
+        });
+      }
+
+      // Update Card Elements
+      const elTM_bxs = document.getElementById("stkTodayMashalBoxes");
+      const elTM_orders = document.getElementById("stkTodayMashalOrders");
+      const elTM_pcs = document.getElementById("stkTodayMashalPieces");
+
+      const elTF_bxs = document.getElementById("stkTodayFaujiBoxes");
+      const elTF_orders = document.getElementById("stkTodayFaujiOrders");
+      const elTF_pcs = document.getElementById("stkTodayFaujiPieces");
+
+      const elYM_bxs = document.getElementById("stkYestMashalBoxes");
+      const elYM_orders = document.getElementById("stkYestMashalOrders");
+      const elYM_pcs = document.getElementById("stkYestMashalPieces");
+
+      const elYF_bxs = document.getElementById("stkYestFaujiBoxes");
+      const elYF_orders = document.getElementById("stkYestFaujiOrders");
+      const elYF_pcs = document.getElementById("stkYestFaujiPieces");
+
+      if (elTM_bxs) elTM_bxs.textContent = todayM_bxs.toLocaleString();
+      if (elTM_orders) elTM_orders.textContent = `${todayM_orders.toLocaleString()} ${todayM_orders === 1 ? 'Order' : 'Orders'}`;
+      if (elTM_pcs) elTM_pcs.textContent = todayM_pcs.toLocaleString();
+
+      if (elTF_bxs) elTF_bxs.textContent = todayF_bxs.toLocaleString();
+      if (elTF_orders) elTF_orders.textContent = `${todayF_orders.toLocaleString()} ${todayF_orders === 1 ? 'Order' : 'Orders'}`;
+      if (elTF_pcs) elTF_pcs.textContent = todayF_pcs.toLocaleString();
+
+      if (elYM_bxs) elYM_bxs.textContent = yestM_bxs.toLocaleString();
+      if (elYM_orders) elYM_orders.textContent = `${yestM_orders.toLocaleString()} ${yestM_orders === 1 ? 'Order' : 'Orders'}`;
+      if (elYM_pcs) elYM_pcs.textContent = yestM_pcs.toLocaleString();
+
+      if (elYF_bxs) elYF_bxs.textContent = yestF_bxs.toLocaleString();
+      if (elYF_orders) elYF_orders.textContent = `${yestF_orders.toLocaleString()} ${yestF_orders === 1 ? 'Order' : 'Orders'}`;
+      if (elYF_pcs) elYF_pcs.textContent = yestF_pcs.toLocaleString();
+    }
+
+    function renderGodownStockTables(analysis) {
+      if (!analysis) return;
+
+      // Check role edit permission: Admin, Manager, Superadmin can edit
+      const canEdit = (currentUserRole === "super_admin" || currentUserRole === "admin" || currentUserRole === "manager");
+
+      // 1. Update Ribbon KPIs with Today & Yesterday Brand Orders (100% Dynamic & Accurate)
+      updateTodayYesterdayBrandKpis(analysis.todayYesterday);
+
+      // 2. Render MASHAL Godown Table
+      const mashalBrand = analysis.brands?.MASHAL || {};
+      const mashalTbody = document.getElementById("godownMashalTableBody");
+      const mashalSummaryStock = document.getElementById("stkMashalGodownSummary");
+      const mashalSummaryDeficit = document.getElementById("stkMashalDeficitSummary");
+
+      if (mashalSummaryStock) mashalSummaryStock.textContent = `${(mashalBrand.godownBoxes || 0).toLocaleString()} Bxs Stock`;
+      if (mashalSummaryDeficit) mashalSummaryDeficit.textContent = `${(mashalBrand.deficitBoxes || 0).toLocaleString()} Bxs Deficit`;
+
+      if (mashalTbody) {
+        let mHtml = "";
+        (mashalBrand.skus || []).forEach(s => {
+          mHtml += buildGodownRowHtml("MASHAL", s, canEdit);
+        });
+        mashalTbody.innerHTML = mHtml;
+      }
+
+      // 3. Render FAUJI Godown Table
+      const faujiBrand = analysis.brands?.FAUJI || {};
+      const faujiTbody = document.getElementById("godownFaujiTableBody");
+      const faujiSummaryStock = document.getElementById("stkFaujiGodownSummary");
+      const faujiSummaryDeficit = document.getElementById("stkFaujiDeficitSummary");
+
+      if (faujiSummaryStock) faujiSummaryStock.textContent = `${(faujiBrand.godownBoxes || 0).toLocaleString()} Bxs Stock`;
+      if (faujiSummaryDeficit) faujiSummaryDeficit.textContent = `${(faujiBrand.deficitBoxes || 0).toLocaleString()} Bxs Deficit`;
+
+      if (faujiTbody) {
+        let fHtml = "";
+        (faujiBrand.skus || []).forEach(s => {
+          fHtml += buildGodownRowHtml("FAUJI", s, canEdit);
+        });
+        faujiTbody.innerHTML = fHtml;
+      }
+    }
+
+    function buildGodownRowHtml(brand, s, canEdit) {
+      const gBxs = parseInt(s.godownBoxes) || 0;
+      const gPcs = parseInt(s.godownPieces) || (gBxs * (s.multiplier || 1));
+      const pBxs = parseInt(s.pendingBoxes) || 0;
+      const pPcs = parseInt(s.pendingPieces) || 0;
+      const dBxs = Math.max(0, pBxs - gBxs);
+      const dPcs = dBxs * (s.multiplier || 1);
+      const sBxs = Math.max(0, gBxs - pBxs);
+
+      let deficitPill = "";
+      if (dBxs > 0) {
+        deficitPill = `
+          <div style="text-align: right;">
+            <span class="badge-deficit" id="pill-def-${escapeHtml(brand)}-${escapeHtml(s.sku).replace(/\W/g, '_')}">
+              ⚠️ Make ${dBxs.toLocaleString()} Bxs
+            </span>
+            <div class="deficit-sub" id="sub-def-${escapeHtml(brand)}-${escapeHtml(s.sku).replace(/\W/g, '_')}">
+              ${dPcs.toLocaleString()} Pcs Deficit
+            </div>
+          </div>
+        `;
+      } else if (pBxs > 0 && sBxs >= 0) {
+        deficitPill = `
+          <div style="text-align: right;">
+            <span class="badge-surplus" id="pill-def-${escapeHtml(brand)}-${escapeHtml(s.sku).replace(/\W/g, '_')}">
+              ✅ Ready (+${sBxs.toLocaleString()} Bxs)
+            </span>
+          </div>
+        `;
+      } else if (gBxs > 0) {
+        deficitPill = `
+          <div style="text-align: right;">
+            <span class="badge-surplus" id="pill-def-${escapeHtml(brand)}-${escapeHtml(s.sku).replace(/\W/g, '_')}">
+              📦 ${gBxs.toLocaleString()} Bxs Stock
+            </span>
+          </div>
+        `;
+      } else {
+        deficitPill = `
+          <div style="text-align: right;">
+            <span class="badge-neutral" id="pill-def-${escapeHtml(brand)}-${escapeHtml(s.sku).replace(/\W/g, '_')}">
+              — No Demand
+            </span>
+          </div>
+        `;
+      }
+
+      return `
+        <tr data-row-brand="${escapeHtml(brand)}" data-row-sku="${escapeHtml(s.sku)}">
+          <td style="font-weight: 700; color: #1e293b;">
+            <span>${escapeHtml(s.sku)}</span>
+            <span class="mult-tag">x${s.multiplier}</span>
+          </td>
+          <td>
+            <div class="godown-stock-input-wrap">
+              <input type="number" min="0" step="1"
+                class="godown-stock-input"
+                value="${gBxs}"
+                data-brand="${escapeHtml(brand)}"
+                data-sku="${escapeHtml(s.sku)}"
+                data-mult="${s.multiplier}"
+                data-pending-bxs="${pBxs}"
+                data-pending-pcs="${pPcs}"
+                ${canEdit ? '' : 'disabled title="View-only: Admin or Manager login required to edit"'}
+                oninput="onGodownInputLiveChange(this)"
+                onchange="onGodownInputBlurSave(this)">
+              <span class="godown-pcs-badge">
+                <span class="dyn-pcs">${gPcs.toLocaleString()}</span> Pcs
+              </span>
+            </div>
+          </td>
+          <td style="text-align: right;">
+            <div class="demand-bxs" style="${pBxs > 0 ? 'color: #0f172a;' : 'color: #94a3b8;'}">${pBxs.toLocaleString()} Bxs</div>
+            <div class="demand-pcs-sub">${pPcs.toLocaleString()} Pcs</div>
+          </td>
+          <td>
+            ${deficitPill}
+          </td>
+        </tr>
+      `;
+    }
+
+    // ⚡ Real-Time Live Calculation as user types in ANY Box input
+    function onGodownInputLiveChange(inputEl) {
+      const brand = inputEl.dataset.brand;
+      const sku = inputEl.dataset.sku;
+      const mult = parseInt(inputEl.dataset.mult) || 1;
+      const pendingBxs = parseInt(inputEl.dataset.pendingBxs) || 0;
+      const gBxs = Math.max(0, parseInt(inputEl.value) || 0);
+
+      // Auto count pieces live:
+      const gPcs = gBxs * mult;
+      const wrap = inputEl.closest(".godown-stock-input-wrap");
+      if (wrap) {
+        const pcsEl = wrap.querySelector(".dyn-pcs");
+        if (pcsEl) pcsEl.textContent = gPcs.toLocaleString();
+      }
+
+      // Net to produce (deficit):
+      const dBxs = Math.max(0, pendingBxs - gBxs);
+      const dPcs = dBxs * mult;
+      const sBxs = Math.max(0, gBxs - pendingBxs);
+
+      const cellKey = `${brand}-${sku}`.replace(/\W/g, '_');
+      const pillEl = document.getElementById(`pill-def-${cellKey}`);
+      const subEl = document.getElementById(`sub-def-${cellKey}`);
+
+      if (pillEl) {
+        if (dBxs > 0) {
+          pillEl.className = "badge-deficit";
+          pillEl.textContent = `⚠️ Make ${dBxs.toLocaleString()} Bxs`;
+          if (subEl) {
+            subEl.style.display = "block";
+            subEl.textContent = `${dPcs.toLocaleString()} Pcs Deficit`;
+          }
+        } else if (pendingBxs > 0 && sBxs >= 0) {
+          pillEl.className = "badge-surplus";
+          pillEl.textContent = `✅ Ready (+${sBxs.toLocaleString()} Bxs)`;
+          if (subEl) subEl.style.display = "none";
+        } else if (gBxs > 0) {
+          pillEl.className = "badge-surplus";
+          pillEl.textContent = `📦 ${gBxs.toLocaleString()} Bxs Stock`;
+          if (subEl) subEl.style.display = "none";
+        } else {
+          pillEl.className = "badge-neutral";
+          pillEl.textContent = `— No Demand`;
+          if (subEl) subEl.style.display = "none";
+        }
+      }
+
+      // Recalculate Grand Ribbon Totals Live
+      recalculateAllGodownTotalsLive();
+
+      // Debounce auto-save to database (600ms)
+      const timerKey = `${brand}-${sku}`;
+      if (_godownDebounceTimers[timerKey]) {
+        clearTimeout(_godownDebounceTimers[timerKey]);
+      }
+      _godownDebounceTimers[timerKey] = setTimeout(() => {
+        saveSingleGodownStockItem(brand, sku, gBxs);
+      }, 600);
+    }
+
+    function onGodownInputBlurSave(inputEl) {
+      const brand = inputEl.dataset.brand;
+      const sku = inputEl.dataset.sku;
+      const gBxs = Math.max(0, parseInt(inputEl.value) || 0);
+      saveSingleGodownStockItem(brand, sku, gBxs);
+    }
+
+    function recalculateAllGodownTotalsLive() {
+      let totalGodownBxs = 0;
+      let totalGodownPcs = 0;
+      let totalPendingBxs = 0;
+      let totalPendingPcs = 0;
+      let totalDeficitBxs = 0;
+      let totalDeficitPcs = 0;
+
+      let mashalGodown = 0, mashalDeficit = 0;
+      let faujiGodown = 0, faujiDeficit = 0;
+
+      document.querySelectorAll(".godown-stock-input").forEach(inp => {
+        const brand = inp.dataset.brand;
+        const mult = parseInt(inp.dataset.mult) || 1;
+        const pBxs = parseInt(inp.dataset.pendingBxs) || 0;
+        const gBxs = Math.max(0, parseInt(inp.value) || 0);
+
+        const gPcs = gBxs * mult;
+        const pPcs = pBxs * mult;
+        const dBxs = Math.max(0, pBxs - gBxs);
+        const dPcs = dBxs * mult;
+
+        totalGodownBxs += gBxs;
+        totalGodownPcs += gPcs;
+        totalPendingBxs += pBxs;
+        totalPendingPcs += pPcs;
+        totalDeficitBxs += dBxs;
+        totalDeficitPcs += dPcs;
+
+        if (brand === "MASHAL") {
+          mashalGodown += gBxs;
+          mashalDeficit += dBxs;
+        } else {
+          faujiGodown += gBxs;
+          faujiDeficit += dBxs;
+        }
+      });
+
+      updateTodayYesterdayBrandKpis();
+
+      const mStock = document.getElementById("stkMashalGodownSummary");
+      const mDef = document.getElementById("stkMashalDeficitSummary");
+      if (mStock) mStock.textContent = `${mashalGodown.toLocaleString()} Bxs Stock`;
+      if (mDef) mDef.textContent = `${mashalDeficit.toLocaleString()} Bxs Deficit`;
+
+      const fStock = document.getElementById("stkFaujiGodownSummary");
+      const fDef = document.getElementById("stkFaujiDeficitSummary");
+      if (fStock) fStock.textContent = `${faujiGodown.toLocaleString()} Bxs Stock`;
+      if (fDef) fDef.textContent = `${faujiDeficit.toLocaleString()} Bxs Deficit`;
+    }
+
+    async function saveSingleGodownStockItem(brand, sku, boxes) {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY) || localStorage.getItem("mashal_admin_token") || (typeof adminAuthToken !== "undefined" ? adminAuthToken : "") || "";
+      const targetUnit = activeUnitFilter || "ALL";
+
+      try {
+        const res = await fetch("/api/admin/godown-stock/update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            brand: brand,
+            sku: sku,
+            boxes: boxes,
+            unit: targetUnit
+          })
+        });
+        if (res.ok) {
+          showStockSaveToast("Auto-Saved");
+        }
+      } catch (e) {
+        console.error("Auto-save failed for", sku, e);
+      }
+    }
+
+    async function saveAllGodownStock() {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY) || localStorage.getItem("mashal_admin_token") || (typeof adminAuthToken !== "undefined" ? adminAuthToken : "") || "";
+      const targetUnit = activeUnitFilter || "ALL";
+
+      const items = [];
+      document.querySelectorAll(".godown-stock-input").forEach(inp => {
+        items.push({
+          brand: inp.dataset.brand,
+          sku: inp.dataset.sku,
+          boxes: Math.max(0, parseInt(inp.value) || 0)
+        });
+      });
+
+      const btnSave = document.getElementById("btnSaveGodownStock");
+      if (btnSave) {
+        btnSave.disabled = true;
+        btnSave.innerHTML = `<span class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:4px;"></span> Saving...`;
+      }
+
+      try {
+        const res = await fetch("/api/admin/godown-stock/bulk-update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            unit: targetUnit,
+            items: items
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          showToast(`All Godown Stock saved successfully! (${data.updatedCount} items)`, "success");
+          showStockSaveToast("All Saved!");
+          if (data.analysis) {
+            _cachedGodownAnalysis = data.analysis;
+            renderGodownStockTables(data.analysis);
+          }
+        } else {
+          alert("Error saving godown stock: " + (data.detail || data.message));
+        }
+      } catch (err) {
+        alert("Network error saving stock: " + err.message);
+      } finally {
+        if (btnSave) {
+          btnSave.disabled = false;
+          btnSave.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg><span style="font-weight: 700;">Save Godown Stock</span>`;
+        }
+      }
+    }
+
+    function showStockSaveToast(msg) {
+      const toast = document.getElementById("stockSaveToast");
+      if (!toast) return;
+      toast.querySelector("span").textContent = msg || "Stock Saved";
+      toast.classList.add("visible");
+      setTimeout(() => {
+        toast.classList.remove("visible");
+      }, 2000);
+    }
+
+    let _lastWarehousePendingOrders = [];
+    let _lastWarehouseMashalMap = {};
+    let _lastWarehouseFaujiMap = {};
+
+    function toggleWarehouseSection() {
+      // Intentionally keep warehouse summary permanently visible and stable
+      const content = document.getElementById("warehouseBodyContent");
+      if (content) content.style.display = "block";
+    }
+
     function printWarehouseSummary() {
-      window.print();
+      if (_activeWarehouseSubTab === "DEFICIT" && _cachedGodownAnalysis) {
+        printGodownStockDeficitSheet();
+        return;
+      }
+
+      const orders = _lastWarehousePendingOrders || [];
+      const mashalMap = _lastWarehouseMashalMap || {};
+      const faujiMap = _lastWarehouseFaujiMap || {};
+      const unitLabel = (!activeUnitFilter || activeUnitFilter === "ALL") ? "All Factory Units" : activeUnitFilter;
+      const printDateStr = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "medium" });
+
+      let totalMashalBoxes = 0;
+      let totalMashalPieces = 0;
+      Object.values(mashalMap).forEach(v => {
+        totalMashalBoxes += (v.boxes || 0);
+        totalMashalPieces += (v.pieces || 0);
+      });
+
+      let totalFaujiBoxes = 0;
+      let totalFaujiPieces = 0;
+      Object.values(faujiMap).forEach(v => {
+        totalFaujiBoxes += (v.boxes || 0);
+        totalFaujiPieces += (v.pieces || 0);
+      });
+
+      const grandBoxes = totalMashalBoxes + totalFaujiBoxes;
+      const grandPieces = totalMashalPieces + totalFaujiPieces;
+
+      let mashalRowsHtml = "";
+      MASHAL_MASTER_SKUS.forEach((sku, idx) => {
+        const itemObj = mashalMap[sku.name.toUpperCase()] || { boxes: 0, pieces: 0 };
+        const b = itemObj.boxes || 0;
+        const p = itemObj.pieces || 0;
+        mashalRowsHtml += `
+          <tr class="${b > 0 ? 'highlight-row' : 'zero-row'}">
+            <td style="text-align: center; width: 35px;">${idx + 1}</td>
+            <td style="font-weight: 600;">${escapeHtml(sku.name)}</td>
+            <td style="text-align: right; font-weight: 700; color: #1e3a8a;">${b.toLocaleString()} Bxs</td>
+            <td style="text-align: right; color: #475569;">${p.toLocaleString()} Pcs</td>
+            <td style="text-align: center; width: 60px;"><span class="checkbox-box"></span></td>
+          </tr>
+        `;
+      });
+
+      let faujiRowsHtml = "";
+      FAUJI_MASTER_SKUS.forEach((sku, idx) => {
+        const itemObj = faujiMap[sku.name.toUpperCase()] || { boxes: 0, pieces: 0 };
+        const b = itemObj.boxes || 0;
+        const p = itemObj.pieces || 0;
+        faujiRowsHtml += `
+          <tr class="${b > 0 ? 'highlight-row' : 'zero-row'}">
+            <td style="text-align: center; width: 35px;">${idx + 1}</td>
+            <td style="font-weight: 600;">${escapeHtml(sku.name)}</td>
+            <td style="text-align: right; font-weight: 700; color: #065f46;">${b.toLocaleString()} Bxs</td>
+            <td style="text-align: right; color: #475569;">${p.toLocaleString()} Pcs</td>
+            <td style="text-align: center; width: 60px;"><span class="checkbox-box"></span></td>
+          </tr>
+        `;
+      });
+
+      let ordersRowsHtml = "";
+      orders.forEach((o, idx) => {
+        const cleanId = o.cleanId || o.id || "";
+        const dateStr = extractDateString(o) || "-";
+        const party = o.partyName || o.party_name || "-";
+        const dest = o.deliveryAddress || o.partyAddress || "-";
+        const bxs = (parseInt(o.totalBoxes, 10) || 0).toLocaleString();
+        const pcs = (parseInt(o.totalPieces, 10) || 0).toLocaleString();
+        const ordUnit = o.unit || "Unit 1";
+        ordersRowsHtml += `
+          <tr>
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="font-family: monospace; font-weight: 700; color: #1e3a8a;">#${escapeHtml(cleanId)}</td>
+            <td style="white-space: nowrap;">${escapeHtml(dateStr)}</td>
+            <td style="font-weight: 600;">${escapeHtml(party)}</td>
+            <td style="font-size: 11px; color: #475569;">${escapeHtml(dest)}</td>
+            <td style="text-align: center;"><span class="unit-badge">${escapeHtml(ordUnit)}</span></td>
+            <td style="text-align: right; font-weight: 700;">${bxs}</td>
+            <td style="text-align: right;">${pcs}</td>
+            <td style="text-align: center;"><span class="checkbox-box"></span></td>
+          </tr>
+        `;
+      });
+
+      const printHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Packing_Sheet_${unitLabel.replace(/\\s+/g, '_')}_${new Date().toISOString().slice(0,10)}</title>
+  <style>
+    @page { size: A4 portrait; margin: 10mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 14px; font-size: 11.5px; line-height: 1.35; background: #ffffff; }
+    .print-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2.5px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 12px; }
+    .brand-group { display: flex; align-items: center; gap: 14px; }
+    .brand-logo-img { height: 58px; width: 87px; object-fit: contain; border: 1.5px solid #fde68a; border-radius: 8px; background: #ffffff; padding: 2px 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    .brand-titles h1 { font-size: 16px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.02em; }
+    .brand-titles h2 { font-size: 12.5px; font-weight: 800; color: #2563eb; margin: 2px 0 0 0; text-transform: uppercase; letter-spacing: 0.05em; }
+    .print-meta { text-align: right; font-size: 10.5px; color: #475569; }
+    .print-meta strong { color: #0f172a; }
+    .meta-pill { display: inline-block; background: #eff6ff; color: #1e40af; border: 1.5px solid #bfdbfe; font-weight: 800; font-size: 11px; padding: 2px 8px; border-radius: 6px; margin-bottom: 4px; }
+    .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+    .kpi-cell { border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; background: #f8fafc; }
+    .kpi-cell.blue { border-color: #93c5fd; background: #eff6ff; }
+    .kpi-cell.green { border-color: #a7f3d0; background: #f0fdf4; }
+    .kpi-label { font-size: 9.5px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+    .kpi-val { font-size: 14px; font-weight: 900; color: #0f172a; }
+    .kpi-sub { font-size: 9.5px; color: #64748b; }
+    .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .section-box { border: 1.5px solid #cbd5e1; border-radius: 6px; overflow: hidden; }
+    .section-header { padding: 5px 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; display: flex; justify-content: space-between; align-items: center; }
+    .section-header.mashal { background: #1e40af; color: #ffffff; }
+    .section-header.fauji { background: #065f46; color: #ffffff; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { background: #f1f5f9; color: #334155; font-weight: 800; text-transform: uppercase; font-size: 9.5px; padding: 4px 6px; border-bottom: 1.5px solid #cbd5e1; text-align: left; }
+    td { padding: 3.5px 6px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    tr.zero-row { opacity: 0.45; }
+    tr.highlight-row { background: #ffffff; font-weight: 600; }
+    .checkbox-box { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #64748b; border-radius: 3px; }
+    .orders-section { border: 1.5px solid #cbd5e1; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
+    .orders-header { background: #0f172a; color: #ffffff; padding: 5px 8px; font-size: 11px; font-weight: 800; display: flex; justify-content: space-between; }
+    .unit-badge { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 1px 5px; border-radius: 4px; font-size: 9.5px; font-weight: 700; }
+    .signoff-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; padding-top: 10px; border-top: 1.5px dashed #94a3b8; }
+    .sign-box { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; min-height: 48px; display: flex; flex-direction: column; justify-content: space-between; background: #fafafa; }
+    .sign-title { font-size: 9.5px; font-weight: 800; color: #475569; text-transform: uppercase; }
+    .sign-line { border-bottom: 1px solid #0f172a; margin-top: 20px; }
+    .no-print-bar { position: fixed; bottom: 12px; right: 12px; background: #0f172a; padding: 8px 14px; border-radius: 8px; box-shadow: 0 4px 18px rgba(0,0,0,0.3); display: flex; gap: 8px; z-index: 9999; }
+    .print-btn { background: #2563eb; color: #ffffff; border: none; padding: 7px 14px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer; }
+    .close-btn { background: #334155; color: #ffffff; border: none; padding: 7px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    @media print {
+      .no-print-bar { display: none !important; }
+      body { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print-bar">
+    <button class="print-btn" onclick="window.print()">🖨️ Print Sheet (A4)</button>
+    <button class="close-btn" onclick="window.close()">✕ Close</button>
+  </div>
+
+  <div class="print-header">
+    <div class="brand-group">
+      <img src="/images/mashal_official_logo.png" alt="Mashal" class="brand-logo-img">
+      <div class="brand-titles">
+        <h1>Khandelia Oil & General Mills Pvt. Ltd.</h1>
+        <h2>Factory Production & Packing Queue Sheet</h2>
+      </div>
+    </div>
+    <div class="print-meta">
+      <div><span class="meta-pill">${unitLabel.toUpperCase()}</span></div>
+      <div>Printed: <strong>${printDateStr}</strong></div>
+      <div>Authorized: <strong>${escapeHtml(currentUsername || "Super Admin")}</strong></div>
+    </div>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi-cell">
+      <div class="kpi-label">Pending Orders Queue</div>
+      <div class="kpi-val">${orders.length} Orders</div>
+      <div class="kpi-sub">Awaiting Packing / Dispatch</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-label">Total Volume To Pack</div>
+      <div class="kpi-val">${grandBoxes.toLocaleString()} Bxs</div>
+      <div class="kpi-sub">${grandPieces.toLocaleString()} Pcs total</div>
+    </div>
+    <div class="kpi-cell blue">
+      <div class="kpi-label">Brand: MASHAL</div>
+      <div class="kpi-val" style="color: #1e40af;">${totalMashalBoxes.toLocaleString()} Bxs</div>
+      <div class="kpi-sub">${totalMashalPieces.toLocaleString()} Pieces</div>
+    </div>
+    <div class="kpi-cell green">
+      <div class="kpi-label">Brand: FAUJI</div>
+      <div class="kpi-val" style="color: #065f46;">${totalFaujiBoxes.toLocaleString()} Bxs</div>
+      <div class="kpi-sub">${totalFaujiPieces.toLocaleString()} Pieces</div>
+    </div>
+  </div>
+
+  <div class="tables-grid">
+    <div class="section-box">
+      <div class="section-header mashal">
+        <span>Brand: MASHAL (14 Packaging SKUs)</span>
+        <span>${totalMashalBoxes.toLocaleString()} Bxs</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align: center;">#</th>
+            <th>Packaging SKU</th>
+            <th style="text-align: right;">Boxes</th>
+            <th style="text-align: right;">Pieces</th>
+            <th style="text-align: center;">Done</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${mashalRowsHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-box">
+      <div class="section-header fauji">
+        <span>Brand: FAUJI (6 Packaging SKUs)</span>
+        <span>${totalFaujiBoxes.toLocaleString()} Bxs</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align: center;">#</th>
+            <th>Packaging SKU</th>
+            <th style="text-align: right;">Boxes</th>
+            <th style="text-align: right;">Pieces</th>
+            <th style="text-align: center;">Done</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${faujiRowsHtml}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="orders-section">
+    <div class="orders-header">
+      <span>Pending Production Orders Breakdown (${orders.length} Active Parties)</span>
+      <span>Target Unit: ${unitLabel}</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center; width: 30px;">#</th>
+          <th style="width: 80px;">Order ID</th>
+          <th style="width: 80px;">Date</th>
+          <th>Party Name</th>
+          <th>Delivery Station</th>
+          <th style="text-align: center; width: 65px;">Unit</th>
+          <th style="text-align: right; width: 55px;">Boxes</th>
+          <th style="text-align: right; width: 65px;">Pieces</th>
+          <th style="text-align: center; width: 45px;">Check</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${ordersRowsHtml || '<tr><td colspan="9" style="text-align:center; padding:12px;">No pending orders in queue</td></tr>'}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="signoff-section">
+    <div class="sign-box">
+      <div class="sign-title">Factory Packaging Supervisor</div>
+      <div class="sign-line"></div>
+    </div>
+    <div class="sign-box">
+      <div class="sign-title">Warehouse Quality Inspector</div>
+      <div class="sign-line"></div>
+    </div>
+    <div class="sign-box">
+      <div class="sign-title">Dispatch & Gate Pass Officer</div>
+      <div class="sign-line"></div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      const printWin = window.open("", "_blank");
+      if (printWin) {
+        printWin.document.open();
+        printWin.document.write(printHtml);
+        printWin.document.close();
+        setTimeout(() => {
+          printWin.focus();
+        }, 300);
+      } else {
+        window.print();
+      }
+    }
+
+    function printGodownStockDeficitSheet() {
+      const analysis = _cachedGodownAnalysis;
+      if (!analysis) {
+        alert("Please wait for godown stock data to finish loading.");
+        return;
+      }
+
+      const unitLabel = (!activeUnitFilter || activeUnitFilter === "ALL") ? "All Factory Units" : activeUnitFilter;
+      const printDateStr = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "medium" });
+
+      const mSkus = analysis.brands?.MASHAL?.skus || [];
+      const fSkus = analysis.brands?.FAUJI?.skus || [];
+
+      let mRows = "";
+      mSkus.forEach((s, idx) => {
+        const isDef = s.deficitBoxes > 0;
+        mRows += `
+          <tr class="${isDef ? 'highlight-deficit-row' : ''}">
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="font-weight: 700;">${escapeHtml(s.sku)}</td>
+            <td style="text-align: right; font-weight: 700; color: #0369a1;">${(s.godownBoxes || 0).toLocaleString()} Bxs</td>
+            <td style="text-align: right; color: #475569;">${(s.pendingBoxes || 0).toLocaleString()} Bxs</td>
+            <td style="text-align: right; font-weight: 800; color: ${isDef ? '#b91c1c' : '#047857'};">
+              ${isDef ? '⚠️ ' + s.deficitBoxes.toLocaleString() + ' Bxs' : '✅ Ready'}
+            </td>
+            <td style="text-align: right; color: ${isDef ? '#b91c1c' : '#64748b'};">${(s.deficitPieces || 0).toLocaleString()} Pcs</td>
+            <td style="text-align: center;"><span class="checkbox-box"></span></td>
+          </tr>
+        `;
+      });
+
+      let fRows = "";
+      fSkus.forEach((s, idx) => {
+        const isDef = s.deficitBoxes > 0;
+        fRows += `
+          <tr class="${isDef ? 'highlight-deficit-row' : ''}">
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="font-weight: 700;">${escapeHtml(s.sku)}</td>
+            <td style="text-align: right; font-weight: 700; color: #047857;">${(s.godownBoxes || 0).toLocaleString()} Bxs</td>
+            <td style="text-align: right; color: #475569;">${(s.pendingBoxes || 0).toLocaleString()} Bxs</td>
+            <td style="text-align: right; font-weight: 800; color: ${isDef ? '#b91c1c' : '#047857'};">
+              ${isDef ? '⚠️ ' + s.deficitBoxes.toLocaleString() + ' Bxs' : '✅ Ready'}
+            </td>
+            <td style="text-align: right; color: ${isDef ? '#b91c1c' : '#64748b'};">${(s.deficitPieces || 0).toLocaleString()} Pcs</td>
+            <td style="text-align: center;"><span class="checkbox-box"></span></td>
+          </tr>
+        `;
+      });
+
+      const printHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Production_Deficit_Sheet_${unitLabel.replace(/\\s+/g, '_')}_${new Date().toISOString().slice(0,10)}</title>
+  <style>
+    @page { size: A4 portrait; margin: 8mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #0f172a; margin: 0; padding: 12px; font-size: 11px; line-height: 1.3; background: #ffffff; }
+    .print-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2.5px solid #0f172a; padding-bottom: 8px; margin-bottom: 10px; }
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+    .brand-logo-img { height: 48px; width: auto; object-fit: contain; }
+    .brand-titles h1 { font-size: 15px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; }
+    .brand-titles h2 { font-size: 12px; font-weight: 800; color: #b91c1c; margin: 2px 0 0 0; text-transform: uppercase; }
+    .print-meta { text-align: right; font-size: 10px; color: #475569; }
+    .meta-pill { display: inline-block; background: #eff6ff; color: #1e40af; border: 1.5px solid #bfdbfe; font-weight: 800; font-size: 10.5px; padding: 2px 8px; border-radius: 4px; margin-bottom: 4px; }
+    .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+    .kpi-cell { border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; background: #f8fafc; }
+    .kpi-cell.red { border-color: #fca5a5; background: #fef2f2; }
+    .kpi-cell.blue { border-color: #93c5fd; background: #eff6ff; }
+    .kpi-label { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+    .kpi-val { font-size: 14px; font-weight: 900; color: #0f172a; }
+    .kpi-sub { font-size: 9px; color: #64748b; }
+    .section-box { border: 1.5px solid #cbd5e1; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
+    .section-header { padding: 5px 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+    .section-header.mashal { background: #1e40af; color: #ffffff; }
+    .section-header.fauji { background: #065f46; color: #ffffff; }
+    table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+    th { background: #f1f5f9; color: #334155; font-weight: 800; text-transform: uppercase; font-size: 9px; padding: 4px 6px; border-bottom: 1.5px solid #cbd5e1; text-align: left; }
+    td { padding: 4px 6px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    tr.highlight-deficit-row { background: #fff1f2; font-weight: 600; }
+    .checkbox-box { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #64748b; border-radius: 3px; }
+    .signoff-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; padding-top: 10px; border-top: 1.5px dashed #94a3b8; }
+    .sign-box { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; min-height: 44px; display: flex; flex-direction: column; justify-content: space-between; background: #fafafa; }
+    .sign-title { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; }
+    .sign-line { border-bottom: 1px solid #0f172a; margin-top: 18px; }
+    .no-print-bar { position: fixed; bottom: 12px; right: 12px; background: #0f172a; padding: 8px 14px; border-radius: 8px; box-shadow: 0 4px 18px rgba(0,0,0,0.3); display: flex; gap: 8px; z-index: 9999; }
+    .print-btn { background: #2563eb; color: #ffffff; border: none; padding: 7px 14px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer; }
+    .close-btn { background: #334155; color: #ffffff; border: none; padding: 7px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    @media print {
+      .no-print-bar { display: none !important; }
+      body { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print-bar">
+    <button class="print-btn" onclick="window.print()">🖨️ Print Production Sheet</button>
+    <button class="close-btn" onclick="window.close()">✕ Close</button>
+  </div>
+
+  <div class="print-header">
+    <div class="brand-group">
+      <img src="/images/mashal_mobile_logo.png" alt="Mashal" class="brand-logo-img">
+      <div class="brand-titles">
+        <h1>Khandelia Oil & General Mills Pvt. Ltd.</h1>
+        <h2>Factory Production Deficit & Godown Ready Stock Sheet</h2>
+      </div>
+    </div>
+    <div class="print-meta">
+      <div><span class="meta-pill">${unitLabel.toUpperCase()}</span></div>
+      <div>Printed: <strong>${printDateStr}</strong></div>
+      <div>Authorized: <strong>${escapeHtml(currentUsername || "Super Admin")}</strong></div>
+    </div>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi-cell blue">
+      <div class="kpi-label">Available Godown Stock</div>
+      <div class="kpi-val" style="color: #0369a1;">${(analysis.totalGodownBoxes || 0).toLocaleString()} Bxs</div>
+      <div class="kpi-sub">${(analysis.totalGodownPieces || 0).toLocaleString()} Pieces in Godown</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-label">Pending Orders Demand</div>
+      <div class="kpi-val">${(analysis.totalPendingBoxes || 0).toLocaleString()} Bxs</div>
+      <div class="kpi-sub">${(analysis.totalPendingPieces || 0).toLocaleString()} Pieces Needed</div>
+    </div>
+    <div class="kpi-cell red">
+      <div class="kpi-label">⚡ NET TO PRODUCE (DEFICIT)</div>
+      <div class="kpi-val" style="color: #b91c1c;">${(analysis.totalDeficitBoxes || 0).toLocaleString()} Bxs</div>
+      <div class="kpi-sub" style="color: #b91c1c;">${(analysis.totalDeficitPieces || 0).toLocaleString()} Pcs Factory Must Make</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-label">Stock Coverage</div>
+      <div class="kpi-val" style="color: #047857;">${analysis.coveragePercent || 0}%</div>
+      <div class="kpi-sub">Demand Fulfilled by Stock</div>
+    </div>
+  </div>
+
+  <div class="section-box">
+    <div class="section-header mashal">
+      <span>Brand: MASHAL (14 Packaging SKUs)</span>
+      <span>Stock: ${(analysis.brands?.MASHAL?.godownBoxes || 0).toLocaleString()} Bxs | Net Deficit: ${(analysis.brands?.MASHAL?.deficitBoxes || 0).toLocaleString()} Bxs</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30px; text-align: center;">#</th>
+          <th>Product & Packaging</th>
+          <th style="text-align: right; width: 110px;">Godown Stock</th>
+          <th style="text-align: right; width: 110px;">Pending Demand</th>
+          <th style="text-align: right; width: 120px;">Net To Produce</th>
+          <th style="text-align: right; width: 110px;">Pieces To Make</th>
+          <th style="text-align: center; width: 60px;">Produced [✓]</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${mRows}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-box">
+    <div class="section-header fauji">
+      <span>Brand: FAUJI (6 Packaging SKUs)</span>
+      <span>Stock: ${(analysis.brands?.FAUJI?.godownBoxes || 0).toLocaleString()} Bxs | Net Deficit: ${(analysis.brands?.FAUJI?.deficitBoxes || 0).toLocaleString()} Bxs</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30px; text-align: center;">#</th>
+          <th>Product & Packaging</th>
+          <th style="text-align: right; width: 110px;">Godown Stock</th>
+          <th style="text-align: right; width: 110px;">Pending Demand</th>
+          <th style="text-align: right; width: 120px;">Net To Produce</th>
+          <th style="text-align: right; width: 110px;">Pieces To Make</th>
+          <th style="text-align: center; width: 60px;">Produced [✓]</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${fRows}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="signoff-section">
+    <div class="sign-box">
+      <div class="sign-title">Production Line Supervisor</div>
+      <div class="sign-line"></div>
+    </div>
+    <div class="sign-box">
+      <div class="sign-title">Godown Stock & Inventory In-Charge</div>
+      <div class="sign-line"></div>
+    </div>
+    <div class="sign-box">
+      <div class="sign-title">Plant Manager / General Manager</div>
+      <div class="sign-line"></div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      const printWin = window.open("", "_blank");
+      if (printWin) {
+        printWin.document.open();
+        printWin.document.write(printHtml);
+        printWin.document.close();
+        setTimeout(() => {
+          printWin.focus();
+        }, 300);
+      } else {
+        window.print();
+      }
     }
 
     // 8. Pagination Implementation
@@ -6248,24 +7946,49 @@
 
         // Format Product Quantities: 1 LTR. BOTTLE x 15 (2 Bxs: 30 Pcs)
         let itemsHtml = `<div class="product-breakdown-list">`;
-        const items = Array.isArray(o.items) ? o.items : [];
+        let items = [];
+        if (Array.isArray(o.items)) {
+          items = o.items;
+        } else if (typeof o.items === "string") {
+          try {
+            const parsed = JSON.parse(o.items);
+            if (Array.isArray(parsed)) items = parsed;
+          } catch (e) {}
+        }
+
         if (items.length > 0) {
           items.forEach(it => {
             const isMashal = (it.brand || "Mashal").toLowerCase() === "mashal";
             const brandCls = isMashal ? "mashal" : "fauji";
             const bxs = parseInt(it.boxes, 10) || 0;
             const mult = parseInt(it.multiplier, 10) || 1;
-            const pcs = bxs * mult;
+            const pcs = parseInt(it.pieces, 10) || (bxs * mult);
 
             itemsHtml += `
               <div class="product-item-chip ${brandCls}">
                 <span class="product-item-name">${escapeHtml(it.item || "")}</span>
-                <span class="calc-detail">${bxs} Bx • ${pcs} Pcs</span>
+                <span class="calc-detail">${bxs.toLocaleString()} Bx • ${pcs.toLocaleString()} Pcs</span>
               </div>
             `;
           });
+        } else if (o.itemsSummary || o.quantitiesSummary) {
+          const rawLines = String(o.itemsSummary || o.quantitiesSummary || "").split(/\n|🔵|•/).map(l => l.trim()).filter(Boolean);
+          if (rawLines.length > 0) {
+            rawLines.forEach(line => {
+              const isMashal = !line.toLowerCase().includes("fauji");
+              const brandCls = isMashal ? "mashal" : "fauji";
+              const cleanLine = line.replace(/🔵|•|📦/g, "").replace(/➔|->|\|/g, " ").trim();
+              itemsHtml += `
+                <div class="product-item-chip ${brandCls}">
+                  <span class="product-item-name">${escapeHtml(cleanLine)}</span>
+                </div>
+              `;
+            });
+          } else {
+            itemsHtml += `<span style="color: var(--text-muted); font-size: 11.5px;">—</span>`;
+          }
         } else {
-          itemsHtml += `<span style="color: var(--text-muted); font-size: 11.5px;">${escapeHtml(o.itemsSummary || "-")}</span>`;
+          itemsHtml += `<span style="color: var(--text-muted); font-size: 11.5px;">—</span>`;
         }
         itemsHtml += `</div>`;
 
@@ -6435,11 +8158,11 @@
     }
 
     // Horizontal Scrolling
-    function scrollTableHorizontally(offset) {
+    function scrollTableHorizontally(offset, smooth = true) {
       const container = document.getElementById("tableScrollContainer");
       if (container) {
-        container.scrollBy({ left: offset, behavior: "smooth" });
-        setTimeout(updateTableScrollProgress, 120);
+        container.scrollBy({ left: offset, behavior: smooth ? "smooth" : "auto" });
+        updateTableScrollProgress();
       }
     }
 
@@ -6781,29 +8504,105 @@
       }
     }
 
-    // Slip Modal Preview & Sharing
+    // Slip Modal Preview & Sharing with Robust Multi-ID & Dynamic Rendering Fallback
     function previewSlipModal(orderId) {
-      const order = allOrdersData.find(o => o.cleanId === orderId);
+      const order = allOrdersData.find(o => 
+        o.cleanId === orderId || 
+        o.order_id === orderId || 
+        String(o.cleanId || '').replace('#', '').trim() === String(orderId || '').replace('#', '').trim()
+      );
       if (!order) return;
 
       const body = document.getElementById("slipModalBody");
-      document.getElementById("slipModalTitle").textContent = `Official Order Slip - #${orderId}`;
-      document.getElementById("slipModalMeta").textContent = `${order.partyName} • ${order.totalBoxes} Boxes (${order.totalPieces} Pieces)`;
-      body.innerHTML = `<div style="color: var(--text-muted); padding: 40px;">Rendering digital confirmation slip...</div>`;
+      const targetId = order.cleanId || orderId;
+      document.getElementById("slipModalTitle").textContent = `Official Order Slip - #${targetId}`;
+      document.getElementById("slipModalMeta").textContent = `${order.partyName || "Customer"} • ${order.totalBoxes || 0} Boxes (${order.totalPieces || 0} Pieces)`;
+      
+      body.innerHTML = `
+        <div style="color: var(--text-muted); padding: 50px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;">
+          <div style="width: 36px; height: 36px; border: 3px solid rgba(220,38,38,0.2); border-top-color: #dc2626; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <div style="font-size: 13px; font-weight: 600; color: #1e293b;">Generating &amp; loading digital slip...</div>
+          <div style="font-size: 11px; color: #64748b;">Order #${targetId} • Khandelia Mills</div>
+        </div>
+      `;
       document.getElementById("slipModalOverlay").style.display = "flex";
 
       const img = new Image();
-      img.src = `/order_slips/${orderId}.png?t=${Date.now()}`;
+      img.src = `/order_slips/${targetId}.png?t=${Date.now()}`;
+      img.style.maxWidth = "100%";
+      img.style.height = "auto";
+      img.style.display = "block";
+      img.style.margin = "0 auto";
+      img.style.borderRadius = "8px";
+      img.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+
       img.onload = () => {
         body.innerHTML = "";
         body.appendChild(img);
       };
+
       img.onerror = () => {
-        body.innerHTML = `<div style="color: var(--text-muted); padding: 40px; text-align: center;">Slip preview image is being regenerated...</div>`;
+        const altId = String(order.order_id || '').replace('#', '').trim();
+        if (altId && altId !== targetId) {
+          const img2 = new Image();
+          img2.src = `/order_slips/${altId}.png?t=${Date.now()}`;
+          img2.style.maxWidth = "100%";
+          img2.style.height = "auto";
+          img2.style.display = "block";
+          img2.style.margin = "0 auto";
+          img2.style.borderRadius = "8px";
+          img2.onload = () => {
+            body.innerHTML = "";
+            body.appendChild(img2);
+          };
+          img2.onerror = () => renderSlipDigitalFallback(body, order, targetId);
+          return;
+        }
+        renderSlipDigitalFallback(body, order, targetId);
       };
 
-      document.getElementById("btnDownloadSlipModal").onclick = () => downloadSlipFile(orderId);
-      document.getElementById("btnWhatsAppSlipModal").onclick = () => shareWhatsAppSingle(orderId);
+      document.getElementById("btnDownloadSlipModal").onclick = () => downloadSlipFile(targetId);
+      document.getElementById("btnWhatsAppSlipModal").onclick = () => shareWhatsAppSingle(targetId);
+    }
+
+    function renderSlipDigitalFallback(container, order, orderId) {
+      container.innerHTML = `
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 600px; margin: 0 auto; text-align: left; font-family: Inter, sans-serif;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #dc2626; padding-bottom: 14px; margin-bottom: 16px;">
+            <div>
+              <div style="font-weight: 800; font-size: 16px; color: #dc2626;">KHANDELIA OIL &amp; GENERAL MILLS PVT. LTD.</div>
+              <div style="font-size: 11px; color: #64748b;">Official Digital Booking Slip</div>
+            </div>
+            <div style="text-align: right;">
+              <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 12px;">#${orderId}</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px;">
+            <div><strong>Party:</strong> ${order.partyName || "-"}</div>
+            <div><strong>Code:</strong> ${order.partyCode || "-"}</div>
+            <div><strong>Sales Person:</strong> ${order.salesPerson || "-"}</div>
+            <div><strong>Date:</strong> ${order.formattedDate || order.orderDate || "-"}</div>
+            <div><strong>Status:</strong> ${order.orderStatus || "Pending"}</div>
+            <div><strong>Warehouse:</strong> ${order.warehouse || "Unit 1"}</div>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Quantities:</div>
+            <div style="background: #ffffff; border: 1px solid #f1f5f9; padding: 10px; border-radius: 6px; font-size: 12px; line-height: 1.6;">
+              ${order.quantitiesSummary || "Items details available in database records."}
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; background: #1e293b; color: #ffffff; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700;">
+            <span>TOTAL BOXES: ${order.totalBoxes || 0}</span>
+            <span>TOTAL PIECES: ${order.totalPieces || 0}</span>
+          </div>
+          <div style="text-align: center; margin-top: 16px;">
+            <button onclick="previewSlipModal('${orderId}')" class="btn-action-icon" style="display: inline-flex; padding: 8px 16px; font-weight: 600;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+              <span>Regenerate High-Res Slip PNG</span>
+            </button>
+          </div>
+        </div>
+      `;
     }
 
     function downloadSlipFile(orderId) {

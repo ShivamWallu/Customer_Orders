@@ -110,7 +110,25 @@
       box-shadow: 0 0 25px rgba(0, 0, 0, 0.06);
     }
 
-    /* 🏷️ TOP HEADER (Compact Modern App Bar - Image 3 Optimized) */
+    /* 🏷️ TOP HEADER (Compact Modern App Bar - Clean Professional Brand Logo) */
+    .brand-app-logo {
+      height: 40px;
+      width: auto;
+      max-width: 62px;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.35));
+      transition: transform 0.2s ease;
+    }
+    .brand-app-logo:hover {
+      transform: scale(1.04);
+    }
+
     .brand-header {
       background: transparent;
       padding: 0;
@@ -1005,6 +1023,11 @@
         padding: 5px 22px;
       }
 
+      .customer-status-strip {
+        padding: 10px 24px;
+        font-size: 13.5px;
+      }
+
       .section-card {
         padding: 20px 24px;
       }
@@ -1066,6 +1089,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
       padding: 10px 14px;
       min-height: 56px;
       box-sizing: border-box;
@@ -1396,6 +1420,10 @@
     .nav-icon-app {
       background: #f5f3ff;
       color: #7c3aed;
+    }
+    .nav-icon-apple {
+      background: #0f172a;
+      color: #ffffff;
     }
     .nav-icon-logout {
       background: #fff1f2;
@@ -1847,19 +1875,162 @@
       gap: 5px;
     }
 
+    .cust-order-card-address {
+      font-size: 11.5px;
+      color: #64748b;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
     .cust-order-card-items-box {
+      margin-bottom: 10px;
+    }
+
+    .card-items-structured {
       background: #f8fafc;
-      border: 1px solid #f1f5f9;
+      border: 1px solid #e2e8f0;
       border-radius: 10px;
       padding: 8px 10px;
-      margin-bottom: 10px;
-      font-size: 11.5px;
-      color: #334155;
-      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-items-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+
+    .card-items-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #047857;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .card-items-count-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .card-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .card-item-chip-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #eef2f6;
+      border-radius: 8px;
+      padding: 6px 9px;
+      gap: 6px;
+      row-gap: 5px;
+      flex-wrap: wrap;
+      transition: background 0.15s ease;
+    }
+
+    .card-item-chip-row:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .chip-item-left {
       display: flex;
       align-items: center;
       gap: 6px;
-      flex-wrap: wrap;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .chip-brand-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+
+    .chip-brand-badge.brand-mashal {
+      background: #fef08a; /* Vibrant rich mustard yellow requested by user */
+      color: #713f12;      /* Dark mustard text for crisp contrast */
+      border: 1px solid #eab308;
+    }
+
+    .chip-brand-badge.brand-fauji {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .chip-item-name {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 11.5px;
+      line-height: 1.35;
+      white-space: normal; /* NO TRUNCATION! Always 100% visible */
+      word-break: break-word;
+    }
+
+    .chip-item-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .chip-qty-bxs {
+      background: #f0f9ff;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .chip-qty-bxs strong {
+      font-weight: 800;
+      color: #0284c7;
+    }
+
+    .chip-qty-pcs {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .chip-qty-pcs strong {
+      font-weight: 800;
+      color: #16a34a;
     }
 
     .cust-order-card-footer {
@@ -2665,6 +2836,7 @@
   <div class="app-wrapper">
     <!-- 🍔 Top Branding with Mobile Three-Line Hamburger Menu -->
     <div class="brand-header-wrap">
+      <img src="/images/mashal_mobile_logo.png" alt="Mashal Official Brand Logo" class="brand-app-logo" title="Mashal Kachi Ghani Mustard Oil">
       <header class="brand-header">
         <div class="company-name">
           <span class="company-name-main">Khandelia Oil &amp; General Mills</span>
@@ -2781,9 +2953,9 @@
 
         <div class="sidebar-divider"></div>
 
-        <!-- 4. Install Android Mobile App -->
-        <button type="button" class="sidebar-nav-item" id="btnSidebarInstallApp" onclick="triggerPWAInstall(); closeCustomerSidebar();">
-          <span class="nav-icon nav-icon-app">
+        <!-- 4. Install Mobile App (Apple iOS & Android Auto-Detect) -->
+        <button type="button" class="sidebar-nav-item" id="btnSidebarInstallApp" onclick="openAppInstallGuideModal(); closeCustomerSidebar();">
+          <span class="nav-icon nav-icon-app" id="sidebarInstallIcon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
               <line x1="12" y1="18" x2="12.01" y2="18"></line>
@@ -2791,10 +2963,10 @@
             </svg>
           </span>
           <div class="nav-text-block">
-            <span class="nav-title">Install Android Mobile App</span>
-            <span class="nav-subtitle">Fast 1-tap home screen access</span>
+            <span class="nav-title" id="sidebarInstallTitle">Install Android Mobile App</span>
+            <span class="nav-subtitle" id="sidebarInstallSubtitle">Fast 1-tap home screen access</span>
           </div>
-          <span class="nav-apk-chip">PWA / APK</span>
+          <span class="nav-apk-chip" id="sidebarInstallBadge">PWA / APK</span>
         </button>
 
         <!-- 5. Sign Out -->
@@ -2817,7 +2989,7 @@
       </nav>
     </div>
 
-    <!-- Customer Status Bar (Cleaned - Switch Account removed, available in slide menu) -->
+    <!-- Customer Status Bar (Clean Emerald Ribbon Strip) -->
     <div class="customer-status-strip" id="customerStatusStrip" style="display: none;">
       <span style="display: inline-flex; align-items: center; gap: 6px;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -3067,15 +3239,12 @@
       <div class="search-filter-chips">
         <button type="button" id="chipCustFilterAll" class="chip-filter-btn chip-all active" onclick="setCustTrackSearchFilter('all')">
           <span>📋 All</span>
-          <span id="chipCustFilterCountAll" class="chip-badge-count">0</span>
         </button>
         <button type="button" id="chipCustFilterConfirmed" class="chip-filter-btn chip-confirmed" onclick="setCustTrackSearchFilter('confirmed')">
           <span>✔ Confirmed</span>
-          <span id="chipCustFilterCountConfirmed" class="chip-badge-count">0</span>
         </button>
         <button type="button" id="chipCustFilterDispatched" class="chip-filter-btn chip-dispatched" onclick="setCustTrackSearchFilter('dispatched')">
           <span>🚚 Dispatched</span>
-          <span id="chipCustFilterCountDispatched" class="chip-badge-count">0</span>
         </button>
       </div>
 
@@ -3160,76 +3329,91 @@
   </div>
 
   <!-- 📄 COMPLETE CUSTOMER ORDER DETAILS MODAL -->
-  <div class="modal-backdrop" id="customerOrderDetailsModal" style="display: none; align-items: flex-end; padding: 0;">
-    <div class="modal-content" style="max-width: 600px; width: 100%; max-height: 90vh; border-radius: 20px 20px 0 0; text-align: left; padding: 22px 18px; overflow-y: auto;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+  <div class="modal-backdrop" id="customerOrderDetailsModal" style="display: none; align-items: flex-end; padding: 0;" onclick="if(event.target===this)closeCustomerOrderDetailsModal()">
+    <div class="modal-content" style="max-width: 580px; width: 100%; max-height: 94vh; border-radius: 20px 20px 0 0; text-align: left; padding: 14px 16px 12px; overflow-y: auto; box-sizing: border-box;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
         <div>
-          <span class="pill-status-confirmed" id="custModalStatusBadge">✔ CONFIRMED</span>
-          <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 6px;" id="custModalOrderId">Order #—</h3>
-          <div style="font-size: 12px; color: #64748b;" id="custModalOrderTime">Date & Time: —</div>
+          <span class="pill-boxes" id="custModalStatusBadge">✔ CONFIRMED</span>
+          <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin-top: 4px; line-height: 1.2;" id="custModalOrderId">SO #—</h3>
+          <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;" id="custModalOrderTime">Order ID: —</div>
         </div>
-        <button type="button" class="btn-tool" style="padding: 6px 12px; font-size: 16px; border-radius: 8px;" onclick="closeCustomerOrderDetailsModal()">✕</button>
+        <button type="button" style="width: 32px; height: 32px; border-radius: 9px; background: #f1f5f9; border: 1.5px solid #e2e8f0; color: #475569; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: all 0.15s ease;" onclick="closeCustomerOrderDetailsModal()" title="Close Details">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
 
+      <!-- 🚚 Live Real-Time 3-Step Lifecycle Stepper -->
+      <div id="custModalStepperContainer"></div>
+
       <!-- Party Card -->
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 14px;">
-        <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Customer & Delivery Details</div>
-        <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 3px;" id="custModalPartyName">—</div>
-        <div style="font-size: 12px; color: #475569; margin-top: 2px;" id="custModalPartyAddress">—</div>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; font-size: 11.5px; font-weight: 700;">
-          <span style="color: #2563eb;" id="custModalSalesPerson">👔 Area Sales Manager: —</span>
-          <span style="color: #047857;" id="custModalUnitBadge">🏭 Unit: —</span>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-bottom: 9px;">
+        <div style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Customer Information</div>
+        <div style="font-size: 14px; font-weight: 800; color: #0f172a; margin-top: 2px;" id="custModalPartyName">—</div>
+        <div style="font-size: 11.5px; color: #475569; margin-top: 1px; line-height: 1.35;" id="custModalPartyAddress">—</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; font-size: 11px; font-weight: 700;">
+          <span style="color: #2563eb;" id="custModalSalesPerson">👔 Sales Manager: —</span>
+          <span style="color: #047857;" id="custModalUnitBadge">🏭 Factory Plant: Unit 1</span>
           <span style="color: #d97706;" id="custModalSoBadge"></span>
           <span style="color: #c2410c; display: none;" id="custModalInvoiceBadge"></span>
         </div>
       </div>
 
       <!-- Packaging & Quantities Breakdown Table -->
-      <div style="margin-bottom: 16px;">
-        <div style="font-size: 12.5px; font-weight: 800; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <div style="margin-bottom: 10px;">
+        <div style="font-size: 11.5px; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
           </svg>
           <span>Order Items & Packaging Breakdown</span>
         </div>
         <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
             <thead>
               <tr style="background: #f1f5f9; text-align: left; color: #475569;">
-                <th style="padding: 8px 10px;">Item Description</th>
-                <th style="padding: 8px 10px; text-align: center;">Packaging</th>
-                <th style="padding: 8px 10px; text-align: right;">Boxes</th>
-                <th style="padding: 8px 10px; text-align: right;">Pieces</th>
+                <th style="padding: 6px 8px;">Item Description</th>
+                <th style="padding: 6px 8px; text-align: center;">Packaging</th>
+                <th style="padding: 6px 8px; text-align: right;">Boxes</th>
+                <th style="padding: 6px 8px; text-align: right;">Pieces</th>
               </tr>
             </thead>
             <tbody id="custModalItemsTableBody">
             </tbody>
             <tfoot>
-              <tr style="background: #f8fafc; font-weight: 800; border-top: 2px solid #e2e8f0;">
-                <td style="padding: 8px 10px;" colspan="2">TOTAL</td>
-                <td style="padding: 8px 10px; text-align: right; color: #0284c7;" id="custModalTotalBoxes">0 Bxs</td>
-                <td style="padding: 8px 10px; text-align: right; color: #16a34a;" id="custModalTotalPieces">0 Pcs</td>
+              <tr style="background: #f8fafc; font-weight: 800; border-top: 1.5px solid #e2e8f0;">
+                <td style="padding: 6px 8px;" colspan="2">TOTAL</td>
+                <td style="padding: 6px 8px; text-align: right; color: #0284c7;" id="custModalTotalBoxes">0 Bxs</td>
+                <td style="padding: 6px 8px; text-align: right; color: #16a34a;" id="custModalTotalPieces">0 Pcs</td>
               </tr>
             </tfoot>
           </table>
         </div>
       </div>
 
-      <!-- Actions: Image 2 requested buttons removed, keeping clean full-width close button -->
-      <div>
-        <button type="button" class="btn-primary-auth" style="margin-top: 0; width: 100%; padding: 12px; font-size: 13.5px; font-weight: 700; background: #0f172a; color: #ffffff; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(15,23,42,0.12); cursor: pointer;" onclick="closeCustomerOrderDetailsModal()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+      <!-- 3-Button Action Bar: View Slip + WhatsApp + Close (Close on Right) -->
+      <div style="display: grid; grid-template-columns: 1fr 1.15fr 0.95fr; gap: 8px; margin-top: 8px;">
+        <button type="button" class="btn-card-action btn-card-slip" id="btnCustModalViewSlip" style="height: 38px; justify-content: center; font-size: 12px; font-weight: 700; border-radius: 9px; background: #ecfdf5; color: #059669; border: 1.5px solid #a7f3d0; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span>Close Details</span>
+          <span>View Slip</span>
+        </button>
+        <button type="button" class="btn-card-action btn-card-details" id="btnCustModalWhatsApp" style="height: 38px; justify-content: center; font-size: 12px; font-weight: 700; border-radius: 9px; background: #25d366; color: #ffffff; border: 1.5px solid #22c55e; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 6px rgba(37,211,102,0.18);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </button>
+        <button type="button" class="btn-card-action" style="margin: 0; padding: 0 8px; height: 38px; font-size: 12px; font-weight: 700; background: #f1f5f9; color: #334155; border: 1.5px solid #cbd5e1; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.15s ease;" onclick="closeCustomerOrderDetailsModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <span>Close</span>
         </button>
       </div>
     </div>
   </div>
 
   <!-- 👁️ INTERACTIVE DIGITAL ORDER SLIP VIEWER MODAL (Corporate White Theme - Image 5 Redesign) -->
-  <div class="modal-backdrop" id="customerOrderSlipModal" style="display: none; align-items: center; justify-content: center; padding: 12px; z-index: 1050;">
+  <div class="modal-backdrop" id="customerOrderSlipModal" style="display: none; align-items: center; justify-content: center; padding: 12px; z-index: 25000; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(5px);" onclick="if(event.target===this)closeCustomerOrderSlipModal()">
     <div class="modal-content" style="max-width: 620px; width: 100%; max-height: 94vh; border-radius: 18px; text-align: center; padding: 18px 16px; overflow-y: auto; background: #ffffff; color: #0f172a; border: 1.5px solid #e2e8f0; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
         <div style="text-align: left;">
@@ -3278,6 +3462,118 @@
         </a>
         <button type="button" class="btn-tool" style="padding: 11px 20px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer;" onclick="closeCustomerOrderSlipModal()">Close</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 🍏📱 UNIVERSAL MULTI-PLATFORM APP INSTALLATION MODAL (APPLE iOS & ANDROID) -->
+  <div class="modal-backdrop" id="appInstallGuideModal" style="display: none; align-items: center; justify-content: center; z-index: 99999;">
+    <div class="modal-content" style="max-width: 460px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 24px 20px; border-radius: 20px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+      
+      <!-- Top Brand Thumb & Close -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+          <img src="/images/mashal_mobile_logo.png" alt="Mashal Official" style="width: 44px; height: 44px; border-radius: 10px; object-fit: contain; background: #fff; border: 1px solid #e2e8f0; padding: 2px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Khandelia / Mashal App</h3>
+            <p style="font-size: 11.5px; color: #64748b; margin: 0;">Official Fast Mobile Web App</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAppInstallGuideModal()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Close Modal">&times;</button>
+      </div>
+
+      <!-- Detected Platform Badge -->
+      <div id="detectedPlatformBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; margin-bottom: 14px; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;">
+        <span id="detectedPlatformDot" style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a;"></span>
+        <span id="detectedPlatformText">Auto-Detecting Device...</span>
+      </div>
+
+      <!-- Segmented Platform Switcher Tabs -->
+      <div style="display: flex; background: #f1f5f9; padding: 3px; border-radius: 12px; margin-bottom: 16px; gap: 4px;">
+        <button type="button" id="tabInstallIos" onclick="switchInstallTab('ios')" style="flex: 1; padding: 8px 10px; font-size: 12.5px; font-weight: 700; border: none; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; background: #ffffff; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.47c.56-.69.95-1.65.84-2.61-.83.03-1.85.56-2.43 1.25-.51.59-.96 1.57-.84 2.51.93.07 1.87-.46 2.43-1.15z"/></svg>
+          <span>Apple (iOS)</span>
+        </button>
+        <button type="button" id="tabInstallAndroid" onclick="switchInstallTab('android')" style="flex: 1; padding: 8px 10px; font-size: 12.5px; font-weight: 700; border: none; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; background: transparent; color: #64748b;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.996-3.4572c.121-.2093.0494-.4767-.16-.5977-.2093-.121-.4766-.0494-.5976.16l-2.025 3.5074C15.6325 8.3582 13.882 8 12 8s-3.6325.3582-5.0949.9339L4.8801 5.4265c-.121-.2094-.3883-.281-.5976-.16-.2094.121-.281.3884-.16.5977l1.996 3.4572C2.812 11.231 0 14.887 0 19h24c0-4.113-2.812-7.769-6.1185-9.6786"/></svg>
+          <span>Android (APK)</span>
+        </button>
+      </div>
+
+      <!-- 🍏 APPLE iOS PANEL -->
+      <div id="installPanelIos" style="display: block; text-align: left;">
+        <div id="iosDeviceNotice" style="display: none; padding: 10px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; font-size: 11.5px; color: #92400e; margin-bottom: 12px; line-height: 1.4;">
+          <strong>Notice:</strong> Aap Android device par hain. Apple iOS steps iPhone/iPad Safari ke liye hain. Android phone me 1-tap install ke liye upar <strong>Android</strong> tab select karein.
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #007aff;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+              <polyline points="16 6 12 2 8 6"></polyline>
+              <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Step 1: Tap Share Button [↑]</div>
+            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Safari browser ke bottom toolbar me <strong>Share icon</strong> par tap karein.</div>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #16a34a;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Step 2: "Add to Home Screen"</div>
+            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Menu sheet scroll karke <strong>"Add to Home Screen"</strong> (होम स्क्रीन में जोड़ें) select karein.</div>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 12px; align-items: center;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: #fdf4ff; border: 1px solid #f5d0fe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #a855f7;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Step 3: Tap "Add" (Top-Right)</div>
+            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Top-right par <strong>Add</strong> karein. App icon aapke iPhone screen par ready ho jayega!</div>
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: #0284c7; background: #f0f9ff; padding: 8px 12px; border-radius: 8px; border: 1px solid #bae6fd; text-align: center;">
+          💡 <em>Apple iPhone standalone app 2X fast chalegi bina URL address bar ke.</em>
+        </div>
+      </div>
+
+      <!-- 🤖 ANDROID PANEL -->
+      <div id="installPanelAndroid" style="display: none; text-align: left;">
+        <div id="androidAppleNotice" style="display: none; padding: 10px 12px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; font-size: 11.5px; color: #9f1239; margin-bottom: 12px; line-height: 1.4;">
+          <strong>Apple Device Detected:</strong> Apple iOS devices me Android APK run nahi hoti. iPhone / iPad par add karne ke liye upar <strong>Apple (iOS)</strong> tab use karein.
+        </div>
+
+        <button type="button" id="btnAndroidDirectInstall" onclick="executeAndroidPwaInstall()" style="width: 100%; padding: 13px; font-size: 13.5px; font-weight: 800; background: #059669; color: #ffffff; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(5,150,105,0.25); margin-bottom: 12px; transition: transform 0.15s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.996-3.4572c.121-.2093.0494-.4767-.16-.5977-.2093-.121-.4766-.0494-.5976.16l-2.025 3.5074C15.6325 8.3582 13.882 8 12 8s-3.6325.3582-5.0949.9339L4.8801 5.4265c-.121-.2094-.3883-.281-.5976-.16-.2094.121-.281.3884-.16.5977l1.996 3.4572C2.812 11.231 0 14.887 0 19h24c0-4.113-2.812-7.769-6.1185-9.6786"/></svg>
+          <span>1-Tap Install on Android (WebAPK)</span>
+        </button>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 12px; color: #475569; line-height: 1.45;">
+          <strong>Alternative Manual Method:</strong><br>
+          1. Chrome ke top-right <strong>⋮ (3 dots)</strong> par tap karein.<br>
+          2. <strong>"Install app"</strong> ya <strong>"Add to Home screen"</strong> select karein.<br>
+          3. Phone home screen par app icon ban jayega!
+        </div>
+      </div>
+
+      <!-- Close Button -->
+      <button type="button" onclick="closeAppInstallGuideModal()" style="width: 100%; margin-top: 14px; padding: 10px; font-size: 13px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer;">
+        Close Guide
+      </button>
+
     </div>
   </div>
 
@@ -3389,6 +3685,129 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+    }
+
+    function formatOrderCardItemsHtml(order) {
+      if (!order) return '';
+
+      let itemsList = [];
+      if (Array.isArray(order.items)) {
+        itemsList = order.items;
+      } else if (typeof order.items === 'string') {
+        try {
+          const parsed = JSON.parse(order.items);
+          if (Array.isArray(parsed)) itemsList = parsed;
+        } catch (e) {}
+      }
+
+      const cleanItems = [];
+      if (itemsList.length > 0) {
+        itemsList.forEach(it => {
+          const name = String(it.item || it.name || it.itemName || it.packaging || '').trim();
+          const bxs = parseInt(it.boxes, 10) || 0;
+          const mult = parseInt(it.multiplier, 10) || 1;
+          const pcs = parseInt(it.pieces, 10) || (bxs * mult);
+          let brand = String(it.brand || (name.toLowerCase().includes('fauji') ? 'Fauji' : 'Mashal')).trim();
+          if (name && name !== '-' && name !== '—' && (bxs > 0 || pcs > 0)) {
+            cleanItems.push({ name, bxs, pcs, brand });
+          }
+        });
+      }
+
+      // Fallback: parse raw itemsSummary or quantitiesSummary string if items array was missing
+      if (cleanItems.length === 0) {
+        const rawSummary = String(order.itemsSummary || order.items_summary || order.quantitiesSummary || order.quantities_summary || '').trim();
+        if (rawSummary && rawSummary.toLowerCase() !== 'packaging items') {
+          const lines = rawSummary.split(/\n|🔵|•/).map(l => l.trim()).filter(Boolean);
+          lines.forEach(line => {
+            let isFauji = line.toLowerCase().includes('fauji');
+            let brand = isFauji ? 'Fauji' : 'Mashal';
+            let clean = line.replace(/🔵|•|📦/g, '').trim();
+
+            let bxs = 0;
+            let pcs = 0;
+            const bxsMatch = clean.match(/(\d[\d,]*)\s*(?:Boxes|Bx|Bxs)/i);
+            if (bxsMatch) bxs = parseInt(bxsMatch[1].replace(/,/g, ''), 10) || 0;
+
+            const pcsMatch = clean.match(/(\d[\d,]*)\s*(?:Pieces|Pcs|Pc)/i);
+            if (pcsMatch) pcs = parseInt(pcsMatch[1].replace(/,/g, ''), 10) || 0;
+
+            let name = clean
+              .replace(/➔|->|\|/g, ' ')
+              .replace(/\[\s*\d[\d,]*\s*(?:Boxes|Bx|Bxs)?\s*\]/gi, '')
+              .replace(/\(\s*\d[\d,]*\s*(?:Boxes|Bx|Bxs)?.*?\)/gi, '')
+              .replace(/\d[\d,]*\s*(?:Boxes|Bx|Bxs)/gi, '')
+              .replace(/\d[\d,]*\s*(?:Pieces|Pcs|Pc)/gi, '')
+              .replace(/^Mashal\s+/i, '')
+              .replace(/^Fauji\s+/i, '')
+              .trim();
+
+            if (!name) name = clean;
+            if (name && (bxs > 0 || pcs > 0)) {
+              cleanItems.push({ name, bxs, pcs, brand });
+            }
+          });
+        }
+      }
+
+      // Fallback if still empty
+      if (cleanItems.length === 0) {
+        const bxs = order.totalBoxes || order.total_boxes || 0;
+        const pcs = order.totalPieces || order.total_pieces || 0;
+        return `
+          <div class="card-items-structured">
+            <div class="card-item-chip-row">
+              <div class="chip-item-left">
+                <span class="chip-brand-badge brand-mashal">MASHAL</span>
+                <span class="chip-item-name">Standard Packing</span>
+              </div>
+              <div class="chip-item-right">
+                <span class="chip-qty-bxs"><strong>${bxs.toLocaleString()}</strong> Bx</span>
+                <span class="chip-qty-pcs"><strong>${pcs.toLocaleString()}</strong> Pcs</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const skuCountText = cleanItems.length === 1 ? '1 SKU' : `${cleanItems.length} SKUs`;
+
+      const rowsHtml = cleanItems.map(item => {
+        const isFauji = item.brand.toLowerCase() === 'fauji' || item.name.toLowerCase().includes('fauji');
+        const brandName = isFauji ? 'FAUJI' : 'MASHAL';
+        const brandCls = isFauji ? 'brand-fauji' : 'brand-mashal';
+        let cleanName = item.name.replace(new RegExp(`^${brandName}\\s+`, 'i'), '').trim();
+
+        return `
+          <div class="card-item-chip-row">
+            <div class="chip-item-left">
+              <span class="chip-brand-badge ${brandCls}">${brandName}</span>
+              <span class="chip-item-name" title="${escapeHtml(cleanName)}">${escapeHtml(cleanName)}</span>
+            </div>
+            <div class="chip-item-right">
+              <span class="chip-qty-bxs"><strong>${item.bxs.toLocaleString()}</strong> Bx</span>
+              <span class="chip-qty-pcs"><strong>${item.pcs.toLocaleString()}</strong> Pcs</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="card-items-structured">
+          <div class="card-items-header">
+            <span class="card-items-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+              Ordered Items
+            </span>
+            <span class="card-items-count-badge">${skuCountText}</span>
+          </div>
+          <div class="card-items-list">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
     }
 
     const mashalItems = [
@@ -4849,15 +5268,10 @@
         const isSearch = currentCustSearchQuery.trim().length > 0;
         container.innerHTML = `
           <div style="text-align: center; padding: 45px 16px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 14px;">
-            <div style="width: 48px; height: 48px; margin: 0 auto 12px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </div>
-            <div style="font-weight: 700; color: #334155; margin-bottom: 4px; font-size: 14px;">${isSearch ? 'No Matching Orders' : 'No Orders Found'}</div>
+            <div style="font-size: 36px; margin-bottom: 8px; line-height: 1;">📋</div>
+            <div style="font-weight: 700; color: #334155; margin-bottom: 4px; font-size: 14px;">${isSearch ? 'No Matching Orders' : 'No orders found'}</div>
             <div style="font-size: 12px; color: #64748b; margin-bottom: ${isSearch ? '12px' : '0'};">
-              ${isSearch ? `No orders found matching "${escapeHtml(currentCustSearchQuery)}".` : 'You have no orders placed in this time period.'}
+              ${isSearch ? `No orders found matching "${escapeHtml(currentCustSearchQuery)}".` : 'No orders placed under this date filter.'}
             </div>
             ${isSearch ? `
               <button type="button" class="btn-secondary-auth" style="display: inline-flex; width: auto; height: 34px; padding: 0 14px; font-size: 12px;" onclick="clearCustomerOrdersSearch()">
@@ -4894,34 +5308,87 @@
         const shortId = String(o.shortId || (o.cleanId && o.cleanId.includes('-') ? o.cleanId.split('-').pop() : o.cleanId) || "").replace('#', '');
         const targetId = o.fullOrderId || o.orderId || o.order_id || o.cleanId || shortId;
 
-        html += `
-          <div class="cust-order-card" onclick="openCustomerOrderDetailsModal('${escapeHtml(targetId)}')">
-            <div class="cust-order-card-header">
-              <div class="cust-order-card-header-left">
-                <div class="cust-order-card-id-badge">#${escapeHtml(shortId)}</div>
-                <div class="cust-order-card-date">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
-                  <span>${escapeHtml(o.formattedTimestamp || o.order_date || "-")}</span>
-                </div>
-              </div>
-              <div class="cust-order-card-header-right">
-                ${statusBadge}
-                ${soSubBadge}
-              </div>
-            </div>
+            const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
+            const partyDisplayName = o.partyName || o.party_name || sess.party_name || "Customer";
+            const partyDisplayCode = o.partyCode || o.party_code || sess.party_code || "";
+            const partyDisplayAddress = o.deliveryAddress || o.partyAddress || o.party_address || sess.address || "-";
+            const salesManagerName = o.salesPerson || o.sales_person || sess.sales_person || "Shivam Wallu";
 
-            <div class="cust-order-card-items-box">
-              <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: #047857;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                </svg>
-                Items:
-              </span>
-              <span>${escapeHtml(o.itemsSummary || "Packaging items")}</span>
-            </div>
+            let displayItemsSummary = String(o.itemsSummary || o.items_summary || "").trim();
+            if (!displayItemsSummary || displayItemsSummary.toLowerCase() === "packaging items") {
+              if (Array.isArray(o.items) && o.items.length > 0) {
+                const parts = [];
+                o.items.forEach(it => {
+                  const nm = String(it.item || it.name || it.itemName || it.packaging || "").trim();
+                  const bxs = parseInt(it.boxes || 0);
+                  const pcs = parseInt(it.pieces || 0);
+                  if (nm && nm !== "-" && nm !== "—") {
+                    if (bxs > 0 && pcs > 0) {
+                      parts.push(`${nm} (${bxs} Bxs / ${pcs.toLocaleString()} Pcs)`);
+                    } else if (bxs > 0) {
+                      parts.push(`${nm} (${bxs} Bxs)`);
+                    } else {
+                      parts.push(nm);
+                    }
+                  }
+                });
+                if (parts.length > 0) displayItemsSummary = parts.join(", ");
+              }
+            }
+            if (!displayItemsSummary || displayItemsSummary.toLowerCase() === "packaging items") {
+              displayItemsSummary = `${(o.totalBoxes || 0)} Boxes / ${(o.totalPieces || 0).toLocaleString()} Pieces`;
+            }
+
+            html += `
+              <div class="cust-order-card" onclick="openCustomerOrderDetailsModal('${escapeHtml(targetId)}')">
+                <div class="cust-order-card-header">
+                  <div class="cust-order-card-header-left">
+                    <div class="cust-order-card-id-badge">#${escapeHtml(shortId)}</div>
+                    <div class="cust-order-card-date">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      <span>${escapeHtml(o.formattedTimestamp || o.order_date || "-")}</span>
+                    </div>
+                  </div>
+                  <div class="cust-order-card-header-right">
+                    ${statusBadge}
+                    ${soSubBadge}
+                  </div>
+                </div>
+
+                <div class="cust-order-card-party">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                    <path d="M3 21h18"></path>
+                    <path d="M9 8h1"></path>
+                    <path d="M9 12h1"></path>
+                    <path d="M9 16h1"></path>
+                    <path d="M14 8h1"></path>
+                    <path d="M14 12h1"></path>
+                    <path d="M14 16h1"></path>
+                    <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                  </svg>
+                  <span>${escapeHtml(partyDisplayName)}</span>
+                  ${partyDisplayCode ? `<span style="font-size: 11px; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 1px 6px; border-radius: 4px; margin-left: 4px;">[${escapeHtml(partyDisplayCode)}]</span>` : ''}
+                </div>
+                <div class="cust-order-card-address">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>${escapeHtml(partyDisplayAddress)}</span>
+                </div>
+
+                <div style="font-size: 11.5px; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <span>Sales Manager: <strong style="color: #334155;">${escapeHtml(salesManagerName)}</strong></span>
+                </div>
+
+                ${formatOrderCardItemsHtml(o)}
 
             <div class="cust-order-card-footer" onclick="event.stopPropagation()">
               <div class="order-card-badge-row">
@@ -5009,50 +5476,44 @@
       const badge = document.getElementById("custModalStatusBadge");
       if (isDelivered) {
         badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> DELIVERED`;
-        badge.className = "pill-status-confirmed";
-        badge.style.background = "#ecfdf5";
-        badge.style.color = "#047857";
-        badge.style.borderColor = "#a7f3d0";
-      } else if (isDispatched) {
-        badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> DISPATCHED`;
-        badge.className = "pill-status-confirmed";
+        badge.className = "pill-boxes pill-status-confirmed";
         badge.style.background = "#eff6ff";
         badge.style.color = "#1d4ed8";
-        badge.style.borderColor = "#bfdbfe";
-      } else if (cleanSo) {
-        badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> SO #${escapeHtml(cleanSo)}`;
-        badge.className = "pill-status-confirmed";
-        badge.style.background = "#ecfdf5";
-        badge.style.color = "#047857";
-        badge.style.borderColor = "#a7f3d0";
-      } else if (isConfirmed) {
+        badge.style.border = "1px solid #bfdbfe";
+      } else if (isDispatched) {
+        badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> DISPATCHED`;
+        badge.className = "pill-boxes pill-status-confirmed";
+        badge.style.background = "#eff6ff";
+        badge.style.color = "#1d4ed8";
+        badge.style.border = "1px solid #bfdbfe";
+      } else if (isConfirmed || cleanSo) {
         badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> SO CONFIRMED`;
-        badge.className = "pill-status-confirmed";
-        badge.style.background = "#ecfdf5";
-        badge.style.color = "#047857";
-        badge.style.borderColor = "#a7f3d0";
+        badge.className = "pill-boxes pill-status-confirmed";
+        badge.style.background = "#eff6ff";
+        badge.style.color = "#1d4ed8";
+        badge.style.border = "1px solid #bfdbfe";
       } else {
         badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> PENDING SO`;
-        badge.className = "pill-status-pending";
-        badge.style.background = "";
-        badge.style.color = "";
-        badge.style.borderColor = "";
+        badge.className = "pill-boxes pill-status-pending";
+        badge.style.background = "#fef3c7";
+        badge.style.color = "#b45309";
+        badge.style.border = "1px solid #fde68a";
       }
 
       const shortId = String(ord.shortId || (ord.cleanId && ord.cleanId.includes('-') ? ord.cleanId.split('-').pop() : ord.cleanId) || "").replace('#', '');
       const fullId = ord.fullOrderId || ord.order_id || ord.orderId || ord.cleanId;
 
-      document.getElementById("custModalOrderId").textContent = `Order #${shortId}`;
-      document.getElementById("custModalOrderTime").textContent = `Booked: ${ord.formattedTimestamp || ord.order_date || "-"}`;
+      document.getElementById("custModalOrderId").textContent = cleanSo ? `SO #${cleanSo}` : `Order #${shortId}`;
+      document.getElementById("custModalOrderTime").textContent = `Order ID: #${shortId} • Date: ${ord.formattedTimestamp || ord.order_date || "-"}`;
       document.getElementById("custModalPartyName").textContent = `${ord.partyName || ord.party_name || "Customer"} ${ord.partyCode || ord.party_code ? '[' + (ord.partyCode || ord.party_code) + ']' : ''}`;
       document.getElementById("custModalPartyAddress").textContent = ord.partyAddress || ord.deliveryAddress || ord.party_address || "Address on record";
       
       document.getElementById("custModalSalesPerson").textContent = `👔 Sales Manager: ${ord.salesPerson || ord.sales_person || "Assigned directly"}`;
-      document.getElementById("custModalUnitBadge").textContent = `🏭 Unit: ${ord.unit || "Unit 1"}`;
+      document.getElementById("custModalUnitBadge").textContent = `🏭 Factory Plant: ${ord.unit || "Unit 1"}`;
 
       const soBadge = document.getElementById("custModalSoBadge");
       if (cleanSo) {
-        soBadge.textContent = `SO #${cleanSo}`;
+        soBadge.textContent = `• SO #${cleanSo}`;
         soBadge.style.display = "inline";
       } else {
         soBadge.style.display = "none";
@@ -5067,6 +5528,100 @@
         } else {
           invBadge.style.display = "none";
         }
+      }
+
+      // 🚚 Render Real-Time 3-Step Lifecycle Stepper
+      const stepperContainer = document.getElementById("custModalStepperContainer");
+      if (stepperContainer) {
+        let stepperClass = "step-1-active";
+        let step1Status = "completed";
+        let step2Status = "upcoming";
+        let step3Status = "upcoming";
+
+        if (isDelivered || isDispatched) {
+          stepperClass = "step-3-active";
+          step1Status = "completed";
+          step2Status = "completed";
+          step3Status = isDelivered ? "completed" : "current";
+        } else if (isConfirmed) {
+          stepperClass = "step-2-active";
+          step1Status = "completed";
+          step2Status = "completed";
+          step3Status = "current";
+        } else {
+          stepperClass = "step-1-active";
+          step1Status = "completed";
+          step2Status = "current";
+          step3Status = "upcoming";
+        }
+
+        const step1Time = ord.formattedTimestamp || ord.order_date || "-";
+        const step2Sub = cleanSo ? `SO #${escapeHtml(cleanSo)}` : (isConfirmed ? "Billing Allocation" : "SO In Review");
+        const step2Time = ord.confirmed_at || ord.confirmedAt || (isConfirmed ? "Confirmed in ERP" : "Awaiting SO");
+        
+        let step3Sub = "Ready for Mandi";
+        let step3Time = "";
+        if (isDelivered) {
+          step3Sub = "Delivered to Mandi";
+          step3Time = ord.dispatch_at || ord.dispatchAt || "Delivered";
+        } else if (isDispatched) {
+          step3Sub = "Vehicle In Transit";
+          step3Time = ord.dispatch_at || ord.dispatchAt || "Dispatched";
+        } else if (isConfirmed) {
+          step3Sub = "Ready for Mandi";
+          step3Time = "Factory Allocation";
+        } else {
+          step3Sub = "Awaiting SO";
+          step3Time = "";
+        }
+
+        stepperContainer.innerHTML = `
+          <div class="track-stepper-wrap" style="margin: 0 0 9px 0; padding: 10px 10px 8px;">
+            <div class="track-stepper ${stepperClass}">
+              <!-- Step 1: Order Booked -->
+              <div class="track-step ${step1Status}">
+                <div class="track-step-circle" style="width: 28px; height: 28px; margin: 0 auto 4px; font-size: 11px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="track-step-label" style="font-size: 10.5px;">Order Booked</div>
+                <div class="track-step-sub" style="font-size: 9px;">Logged in ERP</div>
+                <div class="track-step-time" style="font-size: 8.5px;">${escapeHtml(step1Time)}</div>
+              </div>
+
+              <!-- Step 2: SO Confirmed -->
+              <div class="track-step ${step2Status}">
+                <div class="track-step-circle" style="width: 28px; height: 28px; margin: 0 auto 4px; font-size: 11px;">
+                  ${step2Status === 'completed' 
+                    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>` 
+                    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`}
+                </div>
+                <div class="track-step-label" style="font-size: 10.5px;">${isConfirmed ? 'SO Confirmed' : 'SO In Review'}</div>
+                <div class="track-step-sub" style="font-size: 9px;">${step2Sub}</div>
+                <div class="track-step-time" style="font-size: 8.5px;">${escapeHtml(step2Time)}</div>
+              </div>
+
+              <!-- Step 3: Dispatch & Loading -->
+              <div class="track-step ${step3Status}">
+                <div class="track-step-circle" style="width: 28px; height: 28px; margin: 0 auto 4px; font-size: 11px;">
+                  ${step3Status === 'completed'
+                    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+                    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`}
+                </div>
+                <div class="track-step-label" style="font-size: 10.5px;">Dispatch & Loading</div>
+                <div class="track-step-sub" style="font-size: 9px;">${step3Sub}</div>
+                ${step3Time ? `<div class="track-step-time" style="font-size: 8.5px;">${escapeHtml(step3Time)}</div>` : ''}
+              </div>
+            </div>
+
+            <div style="margin-top: 7px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; color: #64748b;">
+              <span>🏭 Factory Plant: <strong style="color: #0f172a;">${escapeHtml(ord.unit || "Unit 1")}</strong></span>
+              <span style="color: #047857; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                Live ERP Synchronized
+              </span>
+            </div>
+          </div>
+        `;
       }
 
       const tbody = document.getElementById("custModalItemsTableBody");
@@ -5114,19 +5669,19 @@
             if (/mashal/i.test(rawName)) brandText = "MASHAL";
             else if (/fauji/i.test(rawName)) brandText = "FAUJI";
           }
-          const brandBadge = brandText ? `<span style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; margin-right: 5px; font-weight: 700; display: inline-block;">${escapeHtml(brandText)}</span>` : "";
+          const brandBadge = brandText ? `<span style="font-size: 9px; background: #e0f2fe; color: #0369a1; padding: 1px 5px; border-radius: 4px; margin-right: 5px; font-weight: 700; display: inline-block;">${escapeHtml(brandText)}</span>` : "";
 
           itemsHtml += `
             <tr style="border-bottom: 1px solid #f1f5f9;">
-              <td style="padding: 10px 10px; font-weight: 600; color: #1e293b; font-size: 12.5px;">${brandBadge}${escapeHtml(rawName)}</td>
-              <td style="padding: 10px 10px; text-align: center; color: #475569; font-weight: 700; font-size: 12px;"><span style="background: #f1f5f9; padding: 2px 7px; border-radius: 6px; border: 1px solid #e2e8f0;">x${mult}</span></td>
-              <td style="padding: 10px 10px; text-align: right; font-weight: 700; color: #0284c7; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">${bxs.toLocaleString()}</td>
-              <td style="padding: 10px 10px; text-align: right; font-weight: 700; color: #16a34a; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">${pcs.toLocaleString()}</td>
+              <td style="padding: 6px 8px; font-weight: 600; color: #1e293b; font-size: 11.5px;">${brandBadge}${escapeHtml(rawName)}</td>
+              <td style="padding: 6px 8px; text-align: center; color: #475569; font-weight: 700; font-size: 11px;"><span style="background: #f1f5f9; padding: 1px 6px; border-radius: 5px; border: 1px solid #e2e8f0;">x${mult}</span></td>
+              <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #0284c7; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">${bxs.toLocaleString()}</td>
+              <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #16a34a; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">${pcs.toLocaleString()}</td>
             </tr>
           `;
         });
       } else {
-        itemsHtml = `<tr><td colspan="4" style="padding: 14px 10px; text-align: center; color: #64748b; font-size: 12.5px;">${escapeHtml(ord.itemsSummary || ord.items_summary || "No item breakdown available")}</td></tr>`;
+        itemsHtml = `<tr><td colspan="4" style="padding: 10px; text-align: center; color: #64748b; font-size: 11.5px;">${escapeHtml(ord.itemsSummary || ord.items_summary || "No item breakdown available")}</td></tr>`;
       }
       tbody.innerHTML = itemsHtml;
 
@@ -5672,6 +6227,37 @@
         const inv = o.invoiceNumber || o.invoice_number || "";
         const invPill = inv ? `<span class="pill-boxes" style="background: #fff7ed; color: #c2410c; border-color: #ffedd5;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> Inv #${escapeHtml(inv)}</span>` : "";
 
+        const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
+        const partyDisplayName = o.partyName || o.party_name || sess.party_name || "Customer";
+        const partyDisplayCode = o.partyCode || o.party_code || sess.party_code || "";
+        const partyDisplayAddress = o.deliveryAddress || o.partyAddress || o.party_address || sess.address || "-";
+        const salesManagerName = o.salesPerson || o.sales_person || sess.sales_person || "Shivam Wallu";
+
+        let displayItemsSummary = String(o.itemsSummary || o.items_summary || "").trim();
+        if (!displayItemsSummary || displayItemsSummary.toLowerCase() === "packaging items") {
+          if (Array.isArray(o.items) && o.items.length > 0) {
+            const parts = [];
+            o.items.forEach(it => {
+              const nm = String(it.item || it.name || it.itemName || it.packaging || "").trim();
+              const bxs = parseInt(it.boxes || 0);
+              const pcs = parseInt(it.pieces || 0);
+              if (nm && nm !== "-" && nm !== "—") {
+                if (bxs > 0 && pcs > 0) {
+                  parts.push(`${nm} (${bxs} Bxs / ${pcs.toLocaleString()} Pcs)`);
+                } else if (bxs > 0) {
+                  parts.push(`${nm} (${bxs} Bxs)`);
+                } else {
+                  parts.push(nm);
+                }
+              }
+            });
+            if (parts.length > 0) displayItemsSummary = parts.join(", ");
+          }
+        }
+        if (!displayItemsSummary || displayItemsSummary.toLowerCase() === "packaging items") {
+          displayItemsSummary = `${(o.totalBoxes || 0)} Boxes / ${(o.totalPieces || 0).toLocaleString()} Pieces`;
+        }
+
         html += `
           <div class="cust-order-card" onclick="openCustomerOrderDetailsModal('${escapeHtml(o.cleanId)}')">
             <div class="cust-order-card-header">
@@ -5690,15 +6276,41 @@
               </div>
             </div>
 
-            <div class="cust-order-card-items-box">
-              <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: #047857;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                </svg>
-                Items:
-              </span>
-              <span>${escapeHtml(o.itemsSummary || "Packaging items")}</span>
+            <!-- Party Name & Code (Exact Match to ASM in Image 1) -->
+            <div class="cust-order-card-party">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                <path d="M3 21h18"></path>
+                <path d="M9 8h1"></path>
+                <path d="M9 12h1"></path>
+                <path d="M9 16h1"></path>
+                <path d="M14 8h1"></path>
+                <path d="M14 12h1"></path>
+                <path d="M14 16h1"></path>
+                <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+              </svg>
+              <span>${escapeHtml(partyDisplayName)}</span>
+              ${partyDisplayCode ? `<span style="font-size: 11px; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 1px 6px; border-radius: 4px; margin-left: 4px;">[${escapeHtml(partyDisplayCode)}]</span>` : ''}
             </div>
+
+            <!-- Address (Exact Match to ASM in Image 1) -->
+            <div class="cust-order-card-address">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>${escapeHtml(partyDisplayAddress)}</span>
+            </div>
+
+            <!-- Sales Manager (Exact Match to ASM in Image 1) -->
+            <div style="font-size: 11.5px; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>Sales Manager: <strong style="color: #334155;">${escapeHtml(salesManagerName)}</strong></span>
+            </div>
+
+            ${formatOrderCardItemsHtml(o)}
 
             <div class="cust-order-card-footer" onclick="event.stopPropagation()">
               <div class="order-card-badge-row">
@@ -6083,7 +6695,7 @@
     renderItemList();
     checkCustomerSession();
 
-    // 🔄 Real-time Background Polling: Refresh active order status every 10 seconds silently
+    // 🔄 Real-time Background Polling: Refresh active order status every 4 seconds silently (2X Fast Sync)
     setInterval(() => {
       try {
         const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
@@ -6091,28 +6703,208 @@
           populateQuickTrackChips(true);
         }
       } catch(e) {}
-    }, 10000);
+    }, 4000);
   
-    // PWA Install helper for mobile drawer
+    // 🍏📱 MULTI-PLATFORM (APPLE iOS & ANDROID) AUTO-DETECTION & INSTALL ENGINE
     let deferredInstallPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstallPrompt = e;
     });
 
-    function triggerPWAInstall() {
+    function getClientPlatform() {
+      const ua = navigator.userAgent || navigator.vendor || window.opera || "";
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(ua);
+      const isMac = /Macintosh|Mac OS X/i.test(ua) && !isIOS;
+      if (isIOS) return "ios";
+      if (isAndroid) return "android";
+      if (isMac) return "mac";
+      return "desktop";
+    }
+
+    function initPlatformSpecificInstallUI() {
+      const platform = getClientPlatform();
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+      const titleEl = document.getElementById("sidebarInstallTitle");
+      const subEl = document.getElementById("sidebarInstallSubtitle");
+      const badgeEl = document.getElementById("sidebarInstallBadge");
+      const iconEl = document.getElementById("sidebarInstallIcon");
+
+      if (isStandalone) {
+        if (titleEl) titleEl.textContent = "Mashal App Active";
+        if (subEl) subEl.textContent = "Running in Standalone App Mode";
+        if (badgeEl) {
+          badgeEl.textContent = "INSTALLED";
+          badgeEl.style.background = "#dcfce7";
+          badgeEl.style.color = "#15803d";
+        }
+        return;
+      }
+
+      if (platform === "ios") {
+        if (titleEl) titleEl.textContent = "Add to Apple iPhone / iPad";
+        if (subEl) subEl.textContent = "Fast 1-tap Home Screen Web App";
+        if (badgeEl) {
+          badgeEl.textContent = "APPLE iOS";
+          badgeEl.style.background = "#0f172a";
+          badgeEl.style.color = "#ffffff";
+        }
+        if (iconEl) {
+          iconEl.className = "nav-icon nav-icon-apple";
+          iconEl.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.47c.56-.69.95-1.65.84-2.61-.83.03-1.85.56-2.43 1.25-.51.59-.96 1.57-.84 2.51.93.07 1.87-.46 2.43-1.15z"/></svg>`;
+        }
+      } else if (platform === "android") {
+        if (titleEl) titleEl.textContent = "Install Android Mobile App";
+        if (subEl) subEl.textContent = "Fast 1-tap home screen access";
+        if (badgeEl) {
+          badgeEl.textContent = "ANDROID / APK";
+          badgeEl.style.background = "#ede9fe";
+          badgeEl.style.color = "#6d28d9";
+        }
+      } else {
+        if (titleEl) titleEl.textContent = "Install Mobile App";
+        if (subEl) subEl.textContent = "Apple iOS & Android compatible";
+        if (badgeEl) {
+          badgeEl.textContent = "PWA / APP";
+        }
+      }
+    }
+
+    function openAppInstallGuideModal(preferredPlatform) {
+      const modal = document.getElementById("appInstallGuideModal");
+      if (!modal) return;
+
+      const detected = getClientPlatform();
+      const activePlatform = preferredPlatform || (detected === "ios" ? "ios" : "android");
+      switchInstallTab(activePlatform);
+
+      const dot = document.getElementById("detectedPlatformDot");
+      const text = document.getElementById("detectedPlatformText");
+      const badge = document.getElementById("detectedPlatformBadge");
+
+      if (detected === "ios") {
+        if (text) text.textContent = "🍏 Detected: Apple iOS (iPhone / iPad)";
+        if (badge) {
+          badge.style.background = "#eff6ff";
+          badge.style.color = "#1d4ed8";
+          badge.style.borderColor = "#bfdbfe";
+        }
+        if (dot) dot.style.background = "#2563eb";
+      } else if (detected === "android") {
+        if (text) text.textContent = "🤖 Detected: Android Mobile Device";
+        if (badge) {
+          badge.style.background = "#f0fdf4";
+          badge.style.color = "#15803d";
+          badge.style.borderColor = "#bbf7d0";
+        }
+        if (dot) dot.style.background = "#16a34a";
+      } else {
+        if (text) text.textContent = "💻 Detected: Desktop / Laptop Browser";
+        if (badge) {
+          badge.style.background = "#f8fafc";
+          badge.style.color = "#475569";
+          badge.style.borderColor = "#e2e8f0";
+        }
+        if (dot) dot.style.background = "#64748b";
+      }
+
+      modal.style.display = "flex";
+    }
+
+    function closeAppInstallGuideModal() {
+      const modal = document.getElementById("appInstallGuideModal");
+      if (modal) modal.style.display = "none";
+    }
+
+    function switchInstallTab(tab) {
+      const detected = getClientPlatform();
+      const tabIos = document.getElementById("tabInstallIos");
+      const tabAndroid = document.getElementById("tabInstallAndroid");
+      const panelIos = document.getElementById("installPanelIos");
+      const panelAndroid = document.getElementById("installPanelAndroid");
+      const iosNotice = document.getElementById("iosDeviceNotice");
+      const androidNotice = document.getElementById("androidAppleNotice");
+      const btnAndroid = document.getElementById("btnAndroidDirectInstall");
+
+      if (tab === "ios") {
+        if (tabIos) {
+          tabIos.style.background = "#ffffff";
+          tabIos.style.color = "#0f172a";
+          tabIos.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+        }
+        if (tabAndroid) {
+          tabAndroid.style.background = "transparent";
+          tabAndroid.style.color = "#64748b";
+          tabAndroid.style.boxShadow = "none";
+        }
+        if (panelIos) panelIos.style.display = "block";
+        if (panelAndroid) panelAndroid.style.display = "none";
+        if (iosNotice) iosNotice.style.display = (detected === "android") ? "block" : "none";
+      } else {
+        if (tabAndroid) {
+          tabAndroid.style.background = "#ffffff";
+          tabAndroid.style.color = "#0f172a";
+          tabAndroid.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+        }
+        if (tabIos) {
+          tabIos.style.background = "transparent";
+          tabIos.style.color = "#64748b";
+          tabIos.style.boxShadow = "none";
+        }
+        if (panelIos) panelIos.style.display = "none";
+        if (panelAndroid) panelAndroid.style.display = "block";
+
+        // Prevent Apple users from accidentally downloading/installing Android APKs
+        if (detected === "ios") {
+          if (androidNotice) androidNotice.style.display = "block";
+          if (btnAndroid) {
+            btnAndroid.disabled = true;
+            btnAndroid.style.opacity = "0.5";
+            btnAndroid.style.cursor = "not-allowed";
+            btnAndroid.title = "Android APK cannot run on Apple iOS devices";
+          }
+        } else {
+          if (androidNotice) androidNotice.style.display = "none";
+          if (btnAndroid) {
+            btnAndroid.disabled = false;
+            btnAndroid.style.opacity = "1";
+            btnAndroid.style.cursor = "pointer";
+            btnAndroid.title = "";
+          }
+        }
+      }
+    }
+
+    function executeAndroidPwaInstall() {
+      const detected = getClientPlatform();
+      if (detected === "ios") {
+        alert("Apple iOS does not run Android APK files. Please switch to the Apple iOS tab to install on your iPhone / iPad!");
+        switchInstallTab("ios");
+        return;
+      }
+
       if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
         deferredInstallPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            console.log('Customer installed PWA');
+            closeAppInstallGuideModal();
           }
           deferredInstallPrompt = null;
         });
       } else {
-        alert("To install this app on your phone:\n• Chrome/Android: Tap menu (⋮) -> 'Install App' or 'Add to Home screen'\n• iOS Safari: Tap Share (⎋) -> 'Add to Home Screen'");
+        alert("Apne Chrome browser ke top-right ⋮ (3 dots) par tap karein aur 'Install app' ya 'Add to Home screen' select karein!");
       }
     }
+
+    function triggerPWAInstall() {
+      openAppInstallGuideModal();
+    }
+
+    // Initialize platform detection immediately
+    document.addEventListener("DOMContentLoaded", initPlatformSpecificInstallUI);
+    initPlatformSpecificInstallUI();
     
 </script>
 </body>

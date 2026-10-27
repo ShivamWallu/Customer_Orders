@@ -3432,5 +3432,48 @@
     "orderStatus": "PENDING",
     "soNumber": "",
     "formattedTimestamp": "22/10/2026 12:07:46 PM"
+  },
+  {
+    "id": "KOGM-20261027-9289",
+    "partyName": "tat",
+    "partyCode": "SDMONEW1023",
+    "partyAddress": "ddfwefwefewwef",
+    "deliveryAddress": "ddfwefwefewwef",
+    "orderDate": "2026-10-27",
+    "salesPerson": "Shivam Wallu",
+    "totalBoxes": 6156,
+    "formattedTimestamp": "27/10/2026 04:18:21 PM",
+    "items": [
+      {
+        "brand": "Mashal",
+        "item": "500 ML BOTTLE x 30",
+        "boxes": 5646,
+        "pieces": 169380
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 60",
+        "boxes": 456,
+        "pieces": 27360
+      },
+      {
+        "brand": "Mashal",
+        "item": "200 ML BOTTLE x 40",
+        "boxes": 54,
+        "pieces": 2160
+      }
+    ],
+    "contactInput": "",
+    "timestamp": "2026-10-27T16:18:21.900502+05:30",
+    "formattedDate": "27/10/2026",
+    "synced_to_sheet": true,
+    "verifyUrl": "https://order.khandelia.online/verify/KOGM-20261027-9289",
+    "dataConsent": "YES (Verified)",
+    "unit": "Unit 1",
+    "totalPieces": 198900,
+    "itemsSummary": "🔵 Mashal 500 ML BOTTLE x 30   ➔   169,380 Pcs   |   [ 5,646 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 60   ➔   27,360 Pcs   |   [ 456 Boxes ]\n🔵 Mashal 200 ML BOTTLE x 40   ➔   2,160 Pcs   |   [ 54 Boxes ]",
+    "securityHash": "SEC-A270-4093",
+    "slipImagePath": "D:\\Shivam AI\\Shivam AI\\Mashal Order mangement system\\order_slips\\KOGM-20261027-9289.png",
+    "slipImageUrl": "/order_slips/KOGM-20261027-9289.png"
   }
 ]
