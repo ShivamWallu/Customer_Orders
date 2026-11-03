@@ -93,8 +93,8 @@
       overflow-y: auto;
       background: #f8fafc;
       color: var(--text-dark);
-      padding-bottom: 120px;
-      /* Room for sticky bottom bar & DPDP strip */
+      padding-bottom: 74px;
+      /* Precise room for sticky bottom bar without dead space */
       display: flex;
       justify-content: center;
       -webkit-overflow-scrolling: touch;
@@ -107,26 +107,46 @@
       background: #ffffff;
       min-height: 100vh;
       position: relative;
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.06);
+      box-shadow: none;
     }
 
-    /* 🏷️ TOP HEADER (Compact Modern App Bar - Clean Professional Brand Logo) */
+    /* 🎯 Original High-Fidelity Smooth Rendering for Logos & Icons across Retina/OLED Displays */
+    img {
+      image-rendering: auto;
+      image-rendering: smooth;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+    svg {
+      shape-rendering: geometricPrecision;
+      text-rendering: geometricPrecision;
+    }
+    svg path, svg circle, svg rect, svg line, svg polyline, svg polygon {
+      vector-effect: non-scaling-stroke;
+    }
+
+    /* 🏷️ TOP HEADER (Compact Modern App Bar - Crisp Brand Logo & Perfect Responsive Spacing) */
     .brand-app-logo {
-      height: 40px;
+      height: 46px;
       width: auto;
-      max-width: 62px;
+      max-width: 96px;
       object-fit: contain;
       display: block;
       flex-shrink: 0;
-      border-radius: 6px;
-      background: transparent;
-      border: none;
-      padding: 0;
-      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.35));
-      transition: transform 0.2s ease;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      padding: 3px 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+      filter: none !important;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: high-quality;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .brand-app-logo:hover {
-      transform: scale(1.04);
+      transform: scale(1.03);
     }
 
     .brand-header {
@@ -137,53 +157,57 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 3px;
+      gap: 2px;
       flex: 1;
       min-width: 0;
+      overflow: hidden;
     }
 
     .company-name {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 5px;
-      font-size: 12.5px;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: 0.02em;
-      line-height: 1.2;
-      text-transform: uppercase;
+      gap: 4px 6px;
+      line-height: 1.15;
     }
 
     .company-name-main {
-      white-space: nowrap;
-      font-size: 12.5px;
+      font-size: clamp(10.5px, 2.9vw, 12.5px);
       font-weight: 800;
       color: #ffffff;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      white-space: normal;
+      word-break: keep-all;
     }
 
     .company-name-sub {
-      font-size: 9.5px;
+      font-size: 9px;
       font-weight: 700;
       color: #a7f3d0;
       background: rgba(255, 255, 255, 0.14);
       border: 1px solid rgba(255, 255, 255, 0.22);
-      padding: 1px 5px;
+      padding: 1px 4px;
       border-radius: 4px;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       white-space: nowrap;
     }
 
     .order-badge-title {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       background: rgba(255, 255, 255, 0.16);
       color: #a7f3d0;
       border: 1px solid rgba(255, 255, 255, 0.25);
-      font-size: 9.5px;
+      font-size: 8.5px;
       font-weight: 800;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
+      padding: 1.5px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      width: fit-content;
       padding: 2px 7px;
       border-radius: 5px;
       width: fit-content;
@@ -360,13 +384,13 @@
     }
 
     .banner-mashal {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      border-left: 4px solid #f59e0b;
+      background: linear-gradient(135deg, #005a2b 0%, #047857 100%);
+      border-left: 4px solid #34d399;
     }
 
     .banner-fauji {
-      background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
-      border-left: 4px solid #34d399;
+      background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+      border-left: 4px solid #6ee7b7;
     }
 
     .banner-badge {
@@ -529,14 +553,14 @@
       left: 0;
       right: 0;
       background: #ffffff;
-      border-top: 2px solid #cbd5e1;
+      border-top: 1px solid #e2e8f0;
       padding: 10px 16px;
       padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+      box-shadow: none;
       z-index: 999;
       width: 100%;
       max-width: 640px;
@@ -599,7 +623,7 @@
       justify-content: center;
       gap: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(4, 120, 87, 0.35);
+      box-shadow: none;
       transition: all 0.2s;
     }
 
@@ -616,15 +640,15 @@
 
     /* 🔒 PRIVACY CONSENT STRIP WITH CHECKBOX (Subtle Modern Enterprise Assurance) */
     .privacy-consent-strip {
-      margin: 14px 12px 16px 12px;
-      padding: 10px 14px;
+      margin: 16px 12px 0 12px;
+      padding: 11px 14px;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       display: flex;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      box-shadow: none;
       box-sizing: border-box;
       cursor: pointer;
       user-select: none;
@@ -998,7 +1022,7 @@
     @media (min-width: 768px) {
       body {
         padding-top: 24px;
-        padding-bottom: 110px;
+        padding-bottom: 84px;
         background: #f1f5f9;
       }
 
@@ -1088,12 +1112,11 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 14px;
-      min-height: 56px;
+      gap: 10px;
+      padding: 8px 12px;
+      min-height: 62px;
       box-sizing: border-box;
-      box-shadow: 0 4px 16px rgba(6, 78, 59, 0.22);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
     }
 
     .btn-hamburger {
@@ -1101,11 +1124,11 @@
       top: auto;
       transform: none;
       right: auto;
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       background: rgba(255, 255, 255, 0.14);
       border: 1px solid rgba(255, 255, 255, 0.22);
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -1113,9 +1136,9 @@
       gap: 4px;
       cursor: pointer;
       flex-shrink: 0;
-      margin-left: 10px;
+      margin-left: auto;
       z-index: 50;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      box-shadow: none;
       transition: all 0.2s ease;
       padding: 0;
     }
@@ -1195,7 +1218,7 @@
       align-items: center;
       gap: 14px;
       position: relative;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+      box-shadow: none;
       overflow: hidden;
     }
 
@@ -1247,10 +1270,12 @@
     .sidebar-user-info {
       flex: 1;
       min-width: 0;
+      padding-right: 48px; /* 🛡️ Absolute clearance: guarantees name & badges never overlap with close button */
       display: flex;
       flex-direction: column;
       gap: 2.5px;
       z-index: 1;
+      box-sizing: border-box;
     }
 
     .sidebar-user-name-row {
@@ -1261,14 +1286,14 @@
     }
 
     .sidebar-user-info h3 {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       color: #ffffff;
       text-transform: capitalize;
       letter-spacing: -0.02em;
       margin: 0;
       line-height: 1.2;
-      max-width: 145px;
+      max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -1299,6 +1324,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 100%;
     }
 
     .sidebar-user-phone-link {
@@ -1316,6 +1342,10 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
       margin-top: 3px;
       width: fit-content;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       transition: all 0.2s ease;
       backdrop-filter: blur(4px);
     }
@@ -1333,15 +1363,17 @@
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #ffffff;
-      width: 36px;
-      height: 36px;
-      border-radius: 11px;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      min-height: 38px;
+      border-radius: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 2;
+      z-index: 10;
     }
     .btn-sidebar-close:hover {
       background: rgba(255, 255, 255, 0.25);
@@ -1353,19 +1385,45 @@
     }
 
     .sidebar-nav {
-      padding: 16px 12px;
+      padding: 16px 14px 20px;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 12px;
       flex: 1;
       overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    /* 🏷️ Grouped Section Containers */
+    .sidebar-nav-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-section-heading {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 4px 4px 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-section-divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 4px 2px;
     }
 
     .sidebar-nav-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 11px 12px;
+      padding: 10px 12px;
       background: #ffffff;
       border: 1.5px solid #f1f5f9;
       border-radius: 14px;
@@ -1375,6 +1433,7 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       width: 100%;
       position: relative;
+      box-sizing: border-box;
     }
 
     .sidebar-nav-item:hover {
@@ -1387,47 +1446,72 @@
       background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
       border: 1.5px solid #a7f3d0;
       border-left: 4.5px solid #059669;
-      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.1);
+      box-shadow: none;
     }
 
+    /* 💎 2X Larger Icons for Luxury Tactile Mobile Experience */
     .sidebar-nav-item .nav-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
+      width: 50px;
+      height: 50px;
+      min-width: 50px;
+      min-height: 50px;
+      border-radius: 13px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       transition: transform 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .sidebar-nav-item .nav-icon img,
+    .nav-icon img {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      min-height: 38px;
+      max-width: 38px;
+      max-height: 38px;
+      object-fit: contain;
+      filter: none !important;
+      image-rendering: auto;
+      image-rendering: smooth;
+      backface-visibility: hidden;
+      transform: translateZ(0);
     }
 
     .sidebar-nav-item:hover .nav-icon {
-      transform: scale(1.06);
+      transform: scale(1.05);
     }
 
     .nav-icon-booking {
       background: #ecfdf5;
       color: #059669;
+      border: 1.5px solid #a7f3d0;
     }
     .nav-icon-orders {
       background: #eff6ff;
       color: #2563eb;
+      border: 1.5px solid #bfdbfe;
     }
     .nav-icon-track {
       background: #f0f9ff;
       color: #0284c7;
+      border: 1.5px solid #bae6fd;
     }
     .nav-icon-app {
       background: #f5f3ff;
       color: #7c3aed;
+      border: 1.5px solid #ddd6fe;
     }
     .nav-icon-apple {
       background: #0f172a;
       color: #ffffff;
     }
     .nav-icon-logout {
-      background: #fff1f2;
-      color: #e11d48;
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1.5px solid #fecaca;
     }
 
     .nav-text-block {
@@ -1466,6 +1550,40 @@
     .sidebar-nav-item:hover .nav-chevron {
       color: #0f172a;
       transform: translateX(2px);
+    }
+
+
+    .sidebar-support-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .sidebar-support-card:hover {
+      background: #ecfdf5;
+      border-color: #86efac;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 600px) {
+      .support-action-wrap {
+        align-items: stretch;
+        width: 100%;
+        margin-top: 6px;
+      }
+      .btn-support-call {
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .support-toll-sub {
+        text-align: center;
+      }
     }
 
     .sidebar-nav-item.active .nav-chevron {
@@ -1581,7 +1699,7 @@
       border-radius: 16px;
       padding: 8px 10px;
       margin-bottom: 14px;
-      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+      box-shadow: none;
     }
 
     .filter-segmented-bar {
@@ -1614,7 +1732,7 @@
     .seg-btn.active {
       background: #047857;
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(4, 120, 87, 0.28);
+      box-shadow: none;
     }
 
     .seg-btn:active {
@@ -1710,14 +1828,15 @@
       border-radius: 12px;
       padding: 10px 6px;
       text-align: center;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+      box-shadow: none;
       transition: all 0.2s ease;
       cursor: pointer;
     }
 
     .customer-kpi-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      box-shadow: none;
+      border-color: #94a3b8;
     }
 
     .customer-kpi-card.kpi-today {
@@ -1765,7 +1884,7 @@
       border-radius: 14px;
       padding: 14px 14px 12px;
       margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      box-shadow: none;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
     }
@@ -1773,7 +1892,7 @@
     .cust-order-card:hover {
       border-color: #86efac;
       transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.08);
+      box-shadow: none;
     }
 
     .cust-order-card-header {
@@ -2824,19 +2943,321 @@
       box-shadow: none;
       cursor: not-allowed;
     }
+
+    /* 📞 OFFICIAL TOLL-FREE SUPPORT FOOTER & SIDEBAR CARD */
+    .sidebar-support-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 14px 12px 6px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 1.5px solid #bbf7d0;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.08);
+      box-sizing: border-box;
+    }
+    .sidebar-support-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.16);
+      border-color: #86efac;
+    }
+    .mashal-support-footer {
+      margin-top: 36px;
+      margin-bottom: 0;
+      padding: 0 12px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .support-footer-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: none;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    .support-footer-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, #16a34a 0%, #059669 100%);
+    }
+    .support-header-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+      min-width: 0;
+    }
+    .support-avatar-wrap {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      border-radius: 16px;
+      background: #f0fdf4;
+      border: 1.5px solid #dcfce7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+    }
+    .support-agent-img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      filter: none;
+    }
+    .support-live-pulse {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 13px;
+      height: 13px;
+      background: #22c55e;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+      animation: livePulse 2s infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.85; }
+    }
+    .support-info-wrap {
+      flex: 1;
+      min-width: 200px;
+      text-align: left;
+    }
+    .support-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+    .support-chip {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .support-plant-chip {
+      font-size: 10px;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .support-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+    .support-desc {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .support-action-wrap {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .btn-support-call {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #047857;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 11px;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: none;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-support-call:hover {
+      background: #065f46;
+      box-shadow: none;
+      color: #ffffff;
+    }
+    .support-toll-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: #059669;
+      margin-top: 5px;
+      text-align: right;
+    }
+    .mashal-support-footer {
+      margin-top: 36px;
+      margin-bottom: 24px;
+      padding: 0 12px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .support-footer-copyright {
+      margin-top: 8px;
+      margin-bottom: 0;
+      padding-bottom: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    @media (max-width: 640px) {
+      body {
+        padding-bottom: 135px;
+      }
+      .app-wrapper {
+        min-height: auto;
+        width: 100%;
+        max-width: 100%;
+      }
+      .privacy-consent-strip {
+        margin: 14px 10px 0 10px;
+      }
+      .mashal-support-footer {
+        margin-top: 36px;
+        margin-bottom: 24px;
+        padding: 0 10px;
+      }
+      .support-footer-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 13px;
+      }
+      .support-footer-card::before {
+        width: 100%;
+        height: 3px;
+        top: 0;
+        left: 0;
+        bottom: auto;
+      }
+      .support-header-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+      }
+      .support-avatar-wrap {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 11px;
+        flex-shrink: 0;
+      }
+      .support-agent-img {
+        width: 34px;
+        height: 34px;
+      }
+      .support-live-pulse {
+        width: 10px;
+        height: 10px;
+      }
+      .support-info-wrap {
+        flex: 1;
+        min-width: 0;
+      }
+      .support-badge-row {
+        gap: 6px;
+        margin-bottom: 2px;
+      }
+      .support-chip {
+        font-size: 8.5px;
+        padding: 2px 7px;
+        border-radius: 10px;
+      }
+      .support-plant-chip {
+        font-size: 8.5px;
+        padding: 2px 7px;
+        border-radius: 10px;
+      }
+      .support-title {
+        font-size: 12.5px;
+        font-weight: 800;
+        line-height: 1.25;
+        color: #0f172a;
+        margin-bottom: 1px;
+      }
+      .support-desc {
+        font-size: 11px;
+        line-height: 1.3;
+        color: #64748b;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .support-action-wrap {
+        width: 100%;
+        text-align: left;
+        margin-top: 2px;
+      }
+      .btn-support-call {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 8px 12px;
+        font-size: 13px;
+        border-radius: 9px;
+        gap: 7px;
+        background: #047857;
+        box-shadow: none;
+      }
+      .btn-support-call svg {
+        width: 14px;
+        height: 14px;
+      }
+      .support-toll-sub {
+        text-align: center;
+        font-size: 10px;
+        margin-top: 3px;
+      }
+      .support-footer-copyright {
+        margin-top: 8px;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        font-size: 10px;
+        line-height: 1.2;
+      }
+    }
   </style>
 </head>
 
 <body>
   <!-- 🛢️ Preloaded Mashal Official Logo for Digital Order Slip Canvas -->
-  <img id="mashalOfficialLogo" src="/images/mashal_slip_logo.png" alt="Mashal"
+  <img id="mashalOfficialLogo" src="/images/1-NEW.png" alt="Mashal"
     style="position:fixed; left:-9999px; top:-9999px; width:120px; height:120px; opacity:0; pointer-events:none;"
     crossorigin="anonymous">
 
   <div class="app-wrapper">
     <!-- 🍔 Top Branding with Mobile Three-Line Hamburger Menu -->
     <div class="brand-header-wrap">
-      <img src="/images/mashal_mobile_logo.png" alt="Mashal Official Brand Logo" class="brand-app-logo" title="Mashal Kachi Ghani Mustard Oil">
+      <img src="/images/1-NEW.webp" onerror="this.src='/images/1-NEW.png'" alt="Mashal Official Brand Logo" class="brand-app-logo" title="Mashal Kachi Ghani Mustard Oil">
       <header class="brand-header">
         <div class="company-name">
           <span class="company-name-main">Khandelia Oil &amp; General Mills</span>
@@ -2858,20 +3279,14 @@
       <div class="sidebar-header">
         <div class="sidebar-header-pattern"></div>
         <div class="sidebar-user-avatar-wrap">
-          <div class="sidebar-user-avatar" id="sidebarCustomerAvatar">
-            <span id="sidebarCustomerAvatarInitial">S</span>
+          <div class="sidebar-user-avatar" id="sidebarCustomerAvatar" style="background: rgba(255, 255, 255, 0.16); border: 2px solid rgba(255, 255, 255, 0.7); overflow: hidden; padding: 3px;">
+            <img src="/images/icons/profile.png" alt="Customer Profile" style="width: 100%; height: 100%; object-fit: contain;">
+            <span id="sidebarCustomerAvatarInitial" style="display: none;">S</span>
           </div>
-          <span class="avatar-status-dot" title="Account Active"></span>
         </div>
         <div class="sidebar-user-info">
           <div class="sidebar-user-name-row">
             <h3 id="sidebarCustomerName">Customer Account</h3>
-            <span class="verified-buyer-badge" title="Authorized Direct Buyer">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              <span>Verified</span>
-            </span>
           </div>
           <div class="sidebar-user-role" id="sidebarCustomerPartyCode">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -2896,96 +3311,118 @@
         </button>
       </div>
 
-      <!-- Navigation Menu Items -->
+      <!-- Navigation Menu Items (Structured into Clear, Logical Groups with Generous Spacing) -->
       <nav class="sidebar-nav">
-        <!-- 1. Book New Order -->
-        <button type="button" class="sidebar-nav-item active" id="custNavItemBooking" onclick="switchCustomerSection('booking'); closeCustomerSidebar();">
-          <span class="nav-icon nav-icon-booking">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
-          </span>
-          <div class="nav-text-block">
-            <span class="nav-title">Book New Order</span>
-            <span class="nav-subtitle">Direct factory order placement</span>
+        <!-- 🟢 GROUP 1: ORDER OPERATIONS (Top 2 Items) -->
+        <div class="sidebar-nav-section">
+          <div class="sidebar-section-heading">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/></svg>
+            <span>Order Management</span>
           </div>
-          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
 
-        <!-- 2. My Orders & History -->
-        <button type="button" class="sidebar-nav-item" id="custNavItemOrders" onclick="switchCustomerSection('orders'); closeCustomerSidebar();">
-          <span class="nav-icon nav-icon-orders">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          <!-- 1. Book New Order -->
+          <button type="button" class="sidebar-nav-item active" id="custNavItemBooking" onclick="switchCustomerSection('booking'); closeCustomerSidebar();">
+            <span class="nav-icon nav-icon-booking">
+              <img src="/images/icons/book_new_order.png" alt="Book New Order">
+            </span>
+            <div class="nav-text-block">
+              <span class="nav-title">Book New Order</span>
+              <span class="nav-subtitle">Direct factory order placement</span>
+            </div>
+            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
-          </span>
-          <div class="nav-text-block">
-            <span class="nav-title">My Orders & History</span>
-            <span class="nav-subtitle">View SO status & order slips</span>
-          </div>
-          <span class="nav-counter-pill" id="navDrawerOrdersCount">Orders</span>
-          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
+          </button>
 
-        <!-- 3. Sales Order Search / Track Order -->
-        <button type="button" class="sidebar-nav-item" id="custNavItemTrack" onclick="switchCustomerSection('track'); closeCustomerSidebar();">
-          <span class="nav-icon nav-icon-track">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <!-- 2. My Orders & History -->
+          <button type="button" class="sidebar-nav-item" id="custNavItemOrders" onclick="switchCustomerSection('orders'); closeCustomerSidebar();">
+            <span class="nav-icon nav-icon-orders">
+              <img src="/images/icons/my_order_and_history.png" alt="My Orders & History">
+            </span>
+            <div class="nav-text-block">
+              <span class="nav-title">My Orders & History</span>
+              <span class="nav-subtitle">View SO status & order slips</span>
+            </div>
+            <span class="nav-counter-pill" id="navDrawerOrdersCount">Orders</span>
+            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
-          </span>
-          <div class="nav-text-block">
-            <span class="nav-title">Sales Order Search</span>
-            <span class="nav-subtitle">Instant factory dispatch tracking</span>
+          </button>
+        </div>
+
+        <div class="sidebar-section-divider"></div>
+
+        <!-- 🔵 GROUP 2: TRACKING & APP UTILITIES (Items 3 & 4) -->
+        <div class="sidebar-nav-section">
+          <div class="sidebar-section-heading">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span>Tracking & Utilities</span>
           </div>
-          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
 
-        <div class="sidebar-divider"></div>
-
-        <!-- 4. Install Mobile App (Apple iOS & Android Auto-Detect) -->
-        <button type="button" class="sidebar-nav-item" id="btnSidebarInstallApp" onclick="openAppInstallGuideModal(); closeCustomerSidebar();">
-          <span class="nav-icon nav-icon-app" id="sidebarInstallIcon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
-              <line x1="12" y1="18" x2="12.01" y2="18"></line>
-              <path d="M9 2v1m6-1v1"></path>
+          <!-- 3. Sales Order Search / Track Order -->
+          <button type="button" class="sidebar-nav-item" id="custNavItemTrack" onclick="switchCustomerSection('track'); closeCustomerSidebar();">
+            <span class="nav-icon nav-icon-track">
+              <img src="/images/icons/sale_order_and_serach.png" alt="Sales Order Search">
+            </span>
+            <div class="nav-text-block">
+              <span class="nav-title">Sales Order Search</span>
+              <span class="nav-subtitle">Instant factory dispatch tracking</span>
+            </div>
+            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
-          </span>
-          <div class="nav-text-block">
-            <span class="nav-title" id="sidebarInstallTitle">Install Android Mobile App</span>
-            <span class="nav-subtitle" id="sidebarInstallSubtitle">Fast 1-tap home screen access</span>
-          </div>
-          <span class="nav-apk-chip" id="sidebarInstallBadge">PWA / APK</span>
-        </button>
+          </button>
 
-        <!-- 5. Sign Out -->
-        <button type="button" class="sidebar-nav-item logout" onclick="logoutCustomer()">
-          <span class="nav-icon nav-icon-logout">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <polyline points="16 17 21 12 16 7"></polyline>
-              <line x1="21" y1="12" x2="9" y2="12"></line>
-            </svg>
-          </span>
-          <div class="nav-text-block">
-            <span class="nav-title">Sign Out</span>
-            <span class="nav-subtitle">Securely exit customer account</span>
+          <!-- 4. Install Mobile App (Apple iOS & Android Auto-Detect) -->
+          <button type="button" class="sidebar-nav-item" id="btnSidebarInstallApp" onclick="openAppInstallGuideModal(); closeCustomerSidebar();">
+            <span class="nav-icon nav-icon-app" id="sidebarInstallIcon">
+              <img src="/images/icons/install_mobile_app.png" alt="Install Mobile App">
+            </span>
+            <div class="nav-text-block">
+              <span class="nav-title" id="sidebarInstallTitle">Install Android Mobile App</span>
+              <span class="nav-subtitle" id="sidebarInstallSubtitle">Fast 1-tap home screen access</span>
+            </div>
+            <span class="nav-apk-chip" id="sidebarInstallBadge">APP</span>
+          </button>
+        </div>
+
+        <div class="sidebar-section-divider"></div>
+
+        <!-- 🔴 GROUP 3: ACCOUNT & HELPDESK (Sign Out + Toll Free Support) -->
+        <div class="sidebar-nav-section" style="margin-top: 4px;">
+          <div class="sidebar-section-heading">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Account & Support</span>
           </div>
-          <svg class="nav-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
+
+          <!-- 5. Sign Out -->
+          <button type="button" class="sidebar-nav-item logout" onclick="logoutCustomer()">
+            <span class="nav-icon nav-icon-logout">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </span>
+            <div class="nav-text-block">
+              <span class="nav-title" style="color: #dc2626;">Sign Out</span>
+              <span class="nav-subtitle" style="color: #ef4444;">Securely exit customer account</span>
+            </div>
+            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <!-- 6. 📞 Support Card inside Drawer -->
+          <a href="tel:18001033211" class="sidebar-support-card" title="Call Toll Free Support" style="margin: 6px 0 0 0;">
+            <img src="/images/icons/Support_customer_icon.png" alt="Helpdesk" style="width: 50px; height: 50px; object-fit: contain; flex-shrink: 0; filter: none;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; letter-spacing: 0.4px;">Official Helpdesk</div>
+              <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px; line-height: 1.25;">Call 1800-103-3211 (Toll Free)</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" style="flex-shrink: 0;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </a>
+        </div>
       </nav>
     </div>
 
@@ -3032,23 +3469,14 @@
             required></textarea>
         </div>
 
-        <div class="row-2col">
-          <div class="form-group">
-            <label class="form-label">
-              <span>Date of Order</span>
-              <span class="label-tag tag-purple">Date</span>
-            </label>
-            <input type="date" class="input-control" id="orderDate" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              <span>Area Sales Manager</span>
-              <span class="label-tag tag-pink">Manager</span>
-            </label>
-            <input type="text" class="input-control" id="salesPerson" placeholder="Area Sales Manager Name" required>
-          </div>
+        <div class="form-group">
+          <label class="form-label">
+            <span>Date of Order</span>
+            <span class="label-tag tag-purple">Date</span>
+          </label>
+          <input type="date" class="input-control" id="orderDate" required>
         </div>
+        <input type="hidden" id="salesPerson" value="Direct Customer Portal">
       </section>
 
       <!-- 🛢️ BRAND MASHAL SECTION -->
@@ -3265,38 +3693,63 @@
       <!-- Matching Orders List (Identical to ASM Sales Order Search results) -->
       <div id="customerTrackOrdersListContainer" style="margin-top: 12px;"></div>
     </div>
+
+    <!-- 📞 OFFICIAL TOLL-FREE HELPDESK & SUPPORT FOOTER -->
+    <footer class="mashal-support-footer">
+      <div class="support-footer-card">
+        <div class="support-header-row">
+          <div class="support-avatar-wrap">
+            <img src="/images/icons/Support_customer_icon.png" alt="Customer Support" class="support-agent-img">
+            <span class="support-live-pulse" title="Helpdesk Live"></span>
+          </div>
+          <div class="support-info-wrap">
+            <div class="support-badge-row">
+              <span class="support-chip">24×7 Official Helpdesk</span>
+              <span class="support-plant-chip">Khandelia Mills</span>
+            </div>
+            <div class="support-title">Need Order, SO or Dispatch Assistance?</div>
+          </div>
+        </div>
+        <div class="support-action-wrap">
+          <a href="tel:18001033211" class="btn-support-call" title="Call Toll-Free Helpline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Call 1800-103-3211 (Toll Free)</span>
+          </a>
+        </div>
+      </div>
+      <div class="support-footer-copyright">
+        <span>© 2026 Khandelia Oil &amp; General Mills Pvt. Ltd. • All Rights Reserved</span>
+      </div>
+    </footer>
   </div>
 
   <!-- 🔐 CUSTOMER MOBILE OTP LOGIN MODAL -->
   <div class="modal-backdrop" id="customerAuthModal" style="display: none;">
-    <div class="modal-content" style="max-width: 400px; padding: 28px 22px; text-align: center;">
+    <div class="modal-content" style="max-width: 360px; padding: 20px 18px; text-align: center; border-radius: 20px; box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.22), 0 0 1px rgba(15, 23, 42, 0.1); max-height: 94vh; overflow-y: auto;">
       <!-- Step 1: Mobile -->
       <div id="custAuthStep1">
-        <div style="width: 56px; height: 56px; margin: 0 auto 12px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
+          <img src="/images/customer_delivery_illustration_transparent.png" alt="Customer Order Delivery" style="width: 95px; max-height: 90px; max-width: 100%; height: auto; object-fit: contain; display: block; border: none; outline: none; filter: none;">
         </div>
-        <div class="modal-title" style="font-size: 19px; margin-bottom: 6px; font-weight: 800; color: #0a2540;">Customer Registration & Login</div>
-        <div style="font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.4;">
-          Enter your name and 10-digit mobile number to register or sign in with OTP verification.
+        <div class="modal-title" style="font-size: 18px; margin-bottom: 3px; font-weight: 800; color: #0a2540; letter-spacing: -0.01em;">Customer Registration &amp; Login</div>
+        <div style="font-size: 12px; color: #64748b; margin-bottom: 8px; line-height: 1.35;">
+          Enter your firm name &amp; mobile number to sign in.
         </div>
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 10px; margin-bottom: 16px; font-size: 11.5px; color: #166534;">
-          🛡️ <strong>Instant OTP Access:</strong> New customers are automatically registered with accurate timestamp upon OTP confirmation.
+        <div style="display: inline-flex; align-items: center; gap: 5px; background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 999px; padding: 3px 10px; margin-bottom: 12px; font-size: 11px; font-weight: 600; color: #166534;">
+          <span>⚡ Fast 1-Click Access via Secure OTP</span>
         </div>
 
-        <div style="text-align: left; margin-bottom: 12px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Customer / Firm Name <span style="color: #dc2626;">*</span></label>
-          <input type="text" id="loginCustName" class="auth-input" placeholder="Enter full customer or firm name" required style="margin-bottom: 0;">
+        <div style="text-align: left; margin-bottom: 10px;">
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 3px;">Customer / Firm Name <span style="color: #dc2626;">*</span></label>
+          <input type="text" id="loginCustName" class="auth-input" placeholder="Enter full customer or firm name" required style="border-radius: 10px; height: 40px; font-size: 13px; margin-bottom: 0;">
         </div>
         <div style="text-align: left; margin-bottom: 12px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Registered Mobile Number <span style="color: #dc2626;">*</span></label>
-          <input type="tel" id="loginCustPhone" class="auth-input" placeholder="Enter 10-digit mobile number" maxlength="10" required style="margin-bottom: 0;">
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 3px;">Registered Mobile Number <span style="color: #dc2626;">*</span></label>
+          <input type="tel" id="loginCustPhone" class="auth-input" placeholder="Enter 10-digit mobile number" maxlength="10" required style="border-radius: 10px; height: 40px; font-size: 13px; margin-bottom: 0;">
         </div>
-        <div id="custLoginError" style="margin-bottom: 12px; display: none;"></div>
+        <div id="custLoginError" style="margin-bottom: 10px; display: none;"></div>
 
-        <button type="button" class="btn-primary-auth" id="btnSendCustOtp" onclick="requestCustomerOtp()">
+        <button type="button" class="btn-primary-auth" id="btnSendCustOtp" onclick="requestCustomerOtp()" style="border-radius: 10px; height: 42px; font-size: 13.5px; font-weight: 700; letter-spacing: 0.2px;">
           Send Verification OTP
         </button>
       </div>
@@ -3324,6 +3777,56 @@
         <div style="margin-top: 14px; font-size: 12.5px; color: #64748b;" id="custOtpCountdown">
           Resend code in 60s
         </div>
+      </div>
+
+      <!-- Step 3: Polite & Respectful Account Inactive / Blocked View -->
+      <div id="custAuthBlockedView" style="display: none; text-align: center; padding: 4px 2px;">
+        <div style="width: 58px; height: 58px; margin: 0 auto 14px; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="modal-title" style="font-size: 18.5px; margin-bottom: 6px; font-weight: 800; color: #0a2540; line-height: 1.3;">
+          Account Access Inactive
+        </div>
+        <div style="font-size: 13px; color: #475569; margin-bottom: 16px; line-height: 1.55;">
+          Your customer account is temporarily inactive for administrative or security review. Please contact support for assistance.
+        </div>
+
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; text-align: left;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+            Help Desk & Support Assistance
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div style="width: 34px; height: 34px; border-radius: 8px; background: #ecfdf5; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </div>
+            <div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 600;">Toll-Free Helpline</div>
+              <a href="tel:18001033211" style="font-size: 14.5px; font-weight: 800; color: #047857; text-decoration: none; font-family: 'JetBrains Mono', monospace;">1800 103 3211</a>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 34px; height: 34px; border-radius: 8px; background: #eff6ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 600;">Support Email</div>
+              <a href="mailto:customercare@khandelia.com" style="font-size: 12px; font-weight: 700; color: #2563eb; text-decoration: none;">customercare@khandelia.com</a>
+            </div>
+          </div>
+        </div>
+
+        <a href="tel:18001033211" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; box-sizing: border-box; background: #047857; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 13.5px; padding: 12px 18px; border-radius: 10px; margin-bottom: 10px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          <span>Call Helpline 1800 103 3211</span>
+        </a>
+
+        <button type="button" onclick="showCustomerAuthStep1FromBlocked()" style="background: none; border: none; color: #64748b; font-size: 12px; font-weight: 600; cursor: pointer; padding: 6px 12px;">
+          ← Sign in with a different number
+        </button>
       </div>
     </div>
   </div>
@@ -3472,7 +3975,7 @@
       <!-- Top Brand Thumb & Close -->
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
         <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
-          <img src="/images/mashal_mobile_logo.png" alt="Mashal Official" style="width: 44px; height: 44px; border-radius: 10px; object-fit: contain; background: #fff; border: 1px solid #e2e8f0; padding: 2px;">
+          <img src="/images/1-NEW.webp" onerror="this.src='/images/1-NEW.png'" alt="Mashal Official" style="width: 80px; height: 50px; border-radius: 10px; object-fit: contain; background: #fff; border: 1px solid #e2e8f0; padding: 2px;">
           <div>
             <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Khandelia / Mashal App</h3>
             <p style="font-size: 11.5px; color: #64748b; margin: 0;">Official Fast Mobile Web App</p>
@@ -3502,7 +4005,7 @@
       <!-- 🍏 APPLE iOS PANEL -->
       <div id="installPanelIos" style="display: block; text-align: left;">
         <div id="iosDeviceNotice" style="display: none; padding: 10px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; font-size: 11.5px; color: #92400e; margin-bottom: 12px; line-height: 1.4;">
-          <strong>Notice:</strong> Aap Android device par hain. Apple iOS steps iPhone/iPad Safari ke liye hain. Android phone me 1-tap install ke liye upar <strong>Android</strong> tab select karein.
+          <strong>Notice:</strong> You are on an Android device. Select the <strong>Android</strong> tab above for 1-tap installation.
         </div>
 
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center;">
@@ -3515,7 +4018,7 @@
           </div>
           <div style="flex: 1;">
             <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Step 1: Tap Share Button [↑]</div>
-            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Safari browser ke bottom toolbar me <strong>Share icon</strong> par tap karein.</div>
+            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Tap the <strong>Share icon</strong> in Safari's bottom toolbar.</div>
           </div>
         </div>
 
@@ -3529,7 +4032,7 @@
           </div>
           <div style="flex: 1;">
             <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Step 2: "Add to Home Screen"</div>
-            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Menu sheet scroll karke <strong>"Add to Home Screen"</strong> (होम स्क्रीन में जोड़ें) select karein.</div>
+            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Scroll down the menu and tap <strong>"Add to Home Screen"</strong>.</div>
           </div>
         </div>
 
@@ -3541,19 +4044,19 @@
           </div>
           <div style="flex: 1;">
             <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Step 3: Tap "Add" (Top-Right)</div>
-            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Top-right par <strong>Add</strong> karein. App icon aapke iPhone screen par ready ho jayega!</div>
+            <div style="font-size: 11.5px; color: #64748b; line-height: 1.35;">Tap <strong>Add</strong> in the top-right corner. The app icon will appear on your home screen!</div>
           </div>
         </div>
 
         <div style="font-size: 11px; color: #0284c7; background: #f0f9ff; padding: 8px 12px; border-radius: 8px; border: 1px solid #bae6fd; text-align: center;">
-          💡 <em>Apple iPhone standalone app 2X fast chalegi bina URL address bar ke.</em>
+          💡 <em>Fast standalone app experience without browser address bars.</em>
         </div>
       </div>
 
       <!-- 🤖 ANDROID PANEL -->
       <div id="installPanelAndroid" style="display: none; text-align: left;">
         <div id="androidAppleNotice" style="display: none; padding: 10px 12px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; font-size: 11.5px; color: #9f1239; margin-bottom: 12px; line-height: 1.4;">
-          <strong>Apple Device Detected:</strong> Apple iOS devices me Android APK run nahi hoti. iPhone / iPad par add karne ke liye upar <strong>Apple (iOS)</strong> tab use karein.
+          <strong>Apple Device Detected:</strong> Please select the <strong>Apple (iOS)</strong> tab above for installation steps on iPhone / iPad.
         </div>
 
         <button type="button" id="btnAndroidDirectInstall" onclick="executeAndroidPwaInstall()" style="width: 100%; padding: 13px; font-size: 13.5px; font-weight: 800; background: #059669; color: #ffffff; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(5,150,105,0.25); margin-bottom: 12px; transition: transform 0.15s;">
@@ -3563,9 +4066,9 @@
 
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 12px; color: #475569; line-height: 1.45;">
           <strong>Alternative Manual Method:</strong><br>
-          1. Chrome ke top-right <strong>⋮ (3 dots)</strong> par tap karein.<br>
-          2. <strong>"Install app"</strong> ya <strong>"Add to Home screen"</strong> select karein.<br>
-          3. Phone home screen par app icon ban jayega!
+          1. Tap <strong>⋮ (3 dots)</strong> in Chrome.<br>
+          2. Select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.<br>
+          3. The app icon will appear on your phone's home screen!
         </div>
       </div>
 
@@ -4016,8 +4519,7 @@
         const data = await res.json();
         if (res.status === 403 || data.force_logout) {
           localStorage.removeItem(CUSTOMER_SESSION_KEY);
-          alert((data.detail && data.detail.message) || data.message || "Your Customer account has been BLOCKED by Super Admin.");
-          showCustomerAuthModal();
+          showCustomerBlockedScreen();
           return;
         }
         const finalOrder = data.order || payload;
@@ -4240,37 +4742,37 @@
       if (!logoImg || !logoImg.complete || logoImg.naturalWidth === 0) {
         logoImg = new Image();
         logoImg.crossOrigin = "anonymous";
-        logoImg.src = "/images/mashal_slip_logo.png";
+        logoImg.src = "/images/1-NEW.png";
       }
       const hasLogo = logoImg && (logoImg.naturalWidth > 0 || logoImg.complete);
 
-      // Draw Crisp White Card for Logo with Gold Accent
+      // Draw Crisp White Card for Logo with Gold Accent (2X Prominent Display)
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#f59e0b";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(24, 20, 88, 88, 8);
+        ctx.roundRect(20, 16, 126, 92, 10);
         ctx.fill();
         ctx.stroke();
         if (hasLogo) {
           try {
             ctx.save();
             ctx.beginPath();
-            ctx.roundRect(24, 20, 88, 88, 8);
+            ctx.roundRect(20, 16, 126, 92, 10);
             ctx.clip();
-            ctx.drawImage(logoImg, 26, 22, 84, 84);
+            ctx.drawImage(logoImg, 23, 20, 120, 84);
             ctx.restore();
           } catch (e) {
             console.warn("Slip logo draw error:", e);
           }
         }
       } else {
-        ctx.fillRect(24, 20, 88, 88);
-        ctx.strokeRect(24, 20, 88, 88);
+        ctx.fillRect(20, 16, 126, 92);
+        ctx.strokeRect(20, 16, 126, 92);
         if (hasLogo) {
           try {
-            ctx.drawImage(logoImg, 26, 22, 84, 84);
+            ctx.drawImage(logoImg, 23, 20, 120, 84);
           } catch (e) { }
         }
       }
@@ -4364,7 +4866,11 @@
 
       // 3. Right: Live Scannable Verification QR Code (64x64)
       const cleanOrderId = (order.id || "").replace("#", "").trim();
-      const qrUrl = "https://order.khandelia.online/verify/" + cleanOrderId;
+      let verifyBase = order.verifyUrl ? "" : window.location.origin;
+      if (!order.verifyUrl && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+        verifyBase = "https://sevenfold-blazer-pacific.ngrok-free.dev";
+      }
+      const qrUrl = order.verifyUrl || (verifyBase + "/verify/" + cleanOrderId);
       const sealText = order.securityHash || "SEC-AUTHENTIC";
 
       const qrCardW = 216;
@@ -4432,8 +4938,7 @@
       ctx.textAlign = "left";
       ctx.fillText("PACKING / PRODUCT DESCRIPTION", 135, tableY + 25);
       ctx.textAlign = "center";
-      ctx.fillText("QUANTITY (IN PIECES)", 570, tableY + 25);
-      ctx.fillText("QUANTITY (BOXES)", 750, tableY + 25);
+      ctx.fillText("QUANTITY (BOXES / PETIS)", 710, tableY + 25);
 
       // Table Rows
       let curY = tableY + tableHeaderHeight;
@@ -4471,7 +4976,7 @@
         ctx.textAlign = "left";
         ctx.fillText(itemName, 135, curY + 23);
 
-        // Pieces Multiplier Calculation
+        // Boxes Calculation (Pieces removed from customer slip per instructions)
         const matchMult = itemName.match(/x\s*(\d+)/i);
         const multiplier = matchMult ? parseInt(matchMult[1], 10) : (parseInt(it.multiplier, 10) || 1);
         const bxs = parseInt(it.boxes, 10) || 0;
@@ -4479,31 +4984,25 @@
         totalBoxes += bxs;
         totalPieces += pcs;
 
-        // Pieces Column (Centered at 570 - Crisp Bold Navy Blue)
-        ctx.fillStyle = "#1e40af";
-        ctx.font = "bold 14px 'Arial', sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(pcs.toLocaleString() + " Pcs", 570, curY + 23);
-
-        // Boxes Column (Centered at 750 - Distinct Bold Dark Charcoal)
+        // Boxes Column (Centered at 710 - Bold Navy Charcoal)
         ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 14.5px 'Arial', sans-serif";
+        ctx.font = "bold 15px 'Arial', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(bxs.toLocaleString() + " Boxes", 750, curY + 23);
+        ctx.fillText(bxs.toLocaleString() + " Boxes", 710, curY + 23);
 
         curY += rowHeight;
       });
 
-      // Grand Total Banner (Prominent Boxes & Pieces Distinction)
+      // Grand Total Banner (Prominent Boxes Display for Customer)
       const bannerY = curY + 12;
       const bannerH = 48;
       ctx.fillStyle = "#003366";
       ctx.fillRect(12, bannerY, width - 24, bannerH);
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 16.5px 'Arial', sans-serif";
+      ctx.font = "bold 17px 'Arial', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES  |  " + totalPieces.toLocaleString() + " PIECES", width / 2, bannerY + 31);
+      ctx.fillText("TOTAL ORDER QUANTITY: " + totalBoxes.toLocaleString() + " BOXES (PETIS)", width / 2, bannerY + 31);
 
       // 🛡️ Footer Card: Thank You & Customer Care Support (Clean, Wide & Elegant)
       const footCardW = width - 24;
@@ -4618,24 +5117,20 @@
       if (o.contactInput) msg += `*Contact:* ${o.contactInput}\n`;
       msg += `------------------------------------\n`;
       msg += `*ORDER ITEMS BREAKDOWN:*\n`;
-      let totalPieces = 0;
       (o.items || []).forEach((it, i) => {
         const icon = (it.brand || "Mashal").toLowerCase() === "mashal" ? "🔵" : "🟢";
         const bxs = parseInt(it.boxes, 10) || 0;
         const itemName = String(it.item || it.name || it.itemName || it.product || "-").trim();
         const brand = it.brand || "Mashal";
-        const matchMult = itemName.match(/x\s*(\d+)/i);
-        const multiplier = matchMult ? parseInt(matchMult[1], 10) : (parseInt(it.multiplier, 10) || 1);
-        const pcs = bxs * multiplier;
-        totalPieces += pcs;
-        msg += `${i + 1}. ${icon} [${brand}] ${itemName} ➔ *${pcs.toLocaleString()} Pcs*  |  *[ ${bxs} Boxes ]*\n`;
+        msg += `${i + 1}. ${icon} [${brand}] ${itemName} ➔ *[ ${bxs} Boxes / Petis ]*\n`;
       });
       msg += `------------------------------------\n`;
-      msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES*  |  *${totalPieces.toLocaleString()} PIECES*\n`;
+      msg += `*TOTAL ORDER:* *${(o.totalBoxes || 0).toLocaleString()} BOXES (PETIS)*\n`;
       msg += `------------------------------------\n`;
       if (o.id) {
-        const slipLink = window.location.origin + `/order_slips/${o.id}.png`;
+        const slipLink = window.location.origin + `/order_slips/${o.id}.png?audience=customer&hide_pieces=1`;
         msg += `🖼️ *Digital Order Slip:* ${slipLink}\n`;
+        msg += `📞 *Customer Care Helpline:* 1800 103 3211\n`;
         msg += `------------------------------------\n`;
       }
       msg += `_Official Order Record • Khandelia Oil & General Mills Pvt. Ltd._`;
@@ -4796,6 +5291,24 @@
 
     async function checkCustomerSession() {
       try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryToken = urlParams.get("auth_token");
+        if (queryToken) {
+          const res = await fetch("/api/customer/check-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: queryToken })
+          });
+          const d = await res.json();
+          if (res.ok && d.status === "valid" && d.session) {
+            localStorage.setItem(CUSTOMER_SESSION_KEY, JSON.stringify(d.session));
+            window.history.replaceState({}, document.title, window.location.pathname);
+            applyCustomerSession(d.session);
+            populateQuickTrackChips();
+            return;
+          }
+        }
+
         const sess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "null");
         if (sess && sess.token && sess.phone) {
           applyCustomerSession(sess);
@@ -4815,8 +5328,7 @@
           const d = await res.json();
           if (res.status === 403 || d.force_logout || d.status !== "valid") {
             localStorage.removeItem(CUSTOMER_SESSION_KEY);
-            showCustomerAuthModal();
-            showCustomerAuthError({ error_type: "BLOCKED_CUSTOMER", message: d.message || "Your Customer account has been BLOCKED by Super Admin." });
+            showCustomerBlockedScreen();
             return;
           }
           return;
@@ -4825,16 +5337,111 @@
       showCustomerAuthModal();
     }
 
+    function showCustomerBlockedScreen() {
+      const modal = document.getElementById("customerAuthModal");
+      if (modal) modal.style.display = "flex";
+      const s1 = document.getElementById("custAuthStep1");
+      const s2 = document.getElementById("custAuthStep2");
+      const bView = document.getElementById("custAuthBlockedView");
+      if (s1) s1.style.display = "none";
+      if (s2) s2.style.display = "none";
+      if (bView) bView.style.display = "block";
+    }
+
+    function showCustomerAuthStep1FromBlocked() {
+      const s1 = document.getElementById("custAuthStep1");
+      const s2 = document.getElementById("custAuthStep2");
+      const bView = document.getElementById("custAuthBlockedView");
+      if (bView) bView.style.display = "none";
+      if (s2) s2.style.display = "none";
+      if (s1) s1.style.display = "block";
+    }
+
+    // 🛡️ Continuous Hybrid Security Verification:
+    // 1. 30-Second Passive Heartbeat (Drastically reduces server load, prevents battery drain)
+    // 2. Instant Verification on App/Tab Resume (visibilitychange / pageshow / focus)
+    let isCheckingCustomerSession = false;
+    async function verifyCustomerSessionActive(triggerSource = "heartbeat") {
+      if (isCheckingCustomerSession) return;
+      try {
+        const sessStr = localStorage.getItem(CUSTOMER_SESSION_KEY);
+        if (!sessStr) return;
+        const sess = JSON.parse(sessStr);
+        if (!sess || !sess.token) return;
+
+        isCheckingCustomerSession = true;
+        const res = await fetch("/api/customer/check-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: sess.token })
+        });
+        const d = await res.json();
+        if (res.status === 403 || d.force_logout || d.status !== "valid") {
+          localStorage.removeItem(CUSTOMER_SESSION_KEY);
+          showCustomerBlockedScreen();
+        }
+      } catch (e) {
+        // Tolerant to transient network drops
+      } finally {
+        isCheckingCustomerSession = false;
+      }
+    }
+
+    // 🕒 30-Second Lightweight Heartbeat
+    setInterval(() => verifyCustomerSessionActive("heartbeat"), 30000);
+
+    // 📱 Instant Verification on Screen Unlock / Tab Switch / APK Resume
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        verifyCustomerSessionActive("visibility");
+      }
+    });
+    window.addEventListener("pageshow", () => {
+      verifyCustomerSessionActive("pageshow");
+    });
+    window.addEventListener("focus", () => {
+      verifyCustomerSessionActive("focus");
+    });
+
     function showCustomerAuthModal() {
       document.getElementById("customerAuthModal").style.display = "flex";
       document.getElementById("custAuthStep1").style.display = "block";
       document.getElementById("custAuthStep2").style.display = "none";
+      const bView = document.getElementById("custAuthBlockedView");
+      if (bView) bView.style.display = "none";
       document.getElementById("custLoginError").style.display = "none";
     }
 
     function showCustomerAuthError(data) {
       const errBox = document.getElementById("custLoginError");
       if (!errBox) return;
+
+      if (data.error_type === "OTP_HOURLY_LIMIT_EXCEEDED") {
+        const mins = data.retry_after_minutes || 60;
+        const html = `
+          <div style="background: #fff7ed; border: 1.5px solid #f97316; border-radius: 12px; padding: 14px; text-align: left; box-shadow: 0 4px 12px rgba(249,115,22,0.12);">
+            <div style="color: #c2410c; font-weight: 800; font-size: 13.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">⏳</span> <span>Hourly OTP Limit Reached (3/3 Used)</span>
+            </div>
+            <div style="font-size: 12.5px; color: #7c2d12; line-height: 1.5; margin-bottom: 10px;">
+              You have requested <strong>3 OTPs</strong> in the past hour. For security, please try again in <strong>~${mins} minutes</strong>.
+            </div>
+            <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #9a3412; display: flex; align-items: center; justify-content: space-between;">
+              <span>🕒 Cooldown Window: <strong>1 Hour</strong></span>
+              <span style="background: #ffedd5; color: #c2410c; padding: 3px 10px; border-radius: 6px; font-weight: 700;">Wait: ~${mins} Min</span>
+            </div>
+          </div>
+        `;
+        errBox.innerHTML = html;
+        errBox.style.display = "block";
+        const otpErr = document.getElementById("custOtpError");
+        if (otpErr) {
+          otpErr.innerHTML = html;
+          otpErr.style.display = "block";
+        }
+        return;
+      }
+
       if (data.error_type === "UNAUTHORIZED_CUSTOMER" || data.error_type === "BLOCKED_CUSTOMER" || data.error_type === "ROLE_MISMATCH") {
         errBox.innerHTML = `
           <div style="background: #fef2f2; border: 1.5px solid #f87171; border-radius: 10px; padding: 12px; text-align: left;">
@@ -4842,7 +5449,7 @@
               <span>⚠️</span> <span>Customer Account Not Authorized</span>
             </div>
             <div style="font-size: 12px; color: #7f1d1d; line-height: 1.45; margin-bottom: 8px;">
-              Yeh mobile number Customer ke roop me registered nahi hai. Kripya Super Admin se call karke account create karwayein:
+              This mobile number is not registered as a Customer. Please contact Super Admin to create or activate your account:
             </div>
             <div style="background: #ffffff; border: 1px solid #fee2e2; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #991b1b;">
               <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 6px;">
@@ -4909,6 +5516,15 @@
       if (pPhoneInput && phone) {
         pPhoneInput.value = phone;
       }
+      const pAddrInput = document.getElementById("partyAddress");
+      if (pAddrInput) {
+        const addrVal = sess.address || sess.full_address || sess.party_address || "";
+        if (addrVal) {
+          pAddrInput.value = addrVal;
+          pAddrInput.style.height = "auto";
+          pAddrInput.style.height = Math.max(54, pAddrInput.scrollHeight) + "px";
+        }
+      }
     }
 
     function logoutCustomer() {
@@ -4918,7 +5534,10 @@
       }
     }
 
+    let _isCustAuthBusy = false;
+
     async function requestCustomerOtp() {
+      if (_isCustAuthBusy) return;
       const nameInput = document.getElementById("loginCustName");
       const name = nameInput ? nameInput.value.trim() : "";
       const phoneInput = document.getElementById("loginCustPhone");
@@ -4938,6 +5557,7 @@
         return;
       }
 
+      _isCustAuthBusy = true;
       window._pendingCustName = name;
       window._pendingCustPhone = phone;
       errBox.style.display = "none";
@@ -4957,6 +5577,13 @@
           document.getElementById("custAuthStep2").style.display = "block";
           document.getElementById("custAuthSentMsg").textContent = `OTP sent to +91 ${phone}`;
           startCustCountdown(120);
+
+          if (data.is_test_account) {
+            const otpInput = document.getElementById("loginCustOtp") || document.getElementById("custOtpInput");
+            if (otpInput) otpInput.value = data.test_otp || "123456";
+            document.getElementById("custAuthSentMsg").innerHTML = `<span style="color:#059669; font-weight:800;">🧪 Test Account: Logging in directly (No SMS required)...</span>`;
+            setTimeout(() => { submitCustomerOtp(); }, 350);
+          }
         } else {
           showCustomerAuthError(data);
           btn.disabled = false;
@@ -4966,6 +5593,8 @@
         showCustomerAuthError({ message: "Network error: " + e.message });
         btn.disabled = false;
         btn.textContent = "Send Verification OTP";
+      } finally {
+        _isCustAuthBusy = false;
       }
     }
 
@@ -4987,9 +5616,11 @@
     }
 
     async function submitCustomerOtp() {
+      if (_isCustAuthBusy) return;
       const phone = window._pendingCustPhone || (document.getElementById("loginCustPhone") ? document.getElementById("loginCustPhone").value.replace(/\D/g, "") : "");
       const name = window._pendingCustName || (document.getElementById("loginCustName") ? document.getElementById("loginCustName").value.trim() : "");
-      const otp = document.getElementById("loginCustOtp").value.trim();
+      const otpInput = document.getElementById("loginCustOtp") || document.getElementById("custOtpInput");
+      const otp = otpInput ? otpInput.value.trim() : "";
       const errBox = document.getElementById("custOtpError");
       const btn = document.getElementById("btnVerifyCustOtp");
 
@@ -4999,6 +5630,7 @@
         return;
       }
 
+      _isCustAuthBusy = true;
       errBox.style.display = "none";
       btn.disabled = true;
       btn.textContent = "Verifying...";
@@ -5029,6 +5661,8 @@
         errBox.style.display = "block";
         btn.disabled = false;
         btn.textContent = "Verify & Sign In";
+      } finally {
+        _isCustAuthBusy = false;
       }
     }
 
@@ -5766,7 +6400,7 @@
       spinner.style.display = "flex";
       modal.style.display = "flex";
 
-      const slipUrl = `/order_slips/${fullId}.png`;
+      const slipUrl = `/order_slips/${fullId}.png?audience=customer&hide_pieces=1`;
       
       // Try loading server slip PNG image, or fallback dynamically to client canvas render
       const testImg = new Image();
@@ -6751,10 +7385,6 @@
           badgeEl.style.background = "#0f172a";
           badgeEl.style.color = "#ffffff";
         }
-        if (iconEl) {
-          iconEl.className = "nav-icon nav-icon-apple";
-          iconEl.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.47c.56-.69.95-1.65.84-2.61-.83.03-1.85.56-2.43 1.25-.51.59-.96 1.57-.84 2.51.93.07 1.87-.46 2.43-1.15z"/></svg>`;
-        }
       } else if (platform === "android") {
         if (titleEl) titleEl.textContent = "Install Android Mobile App";
         if (subEl) subEl.textContent = "Fast 1-tap home screen access";
@@ -6767,7 +7397,7 @@
         if (titleEl) titleEl.textContent = "Install Mobile App";
         if (subEl) subEl.textContent = "Apple iOS & Android compatible";
         if (badgeEl) {
-          badgeEl.textContent = "PWA / APP";
+          badgeEl.textContent = "APP";
         }
       }
     }
@@ -6894,7 +7524,7 @@
           deferredInstallPrompt = null;
         });
       } else {
-        alert("Apne Chrome browser ke top-right ⋮ (3 dots) par tap karein aur 'Install app' ya 'Add to Home screen' select karein!");
+        alert("Tap ⋮ (3 dots) in Chrome top-right and select 'Install app' or 'Add to Home screen'!");
       }
     }
 

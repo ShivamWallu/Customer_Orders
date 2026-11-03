@@ -1,15 +1,15 @@
 // ⚡ Service Worker for KOGM Sales Manager - Khandelia Oil & General Mills
 // Provides 2X faster app loading via aggressive caching & offline shell capability
 
-const CACHE_NAME = 'kogm-sales-v7';
+const CACHE_NAME = 'kogm-sales-v8';
 const STATIC_ASSETS = [
   '/sale_manage',
   '/manifest.json',
   '/images/icons/icon-192.png',
   '/images/icons/icon-512.png',
   '/images/icons/icon-maskable-512.png',
-  '/images/mashal_slip_logo.png',
-  '/images/KOGM_LOgo.jpg',
+  '/images/NEW_PNG_MASHAL_LOGO.png',
+
   '/js/qrcode.min.js'
 ];
 

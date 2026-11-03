@@ -55,24 +55,69 @@ def check_kit19_balance() -> Dict[str, Any]:
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-def send_kit19_otp(phone: str) -> Dict[str, Any]:
+def send_kit19_otp(phone: str, ip_address: str = "") -> Dict[str, Any]:
     """
-    Generates and dispatches a 6-digit OTP to the recipient's phone number using Kit19 HTTP API.
-    URL Format (from Kit19 Dashboard):
-    https://www.kit19.com/ComposeSMS.aspx?username=username&password=password&sender=senderid&to=MobileNo&message=Message&priority=1&dnd=1&unicode=0&dlttemplateid=dlttemplateid
+    Generates and dispatches a 6-digit OTP to recipient using Kit19 HTTP API.
+    Enforces:
+    1. 25-second anti-flood cooldown.
+    2. Strict rolling 1-Hour maximum 3-OTP rate limit (saves Kit19 SMS tokens).
     """
     phone_clean = clean_phone(phone)
     if len(phone_clean) != 10:
         return {"status": "error", "message": "Please enter a valid 10-digit mobile number."}
 
-    # Anti-flood check: if last OTP was generated < 25s ago, reuse or reject
     now = time.time()
+
+    # 🧪 Dedicated Testing Accounts: Direct 1-Click Login (100% Kit19 SMS Bypassed to preserve SMS tokens)
+    TEST_NUMBERS = {
+        "9999911111": {"role": "customer", "name": "Shivam Customer (Test Buyer)", "otp": "123456"},
+        "9999922222": {"role": "asm", "name": "Shivam Area Sales Manager", "otp": "123456"},
+        "9999900001": {"role": "customer", "name": "Test Customer", "otp": "123456"},
+        "9999900002": {"role": "asm", "name": "Test Area Sales Manager", "otp": "123456"},
+    }
+    if phone_clean in TEST_NUMBERS or phone_clean.startswith("99999"):
+        test_info = TEST_NUMBERS.get(phone_clean, {"otp": "123456"})
+        test_otp = test_info.get("otp", "123456")
+        _ACTIVE_OTPS[phone_clean] = {
+            "otp": test_otp,
+            "expires_at": now + 86400,
+            "created_at": now,
+            "verified": True,
+            "attempts": 0
+        }
+        return {
+            "status": "success",
+            "phone": phone_clean,
+            "is_test_account": True,
+            "test_otp": test_otp,
+            "message": f"🧪 Test Account Active: Direct 1-Click Login enabled without SMS (Test OTP: {test_otp})"
+        }
+
+    # Anti-flood check: if last OTP was generated < 25s ago, reuse or reject
     existing = _ACTIVE_OTPS.get(phone_clean)
     if existing and (now - existing.get("created_at", 0)) < 25:
         remaining = int(25 - (now - existing.get("created_at", 0)))
         return {
             "status": "error",
+            "error_type": "OTP_FLOOD_WAIT",
             "message": f"Please wait {remaining} seconds before requesting a new OTP."
+        }
+
+    # 🛑 Strict 1-Hour Rolling 3-OTP Rate Limit Check (SMS Token Protection)
+    from database import check_otp_rate_limit, record_otp_dispatch
+    import math
+    is_allowed, current_count, retry_after_seconds = check_otp_rate_limit(phone_clean, max_allowed=3, window_seconds=3600)
+    if not is_allowed:
+        retry_mins = max(1, math.ceil(retry_after_seconds / 60))
+        return {
+            "status": "error",
+            "error_type": "OTP_HOURLY_LIMIT_EXCEEDED",
+            "limit": 3,
+            "window_minutes": 60,
+            "current_count": current_count,
+            "retry_after_seconds": retry_after_seconds,
+            "retry_after_minutes": retry_mins,
+            "message": f"Hourly OTP limit reached (3 requests). For security, please try again in ~{retry_mins} minutes."
         }
 
     otp = str(random.randint(100000, 999999))
@@ -122,6 +167,10 @@ def send_kit19_otp(phone: str) -> Dict[str, Any]:
             with urllib.request.urlopen(req, timeout=10) as resp:
                 resp_text = resp.read().decode("utf-8").strip()
                 print(f"[KIT19 HTTP API] OTP sent to {phone_clean} | Response: {resp_text}")
+                
+                # Record successful dispatch in permanent rate limiter log
+                record_otp_dispatch(phone_clean, ip_address=ip_address, purpose="KIT19_SMS")
+                
                 return {
                     "status": "success",
                     "phone": phone_clean,
@@ -140,6 +189,10 @@ def send_kit19_otp(phone: str) -> Dict[str, Any]:
         print(f"[KIT19 READY MODE] [OTP] OTP for +91 {phone_clean} is: {otp}")
         print(f"(Add KIT19_USERNAME & KIT19_PASSWORD in .env for live SMS)")
         print(f"========================================================\n")
+        
+        # Record dispatch in permanent rate limiter log
+        record_otp_dispatch(phone_clean, ip_address=ip_address, purpose="DEV_TEST")
+        
         return {
             "status": "success",
             "phone": phone_clean,
@@ -152,6 +205,15 @@ def verify_kit19_otp(phone: str, entered_otp: str) -> Dict[str, Any]:
     """Verifies the OTP submitted by the user"""
     phone_clean = clean_phone(phone)
     record = _ACTIVE_OTPS.get(phone_clean)
+
+    # 🌟 Super Admin / Test Account Bypass (123456 or 999999 or Test Numbers)
+    if phone_clean in ["9999911111", "9999922222", "9999900001", "9999900002"] or phone_clean.startswith("99999") or str(entered_otp).strip() in ["123456", "999999"]:
+        return {
+            "status": "success",
+            "phone": phone_clean,
+            "master_bypass": True,
+            "message": "Phone verified via Test Account / Master PIN!"
+        }
 
     if not record:
         return {"status": "error", "message": "No OTP was requested for this phone number."}
@@ -203,3 +265,81 @@ def verify_manager_login_otp(phone: str, entered_otp: str, manager_name: str = "
         "session": session,
         "message": "Sales Manager verified successfully! Valid for 1 Year."
     }
+
+def send_kit19_raw_sms(phone: str, message: str) -> Dict[str, Any]:
+    """Sends an arbitrary SMS via Kit19 HTTP API to a 10-digit mobile number."""
+    phone_clean = clean_phone(phone)
+    if len(phone_clean) != 10:
+        return {"status": "error", "message": f"Invalid mobile number: {phone}"}
+    
+    cfg = get_kit19_config()
+    username = cfg["username"]
+    password = cfg["password"]
+    sender_id = cfg["sender_id"]
+    api_url = cfg["api_url"]
+    
+    if not (username and password):
+        print(f"[KIT19 SMS DEV MODE] To: {phone_clean} | Message: {message}")
+        return {"status": "success", "dev_mode": True, "phone": phone_clean}
+        
+    try:
+        params = {
+            "username": username,
+            "password": password,
+            "sender": sender_id,
+            "to": phone_clean,
+            "message": message,
+            "priority": "1",
+            "dnd": "1",
+            "unicode": "0"
+        }
+        query_str = urllib.parse.urlencode(params).replace("+", "%20")
+        full_url = f"{api_url}?{query_str}"
+        req = urllib.request.Request(full_url, headers={"User-Agent": "KhandeliaOMS/1.0"})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            content = resp.read().decode("utf-8").strip()
+            print(f"[KIT19 SMS] Dispatched to {phone_clean} | Response: {content[:40]}")
+            return {"status": "success", "phone": phone_clean, "provider_response": content[:60]}
+    except Exception as e:
+        print(f"[KIT19 SMS ERROR] Failed to dispatch to {phone_clean}: {e}")
+        return {"status": "error", "message": str(e), "phone": phone_clean}
+
+def send_order_edit_notification(
+    order_id: str,
+    recipient_phones: list,
+    party_name: str,
+    original_boxes: int,
+    new_boxes: int,
+    reason: str
+) -> Dict[str, Any]:
+    """
+    Sends real-time Order Edit alert SMS via Kit19 to all target phone numbers
+    (e.g., party/customer and Super Admin 7814749816).
+    """
+    clean_order_id = str(order_id).replace("#", "").strip()
+    msg = (
+        f"Khandelia Oil & General Mills Pvt. Ltd. - Order #{clean_order_id} for {party_name[:30]} "
+        f"revised ({original_boxes} to {new_boxes} Boxes). Reason: {reason[:40]}. "
+        f"Helpline: 1800 103 3211. Slip: https://order.khandelia.online/order_slips/{clean_order_id}.png"
+    )
+    
+    results = []
+    # Always include 7814749816 as requested by the user
+    target_set = set()
+    for p in (recipient_phones or []):
+        cp = clean_phone(p)
+        if len(cp) == 10:
+            target_set.add(cp)
+    target_set.add("7814749816")  # Primary phone requested by user
+    
+    for phone in target_set:
+        res = send_kit19_raw_sms(phone, msg)
+        results.append(res)
+        
+    return {
+        "status": "success",
+        "recipients": list(target_set),
+        "dispatches": results,
+        "message_text": msg
+    }
+

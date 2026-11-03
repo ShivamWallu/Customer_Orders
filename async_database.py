@@ -228,6 +228,7 @@ class RolePermissionModel(Base):
     can_delete_order: Mapped[int] = mapped_column(Integer, default=1)
     can_block_user: Mapped[int] = mapped_column(Integer, default=1)
     can_manage_units: Mapped[int] = mapped_column(Integer, default=1)
+    can_view_alerts: Mapped[int] = mapped_column(Integer, default=1)
     can_view_logs: Mapped[int] = mapped_column(Integer, default=1)
     can_export_csv: Mapped[int] = mapped_column(Integer, default=1)
     updated_at: Mapped[str] = mapped_column(String(64), nullable=False)

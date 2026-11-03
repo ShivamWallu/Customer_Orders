@@ -12,6 +12,8 @@ Features:
 import os
 import json
 import sqlite3
+import time
+import math
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional, Tuple
 import re
@@ -156,6 +158,14 @@ def init_db():
                 updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(brand, sku, unit)
             );
+
+            CREATE TABLE IF NOT EXISTS deleted_orders (
+                order_id TEXT PRIMARY KEY,
+                deleted_at TEXT NOT NULL,
+                deleted_by TEXT DEFAULT 'super_admin',
+                reason TEXT DEFAULT 'Permanently deleted by Super Admin'
+            );
+            CREATE INDEX IF NOT EXISTS idx_deleted_orders_id ON deleted_orders (order_id);
             CREATE INDEX IF NOT EXISTS idx_godown_brand_unit ON godown_stock (brand, unit);
             """)
         # Safe migration for new columns
@@ -239,6 +249,59 @@ def init_db():
             conn.execute("ALTER TABLE orders ADD COLUMN invoice_number TEXT DEFAULT '';")
         except Exception:
             pass
+
+        # 👔 Director Sir Confirmation & Instructions Columns
+        for col_stmt in [
+            "ALTER TABLE orders ADD COLUMN director_confirm_status TEXT DEFAULT '';",
+            "ALTER TABLE orders ADD COLUMN director_note TEXT DEFAULT '';",
+            "ALTER TABLE orders ADD COLUMN director_confirmed_by TEXT DEFAULT '';",
+            "ALTER TABLE orders ADD COLUMN director_confirmed_at TEXT DEFAULT '';",
+            "ALTER TABLE orders ADD COLUMN is_edited INTEGER DEFAULT 0;",
+            "ALTER TABLE orders ADD COLUMN original_items_json TEXT DEFAULT '';",
+            "ALTER TABLE orders ADD COLUMN original_total_boxes INTEGER DEFAULT 0;",
+            "ALTER TABLE orders ADD COLUMN original_total_pieces INTEGER DEFAULT 0;",
+            "ALTER TABLE orders ADD COLUMN edited_at TEXT DEFAULT '';",
+            "ALTER TABLE orders ADD COLUMN edited_by TEXT DEFAULT '';",
+            "ALTER TABLE orders ADD COLUMN edit_reason TEXT DEFAULT '';"
+        ]:
+            try:
+                conn.execute(col_stmt)
+            except Exception:
+                pass
+
+        # 🔔 Real-Time Notifications Table (New Customers, New ASMs, Customer/ASM Orders)
+        try:
+            conn.execute("""
+            CREATE TABLE IF NOT EXISTS notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                type TEXT NOT NULL,
+                title TEXT NOT NULL,
+                message TEXT NOT NULL,
+                data_json TEXT DEFAULT '{}',
+                is_read INTEGER DEFAULT 0,
+                created_at TEXT NOT NULL
+            );
+            """)
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications (created_at DESC);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications (is_read);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications (type);")
+        except Exception as notif_e:
+            print("[DATABASE] Notifications table creation error:", notif_e)
+
+        # 🛑 OTP Dispatch Logs Table (Strict 1-Hour Rolling 3-OTP Rate Limiter)
+        try:
+            conn.execute("""
+            CREATE TABLE IF NOT EXISTS otp_dispatch_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                phone TEXT NOT NULL,
+                dispatched_at REAL NOT NULL,
+                ip_address TEXT DEFAULT '',
+                purpose TEXT DEFAULT 'LOGIN'
+            );
+            """)
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_otp_logs_phone_time ON otp_dispatch_logs (phone, dispatched_at);")
+        except Exception as otp_e:
+            print("[DATABASE] OTP dispatch logs table creation error:", otp_e)
 
         # 🛡️ Self-Healing Integrity: Any order that already has an SO assigned MUST be marked as CONFIRMED
         try:
@@ -352,6 +415,18 @@ def init_db():
                     (role, can_add_order, can_edit_unit, can_confirm_so, can_delete_order, can_block_user, can_manage_units, can_view_logs, can_export_csv, updated_at, updated_by)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, roles_defaults)
+
+                # 🛡️ Ensure can_view_alerts and can_view_packing_summary columns exist in role_permissions table
+                try:
+                    conn.execute("ALTER TABLE role_permissions ADD COLUMN can_view_alerts INTEGER DEFAULT 1;")
+                    conn.execute("UPDATE role_permissions SET can_view_alerts = 0 WHERE role IN ('asm', 'customer');")
+                except Exception:
+                    pass
+                try:
+                    conn.execute("ALTER TABLE role_permissions ADD COLUMN can_view_packing_summary INTEGER DEFAULT 1;")
+                    conn.execute("UPDATE role_permissions SET can_view_packing_summary = 0 WHERE role IN ('asm', 'customer');")
+                except Exception:
+                    pass
         except Exception as e:
             print("[DATABASE] Role permissions table init error:", e)
 
@@ -667,7 +742,7 @@ def get_user_by_phone(phone: str) -> Optional[Dict[str, Any]]:
     try:
         cur = conn.cursor()
         cur.execute("""
-        SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by
+        SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by, password
         FROM users WHERE phone = ? LIMIT 1
         """, (clean_p,))
         row = cur.fetchone()
@@ -849,6 +924,254 @@ def is_user_phone_blocked(phone: str) -> bool:
     finally:
         conn.close()
 
+# 🔔 REAL-TIME SYSTEM NOTIFICATIONS (SUPER ADMIN & ADMIN)
+def add_notification(type_str: str, title: str, message: str, data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """
+    Adds a real-time event notification (New Customer, New ASM, Customer Order, ASM Order).
+    Includes intelligent 120-second deduplication to prevent duplicate alerts from rapid double-taps or network retries.
+    """
+    conn = get_connection()
+    try:
+        now_dt = datetime.now()
+        now_iso = now_dt.isoformat()
+        cutoff_iso = (now_dt - timedelta(seconds=120)).isoformat()
+        data_json = json.dumps(data or {}, ensure_ascii=False)
+        with conn:
+            cur = conn.cursor()
+            # 🛡️ Deduplication Guard: Check if identical notification was logged in the last 120 seconds
+            cur.execute("""
+            SELECT id, type, title, message, is_read, created_at 
+            FROM notifications 
+            WHERE type = ? AND title = ? AND message = ? AND created_at >= ?
+            ORDER BY id DESC LIMIT 1
+            """, (type_str, title, message, cutoff_iso))
+            existing = cur.fetchone()
+            if existing:
+                return {
+                    "id": existing["id"],
+                    "type": existing["type"],
+                    "title": existing["title"],
+                    "message": existing["message"],
+                    "data": data or {},
+                    "is_read": bool(existing["is_read"]),
+                    "created_at": existing["created_at"],
+                    "deduplicated": True
+                }
+
+            cur.execute("""
+            INSERT INTO notifications (type, title, message, data_json, is_read, created_at)
+            VALUES (?, ?, ?, ?, 0, ?)
+            """, (type_str, title, message, data_json, now_iso))
+            notif_id = cur.lastrowid
+        return {
+            "id": notif_id,
+            "type": type_str,
+            "title": title,
+            "message": message,
+            "data": data or {},
+            "is_read": False,
+            "created_at": now_iso
+        }
+    except Exception as e:
+        print(f"[NOTIFICATION INSERT ERROR] {e}")
+        return {"error": str(e)}
+    finally:
+        conn.close()
+
+def get_notifications(limit: int = 100, filter_type: str = "ALL") -> List[Dict[str, Any]]:
+    """Retrieves notifications ordered by latest first with formatted timestamps"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        if filter_type and filter_type != "ALL":
+            cur.execute("""
+            SELECT id, type, title, message, data_json, is_read, created_at 
+            FROM notifications WHERE type = ? ORDER BY id DESC LIMIT ?
+            """, (filter_type, limit))
+        else:
+            cur.execute("""
+            SELECT id, type, title, message, data_json, is_read, created_at 
+            FROM notifications ORDER BY id DESC LIMIT ?
+            """, (limit,))
+        rows = cur.fetchall()
+        result = []
+        for r in rows:
+            try:
+                dt = datetime.fromisoformat(r["created_at"])
+                formatted_time = dt.strftime("%d/%m/%Y, %I:%M %p")
+            except Exception:
+                formatted_time = r["created_at"]
+            
+            try:
+                data_obj = json.loads(r["data_json"] or "{}")
+            except Exception:
+                data_obj = {}
+            
+            result.append({
+                "id": r["id"],
+                "type": r["type"],
+                "title": r["title"],
+                "message": r["message"],
+                "data": data_obj,
+                "is_read": bool(r["is_read"]),
+                "created_at": r["created_at"],
+                "formatted_time": formatted_time
+            })
+        return result
+    finally:
+        conn.close()
+
+def get_unread_notifications_count() -> int:
+    """Returns number of unread notifications for badges"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) AS cnt FROM notifications WHERE is_read = 0")
+        row = cur.fetchone()
+        return row["cnt"] if row else 0
+    finally:
+        conn.close()
+
+def mark_notification_as_read(notif_id: int) -> bool:
+    """Marks a single notification as read"""
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("UPDATE notifications SET is_read = 1 WHERE id = ?", (notif_id,))
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+def mark_all_notifications_as_read() -> bool:
+    """Marks all notifications as read"""
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("UPDATE notifications SET is_read = 1 WHERE is_read = 0")
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+def clear_all_notifications() -> bool:
+    """Permanently deletes all notification history"""
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("DELETE FROM notifications")
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+def clear_all_audit_logs() -> bool:
+    """Permanently purges all system audit logs (Super Admin exclusive)"""
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("DELETE FROM audit_logs")
+            try:
+                conn.execute("DELETE FROM sqlite_sequence WHERE name = 'audit_logs'")
+            except Exception:
+                pass
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+# 🛑 ROLLING 1-HOUR 3-OTP RATE LIMITER (KIT19 TOKEN PROTECTION)
+def check_otp_rate_limit(phone: str, max_allowed: int = 3, window_seconds: int = 3600) -> Tuple[bool, int, int]:
+    """
+    Enforces strict maximum 3 OTPs per mobile number within a rolling 1-hour (3600s) window.
+    Returns:
+        (is_allowed: bool, current_count: int, retry_after_seconds: int)
+        - If is_allowed is False: user has exhausted their 3 OTPs in the current 1-hour window.
+          retry_after_seconds tells exactly how many seconds until the oldest OTP drops out.
+    """
+    digits = "".join(filter(str.isdigit, str(phone)))
+    clean_p = digits[-10:] if len(digits) >= 10 else digits
+    if not clean_p:
+        return True, 0, 0
+
+    now = time.time()
+    window_start = now - window_seconds
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT dispatched_at FROM otp_dispatch_logs 
+        WHERE phone = ? AND dispatched_at >= ? 
+        ORDER BY dispatched_at ASC
+        """, (clean_p, window_start))
+        rows = cur.fetchall()
+        count = len(rows)
+        if count >= max_allowed:
+            # The earliest of the 3 dispatched OTPs determines when the next slot frees up
+            first_row = rows[0]
+            oldest_ts = first_row["dispatched_at"] if isinstance(first_row, sqlite3.Row) else first_row[0]
+            retry_after_seconds = max(1, int((float(oldest_ts) + window_seconds) - now))
+            return False, count, retry_after_seconds
+        return True, count, 0
+    except Exception as e:
+        print(f"[OTP RATE LIMIT ERROR] {e}")
+        return True, 0, 0
+    finally:
+        conn.close()
+
+def record_otp_dispatch(phone: str, ip_address: str = "", purpose: str = "LOGIN") -> None:
+    """Records an OTP dispatch event in the permanent database"""
+    digits = "".join(filter(str.isdigit, str(phone)))
+    clean_p = digits[-10:] if len(digits) >= 10 else digits
+    if not clean_p:
+        return
+    now = time.time()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("""
+            INSERT INTO otp_dispatch_logs (phone, dispatched_at, ip_address, purpose)
+            VALUES (?, ?, ?, ?)
+            """, (clean_p, now, ip_address or "", purpose))
+            # Keep table ultra lightweight by pruning logs older than 48 hours
+            conn.execute("DELETE FROM otp_dispatch_logs WHERE dispatched_at < ?", (now - 172800,))
+    except Exception as e:
+        print(f"[RECORD OTP ERROR] {e}")
+    finally:
+        conn.close()
+
+def get_recent_otp_dispatches(phone: str, limit: int = 5) -> List[Dict[str, Any]]:
+    """Retrieves recent OTP dispatch history for a phone number"""
+    digits = "".join(filter(str.isdigit, str(phone)))
+    clean_p = digits[-10:] if len(digits) >= 10 else digits
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT id, phone, dispatched_at, ip_address, purpose 
+        FROM otp_dispatch_logs WHERE phone = ? 
+        ORDER BY id DESC LIMIT ?
+        """, (clean_p, limit))
+        rows = cur.fetchall()
+        result = []
+        for r in rows:
+            dt = datetime.fromtimestamp(r["dispatched_at"])
+            result.append({
+                "id": r["id"],
+                "phone": r["phone"],
+                "dispatched_at": r["dispatched_at"],
+                "formatted_time": dt.strftime("%d/%m/%Y, %I:%M:%S %p"),
+                "ip_address": r["ip_address"],
+                "purpose": r["purpose"]
+            })
+        return result
+    finally:
+        conn.close()
+
 def get_user_status_by_token(token: str) -> Tuple[bool, Optional[str], Optional[str]]:
     """
     Given an authentication token (Customer, ASM, or Admin), checks if associated user is BLOCKED.
@@ -907,8 +1230,8 @@ def get_permissions_for_role(role: str) -> Dict[str, Any]:
         return {
             "can_add_order": 1, "can_edit_unit": 1, "can_confirm_so": 1,
             "can_delete_order": 1, "can_block_user": 1, "can_manage_users": 1,
-            "can_manage_units": 1, "can_manage_permissions": 1, "can_view_logs": 1,
-            "can_export_csv": 1
+            "can_manage_units": 1, "can_view_packing_summary": 1, "can_view_alerts": 1,
+            "can_manage_permissions": 1, "can_view_logs": 1, "can_export_csv": 1
         }
     conn = get_connection()
     try:
@@ -920,8 +1243,8 @@ def get_permissions_for_role(role: str) -> Dict[str, Any]:
         return {
             "can_add_order": 0, "can_edit_unit": 0, "can_confirm_so": 0,
             "can_delete_order": 0, "can_block_user": 0, "can_manage_users": 0,
-            "can_manage_units": 0, "can_manage_permissions": 0, "can_view_logs": 0,
-            "can_export_csv": 0
+            "can_manage_units": 0, "can_view_packing_summary": 0, "can_view_alerts": 0,
+            "can_manage_permissions": 0, "can_view_logs": 0, "can_export_csv": 0
         }
     finally:
         conn.close()
@@ -931,7 +1254,7 @@ def update_role_permission(role: str, permission_key: str, enabled: bool, update
     valid_keys = [
         "can_add_order", "can_edit_unit", "can_confirm_so", 
         "can_delete_order", "can_block_user", "can_manage_users",
-        "can_manage_units", "can_manage_permissions", "can_view_logs", 
+        "can_manage_units", "can_view_packing_summary", "can_view_alerts", "can_manage_permissions", "can_view_logs", 
         "can_export_csv"
     ]
     if permission_key not in valid_keys:
@@ -940,6 +1263,9 @@ def update_role_permission(role: str, permission_key: str, enabled: bool, update
     clean_role = (role or "").strip().lower()
     if clean_role == "super_admin":
         return {"status": "error", "message": "Super Admin permissions are permanently unlocked and cannot be restricted."}
+
+    if permission_key == "can_manage_permissions":
+        return {"status": "error", "message": "Permissions tab is permanently locked and strictly restricted to Admin and Super Admin."}
 
     val = 1 if enabled else 0
     now_iso = datetime.now().isoformat()
@@ -1160,6 +1486,23 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
     d["deliveryAddress"] = d.get("delivery_address") or ""
     d["salesPerson"] = d.get("sales_person") or ""
 
+    # 📞 Robust Contact Number Extraction (phone, contact_number, or address regex)
+    raw_phone = str(d.get("phone") or d.get("contact_number") or d.get("contactNumber") or d.get("customer_phone") or "").strip()
+    if not raw_phone or len(raw_phone) < 10:
+        addr_combined = f"{d.get('party_address', '')} {d.get('delivery_address', '')}"
+        m_phone = re.search(r'(?:Phone|Mobile|Contact|Mo|Tel)?[:\s\-]*([6-9]\d{9})', addr_combined, re.IGNORECASE)
+        if m_phone:
+            raw_phone = m_phone.group(1)
+        else:
+            m_any = re.search(r'\b[6-9]\d{9}\b', addr_combined)
+            if m_any:
+                raw_phone = m_any.group(0)
+
+    clean_contact = "".join(filter(str.isdigit, raw_phone))[-10:] if raw_phone else ""
+    d["contactNumber"] = clean_contact
+    d["phone"] = clean_contact
+    d["partyPhone"] = clean_contact
+
     raw_summary = str(d.get("items_summary") or d.get("itemsSummary") or "").strip()
     if not raw_summary or raw_summary.lower() == "packaging items":
         parts = []
@@ -1226,6 +1569,25 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
     d["driverPhone"] = d.get("driver_phone") or ""
 
     d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date") or d.get("created_at") or ""
+
+    # 👔 Director Sir Confirmation Mapping
+    d["directorConfirmStatus"] = d.get("director_confirm_status") or ""
+    d["directorNote"] = d.get("director_note") or ""
+    d["directorConfirmedBy"] = d.get("director_confirmed_by") or ""
+    d["directorConfirmedAt"] = d.get("director_confirmed_at") or ""
+
+    # ✏️ Order Edit & Stock Allocation Mapping
+    d["isEdited"] = bool(d.get("is_edited"))
+    orig_items = d.get("original_items_json") or "[]"
+    try:
+        d["originalItems"] = json.loads(orig_items) if isinstance(orig_items, str) else orig_items
+    except Exception:
+        d["originalItems"] = []
+    d["originalTotalBoxes"] = int(d.get("original_total_boxes") or 0)
+    d["originalTotalPieces"] = int(d.get("original_total_pieces") or 0)
+    d["editedAt"] = d.get("edited_at") or ""
+    d["editedBy"] = d.get("edited_by") or ""
+    d["editReason"] = d.get("edit_reason") or ""
 
     # Dynamic 3-Stage Workflow Construction
     is_confirmed = (raw_status == "CONFIRMED") or bool(clean_so)
@@ -1818,6 +2180,153 @@ def update_order_unit_in_db(order_id: str, new_unit: str, updated_by: str = "sup
     finally:
         conn.close()
 
+def update_director_confirmation_in_db(order_id: str, status: str, note: str, confirmed_by: str = "Director") -> Dict[str, Any]:
+    """Updates Director Confirmation Status and Command Note for an Order"""
+    clean_id = (order_id or "").replace("#", "").strip()
+    conn = get_connection()
+    try:
+        now_str = datetime.now().strftime("%d/%m/%Y %I:%M %p")
+        with conn:
+            cur = conn.cursor()
+            cur.execute("""
+            UPDATE orders SET 
+                director_confirm_status = ?,
+                director_note = ?,
+                director_confirmed_by = ?,
+                director_confirmed_at = ?
+            WHERE order_id = ? OR order_id = ?
+            """, (status, note, confirmed_by, now_str, clean_id, f"#{clean_id}"))
+        
+        log_audit_event(
+            user_name=confirmed_by,
+            phone="",
+            role="admin",
+            action="DIRECTOR_CONFIRMATION",
+            status="SUCCESS",
+            details=f"Order #{clean_id} Director Status: {status} | Note: {note}"
+        )
+        return {
+            "status": "success",
+            "message": f"Director confirmation recorded for Order #{clean_id}",
+            "order_id": clean_id,
+            "director_status": status,
+            "director_note": note,
+            "confirmed_at": now_str
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def edit_order_quantities_in_db(order_id: str, updated_items: List[Dict[str, Any]], edit_reason: str, edited_by: str = "Admin") -> Dict[str, Any]:
+    """
+    Edits product quantities (boxes & pieces) due to stock availability at Khandelia Mills.
+    Preserves original items and quantities for permanent audit & Old Slip comparison.
+    """
+    clean_id = (order_id or "").replace("#", "").strip()
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM orders WHERE order_id = ? OR order_id = ?", (clean_id, f"#{clean_id}"))
+        row = cur.fetchone()
+        if not row:
+            return {"status": "error", "message": f"Order #{clean_id} not found"}
+        
+        row_dict = dict(row)
+        # If this is the first edit, store original items and totals
+        orig_items = row_dict.get("original_items_json")
+        if not orig_items or not row_dict.get("is_edited"):
+            orig_items_json = row_dict.get("items_json") or "[]"
+            orig_bxs = int(row_dict.get("total_boxes") or 0)
+            orig_pcs = int(row_dict.get("total_pieces") or 0)
+        else:
+            orig_items_json = orig_items
+            orig_bxs = int(row_dict.get("original_total_boxes") or 0)
+            orig_pcs = int(row_dict.get("original_total_pieces") or 0)
+
+        # Calculate new totals from updated_items
+        calc_bxs = 0
+        calc_pcs = 0
+        cleaned_new_items = []
+        for it in updated_items:
+            b = int(it.get("boxes", 0) or 0)
+            name = str(it.get("item") or it.get("name") or "").strip()
+            mult = int(it.get("multiplier") or 1)
+            if mult < 1:
+                mult = 1
+            p = b * mult
+            calc_bxs += b
+            calc_pcs += p
+            brand = str(it.get("brand") or ("FAUJI" if "fauji" in name.lower() else "MASHAL")).upper()
+            cleaned_new_items.append({
+                "item": name,
+                "name": name,
+                "boxes": b,
+                "pieces": p,
+                "multiplier": mult,
+                "brand": brand
+            })
+
+        new_items_json = json.dumps(cleaned_new_items, ensure_ascii=False)
+        items_summary_list = [f"• {it['name']} ({it['boxes']} Bxs / {it['pieces']} Pcs)" for it in cleaned_new_items if it['boxes'] > 0]
+        new_items_summary = "\n".join(items_summary_list)
+        now_str = datetime.now().strftime("%d/%m/%Y %I:%M %p")
+
+        with conn:
+            cur.execute("""
+            UPDATE orders SET
+                items_json = ?,
+                items_summary = ?,
+                total_boxes = ?,
+                total_pieces = ?,
+                is_edited = 1,
+                original_items_json = ?,
+                original_total_boxes = ?,
+                original_total_pieces = ?,
+                edited_at = ?,
+                edited_by = ?,
+                edit_reason = ?
+            WHERE order_id = ? OR order_id = ?
+            """, (
+                new_items_json, new_items_summary, calc_bxs, calc_pcs,
+                orig_items_json, orig_bxs, orig_pcs,
+                now_str, edited_by, edit_reason,
+                clean_id, f"#{clean_id}"
+            ))
+
+        log_audit_event(
+            user_name=edited_by,
+            phone=row_dict.get("party_address", ""),
+            role="admin",
+            action="ORDER_EDITED_STOCK",
+            status="SUCCESS",
+            details=f"Order #{clean_id} edited: {orig_bxs} Bxs -> {calc_bxs} Bxs ({orig_pcs} Pcs -> {calc_pcs} Pcs). Reason: {edit_reason}"
+        )
+
+        addr_combined = str(row_dict.get("party_address") or "") + " " + str(row_dict.get("delivery_address") or "")
+        m_phone = re.search(r'\b[6-9]\d{9}\b', addr_combined)
+        extracted_phone = m_phone.group(0) if m_phone else ""
+
+        return {
+            "status": "success",
+            "message": f"Order #{clean_id} quantities updated successfully",
+            "order_id": clean_id,
+            "party_name": row_dict.get("party_name", ""),
+            "party_code": row_dict.get("party_code", ""),
+            "phone": extracted_phone,
+            "contact_number": extracted_phone,
+            "original_total_boxes": orig_bxs,
+            "original_total_pieces": orig_pcs,
+            "new_total_boxes": calc_bxs,
+            "new_total_pieces": calc_pcs,
+            "items": cleaned_new_items,
+            "edit_reason": edit_reason
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
 def mark_order_synced_in_db(order_id: str):
     """Marks an order as successfully synced to Google Sheets"""
     conn = get_connection()
@@ -1894,6 +2403,14 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
             d["deliveryAddress"] = d["delivery_address"]
             d["salesPerson"] = d["sales_person"]
             d["unit"] = d.get("unit") or "Unit 1"
+
+            # Robust phone / contact extraction for customer / sales manager alerts
+            addr_text = f"{d.get('party_address') or ''} {d.get('delivery_address') or ''}"
+            m_phone = re.search(r'\b([6-9]\d{9})\b', addr_text)
+            extracted_contact = d.get("phone") or d.get("contact_number") or (m_phone.group(1) if m_phone else "")
+            d["contactNumber"] = extracted_contact
+            d["phone"] = extracted_contact
+            d["partyPhone"] = extracted_contact
             
             # Recalculate pieces and boxes dynamically if missing or 0
             tot_bxs = int(d.get("total_boxes") or 0)
@@ -1941,6 +2458,18 @@ def get_all_orders_from_db(limit: int = 1000, unit: Optional[str] = None) -> Lis
             d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date") or ""
             d["synced_to_sheet"] = bool(d["synced_to_sheet"])
             d["slipImageUrl"] = d.get("slip_image_url") or f"/order_slips/{d['order_id']}.png"
+            
+            # Map Edit details consistently
+            is_ed = bool(d.get("is_edited"))
+            d["isEdited"] = is_ed
+            d["is_edited"] = 1 if is_ed else 0
+            d["originalItems"] = d.get("original_items_json")
+            d["originalTotalBoxes"] = d.get("original_total_boxes")
+            d["originalTotalPieces"] = d.get("original_total_pieces")
+            d["editReason"] = d.get("edit_reason") or ""
+            d["editedAt"] = d.get("edited_at") or ""
+            d["editedBy"] = d.get("edited_by") or ""
+            
             result.append(d)
         return result
     except Exception as e:
@@ -1975,11 +2504,30 @@ def get_order_by_id(order_id: str) -> Optional[Dict[str, Any]]:
             d["partyAddress"] = d["party_address"]
             d["salesPerson"] = d["sales_person"]
             d["unit"] = d.get("unit") or "Unit 1"
+
+            # Robust phone / contact extraction for customer / sales manager alerts
+            addr_text = f"{d.get('party_address') or ''} {d.get('delivery_address') or ''}"
+            m_phone = re.search(r'\b([6-9]\d{9})\b', addr_text)
+            extracted_contact = d.get("phone") or d.get("contact_number") or (m_phone.group(1) if m_phone else "")
+            d["contactNumber"] = extracted_contact
+            d["phone"] = extracted_contact
+            d["partyPhone"] = extracted_contact
             d["totalBoxes"] = d["total_boxes"]
             d["totalPieces"] = d.get("total_pieces", 0)
             d["orderStatus"] = d.get("order_status") or "PENDING"
             d["soNumber"] = d.get("so_number") or ""
-            d["formattedTimestamp"] = d["formatted_timestamp"]
+            d["formattedTimestamp"] = d.get("formatted_timestamp") or d.get("order_date") or ""
+
+            # Map Edit details consistently
+            is_ed = bool(d.get("is_edited"))
+            d["isEdited"] = is_ed
+            d["is_edited"] = 1 if is_ed else 0
+            d["originalItems"] = d.get("original_items_json")
+            d["originalTotalBoxes"] = d.get("original_total_boxes")
+            d["originalTotalPieces"] = d.get("original_total_pieces")
+            d["editReason"] = d.get("edit_reason") or ""
+            d["editedAt"] = d.get("edited_at") or ""
+            d["editedBy"] = d.get("edited_by") or ""
             d["dataConsent"] = d.get("data_consent", "YES (Verified)")
             return d
         return None
@@ -2070,20 +2618,35 @@ def delete_admin_session(token: str):
     finally:
         conn.close()
 
-def delete_order_from_db(order_id: str) -> bool:
-    """Permanently deletes an order from orders.db and removes from customer_orders.json"""
+def delete_order_from_db(order_id: str, deleted_by: str = "super_admin") -> bool:
+    """
+    Permanently deletes an order from orders.db and customer_orders.json.
+    Records the order in deleted_orders tombstone table to prevent remote background sync from re-importing it.
+    """
     clean_id = (order_id or "").replace("#", "").strip()
+    if not clean_id:
+        return False
     conn = get_connection()
     try:
         with conn:
+            # 1. Register in deleted_orders table to permanently prevent remote background re-import
+            conn.execute(
+                "INSERT OR REPLACE INTO deleted_orders (order_id, deleted_at, deleted_by, reason) VALUES (?, datetime('now'), ?, ?)",
+                (clean_id, deleted_by, "Permanently deleted by Super Admin")
+            )
+            # 2. Delete from orders table
             conn.execute("DELETE FROM orders WHERE order_id = ? OR order_id = ?", (clean_id, f"#{clean_id}"))
-        # Also clean up in customer_orders.json
+        
+        # 3. Clean up in customer_orders.json
         orders_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "customer_orders.json")
         if os.path.exists(orders_log):
             try:
                 with open(orders_log, "r", encoding="utf-8") as f:
                     orders_list = json.load(f)
-                filtered = [o for o in orders_list if str(o.get("id", "")).replace("#", "").strip() != clean_id]
+                filtered = [
+                    o for o in orders_list 
+                    if str(o.get("id") or o.get("order_id") or o.get("orderId") or "").replace("#", "").strip() != clean_id
+                ]
                 with open(orders_log, "w", encoding="utf-8") as f:
                     json.dump(filtered, f, indent=2, ensure_ascii=False)
             except Exception as e:
@@ -2092,6 +2655,20 @@ def delete_order_from_db(order_id: str) -> bool:
     except Exception as e:
         print(f"[DATABASE DELETE ERROR] {e}")
         return False
+    finally:
+        conn.close()
+
+def get_deleted_order_ids() -> set:
+    """Returns set of permanently deleted order IDs to prevent remote sync re-import"""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS deleted_orders (order_id TEXT PRIMARY KEY, deleted_at TEXT, deleted_by TEXT, reason TEXT)")
+        cur.execute("SELECT order_id FROM deleted_orders")
+        return {str(row[0]).replace("#", "").strip() for row in cur.fetchall()}
+    except Exception as e:
+        print(f"[DELETED_IDS ERROR] {e}")
+        return set()
     finally:
         conn.close()
 
@@ -2105,14 +2682,27 @@ def cleanup_orders_retain_pankaj_kumar() -> Dict[str, Any]:
     conn = get_connection()
     try:
         cur = conn.cursor()
+        # Ensure deleted_orders table exists
+        cur.execute("CREATE TABLE IF NOT EXISTS deleted_orders (order_id TEXT PRIMARY KEY, deleted_at TEXT, deleted_by TEXT, reason TEXT)")
+        
         # Find Pankaj Kumar's orders
         cur.execute("SELECT order_id, sales_person, total_boxes, total_pieces FROM orders WHERE LOWER(sales_person) LIKE '%pankaj%'")
         pankaj_orders = [dict(r) for r in cur.fetchall()]
         
+        # Find all other orders to delete
+        cur.execute("SELECT order_id FROM orders WHERE LOWER(sales_person) NOT LIKE '%pankaj%'")
+        orders_to_delete = [str(r[0]).replace('#', '').strip() for r in cur.fetchall()]
+        
         with conn:
             # 1. Update Pankaj Kumar orders to Unit 1
             conn.execute("UPDATE orders SET unit = 'Unit 1' WHERE LOWER(sales_person) LIKE '%pankaj%'")
-            # 2. Delete all other orders
+            # 2. Register deleted order IDs into deleted_orders tombstone table
+            for oid in orders_to_delete:
+                conn.execute(
+                    "INSERT OR REPLACE INTO deleted_orders (order_id, deleted_at, deleted_by, reason) VALUES (?, datetime('now'), ?, ?)",
+                    (oid, "super_admin", "Purged during Pankaj Kumar database retention cleanup")
+                )
+            # 3. Delete all other orders
             conn.execute("DELETE FROM orders WHERE LOWER(sales_person) NOT LIKE '%pankaj%'")
 
         # Also sync customer_orders.json
