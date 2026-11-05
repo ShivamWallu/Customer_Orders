@@ -470,22 +470,63 @@
       word-break: break-word;
     }
 
-    /* 🏷️ Product Visual Thumbnail with Accurate Height Scale & Depth */
+    /* 🏷️ Professional Product Thumbnail (Click to Expand / Zoom) */
     .product-thumb-wrap {
-      width: 54px;
-      height: 64px;
-      min-width: 54px;
+      width: 58px;
+      height: 68px;
+      min-width: 58px;
       background: #ffffff;
-      border-radius: 9px;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding: 3px 4px;
+      padding: 4px 4px;
       position: relative;
       flex-shrink: 0;
+      cursor: pointer;
       overflow: hidden;
+      transition: all 0.18s ease;
+    }
+
+    .product-thumb-wrap:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .product-thumb-wrap:active {
+      transform: scale(0.96);
+    }
+
+    .product-thumb-index {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      font-size: 9px;
+      font-weight: 800;
+      color: #64748b;
+      background: rgba(241, 245, 249, 0.9);
+      padding: 1px 4px;
+      border-radius: 4px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .product-thumb-zoom-icon {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 13px;
+      height: 13px;
+      color: #94a3b8;
+      pointer-events: none;
+      transition: color 0.15s;
+    }
+
+    .product-thumb-wrap:hover .product-thumb-zoom-icon {
+      color: #2563eb;
     }
 
     .product-thumb-img {
@@ -497,27 +538,117 @@
       margin: 0 auto;
     }
 
-    .item-card:hover .product-thumb-img {
-      transform: scale(1.06);
+    .product-thumb-wrap:hover .product-thumb-img {
+      transform: scale(1.08);
     }
 
-    .product-type-badge {
-      display: inline-flex;
+    .prod-pack-subtitle {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 2px;
+      display: flex;
       align-items: center;
-      gap: 3px;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-top: 3px;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+      gap: 4px;
     }
 
-    .badge-bottle { background: #e0f2fe; color: #0284c7; }
-    .badge-can { background: #fef3c7; color: #b45309; }
-    .badge-tin { background: #f1f5f9; color: #475569; }
-    .badge-pouch { background: #dcfce7; color: #15803d; }
+    /* 🔍 Ultra-Sleek Product Lightbox Modal */
+    .prod-img-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .prod-img-modal-card {
+      background: #ffffff;
+      border-radius: 20px;
+      max-width: 360px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      position: relative;
+      animation: modalCardPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalCardPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .prod-img-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: none;
+      font-size: 20px;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      z-index: 2;
+    }
+
+    .prod-img-modal-close:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .prod-img-modal-body {
+      background: radial-gradient(circle at center, #ffffff 40%, #f8fafc 100%);
+      padding: 30px 20px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 270px;
+    }
+
+    .prod-img-modal-view {
+      max-width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.14));
+      transition: transform 0.2s;
+    }
+
+    .prod-img-modal-footer {
+      padding: 14px 18px 18px;
+      background: #ffffff;
+      border-top: 1px solid #f1f5f9;
+      text-align: center;
+    }
+
+    .prod-img-modal-footer h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 4px 0;
+    }
+
+    .prod-img-modal-footer p {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      margin: 0;
+    }
 
     /* 🚫 Disable native browser spin buttons */
     input[type=number]::-webkit-inner-spin-button,
@@ -3775,6 +3906,20 @@
     </footer>
   </div>
 
+  <!-- 🔍 ULTRA-SLEEK PRODUCT IMAGE LIGHTBOX MODAL -->
+  <div id="productImageModal" class="prod-img-modal" onclick="closeProductImageModal(event)" style="display: none;">
+    <div class="prod-img-modal-card" onclick="event.stopPropagation()">
+      <button type="button" class="prod-img-modal-close" onclick="closeProductImageModal()" aria-label="Close">&times;</button>
+      <div class="prod-img-modal-body">
+        <img id="prodModalImg" src="" alt="Product Preview" class="prod-img-modal-view">
+      </div>
+      <div class="prod-img-modal-footer">
+        <h3 id="prodModalTitle">Product Name</h3>
+        <p id="prodModalSubtitle">Packing details</p>
+      </div>
+    </div>
+  </div>
+
   <!-- 🔐 CUSTOMER MOBILE OTP LOGIN MODAL -->
   <div class="modal-backdrop" id="customerAuthModal" style="display: none;">
     <div class="modal-content" style="max-width: 360px; padding: 20px 18px; text-align: center; border-radius: 20px; box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.22), 0 0 1px rgba(15, 23, 42, 0.1); max-height: 94vh; overflow-y: auto;">
@@ -4394,105 +4539,125 @@
       const b = (brand || '').toLowerCase();
       const it = (item || '').toUpperCase();
       const isFauji = b.includes('fauji') || it.includes('FAUJI');
+      const brandName = isFauji ? 'Fauji' : 'Mashal';
       const prefix = isFauji ? '/images/products/fauji-mustard-oil-' : '/images/products/mashal-kachi-ghani-mustard-oil-';
       
       let slug = '';
-      let type = 'Bottle';
-      let typeBadge = 'badge-bottle';
-      let height = '58px';
-      let sizeText = '';
+      let title = '';
+      let subtitle = '';
+      let height = '62px';
 
       if (it.includes('100 ML') && it.includes('BOTTLE')) {
         slug = '100-ml-bottle';
-        type = 'Bottle';
-        typeBadge = 'badge-bottle';
+        title = '100 ML Bottle';
+        subtitle = '120 Pcs / Box';
         height = '42px';
-        sizeText = '100 ML';
-      } else if (it.includes('200 ML') && it.includes('BOTTLE')) {
+      } else if (it.includes('200 ML') && it.includes('60')) {
         slug = '200-ml-bottle';
-        type = 'Bottle';
-        typeBadge = 'badge-bottle';
+        title = '200 ML Bottle';
+        subtitle = '60 Pcs / Box';
         height = '48px';
-        sizeText = '200 ML';
+      } else if (it.includes('200 ML') && it.includes('40')) {
+        slug = '200-ml-bottle';
+        title = '200 ML Bottle';
+        subtitle = '40 Pcs / Box';
+        height = '48px';
+      } else if (it.includes('200 ML')) {
+        slug = '200-ml-bottle';
+        title = '200 ML Bottle';
+        subtitle = 'Box Packing';
+        height = '48px';
       } else if (it.includes('500 ML') && it.includes('BOTTLE')) {
         slug = '500-ml-bottle';
-        type = 'Bottle';
-        typeBadge = 'badge-bottle';
+        title = '500 ML Bottle';
+        subtitle = '30 Pcs / Box';
         height = '54px';
-        sizeText = '500 ML';
       } else if (it.includes('1/2 LTR') || (it.includes('500') && it.includes('POUCH'))) {
         slug = isFauji ? '1-litre-pouch' : '500-ml-pouch';
-        type = 'Pouch';
-        typeBadge = 'badge-pouch';
+        title = '500 ML Pouch';
+        subtitle = '32 Pcs / Box';
         height = '50px';
-        sizeText = '500 ML';
       } else if (it.includes('1 LTR') && it.includes('POUCH')) {
         slug = '1-litre-pouch';
-        type = 'Pouch';
-        typeBadge = 'badge-pouch';
+        title = '1 LTR. Pouch';
+        subtitle = '16 Pcs / Box';
         height = '58px';
-        sizeText = '1 LTR';
       } else if (it.includes('1 LTR') && it.includes('BOTTLE')) {
         slug = '1-litre-bottle';
-        type = 'Bottle';
-        typeBadge = 'badge-bottle';
-        height = '60px';
-        sizeText = '1 LTR';
+        title = '1 LTR. Bottle';
+        subtitle = '15 Pcs / Box';
+        height = '62px';
       } else if (it.includes('2 LTR') && it.includes('BOTTLE')) {
         slug = '2-litre-bottle';
-        type = 'Bottle';
-        typeBadge = 'badge-bottle';
+        title = '2 LTR. Bottle';
+        subtitle = '9 Pcs / Box';
         height = '62px';
-        sizeText = '2 LTR';
       } else if (it.includes('2 LTR') && it.includes('CAN')) {
         slug = '2-litre-can';
-        type = 'Can';
-        typeBadge = 'badge-can';
+        title = '2 LTR. Can';
+        subtitle = '6 Pcs / Box';
         height = '56px';
-        sizeText = '2 LTR';
       } else if (it.includes('5 LTR') && it.includes('CAN')) {
         slug = '5-litre-can';
-        type = 'Can';
-        typeBadge = 'badge-can';
+        title = '5 LTR. Can';
+        subtitle = '4 Pcs / Box';
         height = '60px';
-        sizeText = '5 LTR';
       } else if (it.includes('15 KG') && it.includes('CAN')) {
         slug = '15-kg-can';
-        type = 'Can';
-        typeBadge = 'badge-can';
+        title = '15 KG Can';
+        subtitle = '1 Pc (Single Can)';
         height = '62px';
-        sizeText = '15 KG';
       } else if (it.includes('15 LTR') && it.includes('CAN')) {
         slug = '15-litre-can';
-        type = 'Can';
-        typeBadge = 'badge-can';
+        title = '15 LTR. Can';
+        subtitle = '1 Pc (Single Can)';
         height = '62px';
-        sizeText = '15 LTR';
       } else if (it.includes('15 KG') && it.includes('TIN')) {
         slug = '15-kg-tin';
-        type = 'Tin';
-        typeBadge = 'badge-tin';
+        title = '15 KG Tin';
+        subtitle = '1 Pc (Single Tin)';
         height = '62px';
-        sizeText = '15 KG';
       } else if (it.includes('15 LTR') && it.includes('TIN')) {
         slug = '15-litre-tin';
-        type = 'Tin';
-        typeBadge = 'badge-tin';
+        title = '15 LTR. Tin';
+        subtitle = '1 Pc (Single Tin)';
         height = '62px';
-        sizeText = '15 LTR';
       } else {
         slug = isFauji ? '1-litre-bottle' : '1-litre-bottle';
-        type = 'Bottle';
-        typeBadge = 'badge-bottle';
+        title = item;
+        subtitle = 'Standard Box';
         height = '58px';
-        sizeText = '';
       }
 
       const webpUrl = `${prefix}${slug}.webp`;
       const pngUrl = `${prefix}${slug}.png`;
-      const alt = `${isFauji ? 'Fauji' : 'Mashal'} Mustard Oil ${item} Official Packaging`;
+      const alt = `${brandName} ${title} - ${subtitle}`;
       
-      return { webpUrl, pngUrl, alt, type, typeBadge, height, sizeText };
+      return { brandName, title, subtitle, webpUrl, pngUrl, alt, height };
+    }
+
+    function openProductImageModal(title, webpUrl, pngUrl, subtitle) {
+      const modal = document.getElementById("productImageModal");
+      const img = document.getElementById("prodModalImg");
+      const titleEl = document.getElementById("prodModalTitle");
+      const subEl = document.getElementById("prodModalSubtitle");
+      if (!modal || !img) return;
+      
+      if (titleEl) titleEl.textContent = title || "Product Preview";
+      if (subEl) subEl.textContent = subtitle || "";
+      img.src = webpUrl;
+      img.onerror = () => { img.onerror = null; img.src = pngUrl; };
+      modal.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeProductImageModal(e) {
+      if (e && e.target && e.target.closest && e.target.closest('.prod-img-modal-card') && !e.target.classList.contains('prod-img-modal-close')) {
+        return;
+      }
+      const modal = document.getElementById("productImageModal");
+      if (modal) modal.style.display = "none";
+      document.body.style.overflow = "";
     }
 
     function renderItemList() {
@@ -4504,8 +4669,9 @@
         mHtml += `
           <div class="item-card bg-mashal">
             <div class="item-info">
-              <div class="item-sno">${idx + 1}</div>
-              <div class="product-thumb-wrap" title="${escapeHtml(meta.alt)}">
+              <div class="product-thumb-wrap" onclick="openProductImageModal('${escapeHtml(meta.brandName + ' ' + meta.title)}', '${meta.webpUrl}', '${meta.pngUrl}', '${escapeHtml(meta.subtitle)}')" title="Click to view large photo">
+                <span class="product-thumb-index">#${idx + 1}</span>
+                <svg class="product-thumb-zoom-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <img src="${meta.webpUrl}" 
                      onerror="this.onerror=null;this.src='${meta.pngUrl}'" 
                      alt="${escapeHtml(meta.alt)}" 
@@ -4514,8 +4680,8 @@
                      style="height: ${meta.height};">
               </div>
               <div class="item-name-group">
-                <div class="item-title">${escapeHtml(item)}</div>
-                <div class="product-type-badge ${meta.typeBadge}">${meta.type}${meta.sizeText ? ' &bull; ' + meta.sizeText : ''}</div>
+                <div class="item-title">${escapeHtml(meta.title)}</div>
+                <div class="prod-pack-subtitle">${escapeHtml(meta.subtitle)}</div>
               </div>
             </div>
             <div class="qty-control">
@@ -4544,8 +4710,9 @@
         fHtml += `
           <div class="item-card bg-fauji">
             <div class="item-info">
-              <div class="item-sno">${idx + 1}</div>
-              <div class="product-thumb-wrap" title="${escapeHtml(meta.alt)}">
+              <div class="product-thumb-wrap" onclick="openProductImageModal('${escapeHtml(meta.brandName + ' ' + meta.title)}', '${meta.webpUrl}', '${meta.pngUrl}', '${escapeHtml(meta.subtitle)}')" title="Click to view large photo">
+                <span class="product-thumb-index">#${idx + 1}</span>
+                <svg class="product-thumb-zoom-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <img src="${meta.webpUrl}" 
                      onerror="this.onerror=null;this.src='${meta.pngUrl}'" 
                      alt="${escapeHtml(meta.alt)}" 
@@ -4554,8 +4721,8 @@
                      style="height: ${meta.height};">
               </div>
               <div class="item-name-group">
-                <div class="item-title">${escapeHtml(item)}</div>
-                <div class="product-type-badge ${meta.typeBadge}">${meta.type}${meta.sizeText ? ' &bull; ' + meta.sizeText : ''}</div>
+                <div class="item-title">${escapeHtml(meta.title)}</div>
+                <div class="prod-pack-subtitle">${escapeHtml(meta.subtitle)}</div>
               </div>
             </div>
             <div class="qty-control">
