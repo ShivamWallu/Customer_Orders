@@ -470,6 +470,55 @@
       word-break: break-word;
     }
 
+    /* 🏷️ Product Visual Thumbnail with Accurate Height Scale & Depth */
+    .product-thumb-wrap {
+      width: 54px;
+      height: 64px;
+      min-width: 54px;
+      background: #ffffff;
+      border-radius: 9px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 3px 4px;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .product-thumb-img {
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .item-card:hover .product-thumb-img {
+      transform: scale(1.06);
+    }
+
+    .product-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 3px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .badge-bottle { background: #e0f2fe; color: #0284c7; }
+    .badge-can { background: #fef3c7; color: #b45309; }
+    .badge-tin { background: #f1f5f9; color: #475569; }
+    .badge-pouch { background: #dcfce7; color: #15803d; }
+
     /* 🚫 Disable native browser spin buttons */
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button {
@@ -4341,17 +4390,132 @@
       "15 KG TIN x 1"
     ];
 
+    function getProductMeta(brand, item) {
+      const b = (brand || '').toLowerCase();
+      const it = (item || '').toUpperCase();
+      const isFauji = b.includes('fauji') || it.includes('FAUJI');
+      const prefix = isFauji ? '/images/products/fauji-mustard-oil-' : '/images/products/mashal-kachi-ghani-mustard-oil-';
+      
+      let slug = '';
+      let type = 'Bottle';
+      let typeBadge = 'badge-bottle';
+      let height = '58px';
+      let sizeText = '';
+
+      if (it.includes('100 ML') && it.includes('BOTTLE')) {
+        slug = '100-ml-bottle';
+        type = 'Bottle';
+        typeBadge = 'badge-bottle';
+        height = '42px';
+        sizeText = '100 ML';
+      } else if (it.includes('200 ML') && it.includes('BOTTLE')) {
+        slug = '200-ml-bottle';
+        type = 'Bottle';
+        typeBadge = 'badge-bottle';
+        height = '48px';
+        sizeText = '200 ML';
+      } else if (it.includes('500 ML') && it.includes('BOTTLE')) {
+        slug = '500-ml-bottle';
+        type = 'Bottle';
+        typeBadge = 'badge-bottle';
+        height = '54px';
+        sizeText = '500 ML';
+      } else if (it.includes('1/2 LTR') || (it.includes('500') && it.includes('POUCH'))) {
+        slug = isFauji ? '1-litre-pouch' : '500-ml-pouch';
+        type = 'Pouch';
+        typeBadge = 'badge-pouch';
+        height = '50px';
+        sizeText = '500 ML';
+      } else if (it.includes('1 LTR') && it.includes('POUCH')) {
+        slug = '1-litre-pouch';
+        type = 'Pouch';
+        typeBadge = 'badge-pouch';
+        height = '58px';
+        sizeText = '1 LTR';
+      } else if (it.includes('1 LTR') && it.includes('BOTTLE')) {
+        slug = '1-litre-bottle';
+        type = 'Bottle';
+        typeBadge = 'badge-bottle';
+        height = '60px';
+        sizeText = '1 LTR';
+      } else if (it.includes('2 LTR') && it.includes('BOTTLE')) {
+        slug = '2-litre-bottle';
+        type = 'Bottle';
+        typeBadge = 'badge-bottle';
+        height = '62px';
+        sizeText = '2 LTR';
+      } else if (it.includes('2 LTR') && it.includes('CAN')) {
+        slug = '2-litre-can';
+        type = 'Can';
+        typeBadge = 'badge-can';
+        height = '56px';
+        sizeText = '2 LTR';
+      } else if (it.includes('5 LTR') && it.includes('CAN')) {
+        slug = '5-litre-can';
+        type = 'Can';
+        typeBadge = 'badge-can';
+        height = '60px';
+        sizeText = '5 LTR';
+      } else if (it.includes('15 KG') && it.includes('CAN')) {
+        slug = '15-kg-can';
+        type = 'Can';
+        typeBadge = 'badge-can';
+        height = '62px';
+        sizeText = '15 KG';
+      } else if (it.includes('15 LTR') && it.includes('CAN')) {
+        slug = '15-litre-can';
+        type = 'Can';
+        typeBadge = 'badge-can';
+        height = '62px';
+        sizeText = '15 LTR';
+      } else if (it.includes('15 KG') && it.includes('TIN')) {
+        slug = '15-kg-tin';
+        type = 'Tin';
+        typeBadge = 'badge-tin';
+        height = '62px';
+        sizeText = '15 KG';
+      } else if (it.includes('15 LTR') && it.includes('TIN')) {
+        slug = '15-litre-tin';
+        type = 'Tin';
+        typeBadge = 'badge-tin';
+        height = '62px';
+        sizeText = '15 LTR';
+      } else {
+        slug = isFauji ? '1-litre-bottle' : '1-litre-bottle';
+        type = 'Bottle';
+        typeBadge = 'badge-bottle';
+        height = '58px';
+        sizeText = '';
+      }
+
+      const webpUrl = `${prefix}${slug}.webp`;
+      const pngUrl = `${prefix}${slug}.png`;
+      const alt = `${isFauji ? 'Fauji' : 'Mashal'} Mustard Oil ${item} Official Packaging`;
+      
+      return { webpUrl, pngUrl, alt, type, typeBadge, height, sizeText };
+    }
+
     function renderItemList() {
       // 1. Mashal Items
       const mashalContainer = document.getElementById("mashalList");
       let mHtml = "";
       mashalItems.forEach((item, idx) => {
+        const meta = getProductMeta("Mashal", item);
         mHtml += `
           <div class="item-card bg-mashal">
             <div class="item-info">
               <div class="item-sno">${idx + 1}</div>
+              <div class="product-thumb-wrap" title="${escapeHtml(meta.alt)}">
+                <img src="${meta.webpUrl}" 
+                     onerror="this.onerror=null;this.src='${meta.pngUrl}'" 
+                     alt="${escapeHtml(meta.alt)}" 
+                     class="product-thumb-img" 
+                     loading="lazy" 
+                     style="height: ${meta.height};">
+              </div>
               <div class="item-name-group">
                 <div class="item-title">${escapeHtml(item)}</div>
+                <div class="product-type-badge ${meta.typeBadge}">${meta.type}${meta.sizeText ? ' &bull; ' + meta.sizeText : ''}</div>
               </div>
             </div>
             <div class="qty-control">
@@ -4376,12 +4540,22 @@
       const faujiContainer = document.getElementById("faujiList");
       let fHtml = "";
       faujiItems.forEach((item, idx) => {
+        const meta = getProductMeta("Fauji", item);
         fHtml += `
           <div class="item-card bg-fauji">
             <div class="item-info">
               <div class="item-sno">${idx + 1}</div>
+              <div class="product-thumb-wrap" title="${escapeHtml(meta.alt)}">
+                <img src="${meta.webpUrl}" 
+                     onerror="this.onerror=null;this.src='${meta.pngUrl}'" 
+                     alt="${escapeHtml(meta.alt)}" 
+                     class="product-thumb-img" 
+                     loading="lazy" 
+                     style="height: ${meta.height};">
+              </div>
               <div class="item-name-group">
                 <div class="item-title">${escapeHtml(item)}</div>
+                <div class="product-type-badge ${meta.typeBadge}">${meta.type}${meta.sizeText ? ' &bull; ' + meta.sizeText : ''}</div>
               </div>
             </div>
             <div class="qty-control">
