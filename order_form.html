@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Khandelia Oil & General Mills - Mobile Order Slip</title>
 
   <!-- 📱 WHATSAPP & SOCIAL MEDIA LINK PREVIEW (Customer Order Link) -->
@@ -93,8 +93,8 @@
       overflow-y: auto;
       background: #f8fafc;
       color: var(--text-dark);
-      padding-bottom: 74px;
-      /* Precise room for sticky bottom bar without dead space */
+      padding-bottom: calc(90px + env(safe-area-inset-bottom, 14px));
+      /* Room for elevated sticky bottom bar and iPhone home bar */
       display: flex;
       justify-content: center;
       -webkit-overflow-scrolling: touch;
@@ -552,23 +552,24 @@
       bottom: 0;
       left: 0;
       right: 0;
+      box-sizing: border-box;
       background: #ffffff;
       border-top: 1px solid #e2e8f0;
       padding: 10px 16px;
-      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      box-shadow: none;
-      z-index: 999;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      z-index: 9999;
       width: 100%;
       max-width: 640px;
       margin: 0 auto;
-      height: 72px;
-      contain: layout paint;
-      will-change: transform;
+      min-height: 70px;
+      height: auto;
       transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
 
     /* Optimistic UI Micro-Pulse Animation */
@@ -612,6 +613,8 @@
       flex: 1;
       max-width: 220px;
       height: 48px;
+      min-height: 48px;
+      box-sizing: border-box;
       background: linear-gradient(135deg, #047857 0%, #059669 100%);
       color: #ffffff;
       border: none;
@@ -623,7 +626,7 @@
       justify-content: center;
       gap: 8px;
       cursor: pointer;
-      box-shadow: none;
+      box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);
       transition: all 0.2s;
     }
 
@@ -3128,7 +3131,7 @@
     }
     @media (max-width: 640px) {
       body {
-        padding-bottom: 135px;
+        padding-bottom: calc(120px + env(safe-area-inset-bottom, 14px));
       }
       .app-wrapper {
         min-height: auto;

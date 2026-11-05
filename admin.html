@@ -1039,10 +1039,17 @@
       border-right: 1.5px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* Columns 2 & 3 are standard scrolling cells */
+    /* Columns 2 & 3: Headers remain sticky at top (top: 0), body cells scroll horizontally */
     .orders-table th.sticky-col-2,
+    .orders-table th.sticky-col-3 {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #0f172a !important;
+      color: #ffffff !important;
+      left: auto;
+    }
     .orders-table td.sticky-col-2,
-    .orders-table th.sticky-col-3,
     .orders-table td.sticky-col-3 {
       position: static;
       z-index: auto;
