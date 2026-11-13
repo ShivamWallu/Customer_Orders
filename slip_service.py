@@ -197,7 +197,9 @@ def generate_order_slip_png(order: Dict[str, Any], output_path: Optional[str] = 
     # Brand Logo Card (Top-Left)
     logo_card_box = [(28, 22), (180, 152)]
     draw.rounded_rectangle(logo_card_box, radius=12, fill="#ffffff", outline="#f59e0b", width=3)
-    logo_path = os.path.join(BASE_DIR, "images", "NEW_PNG_MASHAL_LOGO.png")
+    logo_path = os.path.join(BASE_DIR, "images", "Logo", "3d_logo2.png")
+    if not os.path.exists(logo_path):
+        logo_path = os.path.join(BASE_DIR, "images", "NEW_PNG_MASHAL_LOGO.png")
     if not os.path.exists(logo_path):
         logo_path = os.path.join(BASE_DIR, "images", "mashal_slip_logo.png")
     if os.path.exists(logo_path):

@@ -470,7 +470,7 @@
       word-break: break-word;
     }
 
-    /* 🏷️ Professional Product Thumbnail (Click to Expand / Zoom) */
+    /* 🏷️ Professional Product Thumbnail */
     .product-thumb-wrap {
       width: 58px;
       height: 68px;
@@ -480,7 +480,7 @@
       border: 1px solid #e2e8f0;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
       padding: 4px 4px;
       position: relative;
@@ -500,39 +500,9 @@
       transform: scale(0.96);
     }
 
-    .product-thumb-index {
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      font-size: 9px;
-      font-weight: 800;
-      color: #64748b;
-      background: rgba(241, 245, 249, 0.9);
-      padding: 1px 4px;
-      border-radius: 4px;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .product-thumb-zoom-icon {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 13px;
-      height: 13px;
-      color: #94a3b8;
-      pointer-events: none;
-      transition: color 0.15s;
-    }
-
-    .product-thumb-wrap:hover .product-thumb-zoom-icon {
-      color: #2563eb;
-    }
-
     .product-thumb-img {
       max-width: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
       transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       display: block;
       margin: 0 auto;
@@ -590,42 +560,44 @@
 
     .prod-img-modal-close {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 34px;
-      height: 34px;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: #f1f5f9;
-      border: none;
-      font-size: 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
       color: #475569;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.15s ease;
-      z-index: 2;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10;
     }
 
     .prod-img-modal-close:hover {
-      background: #e2e8f0;
-      color: #0f172a;
+      background: #fee2e2;
+      color: #ef4444;
+      border-color: #fecaca;
+      transform: scale(1.08);
     }
 
     .prod-img-modal-body {
-      background: radial-gradient(circle at center, #ffffff 40%, #f8fafc 100%);
-      padding: 30px 20px 20px;
+      background: #ffffff !important;
+      padding: 36px 24px 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 270px;
+      min-height: 280px;
     }
 
     .prod-img-modal-view {
       max-width: 100%;
       max-height: 250px;
       object-fit: contain;
-      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.14));
+      filter: none;
       transition: transform 0.2s;
     }
 
@@ -3433,14 +3405,14 @@
 
 <body>
   <!-- 🛢️ Preloaded Mashal Official Logo for Digital Order Slip Canvas -->
-  <img id="mashalOfficialLogo" src="/images/1-NEW.png" alt="Mashal"
+  <img id="mashalOfficialLogo" src="/images/Logo/3d_logo2.png" alt="Mashal"
     style="position:fixed; left:-9999px; top:-9999px; width:120px; height:120px; opacity:0; pointer-events:none;"
     crossorigin="anonymous">
 
   <div class="app-wrapper">
     <!-- 🍔 Top Branding with Mobile Three-Line Hamburger Menu -->
     <div class="brand-header-wrap">
-      <img src="/images/1-NEW.webp" onerror="this.src='/images/1-NEW.png'" alt="Mashal Official Brand Logo" class="brand-app-logo" title="Mashal Kachi Ghani Mustard Oil">
+      <img src="/images/Logo/3d_logo2.png" onerror="this.src='/images/1-NEW.png'" alt="Mashal Official Brand Logo" class="brand-app-logo" title="Mashal Kachi Ghani Mustard Oil">
       <header class="brand-header">
         <div class="company-name">
           <span class="company-name-main">Khandelia Oil &amp; General Mills</span>
@@ -3909,7 +3881,12 @@
   <!-- 🔍 ULTRA-SLEEK PRODUCT IMAGE LIGHTBOX MODAL -->
   <div id="productImageModal" class="prod-img-modal" onclick="closeProductImageModal(event)" style="display: none;">
     <div class="prod-img-modal-card" onclick="event.stopPropagation()">
-      <button type="button" class="prod-img-modal-close" onclick="closeProductImageModal()" aria-label="Close">&times;</button>
+      <button type="button" class="prod-img-modal-close" onclick="closeProductImageModal()" aria-label="Close" title="Close Preview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="prod-img-modal-body">
         <img id="prodModalImg" src="" alt="Product Preview" class="prod-img-modal-view">
       </div>
@@ -4636,7 +4613,7 @@
       return { brandName, title, subtitle, webpUrl, pngUrl, alt, height };
     }
 
-    function openProductImageModal(title, webpUrl, pngUrl, subtitle) {
+    function openProductImageModal(title, pngUrl, subtitle) {
       const modal = document.getElementById("productImageModal");
       const img = document.getElementById("prodModalImg");
       const titleEl = document.getElementById("prodModalTitle");
@@ -4645,14 +4622,13 @@
       
       if (titleEl) titleEl.textContent = title || "Product Preview";
       if (subEl) subEl.textContent = subtitle || "";
-      img.src = webpUrl;
-      img.onerror = () => { img.onerror = null; img.src = pngUrl; };
+      img.src = pngUrl;
       modal.style.display = "flex";
       document.body.style.overflow = "hidden";
     }
 
     function closeProductImageModal(e) {
-      if (e && e.target && e.target.closest && e.target.closest('.prod-img-modal-card') && !e.target.classList.contains('prod-img-modal-close')) {
+      if (e && e.target && e.target.closest && e.target.closest('.prod-img-modal-card') && !e.target.closest('.prod-img-modal-close')) {
         return;
       }
       const modal = document.getElementById("productImageModal");
@@ -4669,11 +4645,8 @@
         mHtml += `
           <div class="item-card bg-mashal">
             <div class="item-info">
-              <div class="product-thumb-wrap" onclick="openProductImageModal('${escapeHtml(meta.brandName + ' ' + meta.title)}', '${meta.webpUrl}', '${meta.pngUrl}', '${escapeHtml(meta.subtitle)}')" title="Click to view large photo">
-                <span class="product-thumb-index">#${idx + 1}</span>
-                <svg class="product-thumb-zoom-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <img src="${meta.webpUrl}" 
-                     onerror="this.onerror=null;this.src='${meta.pngUrl}'" 
+              <div class="product-thumb-wrap" onclick="openProductImageModal('${escapeHtml(meta.brandName + ' ' + meta.title)}', '${meta.pngUrl}', '${escapeHtml(meta.subtitle)}')" title="View ${escapeHtml(meta.title)}">
+                <img src="${meta.pngUrl}" 
                      alt="${escapeHtml(meta.alt)}" 
                      class="product-thumb-img" 
                      loading="lazy" 
@@ -4710,11 +4683,8 @@
         fHtml += `
           <div class="item-card bg-fauji">
             <div class="item-info">
-              <div class="product-thumb-wrap" onclick="openProductImageModal('${escapeHtml(meta.brandName + ' ' + meta.title)}', '${meta.webpUrl}', '${meta.pngUrl}', '${escapeHtml(meta.subtitle)}')" title="Click to view large photo">
-                <span class="product-thumb-index">#${idx + 1}</span>
-                <svg class="product-thumb-zoom-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <img src="${meta.webpUrl}" 
-                     onerror="this.onerror=null;this.src='${meta.pngUrl}'" 
+              <div class="product-thumb-wrap" onclick="openProductImageModal('${escapeHtml(meta.brandName + ' ' + meta.title)}', '${meta.pngUrl}', '${escapeHtml(meta.subtitle)}')" title="View ${escapeHtml(meta.title)}">
+                <img src="${meta.pngUrl}" 
                      alt="${escapeHtml(meta.alt)}" 
                      class="product-thumb-img" 
                      loading="lazy" 

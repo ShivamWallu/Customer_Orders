@@ -2251,7 +2251,9 @@ def send_order_email_notification(order: dict):
         msg_alternative.attach(MIMEText(html_content, "html"))
 
         # Attach official Mashal Logo as inline image with Content-ID: <mashal_logo>
-        logo_path = os.path.join(BASE_DIR, "images", "NEW_PNG_MASHAL_LOGO.png")
+        logo_path = os.path.join(BASE_DIR, "images", "Logo", "3d_logo2.png")
+        if not os.path.exists(logo_path):
+            logo_path = os.path.join(BASE_DIR, "images", "NEW_PNG_MASHAL_LOGO.png")
         if not os.path.exists(logo_path):
             logo_path = os.path.join(BASE_DIR, "images", "mashal_slip_logo.png")
         if os.path.exists(logo_path):
