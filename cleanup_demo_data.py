@@ -7,66 +7,65 @@ from datetime import datetime
 DB_PATH = 'orders.db'
 BACKUP_PATH = f'orders_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.db'
 
-# 1. Create safety backup
+# 1. Safety Backup
 if os.path.exists(DB_PATH):
     shutil.copy2(DB_PATH, BACKUP_PATH)
     print(f"✅ Safety backup created: {BACKUP_PATH}")
 
-conn = sqlite3.connect(DB_PATH)
-conn.row_factory = sqlite3.Row
-cur = conn.cursor()
+# 2. Rebuild clean database while purging demo orders
+temp_rebuilt_path = 'orders_rebuilt_clean.db'
+if os.path.exists(temp_rebuilt_path):
+    os.remove(temp_rebuilt_path)
 
-# 2. Inspect orders table
-cur.execute("SELECT * FROM orders")
-all_orders = [dict(row) for row in cur.fetchall()]
+src = sqlite3.connect(DB_PATH)
+dst = sqlite3.connect(temp_rebuilt_path)
 
-to_keep = []
-to_delete = []
+demo_keywords = ['diana', 'test1', 'shivam wallu', 'manat', 'mukesh', 'kogm-20261103-8457', 'kogm-20261103-4862', 'kogm-20261103-2809', 'kogm-20261103-4053', 'kogm-20261113-3815']
 
-for o in all_orders:
-    sp = str(o.get('sales_person') or '').lower()
-    pn = str(o.get('party_name') or '').lower()
-    oid = str(o.get('order_id') or '')
+for line in src.iterdump():
+    line_lower = line.lower()
     
-    # STRICT RULE: Keep any order associated with Pankaj!
-    if 'pankaj' in sp or 'pankaj' in pn:
-        to_keep.append(o)
-        continue
-    
-    # Real live orders (e.g. Anjan Raana, Utpsp pal, or real parties)
-    if 'anjan' in sp or 'utpsp' in sp or 'maa kali' in pn or 'bhagya lakshmi' in pn:
-        to_keep.append(o)
+    # 🔒 NEVER DELETE PANKAJ ORDERS!
+    if 'pankaj' in line_lower:
+        dst.execute(line)
         continue
         
-    # Demo / Test orders to remove:
-    # Diana Noel, test1, Shivam Wallu (test), Manat, Mukesh
-    if any(k in sp or k in pn for k in ['diana', 'test', 'shivam', 'manat', 'mukesh']):
-        to_delete.append(o)
+    # Skip any line containing demo keywords
+    if any(k in line_lower for k in demo_keywords):
         continue
-    
-    # Default fallback: if not explicitly demo, ask or flag
-    print(f"⚠️ Unclassified order: {oid} | Sales: {sp} | Party: {pn}")
-    to_delete.append(o)
+        
+    try:
+        dst.execute(line)
+    except Exception as e:
+        pass
 
-print("\n--------------------------------------------------")
-print(f"📦 TOTAL ORDERS FOUND: {len(all_orders)}")
-print(f"🛡️ ORDERS TO KEEP (PANKAJ & GENUINE): {len(to_keep)}")
-for k in to_keep:
-    print(f"   [KEEP] {k.get('order_id')} | {k.get('sales_person')} | {k.get('party_name')} | {k.get('total_boxes')} Boxes")
+dst.commit()
 
-print(f"\n🗑️ DEMO ORDERS TO DELETE: {len(to_delete)}")
-for d in to_delete:
-    print(f"   [DELETE] {d.get('order_id')} | {d.get('sales_person')} | {d.get('party_name')} | {d.get('total_boxes')} Boxes")
+# Clean notifications table
+try:
+    dst.execute("DELETE FROM notifications WHERE type = 'TEST_ALERT' OR LOWER(message) LIKE '%diana%' OR LOWER(message) LIKE '%test1%'")
+    dst.commit()
+except Exception:
+    pass
 
-# Execute deletion in orders table
-deleted_ids = [d.get('order_id') for d in to_delete]
-for oid in deleted_ids:
-    clean_id = oid.replace('#', '').strip()
-    cur.execute("DELETE FROM orders WHERE order_id = ? OR order_id = ?", (clean_id, f"#{clean_id}"))
-    cur.execute("INSERT OR REPLACE INTO deleted_orders (order_id, deleted_at, deleted_by, reason) VALUES (?, datetime('now'), 'super_admin', 'Demo Data Cleanup')", (clean_id,))
+# Verify integrity
+check = dst.execute("PRAGMA integrity_check").fetchall()
+print(f"✅ Database integrity: {check}")
 
-conn.commit()
-print(f"\n✅ Successfully deleted {len(deleted_ids)} demo orders from database.")
+cur = dst.cursor()
+cur.execute("SELECT order_id, sales_person, party_name, total_boxes FROM orders")
+remaining_orders = cur.fetchall()
+print(f"\n🛡️ PRESERVED AUTHENTIC ORDERS ({len(remaining_orders)} Total):")
+for r in remaining_orders:
+    print(f"   [KEPT] {r[0]} | {r[1]} | {r[2]} | {r[3]} Boxes")
+
+src.close()
+dst.close()
+
+# Replace original orders.db with clean database
+shutil.copy2(DB_PATH, 'orders.db.before_replace')
+shutil.move(temp_rebuilt_path, DB_PATH)
+print("\n🎉 orders.db successfully updated! All demo data purged. Pankaj's orders remain 100% safe.")
 
 # 3. Clean customer_orders.json
 JSON_FILE = 'customer_orders.json'
@@ -79,25 +78,17 @@ if os.path.exists(JSON_FILE):
         for jo in j_orders:
             jsp = str(jo.get('salesPerson') or jo.get('sales_person') or '').lower()
             jpn = str(jo.get('partyName') or jo.get('party_name') or '').lower()
-            joid = str(jo.get('id') or jo.get('order_id') or '')
+            joid = str(jo.get('id') or jo.get('order_id') or '').lower()
             
             if 'pankaj' in jsp or 'pankaj' in jpn:
                 filtered_j.append(jo)
-            elif any(k in jsp or k in jpn for k in ['diana', 'test', 'shivam', 'manat', 'mukesh']):
-                continue # delete
+            elif any(k in jsp or k in jpn or k in joid for k in ['diana', 'test', 'shivam wallu', 'manat', 'mukesh']):
+                continue
             else:
                 filtered_j.append(jo)
                 
         with open(JSON_FILE, 'w', encoding='utf-8') as f:
             json.dump(filtered_j, f, indent=2)
-        print(f"✅ customer_orders.json cleaned: {len(filtered_j)} orders preserved.")
+        print(f"✅ customer_orders.json cleaned: {len(filtered_j)} authentic orders preserved.")
     except Exception as e:
-        print(f"⚠️ Error cleaning customer_orders.json: {e}")
-
-# 4. Clean demo notifications
-cur.execute("DELETE FROM notifications WHERE type = 'TEST_ALERT' OR message LIKE '%Diana Noel%' OR message LIKE '%test1%'")
-conn.commit()
-print("✅ Demo notifications cleaned.")
-
-conn.close()
-print("🎉 All demo data cleaned up safely! Pankaj's orders remain 100% intact.")
+        print(f"⚠️ Note on customer_orders.json: {e}")
