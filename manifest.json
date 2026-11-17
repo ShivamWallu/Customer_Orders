@@ -1,15 +1,36 @@
 {
+  "id": "/sale_manager",
   "name": "Mashal Sales Manager - Khandelia Oil",
   "short_name": "Mashal Sales",
   "description": "Official Area Sales Manager Order Booking Portal for Mashal & Fauji Mustard Oil (Khandelia Oil & General Mills Pvt. Ltd.).",
-  "start_url": "/sale_manage",
+  "start_url": "/sale_manager",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a192f",
   "theme_color": "#0a192f",
+  "lang": "en",
+  "dir": "ltr",
   "categories": ["business", "productivity", "utilities"],
   "icons": [
+    {
+      "src": "/images/icons/icon-sales-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/icon-sales-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/icon-sales-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/images/icons/icon-192.png",
       "sizes": "192x192",

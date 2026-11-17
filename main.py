@@ -340,6 +340,7 @@ def serve_manifest():
     raise HTTPException(status_code=404, detail="Manifest not found")
 
 @app.get("/customer-manifest.json")
+@app.get("/customer_manifest.json")
 def serve_customer_manifest():
     """Serves PWA Web App Manifest for Customer Order Portal Android WebAPK installation"""
     file_path = os.path.join(BASE_DIR, "customer_manifest.json")

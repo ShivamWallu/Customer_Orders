@@ -1,7 +1,7 @@
 // ⚡ Service Worker for KOGM Sales Manager & Customer Portal - Khandelia Oil & General Mills
 // Provides 10X faster app loading via aggressive caching & offline shell capability
 
-const CACHE_NAME = 'kogm-sales-v9';
+const CACHE_NAME = 'kogm-sales-v10';
 const STATIC_ASSETS = [
   '/',
   '/sale_manager',
@@ -10,6 +10,14 @@ const STATIC_ASSETS = [
   '/images/icons/icon-192.png',
   '/images/icons/icon-512.png',
   '/images/icons/icon-maskable-512.png',
+  '/images/icons/icon-sales-192.png',
+  '/images/icons/icon-sales-512.png',
+  '/images/icons/icon-sales-maskable.png',
+  '/images/icons/sales-apple-touch-icon.png',
+  '/images/icons/icon-customer-192.png',
+  '/images/icons/icon-customer-512.png',
+  '/images/icons/icon-customer-maskable.png',
+  '/images/icons/customer-apple-touch-icon.png',
   '/images/Logo/3d_logo2.png',
   '/images/products/fauji-mustard-oil-1-litre-bottle.png',
   '/images/products/fauji-mustard-oil-1-litre-pouch.png',

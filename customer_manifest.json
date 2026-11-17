@@ -1,6 +1,7 @@
 {
+  "id": "/",
   "name": "Khandelia Oil - Customer Order Portal",
-  "short_name": "Khandelia Customer",
+  "short_name": "Mashal Customer",
   "description": "Official Customer Order Booking & Dispatch Tracking Portal for Mashal & Fauji Mustard Oil (Khandelia Oil & General Mills Pvt. Ltd.).",
   "start_url": "/",
   "scope": "/",
@@ -8,8 +9,28 @@
   "orientation": "portrait",
   "background_color": "#f8fafc",
   "theme_color": "#047857",
+  "lang": "en",
+  "dir": "ltr",
   "categories": ["business", "shopping", "utilities"],
   "icons": [
+    {
+      "src": "/images/icons/icon-customer-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/icon-customer-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/icon-customer-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/images/icons/icon-192.png",
       "sizes": "192x192",
