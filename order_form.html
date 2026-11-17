@@ -4691,7 +4691,7 @@
       faujiItems.forEach((item, idx) => {
         const meta = getProductMeta("Fauji", item);
         const isPriority = idx < 3;
-        mHtml += `
+        fHtml += `
           <div class="item-card bg-fauji">
             <div class="item-info">
               <div class="product-thumb-wrap" onclick="openProductImageModal('${escapeHtml(meta.brandName + ' ' + meta.title)}', '${meta.pngUrl}', '${escapeHtml(meta.subtitle)}')" title="View ${escapeHtml(meta.title)}">
