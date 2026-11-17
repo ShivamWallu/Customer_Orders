@@ -56,11 +56,11 @@ for rid in range(1, 1000):
         pn = str(d.get("party_name") or "").lower()
         oid = str(d.get("order_id") or "").replace("'", "").replace('"', '').strip()
         
-        # 🔒 STRICT IMMUNITY FOR PANKAJ
-        is_pankaj = "pankaj" in sp or "pankaj" in pn
+        # 🔒 STRICT IMMUNITY FOR PANKAJ, UTPSP PAL, AND ANJAN RAANA
+        is_protected = any(x in sp or x in pn for x in ["pankaj", "utpsp", "anjan", "maa kali", "bhagya"])
         is_demo = any(k in sp or k in pn or k in oid.lower() for k in demo_keywords)
         
-        if is_demo and not is_pankaj:
+        if is_demo and not is_protected:
             orders_demo_skipped += 1
             print(f"   [SKIPPED DEMO] {oid} | {sp} | {pn}")
             continue
@@ -119,7 +119,7 @@ if os.path.exists(JSON_FILE):
             j_orders = json.load(f)
         filtered = [
             jo for jo in j_orders
-            if "pankaj" in str(jo).lower() or not any(k in str(jo).lower() for k in demo_keywords)
+            if any(x in str(jo).lower() for x in ["pankaj", "utpsp", "anjan", "maa kali", "bhagya"]) or not any(k in str(jo).lower() for k in demo_keywords)
         ]
         with open(JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(filtered, f, indent=2)

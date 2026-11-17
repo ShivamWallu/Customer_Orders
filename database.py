@@ -60,32 +60,7 @@ def init_db():
                 synced_to_sheet INTEGER DEFAULT 0,
                 synced_at TEXT,
                 whatsapp_status TEXT DEFAULT 'PENDING',
-                whatsapp_sent_at TEXT,
-                total_pieces INTEGER DEFAULT 0,
-                party_code TEXT DEFAULT '',
-                data_consent TEXT DEFAULT 'YES (Verified)',
-                order_status TEXT DEFAULT 'PENDING',
-                so_number TEXT DEFAULT '',
-                confirmed_at TEXT DEFAULT '',
-                confirmed_by TEXT DEFAULT '',
-                unit TEXT DEFAULT 'Unit 1',
-                dispatch_status TEXT DEFAULT 'PENDING',
-                dispatch_at TEXT DEFAULT '',
-                vehicle_number TEXT DEFAULT '',
-                driver_name TEXT DEFAULT '',
-                driver_phone TEXT DEFAULT '',
-                invoice_number TEXT DEFAULT '',
-                director_confirm_status TEXT DEFAULT '',
-                director_note TEXT DEFAULT '',
-                director_confirmed_by TEXT DEFAULT '',
-                director_confirmed_at TEXT DEFAULT '',
-                is_edited INTEGER DEFAULT 0,
-                original_items_json TEXT DEFAULT '',
-                original_total_boxes INTEGER DEFAULT 0,
-                original_total_pieces INTEGER DEFAULT 0,
-                edited_at TEXT DEFAULT '',
-                edited_by TEXT DEFAULT '',
-                edit_reason TEXT DEFAULT ''
+                whatsapp_sent_at TEXT
             );
             CREATE TABLE IF NOT EXISTS sales_manager_sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -136,11 +111,6 @@ def init_db():
             );
             CREATE INDEX IF NOT EXISTS idx_orders_created ON orders (created_at DESC);
             CREATE INDEX IF NOT EXISTS idx_orders_party ON orders (party_name);
-            CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (order_status);
-            CREATE INDEX IF NOT EXISTS idx_orders_so ON orders (so_number);
-            CREATE INDEX IF NOT EXISTS idx_orders_dispatch ON orders (dispatch_status);
-            CREATE INDEX IF NOT EXISTS idx_orders_unit ON orders (unit);
-            CREATE INDEX IF NOT EXISTS idx_orders_party_code ON orders (party_code);
             CREATE INDEX IF NOT EXISTS idx_orders_synced ON orders (synced_to_sheet);
             CREATE INDEX IF NOT EXISTS idx_orders_wa_status ON orders (whatsapp_status);
             CREATE INDEX IF NOT EXISTS idx_mgr_token ON sales_manager_sessions (token);
