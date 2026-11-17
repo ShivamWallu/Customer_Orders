@@ -15,6 +15,7 @@ whatsapp_chrome_profile/
 
 # Temporary order slips and local caches
 order_slips/
+images_backup_highres/
 scratch/
 *.log
 *.tmp

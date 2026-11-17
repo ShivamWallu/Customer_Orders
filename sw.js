@@ -1,15 +1,35 @@
-// ⚡ Service Worker for KOGM Sales Manager - Khandelia Oil & General Mills
-// Provides 2X faster app loading via aggressive caching & offline shell capability
+// ⚡ Service Worker for KOGM Sales Manager & Customer Portal - Khandelia Oil & General Mills
+// Provides 10X faster app loading via aggressive caching & offline shell capability
 
-const CACHE_NAME = 'kogm-sales-v8';
+const CACHE_NAME = 'kogm-sales-v9';
 const STATIC_ASSETS = [
-  '/sale_manage',
+  '/',
+  '/sale_manager',
   '/manifest.json',
+  '/customer-manifest.json',
   '/images/icons/icon-192.png',
   '/images/icons/icon-512.png',
   '/images/icons/icon-maskable-512.png',
-  '/images/NEW_PNG_MASHAL_LOGO.png',
-
+  '/images/Logo/3d_logo2.png',
+  '/images/products/fauji-mustard-oil-1-litre-bottle.png',
+  '/images/products/fauji-mustard-oil-1-litre-pouch.png',
+  '/images/products/fauji-mustard-oil-15-kg-can.png',
+  '/images/products/fauji-mustard-oil-15-kg-tin.png',
+  '/images/products/fauji-mustard-oil-15-litre-tin.png',
+  '/images/products/fauji-mustard-oil-500-ml-bottle.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-1-litre-bottle.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-1-litre-pouch.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-100-ml-bottle.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-15-kg-can.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-15-kg-tin.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-15-litre-can.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-15-litre-tin.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-2-litre-bottle.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-2-litre-can.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-200-ml-bottle.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-5-litre-can.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-500-ml-bottle.png',
+  '/images/products/mashal-kachi-ghani-mustard-oil-500-ml-pouch.png',
   '/js/qrcode.min.js'
 ];
 

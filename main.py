@@ -377,7 +377,7 @@ def serve_image_file(filepath: str):
             file_path,
             media_type=media_type,
             headers={
-                "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+                "Cache-Control": "public, max-age=31536000, immutable",
                 "Access-Control-Allow-Origin": "*"
             }
         )
