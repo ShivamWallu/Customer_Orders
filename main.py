@@ -654,189 +654,192 @@ AUTH_SECRET_TOKEN = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN
 async def admin_portal_login(request: Request):
     """
     🔐 Authenticates Administrative Roles (Super Admin, Admin, Manager, Analyser)
-    Rules:
-    1. Admin, Manager, and Analyser accounts MUST be pre-created by Super Admin with their authorized mobile number.
-    2. User must select their assigned role (Admin, Manager, Analyser).
-    3. Mobile number must strictly match the authorized role in database.
-    4. Unregistered numbers are strictly blocked from Admin Portal.
     """
-    body = await request.json()
-    raw_user = str(body.get("username") or body.get("phone") or "").strip()
-    password = str(body.get("password", "")).strip()
-    selected_role = str(body.get("role") or body.get("selected_role") or "admin").strip().lower()
-    if selected_role == "analyser":
-        selected_role = "analyst"
+    try:
+        body = await request.json()
+        raw_user = str(body.get("username") or body.get("phone") or "").strip()
+        password = str(body.get("password", "")).strip()
+        selected_role = str(body.get("role") or body.get("selected_role") or "admin").strip().lower()
+        if selected_role == "analyser":
+            selected_role = "analyst"
 
-    client_ip = request.client.host if request.client else "127.0.0.1"
-    clean_p = "".join(filter(str.isdigit, raw_user))[-10:]
+        client_ip = request.client.host if request.client else "127.0.0.1"
+        clean_p = "".join(filter(str.isdigit, raw_user))[-10:]
 
-    # 1. Fallback for Master System Root Admin (username: 'admin')
-    if raw_user.lower() == "admin" and not clean_p:
-        user_info = ROLE_CREDENTIALS.get("admin")
-        if user_info and (password == user_info["password"] or password in ["Admin@123#", "999999"]):
-            role = "super_admin"
-            token = create_admin_session(username="admin", role=role, assigned_units="ALL")
-            log_audit_event(user_name="Super Administrator", phone="admin", role=role, action="ADMIN_LOGIN_SUCCESS", status="SUCCESS", details="Master Root Admin logged in to Admin Portal", ip_address=client_ip)
-            role_perms = get_permissions_for_role(role)
-            return {
-                "status": "success",
-                "token": token,
-                "username": "admin",
-                "role": role,
-                "roleName": "Super Administrator",
-                "assignedUnits": "ALL",
-                "canConfirm": True,
-                "canDelete": True,
-                "canManageUnits": True,
-                "canManageUsers": True,
-                "canManagePermissions": True,
-                "canViewLogs": True,
-                "canViewAlerts": True,
-                "canViewPackingSummary": True,
-                "permissions": role_perms,
-                "message": "Welcome Super Administrator (SUPER ADMIN)"
-            }
+        # 1. Fallback for Master System Root Admin (username: 'admin')
+        if raw_user.lower() == "admin" and not clean_p:
+            user_info = ROLE_CREDENTIALS.get("admin")
+            if user_info and (password == user_info["password"] or password in ["Admin@123#", "999999"]):
+                role = "super_admin"
+                token = create_admin_session(username="admin", role=role, assigned_units="ALL")
+                log_audit_event(user_name="Super Administrator", phone="admin", role=role, action="ADMIN_LOGIN_SUCCESS", status="SUCCESS", details="Master Root Admin logged in to Admin Portal", ip_address=client_ip)
+                role_perms = get_permissions_for_role(role)
+                return {
+                    "status": "success",
+                    "token": token,
+                    "username": "admin",
+                    "role": role,
+                    "roleName": "Super Administrator",
+                    "assignedUnits": "ALL",
+                    "canConfirm": True,
+                    "canDelete": True,
+                    "canManageUnits": True,
+                    "canManageUsers": True,
+                    "canManagePermissions": True,
+                    "canViewLogs": True,
+                    "canViewAlerts": True,
+                    "canViewPackingSummary": True,
+                    "permissions": role_perms,
+                    "message": "Welcome Super Administrator (SUPER ADMIN)"
+                }
 
-    # 2. Strict Phone-Based Administrative Authentication
-    if len(clean_p) != 10:
-        raise HTTPException(
-            status_code=400,
-            detail="Please enter your 10-digit registered mobile number."
+        # 2. Strict Phone-Based Administrative Authentication
+        if len(clean_p) != 10:
+            raise HTTPException(
+                status_code=400,
+                detail="Please enter your 10-digit registered mobile number."
+            )
+
+        db_user = get_user_by_phone(clean_p)
+
+        # 🛑 Rule: User MUST be created by Super Admin in database
+        if not db_user:
+            log_audit_event(
+                user_name="Unknown Admin User",
+                phone=clean_p,
+                role=selected_role,
+                action="ADMIN_LOGIN_UNAUTHORIZED",
+                status="FAILED",
+                details=f"Unauthorized mobile {clean_p} attempted Admin Portal login ({selected_role.upper()})",
+                ip_address=client_ip
+            )
+            raise HTTPException(
+                status_code=403,
+                detail=f"Access Denied: +91 {clean_p} is not registered. Please contact Super Admin."
+            )
+
+        # 🛑 Check Blocked Status
+        if db_user.get("status") == "BLOCKED":
+            log_audit_event(
+                user_name=db_user.get("name", clean_p),
+                phone=clean_p,
+                role=db_user.get("role", "admin"),
+                action="ADMIN_LOGIN_BLOCKED",
+                status="FAILED",
+                details=f"Blocked user '{db_user.get('name')}' attempted Admin Portal login",
+                ip_address=client_ip
+            )
+            raise HTTPException(
+                status_code=403,
+                detail="Account Blocked: Access suspended by Super Admin. Helpline: 1800 103 3211."
+            )
+
+        # 🛑 Customer & ASM cannot access Admin Portal
+        actual_role = (db_user.get("role") or "").strip().lower()
+        if actual_role in ["customer", "asm"]:
+            log_audit_event(
+                user_name=db_user.get("name", clean_p),
+                phone=clean_p,
+                role=actual_role,
+                action="ADMIN_LOGIN_ROLE_DENIED",
+                status="FAILED",
+                details=f"Customer/Area Sales Manager user '{db_user.get('name')}' attempted Admin Portal login",
+                ip_address=client_ip
+            )
+            raise HTTPException(
+                status_code=403,
+                detail="Access Denied: Customer / ASM credentials cannot access the Executive Portal."
+            )
+
+        # 🛑 Strict Role Verification: Selected Role vs Actual Database Role
+        norm_actual = "analyst" if actual_role in ["analyst", "analyser"] else actual_role
+        norm_selected = "analyst" if selected_role in ["analyst", "analyser"] else selected_role
+
+        if norm_actual != "super_admin" and norm_actual != norm_selected:
+            role_label_map = {"super_admin": "Super Admin", "admin": "Admin", "manager": "Manager", "analyst": "Analyser"}
+            exp_label = role_label_map.get(norm_actual, norm_actual.title())
+            sel_label = role_label_map.get(norm_selected, norm_selected.title())
+            log_audit_event(
+                user_name=db_user.get("name", clean_p),
+                phone=clean_p,
+                role=actual_role,
+                action="ADMIN_ROLE_MISMATCH",
+                status="FAILED",
+                details=f"User '{db_user.get('name')}' selected '{sel_label}' but is authorized as '{exp_label}'",
+                ip_address=client_ip
+            )
+            raise HTTPException(
+                status_code=403,
+                detail=f"Role Mismatch: +91 {clean_p} is authorized as '{exp_label}'. Please select '{exp_label}'."
+            )
+
+        # 🔑 Password / Security PIN Verification
+        saved_pw = (db_user.get("password") or "").strip()
+        role_default_passwords = ["Admin@123#", "Manager@123#", "Analyst@123#", "admin", "Admin", "ADMIN", "12345", "123456", "99999", "999999"]
+        is_valid_pw = (
+            (saved_pw and password == saved_pw) or 
+            (saved_pw and password.lower() == saved_pw.lower()) or
+            (password in role_default_passwords) or 
+            (password.lower() in ["admin", "admin@123#", "manager", "analyst", "analyser"]) or
+            (password == "999999") or
+            (norm_actual == "super_admin" and password.lower() in ["admin", "admin@123#", "12345", "123456", "99999", "999999"])
         )
 
-    db_user = get_user_by_phone(clean_p)
+        if not is_valid_pw:
+            log_audit_event(
+                user_name=db_user.get("name", clean_p),
+                phone=clean_p,
+                role=actual_role,
+                action="ADMIN_LOGIN_FAILED",
+                status="FAILED",
+                details=f"Invalid password entered for authorized admin user '{db_user.get('name')}'",
+                ip_address=client_ip
+            )
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid Password: Incorrect password or security PIN. Please try again."
+            )
 
-    # 🛑 Rule: User MUST be created by Super Admin in database
-    if not db_user:
-        log_audit_event(
-            user_name="Unknown Admin User",
-            phone=clean_p,
-            role=selected_role,
-            action="ADMIN_LOGIN_UNAUTHORIZED",
-            status="FAILED",
-            details=f"Unauthorized mobile {clean_p} attempted Admin Portal login ({selected_role.upper()})",
-            ip_address=client_ip
-        )
-        raise HTTPException(
-            status_code=403,
-            detail=f"Access Denied: +91 {clean_p} is not registered. Please contact Super Admin."
-        )
-
-    # 🛑 Check Blocked Status
-    if db_user.get("status") == "BLOCKED":
+        # 🚀 Successful Login
+        assigned_role = norm_actual
+        assigned_units = db_user.get("assigned_units", "ALL")
+        token = create_admin_session(username=clean_p, role=assigned_role, assigned_units=assigned_units)
         log_audit_event(
             user_name=db_user.get("name", clean_p),
             phone=clean_p,
-            role=db_user.get("role", "admin"),
-            action="ADMIN_LOGIN_BLOCKED",
-            status="FAILED",
-            details=f"Blocked user '{db_user.get('name')}' attempted Admin Portal login",
+            role=assigned_role,
+            action="ADMIN_LOGIN_SUCCESS",
+            status="SUCCESS",
+            details=f"Authorized user '{db_user.get('name')}' (+91 {clean_p}) successfully logged in as {assigned_role.upper()}",
             ip_address=client_ip
         )
-        raise HTTPException(
-            status_code=403,
-            detail="Account Blocked: Access suspended by Super Admin. Helpline: 1800 103 3211."
-        )
 
-    # 🛑 Customer & ASM cannot access Admin Portal
-    actual_role = (db_user.get("role") or "").strip().lower()
-    if actual_role in ["customer", "asm"]:
-        log_audit_event(
-            user_name=db_user.get("name", clean_p),
-            phone=clean_p,
-            role=actual_role,
-            action="ADMIN_LOGIN_ROLE_DENIED",
-            status="FAILED",
-            details=f"Customer/Area Sales Manager user '{db_user.get('name')}' attempted Admin Portal login",
-            ip_address=client_ip
+        role_perms = get_permissions_for_role(assigned_role)
+        return {
+            "status": "success",
+            "token": token,
+            "username": clean_p,
+            "role": assigned_role,
+            "roleName": db_user.get("name", "Executive"),
+            "assignedUnits": assigned_units,
+            "canConfirm": bool(role_perms.get("can_confirm_so", assigned_role in ["super_admin", "admin", "manager"])),
+            "canDelete": bool(role_perms.get("can_delete_order", assigned_role in ["super_admin", "admin"])),
+            "canManageUnits": bool(role_perms.get("can_manage_units", assigned_role in ["super_admin", "admin"])),
+            "canManageUsers": bool(role_perms.get("can_manage_users", assigned_role in ["super_admin", "admin"])),
+            "canManagePermissions": bool(role_perms.get("can_manage_permissions", assigned_role in ["super_admin", "admin"])),
+            "canViewPackingSummary": bool(role_perms.get("can_view_packing_summary", assigned_role in ["super_admin", "admin", "manager"])),
+            "canViewAlerts": bool(role_perms.get("can_view_alerts", assigned_role in ["super_admin", "admin", "manager", "analyst"])),
+            "canViewLogs": bool(role_perms.get("can_view_logs", assigned_role in ["super_admin", "admin"])),
+            "permissions": role_perms,
+            "message": f"Welcome {db_user.get('name')} ({assigned_role.upper()})"
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": f"Login Error: {str(exc)}", "detail": f"Login Error: {str(exc)}"}
         )
-        raise HTTPException(
-            status_code=403,
-            detail="Access Denied: Customer / ASM credentials cannot access the Executive Portal."
-        )
-
-    # 🛑 Strict Role Verification: Selected Role vs Actual Database Role
-    norm_actual = "analyst" if actual_role in ["analyst", "analyser"] else actual_role
-    norm_selected = "analyst" if selected_role in ["analyst", "analyser"] else selected_role
-
-    if norm_actual != "super_admin" and norm_actual != norm_selected:
-        role_label_map = {"super_admin": "Super Admin", "admin": "Admin", "manager": "Manager", "analyst": "Analyser"}
-        exp_label = role_label_map.get(norm_actual, norm_actual.title())
-        sel_label = role_label_map.get(norm_selected, norm_selected.title())
-        log_audit_event(
-            user_name=db_user.get("name", clean_p),
-            phone=clean_p,
-            role=actual_role,
-            action="ADMIN_ROLE_MISMATCH",
-            status="FAILED",
-            details=f"User '{db_user.get('name')}' selected '{sel_label}' but is authorized as '{exp_label}'",
-            ip_address=client_ip
-        )
-        raise HTTPException(
-            status_code=403,
-            detail=f"Role Mismatch: +91 {clean_p} is authorized as '{exp_label}'. Please select '{exp_label}'."
-        )
-
-    # 🔑 Password / Security PIN Verification
-    saved_pw = (db_user.get("password") or "").strip()
-    role_default_passwords = ["Admin@123#", "Manager@123#", "Analyst@123#", "admin", "Admin", "ADMIN", "12345", "123456", "99999", "999999"]
-    is_valid_pw = (
-        (saved_pw and password == saved_pw) or 
-        (saved_pw and password.lower() == saved_pw.lower()) or
-        (password in role_default_passwords) or 
-        (password.lower() in ["admin", "admin@123#", "manager", "analyst", "analyser"]) or
-        (password == "999999") or
-        (norm_actual == "super_admin" and password.lower() in ["admin", "admin@123#", "12345", "123456", "99999", "999999"])
-    )
-
-    if not is_valid_pw:
-        log_audit_event(
-            user_name=db_user.get("name", clean_p),
-            phone=clean_p,
-            role=actual_role,
-            action="ADMIN_LOGIN_FAILED",
-            status="FAILED",
-            details=f"Invalid password entered for authorized admin user '{db_user.get('name')}'",
-            ip_address=client_ip
-        )
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid Password: Incorrect password or security PIN. Please try again."
-        )
-
-    # 🚀 Successful Login
-    assigned_role = norm_actual
-    assigned_units = db_user.get("assigned_units", "ALL")
-    token = create_admin_session(username=clean_p, role=assigned_role, assigned_units=assigned_units)
-    log_audit_event(
-        user_name=db_user.get("name", clean_p),
-        phone=clean_p,
-        role=assigned_role,
-        action="ADMIN_LOGIN_SUCCESS",
-        status="SUCCESS",
-        details=f"Authorized user '{db_user.get('name')}' (+91 {clean_p}) successfully logged in as {assigned_role.upper()}",
-        ip_address=client_ip
-    )
-
-    role_perms = get_permissions_for_role(assigned_role)
-    return {
-        "status": "success",
-        "token": token,
-        "username": clean_p,
-        "role": assigned_role,
-        "roleName": db_user.get("name", "Executive"),
-        "assignedUnits": assigned_units,
-        "canConfirm": bool(role_perms.get("can_confirm_so", assigned_role in ["super_admin", "admin", "manager"])),
-        "canDelete": bool(role_perms.get("can_delete_order", assigned_role in ["super_admin", "admin"])),
-        "canManageUnits": bool(role_perms.get("can_manage_units", assigned_role in ["super_admin", "admin"])),
-        "canManageUsers": bool(role_perms.get("can_manage_users", assigned_role in ["super_admin", "admin"])),
-        "canManagePermissions": bool(role_perms.get("can_manage_permissions", assigned_role in ["super_admin", "admin"])),
-        "canViewPackingSummary": bool(role_perms.get("can_view_packing_summary", assigned_role in ["super_admin", "admin", "manager"])),
-        "canViewAlerts": bool(role_perms.get("can_view_alerts", assigned_role in ["super_admin", "admin", "manager", "analyst"])),
-        "canViewLogs": bool(role_perms.get("can_view_logs", assigned_role in ["super_admin", "admin"])),
-        "permissions": role_perms,
-        "message": f"Welcome {db_user.get('name')} ({assigned_role.upper()})"
-    }
 
 def require_admin_auth(request: Request) -> Dict[str, Any]:
     """Helper dependency to protect all admin database operations"""

@@ -18,9 +18,11 @@ from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional, Tuple
 import re
 import threading
-from dotenv import load_dotenv
-
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 DB_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "orders.db")
 _json_file_lock = threading.Lock()
@@ -730,16 +732,27 @@ def get_audit_logs(page: int = 1, page_size: int = 25, q: str = "",
 
 # ----------------- 👥 SUPER ADMIN USER & ACCOUNT MANAGEMENT -----------------
 def get_user_by_phone(phone: str) -> Optional[Dict[str, Any]]:
-    """Fetches user record by clean 10-digit mobile number"""
+    """Fetches user record by clean 10-digit mobile number with self-healing schema fallback"""
     digits = "".join(filter(str.isdigit, str(phone)))
     clean_p = digits[-10:] if len(digits) >= 10 else digits
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("""
-        SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by, password
-        FROM users WHERE phone = ? LIMIT 1
-        """, (clean_p,))
+        try:
+            cur.execute("""
+            SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by, password
+            FROM users WHERE phone = ? LIMIT 1
+            """, (clean_p,))
+        except sqlite3.OperationalError:
+            try:
+                conn.execute("ALTER TABLE users ADD COLUMN password TEXT DEFAULT '';")
+                conn.commit()
+            except Exception:
+                pass
+            cur.execute("""
+            SELECT id, name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by, password
+            FROM users WHERE phone = ? LIMIT 1
+            """, (clean_p,))
         row = cur.fetchone()
         return dict(row) if row else None
     finally:
@@ -2561,10 +2574,21 @@ def create_admin_session(username: str = "admin", role: str = "super_admin", ass
     conn = get_connection()
     try:
         with conn:
-            conn.execute("""
-            INSERT INTO admin_sessions (token, username, role, assigned_units, created_at, expires_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """, (token, username, role, assigned_units, now_str, expires_at))
+            try:
+                conn.execute("""
+                INSERT INTO admin_sessions (token, username, role, assigned_units, created_at, expires_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, (token, username, role, assigned_units, now_str, expires_at))
+            except sqlite3.OperationalError:
+                try:
+                    conn.execute("ALTER TABLE admin_sessions ADD COLUMN role TEXT DEFAULT 'admin';")
+                    conn.execute("ALTER TABLE admin_sessions ADD COLUMN assigned_units TEXT DEFAULT 'ALL';")
+                except Exception:
+                    pass
+                conn.execute("""
+                INSERT INTO admin_sessions (token, username, role, assigned_units, created_at, expires_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, (token, username, role, assigned_units, now_str, expires_at))
         return token
     finally:
         conn.close()
