@@ -4788,6 +4788,12 @@
     async function submitOrder(e) {
       e.preventDefault();
 
+      if (window.isCustomerSubmittingOrder) {
+        console.warn("Order submission already in progress...");
+        return;
+      }
+      window.isCustomerSubmittingOrder = true;
+
       let total = 0;
       const items = [];
       document.querySelectorAll(".qty-input-field").forEach(inp => {
@@ -4804,6 +4810,7 @@
 
       if (total === 0) {
         alert("Please enter quantity for at least 1 item before placing order.");
+        window.isCustomerSubmittingOrder = false;
         return;
       }
 
@@ -4811,6 +4818,7 @@
       if (consentCheck && !consentCheck.checked) {
         alert("Please tick the Secure & Data Protected checkbox to place your order.");
         consentCheck.focus();
+        window.isCustomerSubmittingOrder = false;
         return;
       }
 
@@ -4821,8 +4829,15 @@
       const salesPerson = document.getElementById("salesPerson").value.trim();
 
       const btn = document.getElementById("submitBtn");
-      btn.disabled = true;
-      btn.innerHTML = `<span>Saving & Syncing...</span>`;
+      if (btn) {
+        btn.disabled = true;
+        btn.style.pointerEvents = "none";
+        btn.style.opacity = "0.75";
+        btn.innerHTML = `<span>⏳ Processing & Syncing Order...</span>`;
+      }
+
+      const cSess = JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || "{}");
+      const contactVal = cSess.phone || "";
 
       // Format date
       const now = new Date();
@@ -4838,11 +4853,12 @@
       const payload = {
         id: clientOrderId,
         partyName,
-        partyCode: "",
+        partyCode: cSess.party_code || "",
         partyAddress,
         deliveryAddress,
         orderDate,
-        salesPerson,
+        salesPerson: salesPerson || "Direct Customer",
+        contactInput: contactVal,
         totalBoxes: total,
         formattedTimestamp,
         items
@@ -4852,13 +4868,18 @@
       try {
         const res = await fetch("/api/orders/submit", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + (cSess.token || ""),
+            "x-token": (cSess.token || "")
+          },
           body: JSON.stringify(payload)
         });
         const data = await res.json();
-        if (res.status === 403 || data.force_logout) {
+        if (res.status === 403 && (data.error_type === "ACCOUNT_BLOCKED" || data.force_logout)) {
           localStorage.removeItem(CUSTOMER_SESSION_KEY);
           showCustomerBlockedScreen();
+          window.isCustomerSubmittingOrder = false;
           return;
         }
         const finalOrder = data.order || payload;
@@ -4897,10 +4918,14 @@
         }, 50);
 
       } catch (err) {
-        alert("Submission failed: " + err.message + "\nPlease check internet connection.");
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Place Order</span><span>➔</span>`;
+        alert("Submission notice: " + (err.message || "Failed to submit order. Please check internet connection."));
+        if (btn) {
+          btn.disabled = false;
+          btn.style.pointerEvents = "auto";
+          btn.style.opacity = "1";
+          btn.innerHTML = `<span>Place Order</span><span>➔</span>`;
+        }
+        window.isCustomerSubmittingOrder = false;
       }
     }
 
@@ -5553,6 +5578,14 @@
     function shareOnWhatsApp() { shareDirectWhatsApp(); }
 
     function closeModal() {
+      window.isCustomerSubmittingOrder = false;
+      const btn = document.getElementById("submitBtn");
+      if (btn) {
+        btn.disabled = false;
+        btn.style.pointerEvents = "auto";
+        btn.style.opacity = "1";
+        btn.innerHTML = `<span>Place Order</span><span>➔</span>`;
+      }
       document.getElementById("successModal").style.display = "none";
       document.getElementById("orderForm").reset();
       document.getElementById("orderDate").valueAsDate = new Date();
@@ -5665,14 +5698,24 @@
             body: JSON.stringify({ token: sess.token })
           });
           const d = await res.json();
-          if (res.status === 403 || d.force_logout || d.status !== "valid") {
+          if (res.status === 403 && (d.error_type === "ACCOUNT_BLOCKED" || d.force_logout === true)) {
             localStorage.removeItem(CUSTOMER_SESSION_KEY);
             showCustomerBlockedScreen();
             return;
           }
+          if (d.status === "valid" && d.session) {
+            const freshSess = d.session;
+            if (freshSess.customer_name && freshSess.customer_name !== sess.customer_name) {
+              sess.customer_name = freshSess.customer_name;
+              localStorage.setItem(CUSTOMER_SESSION_KEY, JSON.stringify(sess));
+            }
+            applyCustomerSession(sess);
+          }
           return;
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("Customer session offline notice:", e);
+      }
       showCustomerAuthModal();
     }
 
@@ -5715,9 +5758,15 @@
           body: JSON.stringify({ token: sess.token })
         });
         const d = await res.json();
-        if (res.status === 403 || d.force_logout || d.status !== "valid") {
+        if (res.status === 403 && (d.error_type === "ACCOUNT_BLOCKED" || d.force_logout === true)) {
           localStorage.removeItem(CUSTOMER_SESSION_KEY);
           showCustomerBlockedScreen();
+        } else if (d.status === "valid" && d.session && d.session.customer_name) {
+          if (sess.customer_name !== d.session.customer_name) {
+            sess.customer_name = d.session.customer_name;
+            localStorage.setItem(CUSTOMER_SESSION_KEY, JSON.stringify(sess));
+            applyCustomerSession(sess);
+          }
         }
       } catch (e) {
         // Tolerant to transient network drops

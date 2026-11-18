@@ -4566,23 +4566,22 @@
           body: JSON.stringify({ token: sess.token })
         });
         const data = await res.json();
-        if (res.status === 403 || data.force_logout || data.status !== "valid") {
+        if (res.status === 403 && (data.error_type === "BLOCKED_ASM" || data.error_type === "ACCOUNT_BLOCKED" || data.force_logout === true)) {
           localStorage.removeItem(SESSION_KEY);
           showManagerBlockedScreen();
           return;
         }
-        if (data.status === "valid") {
-          const freshSess = data.session || sess;
-          if (freshSess.manager_name) {
+        if (data.status === "valid" && data.session) {
+          const freshSess = data.session;
+          if (freshSess.manager_name && freshSess.manager_name !== sess.manager_name) {
             sess.manager_name = freshSess.manager_name;
             localStorage.setItem(SESSION_KEY, JSON.stringify(sess));
           }
           applyManagerSession(sess);
-        } else {
-          showManagerAuthModal();
         }
       } catch (e) {
-        showManagerAuthModal();
+        // Tolerant to field offline/poor network drops: keep cached session permanently active
+        console.warn("Session check offline notice:", e);
       }
     }
 
@@ -4636,9 +4635,15 @@
           body: JSON.stringify({ token: sess.token })
         });
         const d = await res.json();
-        if (res.status === 403 || d.force_logout || d.status !== "valid") {
+        if (res.status === 403 && (d.error_type === "BLOCKED_ASM" || d.error_type === "ACCOUNT_BLOCKED" || d.force_logout === true)) {
           localStorage.removeItem(SESSION_KEY);
           showManagerBlockedScreen();
+        } else if (d.status === "valid" && d.session && d.session.manager_name) {
+          if (sess.manager_name !== d.session.manager_name) {
+            sess.manager_name = d.session.manager_name;
+            localStorage.setItem(SESSION_KEY, JSON.stringify(sess));
+            applyManagerSession(sess);
+          }
         }
       } catch (e) {
         // Tolerant to transient network drops
@@ -6378,6 +6383,12 @@
         return;
       }
 
+      if (window.isAsmSubmittingOrder) {
+        console.warn("Order submission already in progress...");
+        return;
+      }
+      window.isAsmSubmittingOrder = true;
+
       const partyName = document.getElementById("partyName").value.trim();
       let partyCode = document.getElementById("partyName").dataset.partyCode || "";
       if (!partyCode && window.allCustomersCache && window.allCustomersCache.length > 0) {
@@ -6389,12 +6400,29 @@
       const partyAddress = document.getElementById("partyAddress").value.trim();
       const deliveryAddress = partyAddress;
       const orderDate = document.getElementById("orderDate").value;
-      const salesPerson = document.getElementById("salesPerson").value.trim();
+
+      // 👔 Robust Sales Manager Name Resolution (Zero missing ASM name)
+      const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
+      let salesPerson = (document.getElementById("salesPerson")?.value || "").trim();
+      if (!salesPerson && sess.manager_name) {
+        salesPerson = sess.manager_name;
+      }
+      if (!salesPerson) {
+        salesPerson = "Area Sales Manager";
+      }
+      if (document.getElementById("salesPerson")) {
+        document.getElementById("salesPerson").value = salesPerson;
+      }
+
       const contactInput = document.getElementById("partyContactInput").value.trim();
 
       const btn = document.getElementById("submitBtn");
-      btn.disabled = true;
-      btn.innerHTML = `<span>Saving & Syncing...</span>`;
+      if (btn) {
+        btn.disabled = true;
+        btn.style.pointerEvents = "none";
+        btn.style.opacity = "0.75";
+        btn.innerHTML = `<span>⏳ Processing & Syncing Order...</span>`;
+      }
 
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
@@ -6414,6 +6442,9 @@
         deliveryAddress,
         orderDate,
         salesPerson,
+        managerName: salesPerson,
+        managerPhone: sess.phone || "",
+        token: sess.token || "",
         totalBoxes: total,
         formattedTimestamp,
         items,
@@ -6424,13 +6455,18 @@
       try {
         const res = await fetch("/api/orders/submit", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + (sess.token || ""),
+            "x-token": (sess.token || "")
+          },
           body: JSON.stringify(payload)
         });
         const data = await res.json();
-        if (res.status === 403 || data.force_logout) {
+        if (res.status === 403 && (data.error_type === "BLOCKED_ASM" || data.force_logout)) {
           localStorage.removeItem(SESSION_KEY);
           showManagerBlockedScreen();
+          window.isAsmSubmittingOrder = false;
           return;
         }
         const finalOrder = data.order || payload;
@@ -6469,10 +6505,14 @@
         }, 50);
 
       } catch (err) {
-        alert("Submission failed: " + err.message + "\nPlease check internet connection.");
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Place Order</span><span>➔</span>`;
+        alert("Submission notice: " + (err.message || "Failed to submit order. Please check network."));
+        if (btn) {
+          btn.disabled = false;
+          btn.style.pointerEvents = "auto";
+          btn.style.opacity = "1";
+          btn.innerHTML = `<span>Place Order</span><span>➔</span>`;
+        }
+        window.isAsmSubmittingOrder = false;
       }
     }
 
@@ -7089,6 +7129,15 @@
     function shareOnWhatsApp() { shareDirectWhatsApp(); }
 
     function closeModal() {
+      window.isAsmSubmittingOrder = false;
+      const btn = document.getElementById("submitBtn");
+      if (btn) {
+        btn.disabled = false;
+        btn.style.pointerEvents = "auto";
+        btn.style.opacity = "1";
+        btn.innerHTML = `<span>Place Order</span><span>➔</span>`;
+      }
+
       document.getElementById("successModal").style.display = "none";
       document.getElementById("orderForm").reset();
       document.querySelectorAll(".qty-input-field").forEach(inp => inp.value = "");

@@ -356,15 +356,30 @@ def init_db():
                     """, default_users)
                 print("[DATABASE] Default authorized users successfully seeded.")
             else:
-                # Upgrade existing Shivam Wallu to Super Admin with ALL units
+                # Upgrade existing Shivam Wallu to Super Admin with ALL units and set Admin credentials
                 with conn:
+                    try:
+                        conn.execute("ALTER TABLE users ADD COLUMN password TEXT DEFAULT '';")
+                    except Exception:
+                        pass
                     conn.execute("""
-                    UPDATE users SET role = 'super_admin', assigned_units = 'ALL' 
+                    UPDATE users SET role = 'super_admin', assigned_units = 'ALL', password = 'Admin@123' 
                     WHERE phone = '7814749816' OR LOWER(name) LIKE '%shivam%'
                     """)
                     conn.execute("""
                     UPDATE users SET assigned_units = 'Unit 1'
                     WHERE LOWER(name) LIKE '%pankaj%'
+                    """)
+                    conn.execute("""
+                    INSERT OR IGNORE INTO users (name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by, password)
+                    VALUES ('Administrator', 'admin', 'admin', '', 'Staff / System Account', 'ALL', 'ACTIVE', datetime('now'), datetime('now'), 'SYSTEM', 'Admin@123')
+                    """)
+                    conn.execute("""
+                    INSERT OR IGNORE INTO users (name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by, password)
+                    VALUES ('Super Administrator', 'superadmin', 'super_admin', '', 'Staff / System Account', 'ALL', 'ACTIVE', datetime('now'), datetime('now'), 'SYSTEM', 'Admin@123')
+                    """)
+                    conn.execute("""
+                    UPDATE users SET password = 'Admin@123' WHERE phone IN ('admin', 'superadmin', '7814749816');
                     """)
         except Exception as e:
             print("[DATABASE] User seeding/upgrade error:", e)
@@ -487,33 +502,57 @@ def validate_manager_session(token: str) -> Optional[Dict[str, Any]]:
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
             m_phone = "".join(filter(str.isdigit, str(row["phone"])))[-10:]
-            cur.execute("SELECT status, role FROM users WHERE phone = ? LIMIT 1", (m_phone,))
+            cur.execute("""
+            SELECT id, status, role, name FROM users 
+            WHERE phone = ? OR phone = ? OR phone LIKE ? 
+            LIMIT 1
+            """, (m_phone, f"+91{m_phone}", f"%{m_phone}"))
             u_check = cur.fetchone()
-            if not u_check or u_check["status"] == "BLOCKED" or u_check["role"] not in ["asm", "super_admin", "admin", "manager"]:
-                if u_check and u_check["status"] == "BLOCKED":
-                    with conn:
-                        conn.execute("DELETE FROM sales_manager_sessions WHERE token = ?", (token,))
+
+            # If user account is explicitly marked BLOCKED, revoke session immediately
+            if u_check and str(u_check["status"]).upper() == "BLOCKED":
+                with conn:
+                    conn.execute("DELETE FROM sales_manager_sessions WHERE token = ?", (token,))
                 return None
 
-            m_name = row["manager_name"] or ""
-            # If current session token has empty name, auto-heal from previous records of this phone
-            if not m_name:
+            m_name = (row["manager_name"] or "").strip()
+            # If user has an updated name in users table (e.g. updated by Admin), sync it!
+            if u_check and u_check["name"]:
+                db_name = str(u_check["name"]).strip()
+                if db_name and db_name != m_name:
+                    m_name = db_name
+                    with conn:
+                        conn.execute("UPDATE sales_manager_sessions SET manager_name = ? WHERE token = ?", (m_name, token))
+            elif not m_name:
                 cur.execute("""
                 SELECT manager_name FROM sales_manager_sessions 
-                WHERE phone = ? AND manager_name != '' AND manager_name IS NOT NULL
+                WHERE (phone = ? OR phone LIKE ?) AND manager_name != '' AND manager_name IS NOT NULL
                 ORDER BY id DESC LIMIT 1
-                """, (row["phone"],))
+                """, (m_phone, f"%{m_phone}"))
                 prev_row = cur.fetchone()
                 if prev_row and prev_row["manager_name"]:
                     m_name = prev_row["manager_name"]
                     with conn:
                         conn.execute("UPDATE sales_manager_sessions SET manager_name = ? WHERE token = ?", (m_name, token))
 
+            # Auto-ensure user exists in users table with ACTIVE status so session is never lost
+            if not u_check and m_phone:
+                try:
+                    now_iso = datetime.now().isoformat()
+                    with conn:
+                        conn.execute("""
+                        INSERT OR IGNORE INTO users (name, phone, role, party_code, party_name, assigned_units, status, created_at, updated_at, created_by)
+                        VALUES (?, ?, 'asm', '', 'Staff / System Account', 'Unit 1', 'ACTIVE', ?, ?, 'SESSION_HEAL')
+                        """, (m_name or "Area Sales Manager", m_phone, now_iso, now_iso))
+                except Exception:
+                    pass
+
+            role_val = u_check["role"] if (u_check and u_check["role"]) else "asm"
             return {
                 "token": row["token"],
-                "phone": row["phone"],
-                "manager_name": m_name,
-                "role": u_check["role"],
+                "phone": m_phone,
+                "manager_name": m_name or "Area Sales Manager",
+                "role": role_val,
                 "created_at": row["created_at"],
                 "expires_at": row["expires_at"]
             }
@@ -909,6 +948,61 @@ def update_user_assigned_units(user_id: int, new_units: str, updated_by: str = "
             "status": "success",
             "message": f"Successfully reassigned '{user['name']}' to '{clean_units}'",
             "assigned_units": clean_units
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+def update_user_name(user_id: int, new_name: str, updated_by: str = "SUPER_ADMIN") -> Dict[str, Any]:
+    """
+    Updates user login and display name across the users table and synchronizes active
+    sessions so changes automatically reflect on backend, website, and APK immediately.
+    """
+    clean_name = str(new_name or "").strip()
+    if not clean_name:
+        return {"status": "error", "message": "User name cannot be empty."}
+    conn = get_connection()
+    try:
+        now_iso = datetime.now().isoformat()
+        with conn:
+            cur = conn.cursor()
+            cur.execute("SELECT id, name, phone, role FROM users WHERE id = ?", (user_id,))
+            user = cur.fetchone()
+            if not user:
+                return {"status": "error", "message": f"User ID #{user_id} not found."}
+
+            old_name = user["name"]
+            phone = str(user["phone"] or "")
+            clean_p = "".join(filter(str.isdigit, phone))[-10:]
+
+            cur.execute("UPDATE users SET name = ?, updated_at = ? WHERE id = ?", (clean_name, now_iso, user_id))
+
+            # Synchronize active Sales Manager sessions
+            cur.execute("""
+            UPDATE sales_manager_sessions SET manager_name = ? 
+            WHERE phone = ? OR phone = ? OR phone LIKE ?
+            """, (clean_name, clean_p, f"+91{clean_p}", f"%{clean_p}"))
+
+            # Synchronize active Customer sessions
+            cur.execute("""
+            UPDATE customer_sessions SET customer_name = ? 
+            WHERE phone = ? OR phone = ? OR phone LIKE ?
+            """, (clean_name, clean_p, f"+91{clean_p}", f"%{clean_p}"))
+
+        log_audit_event(
+            user_name=updated_by,
+            phone=clean_p or "admin",
+            role=user["role"],
+            action="USER_NAME_UPDATE",
+            status="SUCCESS",
+            details=f"User ID #{user_id} (+91 {clean_p}) login name changed from '{old_name}' to '{clean_name}'"
+        )
+        return {
+            "status": "success",
+            "message": f"User name updated successfully to '{clean_name}'.",
+            "user_id": user_id,
+            "name": clean_name
         }
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -1367,13 +1461,27 @@ def validate_customer_session(token: str) -> Optional[Dict[str, Any]]:
         row = cur.fetchone()
         if row and row["expires_at"] > time.time():
             c_phone = "".join(filter(str.isdigit, str(row["phone"])))[-10:]
-            cur.execute("SELECT status FROM users WHERE phone = ? LIMIT 1", (c_phone,))
+            cur.execute("""
+            SELECT id, status, name, party_code, party_name FROM users 
+            WHERE phone = ? OR phone = ? OR phone LIKE ? 
+            LIMIT 1
+            """, (c_phone, f"+91{c_phone}", f"%{c_phone}"))
             u_check = cur.fetchone()
-            if u_check and u_check["status"] == "BLOCKED":
+            if u_check and str(u_check["status"]).upper() == "BLOCKED":
                 with conn:
                     conn.execute("DELETE FROM customer_sessions WHERE token = ?", (token,))
                 return None
-            return dict(row)
+
+            res_dict = dict(row)
+            res_dict["phone"] = c_phone
+            if u_check:
+                if u_check["name"]:
+                    res_dict["customer_name"] = u_check["name"]
+                if u_check["party_code"]:
+                    res_dict["party_code"] = u_check["party_code"]
+                if u_check["party_name"]:
+                    res_dict["party_name"] = u_check["party_name"]
+            return res_dict
         return None
     finally:
         conn.close()
@@ -1684,6 +1792,50 @@ def format_order_dict(r: Any) -> Dict[str, Any]:
         "stages": [stage1, stage2, stage3]
     }
     return d
+
+def find_recent_duplicate_order(party_code: str = "", party_name: str = "", total_boxes: int = 0, window_seconds: int = 120) -> Optional[Dict[str, Any]]:
+    """
+    Checks if an order with identical party and total boxes was submitted within the last window_seconds.
+    Used for foolproof idempotency deduplication to prevent duplicate clicks/orders across both portals and APK.
+    """
+    import time
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        p_code = (party_code or "").strip()
+        p_name = (party_name or "").strip()
+        if not p_code and not p_name:
+            return None
+
+        query = """
+        SELECT order_id, party_code, party_name, total_boxes, total_pieces, items_summary, sales_person, created_at, formatted_timestamp
+        FROM orders
+        WHERE (party_code = ? AND party_code != '') OR LOWER(TRIM(party_name)) = LOWER(TRIM(?))
+        ORDER BY created_at DESC LIMIT 5
+        """
+        cur.execute(query, (p_code, p_name))
+        rows = cur.fetchall()
+        now_ts = time.time()
+        for r in rows:
+            if total_boxes and int(r["total_boxes"] or 0) != int(total_boxes):
+                continue
+            created_str = str(r["created_at"] or "")
+            try:
+                if "T" in created_str:
+                    dt = datetime.fromisoformat(created_str.replace("Z", ""))
+                else:
+                    dt = datetime.strptime(created_str, "%Y-%m-%d %H:%M:%S")
+                diff = abs(now_ts - dt.timestamp())
+                if diff <= window_seconds:
+                    return dict(r)
+            except Exception:
+                pass
+        return None
+    except Exception as e:
+        print("[DUPLICATE CHECK ERROR]", e)
+        return None
+    finally:
+        conn.close()
 
 def get_orders_for_customer(
     party_name: str = "",
@@ -2564,12 +2716,12 @@ def migrate_existing_json_orders():
         print(f"[DATABASE MIGRATION NOTICE] {e}")
 
 def create_admin_session(username: str = "admin", role: str = "super_admin", assigned_units: str = "ALL") -> str:
-    """Creates a secure 7-day persistent session token for Admin Dashboard with user role and assigned units"""
+    """Creates a secure 1-year persistent session token for Admin Dashboard with user role and assigned units"""
     import secrets
     import time
     token = f"ADM_{secrets.token_hex(24)}"
     now = time.time()
-    expires_at = now + (7 * 24 * 3600)
+    expires_at = now + (365 * 24 * 3600)
     now_str = datetime.now().isoformat()
     conn = get_connection()
     try:
