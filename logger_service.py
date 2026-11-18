@@ -70,6 +70,10 @@ class RequestTracingMiddleware(BaseHTTPMiddleware):
             duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
             response.headers["X-Request-ID"] = req_id
             response.headers["X-Response-Time-Ms"] = str(duration_ms)
+            response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers["X-Frame-Options"] = "SAMEORIGIN"
+            response.headers["X-XSS-Protection"] = "1; mode=block"
+            response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
             # Avoid logging noisy health checks and static files
             path = request.url.path

@@ -2629,22 +2629,32 @@
     }
 
     .slip-preview-container {
-      max-height: 80vh;
-      overflow-y: auto;
+      max-height: calc(88vh - 120px);
+      overflow: auto;
       text-align: center;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: var(--radius-sm);
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
       padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      -webkit-overflow-scrolling: touch;
     }
     .slip-preview-container img {
       max-width: 100%;
-      width: 100%;
+      width: auto;
       height: auto;
-      border-radius: 8px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
       display: block;
       margin: 0 auto;
+      background: #ffffff;
+      transition: max-width 0.2s ease, width 0.2s ease;
+    }
+    .slip-preview-container img.zoomed-100 {
+      max-width: none !important;
+      width: 1400px !important;
     }
 
     .empty-state-cell {
@@ -5633,15 +5643,25 @@
 
   <!-- 🖼️ Order Slip Modal Preview -->
   <div class="generic-modal-overlay" id="slipModalOverlay" onclick="closeGenericModal('slipModalOverlay', event)">
-    <div class="generic-modal-box" style="max-width: 1020px; width: 95%;" onclick="event.stopPropagation()">
-      <div class="generic-modal-header">
-        <h3 id="slipModalTitle" style="display: flex; align-items: center; gap: 8px;">
+    <div class="generic-modal-box" style="max-width: 1180px; width: 96%;" onclick="event.stopPropagation()">
+      <div class="generic-modal-header" style="justify-content: space-between;">
+        <h3 id="slipModalTitle" style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 15px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           <span>Official Order Confirmation Slip</span>
         </h3>
-        <button class="btn-tool" style="padding: 2px 8px;" onclick="closeGenericModal('slipModalOverlay')">✕</button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-tool" id="btnToggleSlipZoom" onclick="toggleSlipZoom()" title="Toggle 100% Full Resolution / Fit to Window" style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12px; padding: 4px 10px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            <span id="slipZoomText">100% Zoom</span>
+          </button>
+          <button class="btn-tool" onclick="printSlipDirectly()" title="Print Slip" style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 4px 10px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span>Print</span>
+          </button>
+          <button class="btn-tool" style="padding: 2px 8px; font-weight: bold;" onclick="closeGenericModal('slipModalOverlay')">✕</button>
+        </div>
       </div>
-      <div class="generic-modal-body">
+      <div class="generic-modal-body" style="padding: 10px;">
         <div class="slip-preview-container" id="slipModalBody">
           <!-- Digital Slip Image Rendered Here -->
         </div>
@@ -6779,9 +6799,7 @@
           const isPending = (o.orderStatus || "").toUpperCase() === "PENDING";
           if (!isPending) return false;
           if (activeUnitFilter && activeUnitFilter !== "ALL") {
-            const ordUnit = (o.unit || "Unit 1").trim().toLowerCase().replace(/[-\s_]/g, "");
-            const targetUnit = String(activeUnitFilter).trim().toLowerCase().replace(/[-\s_]/g, "");
-            if (ordUnit !== targetUnit) return false;
+            if (!isUnitMatching(o.unit, activeUnitFilter)) return false;
           }
           return true;
         });
@@ -7300,6 +7318,26 @@
       }
     }
 
+    function isUnitMatching(orderUnit, filterUnit) {
+      if (!filterUnit || filterUnit === "ALL") return true;
+      const oU = String(orderUnit || "Unit 1").trim().toLowerCase().replace(/[-\s_]/g, "");
+      const fU = String(filterUnit).trim().toLowerCase().replace(/[-\s_]/g, "");
+      if (oU === fU) return true;
+      if (typeof allWarehouseUnits !== "undefined" && Array.isArray(allWarehouseUnits)) {
+        const matched = allWarehouseUnits.find(u => {
+          const cCode = String(u.unit_code || "").trim().toLowerCase().replace(/[-\s_]/g, "");
+          const cName = String(u.unit_name || "").trim().toLowerCase().replace(/[-\s_]/g, "");
+          return (fU === cCode || fU === cName);
+        });
+        if (matched) {
+          const cCode = String(matched.unit_code || "").trim().toLowerCase().replace(/[-\s_]/g, "");
+          const cName = String(matched.unit_name || "").trim().toLowerCase().replace(/[-\s_]/g, "");
+          return (oU === cCode || oU === cName);
+        }
+      }
+      return false;
+    }
+
     function renderUnitSelectorPills() {
       const row = document.getElementById("unitPillsRow");
       if (!row) return;
@@ -7320,16 +7358,20 @@
 
       allWarehouseUnits.forEach(u => {
         if ((u.status || "ACTIVE") !== "ACTIVE") return;
-        const uName = u.unit_name || u.unit_code;
-        const isAllowed = isSuper || allowedUnits.includes(uName.toLowerCase()) || allowedUnits.includes(u.unit_code.toLowerCase());
+        const uCode = (u.unit_code || u.unit_name || "").trim();
+        const uName = (u.unit_name || u.unit_code || "").trim();
+        const isAllowed = isSuper || allowedUnits.includes(uName.toLowerCase()) || allowedUnits.includes(uCode.toLowerCase());
         if (!isAllowed) return;
 
-        const isActive = activeUnitFilter === uName;
+        // Display ONLY the Unit Code as requested by user!
+        const displayLabel = uCode;
+        const filterKey = uCode;
+        const isActive = isUnitMatching(filterKey, activeUnitFilter);
 
         html += `
-          <div class="unit-pill ${isActive ? 'active' : ''}" onclick="selectUnitFilter('${escapeHtml(uName)}')">
+          <div class="unit-pill ${isActive ? 'active' : ''}" onclick="selectUnitFilter('${escapeHtml(filterKey)}')" title="${escapeHtml(uName)} (${escapeHtml(uCode)})">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            <span>${escapeHtml(uName)}</span>
+            <span>${escapeHtml(displayLabel)}</span>
           </div>
         `;
       });
@@ -8627,9 +8669,7 @@
         const isPending = (o.orderStatus || "").toUpperCase() === "PENDING";
         if (!isPending) return false;
         if (activeUnitFilter && activeUnitFilter !== "ALL") {
-          const ordUnit = (o.unit || "Unit 1").trim().toLowerCase().replace(/[-\s_]/g, "");
-          const targetUnit = String(activeUnitFilter).trim().toLowerCase().replace(/[-\s_]/g, "");
-          if (ordUnit !== targetUnit) return false;
+          if (!isUnitMatching(o.unit, activeUnitFilter)) return false;
         }
         return true;
       });
@@ -9027,12 +9067,8 @@
         yestF_bxs = apiTodayYest.yesterday.fauji?.boxes || 0;
         yestF_pcs = apiTodayYest.yesterday.fauji?.pieces || 0;
       } else if (Array.isArray(allOrdersData) && allOrdersData.length > 0) {
-        const activeUnit = (activeUnitFilter || "ALL").trim().toLowerCase().replace(/[-\s_]/g, "");
-
         allOrdersData.forEach(ord => {
-          if (activeUnit !== "all") {
-            const ordUnit = String(ord.unit || "Unit 1").trim().toLowerCase().replace(/[-\s_]/g, "");
-            if (ordUnit !== activeUnit) return;
+          if (!isUnitMatching(ord.unit, activeUnitFilter)) return;
           }
 
           const dStr = extractDateString(ord);
@@ -11198,15 +11234,20 @@
       `;
       document.getElementById("slipModalOverlay").style.display = "flex";
 
+      _isSlipZoomed = false;
+      const zoomText = document.getElementById("slipZoomText");
+      if (zoomText) zoomText.textContent = "100% Zoom";
+
       const queryType = isOld ? "type=old&" : "";
       const img = new Image();
+      img.id = "activeSlipModalImg";
       img.src = `/order_slips/${targetId}.png?${queryType}t=${Date.now()}`;
       img.style.maxWidth = "100%";
       img.style.height = "auto";
       img.style.display = "block";
       img.style.margin = "0 auto";
       img.style.borderRadius = "8px";
-      img.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+      img.style.boxShadow = "0 12px 35px rgba(0,0,0,0.35)";
 
       img.onload = () => {
         body.innerHTML = "";
@@ -11217,12 +11258,14 @@
         const altId = String(order.order_id || '').replace('#', '').trim();
         if (altId && altId !== targetId) {
           const img2 = new Image();
+          img2.id = "activeSlipModalImg";
           img2.src = `/order_slips/${altId}.png?${queryType}t=${Date.now()}`;
           img2.style.maxWidth = "100%";
           img2.style.height = "auto";
           img2.style.display = "block";
           img2.style.margin = "0 auto";
           img2.style.borderRadius = "8px";
+          img2.style.boxShadow = "0 12px 35px rgba(0,0,0,0.35)";
           img2.onload = () => {
             body.innerHTML = "";
             body.appendChild(img2);
@@ -11235,6 +11278,51 @@
 
       document.getElementById("btnDownloadSlipModal").onclick = () => downloadSlipFile(targetId, slipType);
       document.getElementById("btnWhatsAppSlipModal").onclick = () => shareWhatsAppSingle(targetId, slipType);
+    }
+
+    let _isSlipZoomed = false;
+    function toggleSlipZoom() {
+      const img = document.getElementById("activeSlipModalImg") || document.querySelector("#slipModalBody img");
+      const zoomText = document.getElementById("slipZoomText");
+      if (!img) return;
+      _isSlipZoomed = !_isSlipZoomed;
+      if (_isSlipZoomed) {
+        img.classList.add("zoomed-100");
+        if (zoomText) zoomText.textContent = "Fit Window";
+      } else {
+        img.classList.remove("zoomed-100");
+        if (zoomText) zoomText.textContent = "100% Zoom";
+      }
+    }
+
+    function printSlipDirectly() {
+      const img = document.getElementById("activeSlipModalImg") || document.querySelector("#slipModalBody img");
+      if (!img || !img.src) {
+        showAdminToast("Slip image not ready to print", "warning");
+        return;
+      }
+      const printWin = window.open("", "_blank");
+      if (!printWin) {
+        showAdminToast("Please allow popups to print slip", "warning");
+        return;
+      }
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Official Order Confirmation Slip - Khandelia Mills</title>
+          <style>
+            @page { size: auto; margin: 8mm; }
+            body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: #ffffff; }
+            img { max-width: 100%; height: auto; display: block; }
+          </style>
+        </head>
+        <body>
+          <img src="${img.src}" onload="window.print(); window.close();" />
+        </body>
+        </html>
+      `);
+      printWin.document.close();
     }
 
     function renderSlipDigitalFallback(container, order, orderId, isOld = false) {

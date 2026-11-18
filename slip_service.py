@@ -132,8 +132,8 @@ def generate_order_slip_png(order: Dict[str, Any], output_path: Optional[str] = 
     # Pre-calculate height with dummy canvas
     dummy_im = Image.new("RGB", (1, 1))
     dummy_draw = ImageDraw.Draw(dummy_im)
-    font_addr = get_font("arial.ttf", 16)
-    font_party_name = get_font("arialbd.ttf", 22)
+    font_addr = get_font("arial.ttf", 20)
+    font_party_name = get_font("arialbd.ttf", 28)
 
     party_name = str(slip_order.get("partyName") or slip_order.get("party_name") or "Customer").strip()
     raw_addr = str(slip_order.get("partyAddress") or slip_order.get("deliveryAddress") or slip_order.get("party_address") or "-").strip()
@@ -144,48 +144,48 @@ def generate_order_slip_png(order: Dict[str, Any], output_path: Optional[str] = 
     addr_lines = wrap_text(f"Address: {raw_addr}", font_addr, 840, dummy_draw)
     
     # Calculate customer box height dynamically based on content
-    left_content_height = 24 + (len(party_lines) * 28) + 8 + (len(addr_lines) * 22) + 28 + 20
-    cust_box_h = max(180, left_content_height)
-    cust_box_y = 250
+    left_content_height = 28 + (len(party_lines) * 34) + 10 + (len(addr_lines) * 26) + 32 + 20
+    cust_box_h = max(200, left_content_height)
+    cust_box_y = 252
 
-    row_h = 52
-    table_header_h = 54
+    row_h = 58
+    table_header_h = 58
     table_y = cust_box_y + cust_box_h + 18
     table_content_h = len(items) * row_h
     banner_y = table_y + table_header_h + table_content_h + 18
-    banner_h = 64
+    banner_h = 68
     foot_card_y = banner_y + banner_h + 20
-    foot_card_h = 130
+    foot_card_h = 142
     total_height = foot_card_y + foot_card_h + 20
 
     # Create canvas with 100% white background
     im = Image.new("RGB", (width, total_height), "#ffffff")
     draw = ImageDraw.Draw(im)
 
-    # High-Definition Typography Tokens (2x Crisp Scale)
-    font_header_title = get_font("arialbd.ttf", 30)
-    font_ribbon = get_font("arialbd.ttf", 15)
-    font_id = get_font("courbd.ttf", 17)
-    font_meta = get_font("arialbd.ttf", 15)
-    font_cust_lbl = get_font("arialbd.ttf", 13)
-    font_badge_lbl = get_font("arialbd.ttf", 12)
-    font_badge_code = get_font("courbd.ttf", 19)
-    font_qr_verify = get_font("arialbd.ttf", 13)
-    font_qr_id = get_font("courbd.ttf", 15)
-    font_qr_seal = get_font("courbd.ttf", 12)
-    font_qr_rec = get_font("arialbd.ttf", 11)
-    font_th = get_font("arialbd.ttf", 16)
-    font_td_num = get_font("arialbd.ttf", 16)
-    font_td_brand = get_font("arialbd.ttf", 15)
-    font_td_name = get_font("arialbd.ttf", 17)
-    font_td_pcs = get_font("arialbd.ttf", 18)
-    font_td_bxs = get_font("arialbd.ttf", 18)
-    font_grand_total = get_font("arialbd.ttf", 22)
-    font_foot_thanks = get_font("arialbd.ttf", 19)
-    font_foot_sub = get_font("arial.ttf", 14)
-    font_foot_toll = get_font("arialbd.ttf", 16)
-    font_foot_help = get_font("arial.ttf", 13)
-    font_foot_copy = get_font("arial.ttf", 12)
+    # High-Definition Typography Tokens (Enlarged for Crisp Mobile & Desktop Readability)
+    font_header_title = get_font("arialbd.ttf", 34)
+    font_ribbon = get_font("arialbd.ttf", 18)
+    font_id = get_font("courbd.ttf", 20)
+    font_meta = get_font("arialbd.ttf", 18)
+    font_cust_lbl = get_font("arialbd.ttf", 15)
+    font_badge_lbl = get_font("arialbd.ttf", 14)
+    font_badge_code = get_font("courbd.ttf", 22)
+    font_qr_verify = get_font("arialbd.ttf", 15)
+    font_qr_id = get_font("courbd.ttf", 17)
+    font_qr_seal = get_font("courbd.ttf", 14)
+    font_qr_rec = get_font("arialbd.ttf", 13)
+    font_th = get_font("arialbd.ttf", 20)
+    font_td_num = get_font("arialbd.ttf", 18)
+    font_td_brand = get_font("arialbd.ttf", 18)
+    font_td_name = get_font("arialbd.ttf", 21)
+    font_td_pcs = get_font("arialbd.ttf", 21)
+    font_td_bxs = get_font("arialbd.ttf", 21)
+    font_grand_total = get_font("arialbd.ttf", 26)
+    font_foot_thanks = get_font("arialbd.ttf", 22)
+    font_foot_sub = get_font("arial.ttf", 16)
+    font_foot_toll = get_font("arialbd.ttf", 18)
+    font_foot_help = get_font("arial.ttf", 15)
+    font_foot_copy = get_font("arial.ttf", 14)
 
     # 1. Outer Border
     border_color = "#475569" if is_old_slip else "#003366"
@@ -262,18 +262,18 @@ def generate_order_slip_png(order: Dict[str, Any], output_path: Optional[str] = 
     # Left Column (Customer Information: x=36 to x=900)
     draw.text((36, cust_box_y + 22), "CUSTOMER / BILLING DETAILS", fill="#64748b", font=font_cust_lbl, anchor="lm")
     
-    party_y = cust_box_y + 46
+    party_y = cust_box_y + 48
     for p_line in party_lines:
         draw.text((36, party_y), p_line, fill="#0f172a", font=font_party_name, anchor="lm")
-        party_y += 28
+        party_y += 34
 
-    addr_y = party_y + 4
+    addr_y = party_y + 6
     for line in addr_lines:
         draw.text((36, addr_y), line, fill="#475569", font=font_addr, anchor="lm")
-        addr_y += 22
+        addr_y += 26
 
     if phone:
-        draw.text((36, addr_y + 4), f"Contact: +91 {phone}", fill="#003366", font=font_addr, anchor="lm")
+        draw.text((36, addr_y + 6), f"Contact: +91 {phone}", fill="#003366", font=font_addr, anchor="lm")
 
     # Right Column: Stacked Badges (x=940 to width-36 = 1364)
     right_col_x = 940

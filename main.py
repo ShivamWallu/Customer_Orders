@@ -145,9 +145,6 @@ app.add_middleware(RequestTracingMiddleware)
 
 IST_TZ = timezone(timedelta(hours=5, minutes=30))
 
-# 🛑 Sliding TTL deduplication cache for preventing double-click / multiple identical orders
-RECENT_SUBMISSION_CACHE: Dict[str, Tuple[float, Any]] = {}
-
 def get_ist_now() -> datetime:
     """Returns current datetime strictly in Indian Standard Time (IST)"""
     return datetime.now(timezone.utc).astimezone(IST_TZ)
@@ -658,6 +655,7 @@ AUTH_SECRET_TOKEN = os.environ.get("AUTH_SECRET_TOKEN", "KOGM_ADMIN_SECURE_TOKEN
 
 @app.post("/api/auth/login")
 @app.post("/api/admin/login")
+@limiter.limit("15/minute")
 async def admin_portal_login(request: Request):
     """
     🔐 Authenticates Administrative Roles (Super Admin, Admin, Manager, Analyser)
@@ -1820,44 +1818,6 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
     """
     order = await request.json()
 
-    # 🛑 Idempotency Deduplication Check (Fix for Double-Click / Duplicate Orders):
-    now_ts = time.time()
-    for k in list(RECENT_SUBMISSION_CACHE.keys()):
-        if now_ts - RECENT_SUBMISSION_CACHE[k][0] > 300:
-            RECENT_SUBMISSION_CACHE.pop(k, None)
-
-    raw_p_name = (order.get("partyName") or "").strip()
-    raw_p_code = (order.get("partyCode") or "").strip()
-    raw_items = order.get("items") or []
-    calc_boxes = sum(int(it.get("boxes", 0)) for it in raw_items if isinstance(it, dict))
-    boxes_val = int(order.get("totalBoxes") or calc_boxes)
-    items_sig = tuple(sorted([(str(it.get("item", "")).strip().lower(), int(it.get("boxes", 0))) for it in raw_items if isinstance(it, dict)]))
-    dedup_key = f"{raw_p_code.lower() or raw_p_name.lower()}_{boxes_val}_{hash(items_sig)}"
-
-    if dedup_key in RECENT_SUBMISSION_CACHE:
-        cached_ts, cached_resp = RECENT_SUBMISSION_CACHE[dedup_key]
-        if (now_ts - cached_ts) <= 120:
-            logger.info(f"[DEDUP] Duplicate order attempt blocked for '{raw_p_name}' ({boxes_val} boxes) within {int(now_ts - cached_ts)}s. Returning original Order #{cached_resp.get('orderId')}")
-            dup_return = dict(cached_resp)
-            dup_return["is_duplicate"] = True
-            dup_return["message"] = "Order already received and recorded."
-            return dup_return
-
-    db_dup = find_recent_duplicate_order(party_code=raw_p_code, party_name=raw_p_name, total_boxes=boxes_val, window_seconds=120)
-    if db_dup:
-        orig_id = db_dup.get("order_id") or db_dup.get("id")
-        logger.info(f"[DEDUP DB] Duplicate order attempt blocked for '{raw_p_name}'. Found existing order #{orig_id} in SQLite DB.")
-        dup_resp = {
-            "status": "success",
-            "message": "Order already received and recorded.",
-            "orderId": orig_id,
-            "id": orig_id,
-            "order": db_dup,
-            "is_duplicate": True
-        }
-        RECENT_SUBMISSION_CACHE[dedup_key] = (now_ts, dup_resp)
-        return dup_resp
-
     orders_list = []
     if os.path.exists(ORDERS_LOG):
         try:
@@ -2156,7 +2116,6 @@ async def receive_customer_order(request: Request, background_tasks: BackgroundT
         "slipImageUrl": order.get("slipImageUrl"),
         "message": "Order recorded successfully!"
     }
-    RECENT_SUBMISSION_CACHE[dedup_key] = (now_ts, success_response)
     return success_response
 
 @app.post("/api/orders/upload-slip")
